@@ -45,7 +45,7 @@ _Tags_
 ```csharp
 var countries = db.Countries.Where(x => x.IsActive).FromCache("states", "countries");
 
-// All cached query using the "states" tag are expired.
+// All cached query using the "states" tag are expired
 QueryCacheManager.ExpireTag("states");
 ```
 
