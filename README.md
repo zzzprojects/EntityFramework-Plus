@@ -38,7 +38,7 @@ var states = ctx.States.Where(x => x.IsActive).FromCache(DateTime.Now.AddHours(2
 
 // (EF7) The query is cached for 2 hours without any activity
 var options = new MemoryCacheEntryOptions() { SlidingExpiration = TimeSpan.FromHours(2)};
-ctx.States.Where(x => x.IsActive).FromCache(options).Count();
+var states = ctx.States.Where(x => x.IsActive).FromCache(options).Count();
 ```
 
 _Tags_
