@@ -42,10 +42,11 @@ var states = ctx.States.Where(x => x.IsActive).FromCache(options).Count();
 ```
 
 _Tags_
+
 ```csharp
 var countries = db.Countries.Where(x => x.IsActive).FromCache("states", "countries");
 
-// All cached query using the "states" tag are expired
+// Expire all cache entry using the "states" tag
 QueryCacheManager.ExpireTag("states");
 ```
 
