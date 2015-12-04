@@ -31,14 +31,14 @@ _Cache Policy_
 
 ```csharp
 // The query is cached using default QueryCacheManager options
-var countries = db.Countries.Where(x => x.IsActive).FromCache();
+var countries = ctx.Countries.Where(x => x.IsActive).FromCache();
 
 // (EF5 | EF6) The query is cached for 2 hours
-var states = db.States.Where(x => x.IsActive).FromCache(DateTime.Now.AddHours(2));
+var states = ctx.States.Where(x => x.IsActive).FromCache(DateTime.Now.AddHours(2));
 
 // (EF7) The query is cached for 2 hours without any activity
-var cacheOptions = new MemoryCacheEntryOptions() { SlidingExpiration = TimeSpan.FromHours(2)};
-ctx.EntitySimples.FromCache(cacheOptions).Count();
+var options = new MemoryCacheEntryOptions() { SlidingExpiration = TimeSpan.FromHours(2)};
+ctx.States.Where(x => x.IsActive).FromCache(options).Count();
 ```
 
 _Tags_
