@@ -1,3 +1,7 @@
+This library is under construction.
+
+Use [.NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotnet-development/entity-framework-extensions/) for stable version.
+
 ##EF Bulk Operations & Utilities | Bulk Insert, Update, Delete, Merge from database##
 
 ## Download
