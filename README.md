@@ -18,7 +18,7 @@ Z.EntityFramework.Plus.EF5 | <a href="https://www.nuget.org/packages/EntityFrame
     - Query Batch Operations _(under development)_
     - [Query Cache (Second Level Cache)](https://github.com/zzzprojects/Entity-Framework-Plus/wiki/Query-Cache)
     - Query Future _(under development)_
-- Auditing -(under development)_
+- Auditing _(under development)_
 
 ## Query Cache
 **Query cache is the second level cache for Entity Framework.**
