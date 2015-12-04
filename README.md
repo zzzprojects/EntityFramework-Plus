@@ -16,7 +16,7 @@ Z.EntityFramework.Plus.EF5 | <a href="https://www.nuget.org/packages/EntityFrame
     - Bulk Merge _(under development)_
 - Query
     - Query Batch Operations _(under development)_
-    - [Query Cache (Second Level Cache)](https://github.com/zzzprojects/Entity-Framework-Plus-Private-/wiki/Query-Cache)
+    - [Query Cache (Second Level Cache)](https://github.com/zzzprojects/Entity-Framework-Plus/wiki/Query-Cache)
     - Query Future _(under development)_
 - Auditing -(under development)_
 
