@@ -156,7 +156,7 @@ _FutureValue_
 
 ```csharp
 // GET the first active customer and the number of avtive customers
-var futureFirstCustomer = db.Customer.Where(x => x.IsActive).DelayedFirstOrDefault().FutureValue();
+var futureFirstCustomer = db.Customers.Where(x => x.IsActive).DelayedFirstOrDefault().FutureValue();
 var futureCustomerCount = db.Customers.Where(x => x.IsActive).DelayedCount().FutureValue();
 
 // TRIGGER all pending queries (futureFirstCustomer & futureCustomerCount)
