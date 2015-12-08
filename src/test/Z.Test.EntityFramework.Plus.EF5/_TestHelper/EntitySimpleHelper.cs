@@ -5,6 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright (c) 2015 ZZZ Projects. All rights reserved.
 
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -25,11 +26,27 @@ namespace Z.Test.EntityFramework.Plus
 
         public static void AddOne()
         {
+            Add(1);
+        }
+
+        public static void AddTen()
+        {
+            Add(10);
+        }
+
+        public static void Add(int count)
+        {
+            var entities = new List<EntitySimple>();
+            for (var i = 0; i < count; i++)
+            {
+                entities.Add(new EntitySimple {ColumnInt = i});
+            }
+
             using (var ctx = new EntityContext())
             {
-                ctx.EntitySimples.Add(new EntitySimple {ColumnInt = 1});
+                entities.ForEach(x => ctx.EntitySimples.Add(x));
                 ctx.SaveChanges();
-                Assert.AreEqual(1, ctx.EntitySimples.ToList().Count);
+                Assert.AreEqual(count, ctx.EntitySimples.ToList().Count);
             }
         }
     }

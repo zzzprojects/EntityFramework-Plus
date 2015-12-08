@@ -7,7 +7,7 @@
     <ProjectGuid>{6EA3675A-AB66-4ABA-94D1-3DA69FA88D4E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Z.EntityFramework</RootNamespace>
+    <RootNamespace>Z.EntityFramework.Plus</RootNamespace>
     <AssemblyName>Z.EntityFramework.Plus.EF6</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -31,16 +31,14 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;EF6 NET45</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.0.0\lib\net40\EntityFramework.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -53,10 +51,51 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\IQueryable`\IQueryable.GetObjectQuery.cs" />
+    <Compile Include="QueryDelayed\QueryDelayed.cs" />
+    <Compile Include="QueryDelayed\Extensions\DelayedAverage.cs" />
+    <Compile Include="QueryDelayed\Extensions\DelayedAggregate.cs" />
+    <Compile Include="QueryDelayed\Extensions\DelayedMax.cs" />
+    <Compile Include="QueryDelayed\Extensions\DelayedSum.cs" />
+    <Compile Include="QueryDelayed\Extensions\DelayedMin.cs" />
+    <Compile Include="QueryDelayed\Extensions\DelayedLongCount.cs" />
+    <Compile Include="QueryDelayed\Extensions\DelayedCount.cs" />
+    <Compile Include="QueryDelayed\Extensions\DelayedAll.cs" />
+    <Compile Include="QueryDelayed\Extensions\DelayedAny.cs" />
+    <Compile Include="QueryDelayed\Extensions\DelayedSequenceEqual.cs" />
+    <Compile Include="QueryDelayed\Extensions\DelayedElementAtOrDefault.cs" />
+    <Compile Include="QueryDelayed\Extensions\DelayedElementAt.cs" />
+    <Compile Include="QueryDelayed\Extensions\DelayedContains.cs" />
+    <Compile Include="QueryDelayed\Extensions\DelayedSingleOrDefault.cs" />
+    <Compile Include="QueryDelayed\Extensions\DelayedSingle.cs" />
+    <Compile Include="QueryDelayed\Extensions\DelayedLastOrDefault.cs" />
+    <Compile Include="QueryDelayed\Extensions\DelayedLast.cs" />
+    <Compile Include="QueryDelayed\Extensions\DelayedFirstOrDefault.cs" />
+    <Compile Include="QueryDelayed\Extensions\DelayedFirst.cs" />
+    <Compile Include="QueryDelayed\QueryDelayedExtensions.cs" />
+    <Compile Include="QueryDelayed\QueryDelayedExtensionsError.cs" />
+    <Compile Include="Extensions\ObjectContext\CreateStoreCommand.cs" />
+    <Compile Include="Extensions\EntityConnection\GetStoreTransaction.cs" />
+    <Compile Include="Extensions\ObjectContext\GetInterceptionContext.cs" />
+    <Compile Include="Extensions\EntityConnection\GetDbTransaction.cs" />
+    <Compile Include="Extensions\EntityConnection\GetEntityTransaction.cs" />
+    <Compile Include="Extensions\IQueryable\IQueryable.GetObjectQuery.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QueryCache\FromCache.cs" />
-    <Compile Include="QueryCache\FromCacheAsync.cs" />
+    <Compile Include="QueryCache\Extensions\QueryDelayed.FromCache.cs" />
+    <Compile Include="QueryCache\Extensions\IQueryable.FromCache.cs" />
+    <Compile Include="QueryCache\Extensions\QueryDelayed.FromCacheAsync.cs" />
+    <Compile Include="QueryCache\Extensions\IQueryable.FromCacheAsync.cs" />
     <Compile Include="QueryCache\QueryCacheManager.cs" />
+    <Compile Include="QueryFuture\Extensions\FutureValue.cs" />
+    <Compile Include="QueryFuture\Extensions\Future.cs" />
+    <Compile Include="QueryFuture\QueryFutureBatch.cs" />
+    <Compile Include="QueryFuture\QueryFutureBase.cs" />
+    <Compile Include="QueryFuture\QueryFutureValue.cs" />
+    <Compile Include="QueryFuture\QueryFutureEnumerable.cs" />
+    <Compile Include="QueryFuture\QueryFutureManager.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

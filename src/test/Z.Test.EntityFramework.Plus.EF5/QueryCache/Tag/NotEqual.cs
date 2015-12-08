@@ -12,7 +12,7 @@ using Z.EntityFramework.Plus;
 
 namespace Z.Test.EntityFramework.Plus
 {
-    public partial class QueryCache
+    public partial class QueryCache_Tag
     {
         [TestMethod]
         public void Tag_NotEqual()

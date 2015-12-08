@@ -36,14 +36,14 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;EF5</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EntityFramework, Version=4.4.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.5.0.0\lib\net40\EntityFramework.dll</HintPath>
+    <Reference Include="EntityFramework, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -68,21 +68,37 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QueryCache\FromCacheAsync\WithDefault.cs" />
-    <Compile Include="QueryCache\FromCacheAsync\WithExpiration.cs" />
-    <Compile Include="QueryCache\FromCache\WithDefault.cs" />
-    <Compile Include="QueryCache\FromCache\WithExpiration.cs" />
-    <Compile Include="QueryCache\QueryCache.cs" />
+    <Compile Include="QueryCache\FromCacheAsync\Queryable_WithDefault.cs" />
+    <Compile Include="QueryCache\FromCacheAsync\Queryable_WithExpiration.cs" />
+    <Compile Include="QueryCache\FromCacheAsync\QueryDelayed_WithDefault.cs" />
+    <Compile Include="QueryCache\FromCacheAsync\QueryDelayed_WithExpiration.cs" />
+    <Compile Include="QueryCache\FromCache\Queryable_WithDefault.cs" />
+    <Compile Include="QueryCache\FromCache\Queryable_WithExpiration.cs" />
+    <Compile Include="QueryCache\FromCache\QueryDelayed_WithDefault.cs" />
+    <Compile Include="QueryCache\FromCache\QueryDelayed_WithExpiration.cs" />
+    <Compile Include="QueryCache\QueryCache_FromCache.cs" />
+    <Compile Include="QueryCache\QueryCache_FromCacheAsync.cs" />
+    <Compile Include="QueryCache\QueryCache_Tag.cs" />
     <Compile Include="QueryCache\Tag\Equal.cs" />
     <Compile Include="QueryCache\Tag\Expire.cs" />
     <Compile Include="QueryCache\Tag\NotEqual.cs" />
+    <Compile Include="QueryFuture\FutureValue\DelayedQuery_AsNoTracking.cs" />
+    <Compile Include="QueryFuture\FutureValue\DelayedQuery_AsTracking.cs" />
+    <Compile Include="QueryFuture\FutureValue\Queryable_AsNoTracking.cs" />
+    <Compile Include="QueryFuture\FutureValue\Queryable_AsTracking.cs" />
+    <Compile Include="QueryFuture\Future\Queryable_AsNoTracking.cs" />
+    <Compile Include="QueryFuture\Future\Queryable_AsTracking.cs" />
+    <Compile Include="QueryFuture\QueryFuture_Future.cs" />
+    <Compile Include="QueryFuture\QueryFuture_FutureValue.cs" />
     <Compile Include="_Model\EntitySimple.cs" />
     <Compile Include="_Model\_Context.cs" />
     <Compile Include="_TestHelper\EntitySimpleHelper.cs" />
     <Compile Include="_TestHelper\QueryCacheManagerHelper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

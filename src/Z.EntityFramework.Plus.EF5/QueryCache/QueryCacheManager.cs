@@ -87,5 +87,15 @@ namespace Z.EntityFramework.Plus
         {
             return CachePrefix + string.Join(";", tags) + query;
         }
+
+        /// <summary>Gets cache key used to cache or retrieve query from the QueryCacheManager.</summary>
+        /// <typeparam name="T">Generic type parameter.</typeparam>
+        /// <param name="query">The query to cache or retrieve from the QueryCacheManager.</param>
+        /// <param name="tags">A variable-length parameters list containing tag to create the cache key.</param>
+        /// <returns>The cache key used to cache or retrieve query from the QueryCacheManager.</returns>
+        public static string GetCacheKey<T>(QueryDelayed<T> query, string[] tags)
+        {
+            return CachePrefix + string.Join(";", tags) + query.Source;
+        }
     }
 }
