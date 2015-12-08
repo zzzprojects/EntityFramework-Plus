@@ -21,7 +21,9 @@ Z.EntityFramework.Plus.EF5 | <a href="https://www.nuget.org/packages/Z.EntityFra
 - Query
     - Query Batch Operations _(under development)_
     - [Query Cache (Second Level Cache)](https://github.com/zzzprojects/Entity-Framework-Plus/wiki/Query-Cache)
-    - Query Future _(under development)_
+    - [Query Delayed](https://github.com/zzzprojects/Entity-Framework-Plus/wiki/Query-Delayed)
+    - [Query Filter](https://github.com/zzzprojects/Entity-Framework-Plus/wiki/Query-Filter)    
+    - [Query Future](https://github.com/zzzprojects/Entity-Framework-Plus/wiki/Query-Future)
 - Auditing _(under development)_
 
 ## Query Cache
