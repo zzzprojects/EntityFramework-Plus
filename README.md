@@ -1,8 +1,8 @@
-This library is under construction.
+This library is under construction. New features are added weekly.
 
 Use [.NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotnet-development/entity-framework-extensions/) for stable version.
 
-##EF Bulk Operations & Utilities | Bulk Insert, Update, Delete, Merge from database##
+##Entity Framework Bulk Operations & Utilities##
 
 ## Download
 Version | NuGet | NuGet Install
@@ -20,16 +20,18 @@ Z.EntityFramework.Plus.EF5 | <a href="https://www.nuget.org/packages/Z.EntityFra
     - Bulk Merge _(under development)_
 - Query
     - Query Batch Operations _(under development)_
-    - [Query Cache (Second Level Cache)](https://github.com/zzzprojects/Entity-Framework-Plus/wiki/Query-Cache)
-    - [Query Delayed](https://github.com/zzzprojects/Entity-Framework-Plus/wiki/Query-Delayed)
-    - [Query Filter](https://github.com/zzzprojects/Entity-Framework-Plus/wiki/Query-Filter)    
-    - [Query Future](https://github.com/zzzprojects/Entity-Framework-Plus/wiki/Query-Future)
+    - [Query Cache (Second Level Cache)](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Cache)
+    - [Query Delayed](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Delayed)
+    - [Query Filter](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Filter)    
+    - [Query Future](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Future)
 - Auditing _(under development)_
 
 ## Query Cache
 **Query cache is the second level cache for Entity Framework.**
 
 The result of the query is returned from the cache. If the query is not cached yet, the query is materialized and cached before being returned.
+
+You can specify cache policy and cache tag to control CacheItem expiration.
 
 **Support:**
 
@@ -44,36 +46,146 @@ var states = ctx.States.Where(x => x.IsActive).FromCache(DateTime.Now.AddHours(2
 
 // (EF7) The query is cached for 2 hours without any activity
 var options = new MemoryCacheEntryOptions() { SlidingExpiration = TimeSpan.FromHours(2)};
-var states = ctx.States.Where(x => x.IsActive).FromCache(options).Count();
+var states = ctx.States.Where(x => x.IsActive).FromCache(options);
 ```
 
-_Tags_
+_Cache Tags_
 
 ```csharp
-var countries = db.Countries.Where(x => x.IsActive).FromCache("states", "countries");
+var states = db.States.Where(x => x.IsActive).FromCache("countries", "states");
+var stateCount = db.States.Where(x => x.IsActive).DelayedCount().FromCache("countries", "states");
 
-// Expire all cache entry using the "states" tag
-QueryCacheManager.ExpireTag("states");
+// Expire all cache entry using the "countries" tag
+QueryCacheManager.ExpireTag("countries");
 ```
 
-**[Learn more](https://github.com/zzzprojects/Entity-Framework-Plus/wiki/Query-Cache)**
+**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Cache)**
+
+## Query Delayed
+**Delay the execution of a query which is normally executed to allow some features like Query Cache and Query Future.**
+
+```csharp
+// Oops! The query is already executed, we cannot use Query Cache or Query Future features
+var count = ctx.Customers.Count();
+
+// Query Cache
+ctx.Customers.DelayedCount().FromCache();
+
+// Query Future
+ctx.Customers.DelayedCount().FutureValue();
+```
+> All LINQ extensions are supported: Count, First, FirstOrDefault, Sum, etc. 
+
+**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Delayed)**
+
+## Query Filter
+_(AVAILABLE SOON)_
+
+**Filter query with predicate at global, instance or query level.**
+
+**Support**
+
+_Global Filter_
+```csharp
+// CREATE filter
+QueryFilterManager.Filter<Customer>(c => c.IsActive);
+
+// CONFIGURE context
+public class EntityContext : DbContext
+{
+        public EntityContext() : base("MyDatabase")
+        {
+            // ENABLE all filters
+            this.EnableFilter();
+        }
+        
+        public DbSet<Customer> Customers { get; set; }
+}
+
+// SELECT * FROM Customer WHERE IsActive = true
+var ctx = new EntityContext();
+var customer = ctx.Customers.ToList();
+```
+
+_Instance Filter_
+```csharp
+// CREATE filter
+QueryFilterManager.Filter<Customer>(c => c.IsActive);
+
+// ENABLE all filters
+var ctx = new EntityContext();
+ctx.EnableFilter();
+
+// SELECT * FROM Customer WHERE IsActive = true
+var customer = ctx.Customers.ToList();
+```
+
+_Query Filter_
+```csharp
+// CREATE filter
+QueryFilterManager.Filter<Customer>(c => c.IsActive, false);
+QueryFilterManager.Filter<Customer>(custom.EnumValue, c => c.IsActive, false);
+
+// SELECT * FROM Customer WHERE IsActive = true
+var ctx = new EntityContext();
+var customer = ctx.Customers.Filter().ToList();
+var customer = ctx.Customers.Filter(custom.EnumValue).ToList();
+```
+
+**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Filter)**
+
+## Query Future
+**Query Future allow to reduce database roundtrip by batching multiple queries in the same sql command.**
+
+All future query are stored in a pending list. When the first future query require a database roundtrip, all query are resolved in the same sql command instead of making a database roundtrip for every sql command.
+
+**Support:**
+
+_Future_
+
+```csharp
+// GET the states & countries list
+var futureCountries = db.Countries.Where(x => x.IsActive).Future();
+var futureStates = db.States.Where(x => x.IsActive).Future();
+
+// TRIGGER all pending queries (futureCountries & futureStates)
+var countries = futureCountries.ToList();
+```
+
+_FutureValue_
+
+```csharp
+// GET the first active customer and the number of avtive customers
+var futureFirstCustomer = db.Customer.Where(x => x.IsActive).DelayedFirstOrDefault().FutureValue();
+var futureCustomerCount = db.Customers.Where(x => x.IsActive).DelayedCount().FutureValue();
+
+// TRIGGER all pending queries (futureFirstCustomer & futureCustomerCount)
+Customer firstCustomer = futureFirstCustomer.Value;
+```
+
+**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Future)**
 
 ## FREE vs PRO
 Every month, a new monthly trial of the PRO Version is available to let you evaluate all its features without limitations.
 
 Features | FREE Version | PRO Version
 ------------ | :-------------: | :-------------:
+Audit | Yes | Yes
+Query Batch | Yes | Yes
 Query Cache | Yes | Yes
-Commercial License | No | Yes
-Royalty-Free | No | Yes
-Support & Upgrades (1 year) | No | Yes
+Query Delayed | Yes | Yes
+Query Filter | Yes | Yes
+Query Future | Yes | Yes
+Commercial License | **No** | Yes
+Royalty-Free | **No** | Yes
+Support & Upgrades (1 year) | **No** | Yes
 Learn more about the PRO Version **(Not available until 2016)**
 
 ## Support
 Contact our outstanding customer support for any request. We usually answer within the next business day, hour, or minutes!
 
 - Website (Not yet available)
-- [Documentation](https://github.com/zzzprojects/Entity-Framework-Plus/wiki)
+- [Documentation](https://github.com/zzzprojects/EntityFramework-Plus/wiki)
 - [Forum](https://zzzprojects.uservoice.com/forums/283924-entity-framework-plus)
 - sales@zzzprojects.com
 
