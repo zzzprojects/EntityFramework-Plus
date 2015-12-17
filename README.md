@@ -79,24 +79,18 @@ ctx.Customers.DelayedCount().FutureValue();
 **[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Delayed)**
 
 ## Query Filter
-_(AVAILABLE SOON)_
-
 **Filter query with predicate at global, instance or query level.**
 
 **Support**
 
 _Global Filter_
 ```csharp
-// CREATE filter
-QueryFilterManager.Filter<Customer>(c => c.IsActive);
-
-// CONFIGURE context
 public class EntityContext : DbContext
 {
         public EntityContext() : base("MyDatabase")
         {
-            // ENABLE all filters
-            this.EnableFilter();
+            // CONFIGURE all your filters for all context
+            this.Filter<Customer>(x => x.Where(c => c.IsActive));
         }
         
         public DbSet<Customer> Customers { get; set; }
@@ -109,12 +103,10 @@ var customer = ctx.Customers.ToList();
 
 _Instance Filter_
 ```csharp
-// CREATE filter
-QueryFilterManager.Filter<Customer>(c => c.IsActive);
-
-// ENABLE all filters
 var ctx = new EntityContext();
-ctx.EnableFilter();
+
+// CREATE filter
+ctx.Filter<Customer>(x => x.Where(c => c.IsActive));
 
 // SELECT * FROM Customer WHERE IsActive = true
 var customer = ctx.Customers.ToList();
@@ -122,14 +114,13 @@ var customer = ctx.Customers.ToList();
 
 _Query Filter_
 ```csharp
-// CREATE filter
-QueryFilterManager.Filter<Customer>(c => c.IsActive, false);
-QueryFilterManager.Filter<Customer>(custom.EnumValue, c => c.IsActive, false);
+var ctx = new EntityContext();
+
+// CREATE filter disabled
+ctx.Filter<Customer>(custom.EnumValue, x => x.Where(c => c.IsActive), false);
 
 // SELECT * FROM Customer WHERE IsActive = true
-var ctx = new EntityContext();
-var customer = ctx.Customers.Filter().ToList();
-var customer = ctx.Customers.Filter(custom.EnumValue).ToList();
+var customer = ctx.Customers.Filter(MyEnum.Filter1).ToList();
 ```
 
 **[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Filter)**
