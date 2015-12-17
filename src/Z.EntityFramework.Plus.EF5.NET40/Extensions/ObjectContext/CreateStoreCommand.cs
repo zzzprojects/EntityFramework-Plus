@@ -18,7 +18,7 @@ using System.Data.Entity.Core.Objects;
 
 namespace Z.EntityFramework.Plus
 {
-    public static class ObjectContextExtensions
+    public static partial class ObjectContextExtensions
     {
         public static DbCommand CreateStoreCommand(this ObjectContext context)
         {

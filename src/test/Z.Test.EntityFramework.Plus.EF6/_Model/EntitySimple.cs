@@ -13,4 +13,11 @@ namespace Z.Test.EntityFramework.Plus
         public int ColumnInt { get; set; }
         public string ColumnString { get; set; }
     }
+
+    public class EntitySimple2
+    {
+        public int ID { get; set; }
+        public int ColumnInt { get; set; }
+        public string ColumnString { get; set; }
+    }
 }

@@ -6,6 +6,8 @@
 // Copyright (c) 2015 ZZZ Projects. All rights reserved.
 
 using System.Data.Entity;
+using System.Linq;
+using Z.EntityFramework.Plus;
 
 namespace Z.Test.EntityFramework.Plus
 {
@@ -15,6 +17,102 @@ namespace Z.Test.EntityFramework.Plus
         {
         }
 
+        public EntityContext(bool isEnabled, string fixResharper = null, bool? enableFilter1 = null, bool? enableFilter2 = null, bool? enableFilter3 = null, bool? enableFilter4 = null, bool? excludeClass = null, bool? excludeInterface = null, bool? excludeBaseClass = null, bool? excludeBaseInterface = null, bool? includeClass = null, bool? includeInterface = null, bool? includeBaseClass = null, bool? includeBaseInterface = null) : base("TestDatabase")
+        {
+            if (enableFilter1 != null)
+            {
+                this.Filter<FilterEntity>(FilterEntityHelper.Filter.Filter1, entities => entities.Where(x => x.ColumnInt != 1), isEnabled);
+                if (!isEnabled && enableFilter1.Value)
+                {
+                    this.Filter(FilterEntityHelper.Filter.Filter1).Enable();
+                }
+                else if (isEnabled && !enableFilter1.Value)
+                {
+                    this.Filter(FilterEntityHelper.Filter.Filter1).Disable();
+                }
+            }
+            if (enableFilter2 != null)
+            {
+                this.Filter<IFilterEntity>(FilterEntityHelper.Filter.Filter2, entities => entities.Where(x => x.ColumnInt != 2), isEnabled);
+                if (!isEnabled && enableFilter2.Value)
+                {
+                    this.Filter(FilterEntityHelper.Filter.Filter2).Enable();
+                }
+                else if (isEnabled && !enableFilter2.Value)
+                {
+                    this.Filter(FilterEntityHelper.Filter.Filter2).Disable();
+                }
+            }
+            if (enableFilter3 != null)
+            {
+                this.Filter<BaseFilterEntity>(FilterEntityHelper.Filter.Filter3, entities => entities.Where(x => x.ColumnInt != 3), isEnabled);
+                if (!isEnabled && enableFilter3.Value)
+                {
+                    this.Filter(FilterEntityHelper.Filter.Filter3).Enable();
+                }
+                else if (isEnabled && !enableFilter3.Value)
+                {
+                    this.Filter(FilterEntityHelper.Filter.Filter3).Disable();
+                }
+            }
+            if (enableFilter4 != null)
+            {
+                this.Filter<IBaseFilterEntity>(FilterEntityHelper.Filter.Filter4, entities => entities.Where(x => x.ColumnInt != 4), isEnabled);
+                if (!isEnabled && enableFilter4.Value)
+                {
+                    this.Filter(FilterEntityHelper.Filter.Filter4).Enable();
+                }
+                else if (isEnabled && !enableFilter4.Value)
+                {
+                    this.Filter(FilterEntityHelper.Filter.Filter4).Disable();
+                }
+            }
+
+            if (excludeClass != null && excludeClass.Value)
+            {
+                this.Filter(FilterEntityHelper.Filter.Filter1).Disable(typeof (FilterEntity));
+            }
+
+            if (excludeInterface != null && excludeInterface.Value)
+            {
+                this.Filter(FilterEntityHelper.Filter.Filter2).Disable(typeof (IFilterEntity));
+            }
+
+            if (excludeBaseClass != null && excludeBaseClass.Value)
+            {
+                this.Filter(FilterEntityHelper.Filter.Filter3).Disable(typeof (BaseFilterEntity));
+            }
+
+            if (excludeBaseInterface != null && excludeBaseInterface.Value)
+            {
+                this.Filter(FilterEntityHelper.Filter.Filter4).Disable(typeof (IBaseFilterEntity));
+            }
+
+            if (includeClass != null && includeClass.Value)
+            {
+                this.Filter(FilterEntityHelper.Filter.Filter1).Enable(typeof (IFilterEntity));
+            }
+
+            if (includeInterface != null && includeInterface.Value)
+            {
+                this.Filter(FilterEntityHelper.Filter.Filter2).Enable(typeof (IFilterEntity));
+            }
+
+            if (includeBaseClass != null && includeBaseClass.Value)
+            {
+                this.Filter(FilterEntityHelper.Filter.Filter3).Enable(typeof (BaseFilterEntity));
+            }
+
+            if (includeBaseInterface != null && includeBaseInterface.Value)
+            {
+                this.Filter(FilterEntityHelper.Filter.Filter4).Enable(typeof (IBaseFilterEntity));
+            }
+        }
+
         public DbSet<EntitySimple> EntitySimples { get; set; }
+
+        public DbSet<FilterEntity> FilterEntities { get; set; }
+
+        public DbSet<EntitySimple2> EntitySimple2s { get; set; }
     }
 }

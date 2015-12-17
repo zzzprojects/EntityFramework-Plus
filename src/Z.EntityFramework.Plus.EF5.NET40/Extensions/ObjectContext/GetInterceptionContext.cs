@@ -18,8 +18,9 @@ namespace Z.EntityFramework.Plus
         public static DbInterceptionContext GetInterceptionContext(this ObjectContext context)
         {
             var interceptionContextProperty = context.GetType().GetProperty("InterceptionContext", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            return (DbInterceptionContext) interceptionContextProperty.GetValue(context);
+            return (DbInterceptionContext) interceptionContextProperty.GetValue(context, null);
         }
     }
 }
+
 #endif

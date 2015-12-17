@@ -52,13 +52,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExceptionMessage.cs" />
+    <Compile Include="Extensions\IDbSet`\GetDbContext.cs" />
     <Compile Include="Extensions\EntityConnection\GetDbTransaction.cs" />
     <Compile Include="Extensions\EntityConnection\GetEntityTransaction.cs" />
     <Compile Include="Extensions\EntityConnection\GetStoreTransaction.cs" />
     <Compile Include="Extensions\IQueryable\IQueryable.GetObjectQuery.cs" />
     <Compile Include="Extensions\IQueryable`\IQueryable.GetObjectQuery.cs" />
     <Compile Include="Extensions\ObjectContext\CreateStoreCommand.cs" />
+    <Compile Include="Extensions\ObjectContext\GetDbContext.cs" />
     <Compile Include="Extensions\ObjectContext\GetInterceptionContext.cs" />
+    <Compile Include="Internal\Extensions\DbContext\DbContext.GetDbSetProperties.cs" />
+    <Compile Include="Internal\Extensions\Dictionary\Dictionary.AddOrAppend.cs" />
+    <Compile Include="Internal\Extensions\Object\Object.GetObjectQuery.cs" />
+    <Compile Include="Internal\Extensions\Type\Type.GetDbSetElementType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryCache\Extensions\IQueryable.FromCache.cs" />
     <Compile Include="QueryCache\Extensions\IQueryable.FromCacheAsync.cs" />
@@ -87,6 +94,16 @@
     <Compile Include="QueryDelayed\QueryDelayed.cs" />
     <Compile Include="QueryDelayed\QueryDelayedExtensions.cs" />
     <Compile Include="QueryDelayed\QueryDelayedExtensionsError.cs" />
+    <Compile Include="QueryFilter\Extensions\DbContext.Filter.cs" />
+    <Compile Include="QueryFilter\Extensions\IDbSet.AsNoFilter.cs" />
+    <Compile Include="QueryFilter\Extensions\IDbSet.Filter.cs" />
+    <Compile Include="QueryFilter\IQueryFilter.cs" />
+    <Compile Include="QueryFilter\IQueryFilterQueryable.cs" />
+    <Compile Include="QueryFilter\QueryFilter.cs" />
+    <Compile Include="QueryFilter\QueryFilterContext.cs" />
+    <Compile Include="QueryFilter\QueryFilterManager.cs" />
+    <Compile Include="QueryFilter\QueryFilterQueryable.cs" />
+    <Compile Include="QueryFilter\QueryFilterSet.cs" />
     <Compile Include="QueryFuture\Extensions\Future.cs" />
     <Compile Include="QueryFuture\Extensions\FutureValue.cs" />
     <Compile Include="QueryFuture\QueryFutureBase.cs" />

@@ -9,6 +9,7 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading.Tasks;
 #if EF5
 using System.Data.Objects;
 
@@ -49,5 +50,14 @@ namespace Z.EntityFramework.Plus
         {
             return Source.Provider.Execute<TResult>(Expression);
         }
+
+#if NET45
+        /// <summary>Executes the asynchronous operation.</summary>
+        /// <returns>A Task&lt;TResult&gt;</returns>
+        public Task<TResult> ExecuteAsync()
+        {
+            return Task.Run(() => Execute());
+        }
+#endif
     }
 }

@@ -49,5 +49,14 @@ namespace Z.EntityFramework.Plus
         {
             return Source.Provider.Execute<TResult>(Expression);
         }
+
+#if NET45
+    /// <summary>Executes the asynchronous operation.</summary>
+    /// <returns>A Task&lt;TResult&gt;</returns>
+        public Task<TResult> ExecuteAsync()
+        {
+            return Task.Run(() => Execute());
+        }
+#endif
     }
 }
