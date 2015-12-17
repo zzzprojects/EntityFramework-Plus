@@ -172,6 +172,8 @@ Royalty-Free | **No** | Yes
 Support & Upgrades (1 year) | **No** | Yes
 Learn more about the PRO Version **(Not available until 2016)**
 
+(Compatible with license from [.NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotnet-development/entity-framework-extensions/))
+
 ## Support
 Contact our outstanding customer support for any request. We usually answer within the next business day, hour, or minutes!
 
