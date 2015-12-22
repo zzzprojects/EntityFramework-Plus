@@ -204,10 +204,8 @@ foreach(var entry in entries)
 Want to save audit entries automatically after every SaveChanges(audit) call?
 ```csharp
 // ADD AuditEntry && AuditEntryProperty to your context or use your own entity
-AuditManager.DefaultConfiguration.AutoSaveAction = (context, audit) => {
+AuditManager.DefaultConfiguration.AutoSaveAction = (context, audit) =>
     (context as EntityContext).AuditEntries.AddRange(audit.Entries);
-    context.SaveChanges();
-};
 ```
 
 **[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Audit)**
