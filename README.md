@@ -24,8 +24,8 @@ Z.EntityFramework.Plus.EF5 | <a href="https://www.nuget.org/packages/Z.EntityFra
     - [Query Delayed](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Delayed)
     - [Query Filter](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Filter)    
     - [Query Future](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Future)
-    - Query Include Filter _(under development)_
-- Auditing _(under development)_
+    - [Query Include](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Include) (_Soon available_)
+- [Query Audit](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Audit) (_Soon available_)
 
 ## Query Cache
 **Query cache is the second level cache for Entity Framework.**
@@ -156,6 +156,61 @@ Customer firstCustomer = futureFirstCustomer.Value;
 ```
 
 **[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Future)**
+
+## Query Include (_Soon available_)
+Entity Framework already support eager loading however the major drawback is you cannot control what will be included. There is no way to load only active item or load only the first 10 comments.
+
+**EF+ Query Include** make it easy:
+```csharp
+var ctx = new EntityContext();
+
+// Load only active  items
+var orders = ctx.Orders.Include(x => x.Items, item => item.IsActive);
+
+// Load only the first 10 comments
+var posts = ctx.Post.Include(x => x.Comments, comments => comments.Take(10));
+```
+
+> Bonus: Data transfered are heavily decreased over Entity Framework Include.
+
+**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Include)**
+
+## Audit (_Soon available_)
+Entity Framework allow to save changes but doesn’t log what change has been made in the Change Tracker. Audit allow to capture every changes made on entities and relations saved to your underling database.
+
+**Support:**
+ - Identity
+ - All kind of entity/inheritance (TPC, TPH, TPT)
+ - All kind of relations (Many to Many, One to Many, One to One, etc.)
+ - Audit AutoSaving
+
+```csharp
+var ctx = new EntityContext();
+
+// ... ctx changes ...
+var audit = new Audit();
+ctx.SaveChanges(audit);
+
+// You have now access to all captured informations
+var entries = audit.Entries;
+foreach(var entry in entries)
+{
+    foreach(var property in entry.Properties)
+    {
+    }
+}
+```
+
+Want to save audit entries automatically after every SaveChanges(audit) call?
+```csharp
+// ADD AuditEntry && AuditEntryProperty to your context or use your own entity
+AuditManager.DefaultConfiguration.AutoSaveAction = (context, audit) => {
+    (context as EntityContext).AuditEntries.AddRange(audit.Entries);
+    context.SaveChanges();
+};
+```
+
+**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Audit)**
 
 ## FREE vs PRO
 Every month, a new monthly trial of the PRO Version is available to let you evaluate all its features without limitations.
