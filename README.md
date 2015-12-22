@@ -164,7 +164,7 @@ Entity Framework already support eager loading however the major drawback is you
 ```csharp
 var ctx = new EntityContext();
 
-// Load only active  items
+// Load only active items
 var orders = ctx.Orders.Include(x => x.Items, item => item.IsActive);
 
 // Load only the first 10 comments
