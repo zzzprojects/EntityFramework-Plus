@@ -24,7 +24,7 @@ Z.EntityFramework.Plus.EF5 | <a href="https://www.nuget.org/packages/Z.EntityFra
     - [Query Delayed](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Delayed)
     - [Query Filter](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Filter)    
     - [Query Future](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Future)
-    - [Query Include Filter] _(under development)_
+    - Query Include Filter _(under development)_
 - Auditing _(under development)_
 
 ## Query Cache
