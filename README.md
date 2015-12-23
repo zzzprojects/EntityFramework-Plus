@@ -25,8 +25,8 @@ Z.EntityFramework.Plus.EF5 | <a href="https://www.nuget.org/packages/Z.EntityFra
     - [Query Filter](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Filter)    
     - [Query Future](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Future)
     - [Query Include](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Include) (_Soon available_)
-- [Query Audit](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Audit) (_Soon available_)
-
+- [Audit](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Audit) (_Soon available_)
+- Save Change Security
 ## Query Cache
 **Query cache is the second level cache for Entity Framework.**
 
