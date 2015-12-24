@@ -181,7 +181,7 @@ Entity Framework allow to save changes but doesn’t log what change has been ma
 
 **Support:**
  - Identity
- - All kind of entity/inheritance (TPC, TPH, TPT)
+ - All kind of entity/inheritance (Complex Type, TPC, TPH, TPT)
  - All kind of relations (Many to Many, One to Many, One to One, etc.)
  - Audit AutoSaving
 
