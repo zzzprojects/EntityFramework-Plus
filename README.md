@@ -25,7 +25,7 @@ Z.EntityFramework.Plus.EF5 | <a href="https://www.nuget.org/packages/Z.EntityFra
     - [Query Filter](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Filter)    
     - [Query Future](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Future)
     - [Query Include "Where"](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Include) (_Soon available_)
-    - [Query Include Many "Optimized"](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-IncludeMany) (_Soon available_)
+    - [Query IncludeMany "Optimized"](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-IncludeMany) (_Soon available_)
 - [Audit](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Audit) (_Soon available_)
 - Save Change Security _(under development)_
 
