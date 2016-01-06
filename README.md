@@ -223,9 +223,9 @@ Query Cache | Yes | Yes
 Query Delayed | Yes | Yes
 Query Filter | Yes | Yes
 Query Future | Yes | Yes
-Commercial License | **No** | Yes
-Royalty-Free | **No** | Yes
-Support & Upgrades (1 year) | **No** | Yes
+Commercial License | Yes | Yes
+Royalty-Free | Yes | Yes
+Support (1 year) | **No** | Yes
 Learn more about the PRO Version **(Not available until 2016)**
 
 (Compatible with license from [.NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotnet-development/entity-framework-extensions/))
