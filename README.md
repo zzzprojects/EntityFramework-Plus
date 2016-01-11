@@ -234,12 +234,22 @@ Contact our outstanding customer support for any request. We usually answer with
 - Website (Not yet available)
 - [Documentation](https://github.com/zzzprojects/EntityFramework-Plus/wiki)
 - [Forum](https://zzzprojects.uservoice.com/forums/283924-entity-framework-plus)
-- sales@zzzprojects.com
+- info@zzzprojects.com
 
 ## More Projects
+- Entity Framework
+  - [NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotnet-development/entity-framework-extensions/)
+  - [EntityFramework Plus](https://github.com/zzzprojects/EntityFramework-Plus) _(Under development)_
+- Bulk Operations
   - [NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotnet-development/entity-framework-extensions/)
   - [NET Bulk Operations](http://www.zzzprojects.com/products/dotnet-development/bulk-operations/)
+- Expression Evaluator
   - [Eval Expression.NET](https://github.com/zzzprojects/Eval-Expression.NET)
   - [Eval SQL.NET](https://github.com/zzzprojects/Eval-SQL.NET)
+- Others
   - [Extension Methods Library](https://github.com/zzzprojects/Z.ExtensionMethods/)
+  - [LINQ Async](https://github.com/zzzprojects/Linq-AsyncExtensions)
 
+Need more info? info@zzzprojects.com
+
+Contact our outstanding customer support for any request. We usually answer within the next business day, hour, or minutes!
