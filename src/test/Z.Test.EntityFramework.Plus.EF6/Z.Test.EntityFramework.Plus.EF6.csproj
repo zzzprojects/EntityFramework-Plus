@@ -43,12 +43,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.1.3\lib\net40\EntityFramework.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.1.3\lib\net40\EntityFramework.SqlServer.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -70,6 +70,43 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Audit\Audit_Configuration.cs" />
+    <Compile Include="Audit\Audit_RelationshipDeleted.cs" />
+    <Compile Include="Audit\Configuration\IncludePropertyUnchanged_IsTrue.cs" />
+    <Compile Include="Audit\Configuration\IncludePropertyUnchanged_IsFalse.cs" />
+    <Compile Include="Audit\Configuration\IncludeRelationshipAdded_IsFalse.cs" />
+    <Compile Include="Audit\Configuration\IncludeRelationshipAdded_IsTrue.cs" />
+    <Compile Include="Audit\Configuration\IncludeEntityAdded_IsFalse.cs" />
+    <Compile Include="Audit\Configuration\IncludeEntityAdded_IsTrue.cs" />
+    <Compile Include="Audit\Configuration\IncludeRelationshipDeleted_IsFalse.cs" />
+    <Compile Include="Audit\Configuration\IncludeRelationshipDeleted_IsTrue.cs" />
+    <Compile Include="Audit\Configuration\IncludeEntityDeleted_IsTrue.cs" />
+    <Compile Include="Audit\Configuration\IncludeEntityModified_IsTrue.cs" />
+    <Compile Include="Audit\Configuration\IncludeEntityModified_IsFalse.cs" />
+    <Compile Include="Audit\Configuration\IncludeEntityDeleted_IsFalse.cs" />
+    <Compile Include="Audit\RelationshipAdded\Association_OneToMany.cs" />
+    <Compile Include="Audit\RelationshipAdded\Association_ManyToMany.cs" />
+    <Compile Include="Audit\Audit_RelationshipAdded.cs" />
+    <Compile Include="Audit\Audit_EntityModified.cs" />
+    <Compile Include="Audit\Audit_EntityDeleted.cs" />
+    <Compile Include="Audit\EntityAdded\Inheritance_TPT.cs" />
+    <Compile Include="Audit\EntityAdded\Inheritance_TPH.cs" />
+    <Compile Include="Audit\EntityAdded\Inheritance_TPC.cs" />
+    <Compile Include="Audit\EntityAdded\Entity_Complex.cs" />
+    <Compile Include="Audit\EntityAdded\Entity_Basic.cs" />
+    <Compile Include="Audit\Audit_EntityAdded.cs" />
+    <Compile Include="Audit\EntityDeleted\Entity_Basic.cs" />
+    <Compile Include="Audit\EntityDeleted\Entity_Complex.cs" />
+    <Compile Include="Audit\EntityDeleted\Inheritance_TPC.cs" />
+    <Compile Include="Audit\EntityDeleted\Inheritance_TPH.cs" />
+    <Compile Include="Audit\EntityDeleted\Inheritance_TPT.cs" />
+    <Compile Include="Audit\EntityModified\Entity_Basic.cs" />
+    <Compile Include="Audit\EntityModified\Entity_Complex.cs" />
+    <Compile Include="Audit\EntityModified\Inheritance_TPC.cs" />
+    <Compile Include="Audit\EntityModified\Inheritance_TPH.cs" />
+    <Compile Include="Audit\EntityModified\Inheritance_TPT.cs" />
+    <Compile Include="Audit\RelationshipDeleted\Association_ManyToMany.cs" />
+    <Compile Include="Audit\RelationshipDeleted\Association_OneToMany.cs" />
     <Compile Include="QueryCache\FromCacheAsync\QueryDelayed_WithDefault.cs" />
     <Compile Include="QueryCache\FromCacheAsync\QueryDelayed_WithExpiration.cs" />
     <Compile Include="QueryCache\FromCache\QueryDelayed_WithDefault.cs" />
@@ -155,16 +192,49 @@
     <Compile Include="QueryCache\Tag\NotEqual.cs" />
     <Compile Include="QueryCache\Tag\Expire.cs" />
     <Compile Include="QueryCache\Tag\Equal.cs" />
-    <Compile Include="_Model\BaseFilterEntity.cs" />
-    <Compile Include="_Model\EntitySimple.cs" />
-    <Compile Include="_Model\FilterEntity.cs" />
-    <Compile Include="_Model\IBaseFilterEntity.cs" />
-    <Compile Include="_Model\IFilterEntity.cs" />
-    <Compile Include="_Model\_Context.cs" />
+    <Compile Include="QueryIncludeQuery\Where\Many_Enumerator.cs" />
+    <Compile Include="QueryIncludeQuery\Where\Many_Executor.cs" />
+    <Compile Include="QueryIncludeQuery\Where\Many_ThenQuery_Enumerator.cs" />
+    <Compile Include="QueryIncludeQuery\Where\Many_ThenQuery_Executor.cs" />
+    <Compile Include="QueryIncludeQuery\Where\Single_Enumerator.cs" />
+    <Compile Include="QueryIncludeQuery\Where\Single_Executor.cs" />
+    <Compile Include="QueryIncludeQuery\Where\Single_ThenQuery_Enumerator.cs" />
+    <Compile Include="QueryIncludeQuery\Where\Single_ThenQuery_Executor.cs" />
+    <Compile Include="QueryIncludeQuery\QueryInclude_Where.cs" />
+    <Compile Include="_Helper\AuditHelper.cs" />
+    <Compile Include="_Model\Association_Multi_OneToMany_Left.cs" />
+    <Compile Include="_Model\Association_Multi_OneToMany_Right1.cs" />
+    <Compile Include="_Model\Association_Multi_OneToMany_Right2.cs" />
+    <Compile Include="_Model\Methods\GetIdentitySeed.cs" />
+    <Compile Include="_Model\Methods\TypeName.cs" />
+    <Compile Include="_Model\Methods\Insert.cs" />
+    <Compile Include="_Model\Methods\DeleteAll.cs" />
+    <Compile Include="_Model\Inheritance_TPC_Cat.cs" />
+    <Compile Include="_Model\Inheritance_TPC_Dog.cs" />
+    <Compile Include="_Model\Inheritance_TPC_Animal.cs" />
+    <Compile Include="_Model\Inheritance_TPH_Cat.cs" />
+    <Compile Include="_Model\Inheritance_TPH_Dog.cs" />
+    <Compile Include="_Model\Inheritance_TPT_Cat.cs" />
+    <Compile Include="_Model\Inheritance_TPT_Dog.cs" />
+    <Compile Include="_Model\Inheritance_Interface_Base.cs" />
+    <Compile Include="_Model\Inheritance_TPT_Animal.cs" />
+    <Compile Include="_Model\Inheritance_TPH_Animal.cs" />
+    <Compile Include="_Model\Property_AllType.cs" />
+    <Compile Include="_Model\Association_ManyToMany_Left.cs" />
+    <Compile Include="_Model\Association_OneToMany_Left.cs" />
+    <Compile Include="_Model\Association_ManyToMany_Right.cs" />
+    <Compile Include="_Model\Association_OneToMany_Right.cs" />
+    <Compile Include="_Model\Entity_Complex.cs" />
+    <Compile Include="_Model\Entity_Complex_Info.cs" />
+    <Compile Include="_Model\Entity_Complex_Info_Info.cs" />
+    <Compile Include="_Model\Entity_Basic.cs" />
+    <Compile Include="_Model\Inheritance_Interface_Entity.cs" />
+    <Compile Include="_Model\Inheritance_Interface_IBase.cs" />
+    <Compile Include="_Model\Inheritance_Interface_IEntity.cs" />
+    <Compile Include="_Model\_TestContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="_TestHelper\FilterEntityHelper.cs" />
-    <Compile Include="_TestHelper\QueryCacheManagerHelper.cs" />
-    <Compile Include="_TestHelper\EntitySimpleHelper.cs" />
+    <Compile Include="_Helper\QueryFilterHelper.cs" />
+    <Compile Include="_Helper\QueryCacheHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

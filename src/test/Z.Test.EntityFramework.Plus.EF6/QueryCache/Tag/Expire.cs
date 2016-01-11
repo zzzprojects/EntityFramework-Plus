@@ -1,6 +1,6 @@
 ﻿// Description: EF Bulk Operations & Utilities | Bulk Insert, Update, Delete, Merge from database.
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
-// Forum: http://zzzprojects.uservoice.com/forums/283924-entity-framework-plus
+// Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
 // License: http://www.zzzprojects.com/license-agreement/
 // More projects: http://www.zzzprojects.com/
 // Copyright (c) 2015 ZZZ Projects. All rights reserved.
@@ -19,26 +19,26 @@ namespace Z.Test.EntityFramework.Plus
         {
             var testCacheKey = Guid.NewGuid().ToString();
 
-            EntitySimpleHelper.Clear();
-            EntitySimpleHelper.AddOne();
+            TestContext.DeleteAll(x => x.Entity_Basics);
+            TestContext.Insert(x => x.Entity_Basics, 1);
 
-            using (var ctx = new EntityContext())
+            using (var ctx = new TestContext())
             {
                 // BEFORE
-                var itemCountBefore = ctx.EntitySimples.FromCache(testCacheKey).Count();
-                var cacheCountBefore = QueryCacheManagerHelper.GetCacheCount();
+                var itemCountBefore = ctx.Entity_Basics.FromCache(testCacheKey).Count();
+                var cacheCountBefore = QueryCacheHelper.GetCacheCount();
 
-                EntitySimpleHelper.Clear();
+                TestContext.DeleteAll(x => x.Entity_Basics);
 
                 QueryCacheManager.ExpireTag(testCacheKey);
-                var cacheCountExpired = QueryCacheManagerHelper.GetCacheCount();
+                var cacheCountExpired = QueryCacheHelper.GetCacheCount();
 
                 // TEST: The cache count are NOT equal (The cache key has been removed)
                 Assert.AreEqual(cacheCountBefore - 1, cacheCountExpired);
 
                 // AFTER
-                var itemCountAfter = ctx.EntitySimples.FromCache(testCacheKey).Count();
-                var cacheCountAfter = QueryCacheManagerHelper.GetCacheCount();
+                var itemCountAfter = ctx.Entity_Basics.FromCache(testCacheKey).Count();
+                var cacheCountAfter = QueryCacheHelper.GetCacheCount();
 
                 // TEST: The item count are NOT equal (The query has been expired)
                 Assert.AreNotEqual(itemCountBefore, itemCountAfter);

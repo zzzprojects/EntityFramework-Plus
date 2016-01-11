@@ -51,7 +51,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Audit\AuditConfiguration.cs" />
+    <Compile Include="Audit\Audit.cs" />
+    <Compile Include="Audit\AuditEntryState.cs" />
+    <Compile Include="Audit\AuditEntry.cs" />
+    <Compile Include="Audit\AuditEntryProperty.cs" />
+    <Compile Include="Audit\AuditManager.cs" />
+    <Compile Include="Audit\AuditStateEntry\PreSaveChanges.cs" />
+    <Compile Include="Audit\AuditStateEntry\PostSaveChanges.cs" />
+    <Compile Include="Audit\AuditStateEntry\AuditEntityModified.cs" />
+    <Compile Include="Audit\AuditStateEntry\AuditEntityDeleted.cs" />
+    <Compile Include="Audit\AuditStateEntry\AuditEntityAdded.cs" />
+    <Compile Include="Audit\AuditStateEntry\AuditRelationshipDeleted.cs" />
+    <Compile Include="Audit\AuditStateEntry\AuditRelationshipAdded.cs" />
+    <Compile Include="Audit\Extensions\DbContext\SaveChanges.cs" />
+    <Compile Include="Audit\Extensions\DbContext\SaveChangesAsync.cs" />
+    <Compile Include="EF5\Extensions\DbContext\DbContext.SaveChangesAsync.cs" />
+    <Compile Include="EF5\Extensions\DbSet`\DbContext.AddRange.cs" />
+    <Compile Include="EF5\Extensions\DbSet`\DbContext.RemoveRange.cs" />
     <Compile Include="ExceptionMessage.cs" />
+    <Compile Include="Extensions\DbContext\DbContext.GetObjectContext.cs" />
     <Compile Include="Extensions\IDbSet`\GetDbContext.cs" />
     <Compile Include="Extensions\IQueryable`\IQueryable.GetObjectQuery.cs" />
     <Compile Include="Extensions\ObjectContext\GetDbContext.cs" />
@@ -110,6 +129,11 @@
     <Compile Include="QueryFuture\QueryFutureValue.cs" />
     <Compile Include="QueryFuture\QueryFutureEnumerable.cs" />
     <Compile Include="QueryFuture\QueryFutureManager.cs" />
+    <Compile Include="QueryIncludeQuery\Extensions\IQueryable`.IncludeQuery.cs" />
+    <Compile Include="QueryIncludeQuery\QueryIncludeQueryProvider.cs" />
+    <Compile Include="QueryIncludeQuery\IQueryIncludeQueryQueryable.cs" />
+    <Compile Include="QueryIncludeQuery\QueryIncludeQueryQueryable`2.cs" />
+    <Compile Include="QueryIncludeQuery\QueryIncludeQueryQueryable`.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

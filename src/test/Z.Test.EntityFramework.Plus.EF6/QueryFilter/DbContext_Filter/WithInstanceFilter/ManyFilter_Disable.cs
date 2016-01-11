@@ -1,6 +1,6 @@
 ﻿// Description: EF Bulk Operations & Utilities | Bulk Insert, Update, Delete, Merge from database.
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
-// Forum: http://zzzprojects.uservoice.com/forums/283924-entity-framework-plus
+// Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
 // License: http://www.zzzprojects.com/license-agreement/
 // More projects: http://www.zzzprojects.com/
 // Copyright (c) 2015 ZZZ Projects. All rights reserved.
@@ -16,22 +16,22 @@ namespace Z.Test.EntityFramework.Plus
         [TestMethod]
         public void WithInstanceFilter_ManyFilter_Disable()
         {
-            FilterEntityHelper.Clear();
-            FilterEntityHelper.AddTen();
+            TestContext.DeleteAll(x => x.Inheritance_Interface_Entities);
+            TestContext.Insert(x => x.Inheritance_Interface_Entities, 10);
 
-            using (var ctx = new EntityContext())
+            using (var ctx = new TestContext())
             {
-                ctx.Filter<FilterEntity>(FilterEntityHelper.Filter.Filter1, entities => entities.Where(x => x.ColumnInt != 1));
-                ctx.Filter<IFilterEntity>(FilterEntityHelper.Filter.Filter2, entities => entities.Where(x => x.ColumnInt != 2));
-                ctx.Filter<BaseFilterEntity>(FilterEntityHelper.Filter.Filter3, entities => entities.Where(x => x.ColumnInt != 3));
-                ctx.Filter<IBaseFilterEntity>(FilterEntityHelper.Filter.Filter4, entities => entities.Where(x => x.ColumnInt != 4));
+                ctx.Filter<Inheritance_Interface_Entity>(QueryFilterHelper.Filter.Filter1, entities => entities.Where(x => x.ColumnInt != 1));
+                ctx.Filter<Inheritance_Interface_IEntity>(QueryFilterHelper.Filter.Filter2, entities => entities.Where(x => x.ColumnInt != 2));
+                ctx.Filter<Inheritance_Interface_Base>(QueryFilterHelper.Filter.Filter3, entities => entities.Where(x => x.ColumnInt != 3));
+                ctx.Filter<Inheritance_Interface_IBase>(QueryFilterHelper.Filter.Filter4, entities => entities.Where(x => x.ColumnInt != 4));
 
-                ctx.Filter(FilterEntityHelper.Filter.Filter1).Disable();
-                ctx.Filter(FilterEntityHelper.Filter.Filter2).Disable();
-                ctx.Filter(FilterEntityHelper.Filter.Filter3).Disable();
-                ctx.Filter(FilterEntityHelper.Filter.Filter4).Disable();
+                ctx.Filter(QueryFilterHelper.Filter.Filter1).Disable();
+                ctx.Filter(QueryFilterHelper.Filter.Filter2).Disable();
+                ctx.Filter(QueryFilterHelper.Filter.Filter3).Disable();
+                ctx.Filter(QueryFilterHelper.Filter.Filter4).Disable();
 
-                Assert.AreEqual(45, ctx.FilterEntities.Sum(x => x.ColumnInt));
+                Assert.AreEqual(45, ctx.Inheritance_Interface_Entities.Sum(x => x.ColumnInt));
             }
         }
     }

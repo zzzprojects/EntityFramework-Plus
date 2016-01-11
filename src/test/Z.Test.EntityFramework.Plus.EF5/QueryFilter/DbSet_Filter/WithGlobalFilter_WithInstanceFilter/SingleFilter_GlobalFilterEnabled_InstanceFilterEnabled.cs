@@ -1,6 +1,6 @@
 ﻿// Description: EF Bulk Operations & Utilities | Bulk Insert, Update, Delete, Merge from database.
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
-// Forum: http://zzzprojects.uservoice.com/forums/283924-entity-framework-plus
+// Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
 // License: http://www.zzzprojects.com/license-agreement/
 // More projects: http://www.zzzprojects.com/
 // Copyright (c) 2015 ZZZ Projects. All rights reserved.
@@ -16,20 +16,20 @@ namespace Z.Test.EntityFramework.Plus
         [TestMethod]
         public void WithGlobalFilter_WithInstanceFilter_SingleFilter_GlobalFilterEnabled_InstanceFilterEnabled()
         {
-            using (var ctx = new EntityContext(false, enableFilter1: true))
+            using (var ctx = new TestContext(false, enableFilter1: true))
             {
-                ctx.Filter<FilterEntity>(FilterEntityHelper.Filter.Filter5, entities => entities.Where(x => x.ColumnInt != 5), false);
-                ctx.Filter(FilterEntityHelper.Filter.Filter5).Enable();
+                ctx.Filter<Inheritance_Interface_Entity>(QueryFilterHelper.Filter.Filter5, entities => entities.Where(x => x.ColumnInt != 5), false);
+                ctx.Filter(QueryFilterHelper.Filter.Filter5).Enable();
 
-                Assert.AreEqual(39, ctx.FilterEntities.Filter(
-                    FilterEntityHelper.Filter.Filter1,
-                    FilterEntityHelper.Filter.Filter2,
-                    FilterEntityHelper.Filter.Filter3,
-                    FilterEntityHelper.Filter.Filter4,
-                    FilterEntityHelper.Filter.Filter5,
-                    FilterEntityHelper.Filter.Filter6,
-                    FilterEntityHelper.Filter.Filter7,
-                    FilterEntityHelper.Filter.Filter8).Sum(x => x.ColumnInt));
+                Assert.AreEqual(39, ctx.Inheritance_Interface_Entities.Filter(
+                    QueryFilterHelper.Filter.Filter1,
+                    QueryFilterHelper.Filter.Filter2,
+                    QueryFilterHelper.Filter.Filter3,
+                    QueryFilterHelper.Filter.Filter4,
+                    QueryFilterHelper.Filter.Filter5,
+                    QueryFilterHelper.Filter.Filter6,
+                    QueryFilterHelper.Filter.Filter7,
+                    QueryFilterHelper.Filter.Filter8).Sum(x => x.ColumnInt));
             }
         }
     }

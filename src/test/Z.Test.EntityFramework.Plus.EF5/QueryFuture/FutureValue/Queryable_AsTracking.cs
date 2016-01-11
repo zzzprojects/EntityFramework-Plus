@@ -1,6 +1,6 @@
 ﻿// Description: EF Bulk Operations & Utilities | Bulk Insert, Update, Delete, Merge from database.
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
-// Forum: http://zzzprojects.uservoice.com/forums/283924-entity-framework-plus
+// Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
 // License: http://www.zzzprojects.com/license-agreement/
 // More projects: http://www.zzzprojects.com/
 // Copyright (c) 2015 ZZZ Projects. All rights reserved.
@@ -16,16 +16,16 @@ namespace Z.Test.EntityFramework.Plus
         [TestMethod]
         public void Queryable_AsTracking()
         {
-            EntitySimpleHelper.Clear();
-            EntitySimpleHelper.AddTen();
+            TestContext.DeleteAll(x => x.Entity_Basics);
+            TestContext.Insert(x => x.Entity_Basics, 10);
 
-            using (var ctx = new EntityContext())
+            using (var ctx = new TestContext())
             {
                 // BEFORE
                 var cacheCountBefore = QueryFutureManager.Cache.Count();
 
-                var futureValue1 = ctx.EntitySimples.Where(x => x.ColumnInt < 5).OrderBy(x => x.ColumnInt).FutureValue();
-                var futureValue2 = ctx.EntitySimples.Where(x => x.ColumnInt >= 5).OrderBy(x => x.ColumnInt).FutureValue();
+                var futureValue1 = ctx.Entity_Basics.Where(x => x.ColumnInt < 5).OrderBy(x => x.ColumnInt).FutureValue();
+                var futureValue2 = ctx.Entity_Basics.Where(x => x.ColumnInt >= 5).OrderBy(x => x.ColumnInt).FutureValue();
 
                 // TEST: The cache count are NOT equal (A new context has been added)
                 Assert.AreEqual(cacheCountBefore + 1, QueryFutureManager.Cache.Count());

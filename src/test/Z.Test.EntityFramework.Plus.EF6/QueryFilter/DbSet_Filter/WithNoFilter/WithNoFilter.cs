@@ -1,6 +1,6 @@
 ﻿// Description: EF Bulk Operations & Utilities | Bulk Insert, Update, Delete, Merge from database.
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
-// Forum: http://zzzprojects.uservoice.com/forums/283924-entity-framework-plus
+// Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
 // License: http://www.zzzprojects.com/license-agreement/
 // More projects: http://www.zzzprojects.com/
 // Copyright (c) 2015 ZZZ Projects. All rights reserved.
@@ -16,12 +16,12 @@ namespace Z.Test.EntityFramework.Plus
         [TestMethod]
         public void WithNoFilter_WithNoFilter()
         {
-            FilterEntityHelper.Clear();
-            FilterEntityHelper.AddTen();
+            TestContext.DeleteAll(x => x.Inheritance_Interface_Entities);
+            TestContext.Insert(x => x.Inheritance_Interface_Entities, 10);
 
-            using (var ctx = new EntityContext())
+            using (var ctx = new TestContext())
             {
-                Assert.AreEqual(45, ctx.FilterEntities.Filter(FilterEntityHelper.Filter.Filter1).Sum(x => x.ColumnInt));
+                Assert.AreEqual(45, ctx.Inheritance_Interface_Entities.Filter(QueryFilterHelper.Filter.Filter1).Sum(x => x.ColumnInt));
             }
         }
     }

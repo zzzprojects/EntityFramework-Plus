@@ -1,6 +1,6 @@
 ﻿// Description: EF Bulk Operations & Utilities | Bulk Insert, Update, Delete, Merge from database.
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
-// Forum: http://zzzprojects.uservoice.com/forums/283924-entity-framework-plus
+// Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
 // License: http://www.zzzprojects.com/license-agreement/
 // More projects: http://www.zzzprojects.com/
 // Copyright (c) 2015 ZZZ Projects. All rights reserved.
@@ -15,20 +15,20 @@ namespace Z.Test.EntityFramework.Plus
         [TestMethod]
         public void FromCache_QueryDelayed_WithDefault()
         {
-            EntitySimpleHelper.Clear();
-            EntitySimpleHelper.AddOne();
+            TestContext.DeleteAll(x => x.Entity_Basics);
+            TestContext.Insert(x => x.Entity_Basics, 1);
 
-            using (var ctx = new EntityContext())
+            using (var ctx = new TestContext())
             {
                 // BEFORE
-                var itemCountBefore = ctx.EntitySimples.DelayedCount().FromCache();
-                var cacheCountBefore = QueryCacheManagerHelper.GetCacheCount();
+                var itemCountBefore = ctx.Entity_Basics.DelayedCount().FromCache();
+                var cacheCountBefore = QueryCacheHelper.GetCacheCount();
 
-                EntitySimpleHelper.Clear();
+                TestContext.DeleteAll(x => x.Entity_Basics);
 
                 // AFTER
-                var itemCountAfter = ctx.EntitySimples.DelayedCount().FromCache();
-                var cacheCountAfter = QueryCacheManagerHelper.GetCacheCount();
+                var itemCountAfter = ctx.Entity_Basics.DelayedCount().FromCache();
+                var cacheCountAfter = QueryCacheHelper.GetCacheCount();
 
                 // TEST: The item count are equal
                 Assert.AreEqual(itemCountBefore, itemCountAfter);

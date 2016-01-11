@@ -50,7 +50,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Audit\Audit.cs" />
+    <Compile Include="Audit\AuditConfiguration.cs" />
+    <Compile Include="Audit\AuditEntry.cs" />
+    <Compile Include="Audit\AuditEntryProperty.cs" />
+    <Compile Include="Audit\AuditEntryState.cs" />
+    <Compile Include="Audit\AuditManager.cs" />
+    <Compile Include="Audit\AuditStateEntry\AuditEntityAdded.cs" />
+    <Compile Include="Audit\AuditStateEntry\AuditEntityDeleted.cs" />
+    <Compile Include="Audit\AuditStateEntry\AuditEntityModified.cs" />
+    <Compile Include="Audit\AuditStateEntry\AuditRelationshipAdded.cs" />
+    <Compile Include="Audit\AuditStateEntry\AuditRelationshipDeleted.cs" />
+    <Compile Include="Audit\AuditStateEntry\PostSaveChanges.cs" />
+    <Compile Include="Audit\AuditStateEntry\PreSaveChanges.cs" />
+    <Compile Include="Audit\Extensions\DbContext\SaveChanges.cs" />
+    <Compile Include="Audit\Extensions\DbContext\SaveChangesAsync.cs" />
+    <Compile Include="EF5\Extensions\DbContext\DbContext.SaveChangesAsync.cs" />
+    <Compile Include="EF5\Extensions\DbSet`\DbContext.AddRange.cs" />
+    <Compile Include="EF5\Extensions\DbSet`\DbContext.RemoveRange.cs" />
     <Compile Include="ExceptionMessage.cs" />
+    <Compile Include="Extensions\DbContext\DbContext.GetObjectContext.cs" />
     <Compile Include="Extensions\EntityConnection\GetDbTransaction.cs" />
     <Compile Include="Extensions\EntityConnection\GetEntityTransaction.cs" />
     <Compile Include="Extensions\EntityConnection\GetStoreTransaction.cs" />
@@ -111,7 +130,6 @@
     <Compile Include="QueryFuture\QueryFutureValue.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

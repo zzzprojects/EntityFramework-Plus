@@ -108,6 +108,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Audit\Audit.cs" />
+    <Compile Include="Audit\AuditConfiguration.cs" />
+    <Compile Include="Audit\AuditEntry.cs" />
+    <Compile Include="Audit\AuditEntryProperty.cs" />
+    <Compile Include="Audit\AuditEntryState.cs" />
+    <Compile Include="Audit\AuditManager.cs" />
+    <Compile Include="Audit\AuditStateEntry\AuditEntityAdded.cs" />
+    <Compile Include="Audit\AuditStateEntry\AuditEntityDeleted.cs" />
+    <Compile Include="Audit\AuditStateEntry\AuditEntityModified.cs" />
+    <Compile Include="Audit\AuditStateEntry\AuditRelationshipAdded.cs" />
+    <Compile Include="Audit\AuditStateEntry\AuditRelationshipDeleted.cs" />
+    <Compile Include="Audit\AuditStateEntry\PostSaveChanges.cs" />
+    <Compile Include="Audit\AuditStateEntry\PreSaveChanges.cs" />
+    <Compile Include="Audit\Extensions\DbContext\SaveChanges.cs" />
+    <Compile Include="Audit\Extensions\DbContext\SaveChangesAsync.cs" />
+    <Compile Include="EF7\Extensions\GetDbContext.cs" />
     <Compile Include="ExceptionMessage.cs" />
     <Compile Include="Extensions\DbSet`\GetDbContext.cs" />
     <Compile Include="Internal\Extensions\DbContext\DbContext.GetDbSetProperties.cs" />

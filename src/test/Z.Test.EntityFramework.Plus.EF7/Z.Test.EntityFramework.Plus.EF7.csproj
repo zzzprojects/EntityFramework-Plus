@@ -138,6 +138,30 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Audit\Audit_EntityAdded.cs" />
+    <Compile Include="Audit\Audit_EntityDeleted.cs" />
+    <Compile Include="Audit\Audit_EntityModified.cs" />
+    <Compile Include="Audit\Audit_RelationshipAdded.cs" />
+    <Compile Include="Audit\Audit_RelationshipDeleted.cs" />
+    <Compile Include="Audit\EntityAdded\Entity_Basic.cs" />
+    <Compile Include="Audit\EntityAdded\Entity_Complex.cs" />
+    <Compile Include="Audit\EntityAdded\Inheritance_TPC.cs" />
+    <Compile Include="Audit\EntityAdded\Inheritance_TPH.cs" />
+    <Compile Include="Audit\EntityAdded\Inheritance_TPT.cs" />
+    <Compile Include="Audit\EntityDeleted\Entity_Basic.cs" />
+    <Compile Include="Audit\EntityDeleted\Entity_Complex.cs" />
+    <Compile Include="Audit\EntityDeleted\Inheritance_TPC.cs" />
+    <Compile Include="Audit\EntityDeleted\Inheritance_TPH.cs" />
+    <Compile Include="Audit\EntityDeleted\Inheritance_TPT.cs" />
+    <Compile Include="Audit\EntityModified\Entity_Basic.cs" />
+    <Compile Include="Audit\EntityModified\Entity_Complex.cs" />
+    <Compile Include="Audit\EntityModified\Inheritance_TPC.cs" />
+    <Compile Include="Audit\EntityModified\Inheritance_TPH.cs" />
+    <Compile Include="Audit\EntityModified\Inheritance_TPT.cs" />
+    <Compile Include="Audit\RelationshipAdded\Association_ManyToMany.cs" />
+    <Compile Include="Audit\RelationshipAdded\Association_OneToMany.cs" />
+    <Compile Include="Audit\RelationshipDeleted\Association_ManyToMany.cs" />
+    <Compile Include="Audit\RelationshipDeleted\Association_OneToMany.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryCache\FromCacheAsync\WithDefault.cs" />
     <Compile Include="QueryCache\FromCacheAsync\WithExpiration.cs" />
@@ -210,15 +234,39 @@
     <Compile Include="QueryFilter\QueryFilter_DbContext_Filter.cs" />
     <Compile Include="QueryFilter\QueryFilter_DbSet_AsNoFilter.cs" />
     <Compile Include="QueryFilter\QueryFilter_DbSet_Filter.cs" />
-    <Compile Include="_Model\BaseFilterEntity.cs" />
-    <Compile Include="_Model\EntitySimple.cs" />
-    <Compile Include="_Model\FilterEntity.cs" />
-    <Compile Include="_Model\IBaseFilterEntity.cs" />
-    <Compile Include="_Model\IFilterEntity.cs" />
-    <Compile Include="_Model\_Context.cs" />
-    <Compile Include="_TestHelper\EntitySimpleHelper.cs" />
-    <Compile Include="_TestHelper\FilterEntityHelper.cs" />
-    <Compile Include="_TestHelper\QueryCacheManagerHelper.cs" />
+    <Compile Include="_Helper\AuditHelper.cs" />
+    <Compile Include="_Helper\QueryCacheHelper.cs" />
+    <Compile Include="_Helper\QueryFilterHelper.cs" />
+    <Compile Include="_Model\Association_ManyToMany_Left.cs" />
+    <Compile Include="_Model\Association_ManyToMany_Right.cs" />
+    <Compile Include="_Model\Association_Multi_OneToMany_Left.cs" />
+    <Compile Include="_Model\Association_Multi_OneToMany_Right1.cs" />
+    <Compile Include="_Model\Association_Multi_OneToMany_Right2.cs" />
+    <Compile Include="_Model\Association_OneToMany_Left.cs" />
+    <Compile Include="_Model\Association_OneToMany_Right.cs" />
+    <Compile Include="_Model\Entity_Basic.cs" />
+    <Compile Include="_Model\Entity_Complex.cs" />
+    <Compile Include="_Model\Entity_Complex_Info.cs" />
+    <Compile Include="_Model\Entity_Complex_Info_Info.cs" />
+    <Compile Include="_Model\Methods\DeleteAll.cs" />
+    <Compile Include="_Model\Methods\GetIdentitySeed.cs" />
+    <Compile Include="_Model\Methods\Insert.cs" />
+    <Compile Include="_Model\Methods\TypeName.cs" />
+    <Compile Include="_Model\Inheritance_Interface_Base.cs" />
+    <Compile Include="_Model\Inheritance_Interface_Entity.cs" />
+    <Compile Include="_Model\Inheritance_Interface_IBase.cs" />
+    <Compile Include="_Model\Inheritance_Interface_IEntity.cs" />
+    <Compile Include="_Model\Inheritance_TPC_Animal.cs" />
+    <Compile Include="_Model\Inheritance_TPC_Cat.cs" />
+    <Compile Include="_Model\Inheritance_TPC_Dog.cs" />
+    <Compile Include="_Model\Inheritance_TPH_Animal.cs" />
+    <Compile Include="_Model\Inheritance_TPH_Cat.cs" />
+    <Compile Include="_Model\Inheritance_TPH_Dog.cs" />
+    <Compile Include="_Model\Inheritance_TPT_Animal.cs" />
+    <Compile Include="_Model\Inheritance_TPT_Cat.cs" />
+    <Compile Include="_Model\Inheritance_TPT_Dog.cs" />
+    <Compile Include="_Model\Property_AllType.cs" />
+    <Compile Include="_Model\_TestContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -229,6 +277,9 @@
       <Project>{01bcb005-e336-4d9d-897d-3b7cd887ae55}</Project>
       <Name>Z.EntityFramework.Plus.EF7</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Audit\Configuration\" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
