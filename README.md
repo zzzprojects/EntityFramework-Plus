@@ -228,14 +228,6 @@ Learn more about the PRO Version **(Not available until 2016 Q1)**
 
 (Compatible with license from [.NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotnet-development/entity-framework-extensions/))
 
-## Support
-Contact our outstanding customer support for any request. We usually answer within the next business day, hour, or minutes!
-
-- Website (Not yet available)
-- [Documentation](https://github.com/zzzprojects/EntityFramework-Plus/wiki)
-- [Forum](https://zzzprojects.uservoice.com/forums/283924-entity-framework-plus)
-- info@zzzprojects.com
-
 ## More Projects
 - Entity Framework
   - [NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotnet-development/entity-framework-extensions/)
