@@ -160,25 +160,20 @@ Customer firstCustomer = futureFirstCustomer.Value;
 
 **[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Future)**
 
-## Query Include (_Soon available_)
+## Query IncludeQuery
 Entity Framework already support eager loading however the major drawback is you cannot control what will be included. There is no way to load only active item or load only the first 10 comments.
 
 **EF+ Query Include** make it easy:
 ```csharp
 var ctx = new EntityContext();
 
-// Load only active items
-var orders = ctx.Orders.Include(x => x.Items, item => item.IsActive);
-
-// Load only the first 10 comments
-var posts = ctx.Post.Include(x => x.Comments, comments => comments.Take(10));
+// Load only active comments
+var posts = ctx.Post.Include(x => x.Comments.Where(x => x.IsActive));
 ```
-
-> Bonus: Data transfered are heavily decreased over Entity Framework Include.
 
 **[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Include)**
 
-## Audit (_Soon available_)
+## Audit
 Entity Framework allow to save changes but doesn’t log what change has been made in the Change Tracker. Audit allow to capture every changes made on entities and relations saved to your underling database.
 
 **Support:**
@@ -224,6 +219,8 @@ Query Cache | Yes | Yes
 Query Delayed | Yes | Yes
 Query Filter | Yes | Yes
 Query Future | Yes | Yes
+Query IncludeOptimize | Yes | Yes
+Query IncludeQuery | Yes | Yes
 Commercial License | Yes | Yes
 Royalty-Free | Yes | Yes
 Support & Upgrades (1 year) | **No** | Yes
