@@ -22,8 +22,8 @@ Z.EntityFramework.Plus.EF5 | <a href="https://www.nuget.org/packages/Z.EntityFra
     - Bulk Merge _(under development)_
 - Query
     - Query Batch Operations _(under development)_
-    - [Query Cache (Second Level Cache)](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Cache)
-    - [Query Deferred](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Deferred)
+    - [Query Cache](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Cache-%7C-Entity-Framework-Second-Level-Caching)
+    - [Query Deferred](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Deferred-%7C-Entity-Framework-deferring-immediate-LINQ-query-execution)
     - [Query Filter](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Filter)    
     - [Query Future](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Future)
     - [Query IncludeOptimize](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-IncludeMany) (_Soon available_)
@@ -65,7 +65,7 @@ var stateCount = db.States.Where(x => x.IsActive).DeferredCount().FromCache("cou
 QueryCacheManager.ExpireTag("countries");
 ```
 
-**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Cache)**
+**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Cache-%7C-Entity-Framework-Second-Level-Caching)**
 
 ## Query Deferred
 **Defer the execution of a query which is normally executed to allow some features like Query Cache and Query Future.**
@@ -82,7 +82,7 @@ ctx.Customers.DeferredCount().FutureValue();
 ```
 > All LINQ extensions are supported: Count, First, FirstOrDefault, Sum, etc. 
 
-**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Deferred)**
+**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Deferred-%7C-Entity-Framework-deferring-immediate-LINQ-query-execution)**
 
 ## Query Filter
 **Filter query with predicate at global, instance or query level.**
