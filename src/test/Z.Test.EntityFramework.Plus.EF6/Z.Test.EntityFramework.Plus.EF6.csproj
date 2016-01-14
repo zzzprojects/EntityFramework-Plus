@@ -44,11 +44,11 @@
   <ItemGroup>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -113,6 +113,10 @@
     <Compile Include="QueryCache\FromCache\QueryDelayed_WithExpiration.cs" />
     <Compile Include="QueryCache\QueryCache_FromCache.cs" />
     <Compile Include="QueryCache\QueryCache_FromCacheAsync.cs" />
+    <Compile Include="QueryDeferred\ExecuteAsync\Executor.cs" />
+    <Compile Include="QueryDeferred\Execute\Executor.cs" />
+    <Compile Include="QueryDeferred\QueryDeferred_ExecuteAsync.cs" />
+    <Compile Include="QueryDeferred\QueryDeferred_Execute.cs" />
     <Compile Include="QueryFilter\DbContext_Filter\WithGlobalFilter\ManyFilter.cs" />
     <Compile Include="QueryFilter\DbContext_Filter\WithGlobalFilter\ManyFilter_Disable.cs" />
     <Compile Include="QueryFilter\DbContext_Filter\WithGlobalFilter\ManyFilter_Include.cs" />

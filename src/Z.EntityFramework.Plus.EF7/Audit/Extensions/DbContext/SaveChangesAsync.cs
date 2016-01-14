@@ -5,11 +5,10 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright (c) 2015 ZZZ Projects. All rights reserved.
 
-
 #if NET45
-using System.Data.Entity;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Data.Entity;
 
 namespace Z.EntityFramework.Plus
 {

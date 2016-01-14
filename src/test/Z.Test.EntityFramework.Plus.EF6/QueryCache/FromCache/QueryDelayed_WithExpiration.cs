@@ -23,13 +23,13 @@ namespace Z.Test.EntityFramework.Plus
             using (var ctx = new TestContext())
             {
                 // BEFORE
-                var itemCountBefore = ctx.Entity_Basics.DelayedCount().FromCache(DateTime.Now.AddMinutes(2));
+                var itemCountBefore = ctx.Entity_Basics.DeferredCount().FromCache(DateTime.Now.AddMinutes(2));
                 var cacheCountBefore = QueryCacheHelper.GetCacheCount();
 
                 TestContext.DeleteAll(x => x.Entity_Basics);
 
                 // AFTER
-                var itemCountAfter = ctx.Entity_Basics.DelayedCount().FromCache(DateTime.Now.AddMinutes(2));
+                var itemCountAfter = ctx.Entity_Basics.DeferredCount().FromCache(DateTime.Now.AddMinutes(2));
                 var cacheCountAfter = QueryCacheHelper.GetCacheCount();
 
                 // TEST: The item count are equal

@@ -36,7 +36,7 @@
   <ItemGroup>
     <Reference Include="EntityFramework, Version=4.4.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.5.0.0\lib\net40\EntityFramework.dll</HintPath>
-      <Private>True</Private>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -84,33 +84,33 @@
     <Compile Include="Internal\Extensions\Object\Object.GetObjectQuery.cs" />
     <Compile Include="Internal\Extensions\Type\Type.GetDbSetElementType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QueryCache\Extensions\IQueryable.FromCache.cs" />
-    <Compile Include="QueryCache\Extensions\IQueryable.FromCacheAsync.cs" />
-    <Compile Include="QueryCache\Extensions\QueryDelayed.FromCache.cs" />
-    <Compile Include="QueryCache\Extensions\QueryDelayed.FromCacheAsync.cs" />
+    <Compile Include="QueryCache\Extensions\IQueryable`\FromCache.cs" />
+    <Compile Include="QueryCache\Extensions\IQueryable`\FromCacheAsync.cs" />
+    <Compile Include="QueryCache\Extensions\QueryDelayed`\FromCache.cs" />
+    <Compile Include="QueryCache\Extensions\QueryDelayed`\FromCacheAsync.cs" />
     <Compile Include="QueryCache\QueryCacheManager.cs" />
-    <Compile Include="QueryDelayed\Extensions\DelayedAggregate.cs" />
-    <Compile Include="QueryDelayed\Extensions\DelayedAll.cs" />
-    <Compile Include="QueryDelayed\Extensions\DelayedAny.cs" />
-    <Compile Include="QueryDelayed\Extensions\DelayedAverage.cs" />
-    <Compile Include="QueryDelayed\Extensions\DelayedContains.cs" />
-    <Compile Include="QueryDelayed\Extensions\DelayedCount.cs" />
-    <Compile Include="QueryDelayed\Extensions\DelayedElementAt.cs" />
-    <Compile Include="QueryDelayed\Extensions\DelayedElementAtOrDefault.cs" />
-    <Compile Include="QueryDelayed\Extensions\DelayedFirst.cs" />
-    <Compile Include="QueryDelayed\Extensions\DelayedFirstOrDefault.cs" />
-    <Compile Include="QueryDelayed\Extensions\DelayedLast.cs" />
-    <Compile Include="QueryDelayed\Extensions\DelayedLastOrDefault.cs" />
-    <Compile Include="QueryDelayed\Extensions\DelayedLongCount.cs" />
-    <Compile Include="QueryDelayed\Extensions\DelayedMax.cs" />
-    <Compile Include="QueryDelayed\Extensions\DelayedMin.cs" />
-    <Compile Include="QueryDelayed\Extensions\DelayedSequenceEqual.cs" />
-    <Compile Include="QueryDelayed\Extensions\DelayedSingle.cs" />
-    <Compile Include="QueryDelayed\Extensions\DelayedSingleOrDefault.cs" />
-    <Compile Include="QueryDelayed\Extensions\DelayedSum.cs" />
-    <Compile Include="QueryDelayed\QueryDelayed.cs" />
-    <Compile Include="QueryDelayed\QueryDelayedExtensions.cs" />
-    <Compile Include="QueryDelayed\QueryDelayedExtensionsError.cs" />
+    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredAggregate.cs" />
+    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredAll.cs" />
+    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredAny.cs" />
+    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredAverage.cs" />
+    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredContains.cs" />
+    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredCount.cs" />
+    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredElementAt.cs" />
+    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredElementAtOrDefault.cs" />
+    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredFirst.cs" />
+    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredFirstOrDefault.cs" />
+    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredLast.cs" />
+    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredLastOrDefault.cs" />
+    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredLongCount.cs" />
+    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredMax.cs" />
+    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredMin.cs" />
+    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredSequenceEqual.cs" />
+    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredSingle.cs" />
+    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredSingleOrDefault.cs" />
+    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredSum.cs" />
+    <Compile Include="QueryDeferred\QueryDeferred.cs" />
+    <Compile Include="QueryDeferred\QueryDeferredExtensions.cs" />
+    <Compile Include="QueryDeferred\QueryDeferredExtensionsError.cs" />
     <Compile Include="QueryFilter\Extensions\DbContext.Filter.cs" />
     <Compile Include="QueryFilter\Extensions\IDbSet.AsNoFilter.cs" />
     <Compile Include="QueryFilter\Extensions\IDbSet.Filter.cs" />

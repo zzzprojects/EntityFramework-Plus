@@ -15,9 +15,9 @@ namespace Z.EntityFramework.Plus
         /// <typeparam name="TResult">Type of the result.</typeparam>
         /// <param name="query">The query to act on.</param>
         /// <returns>A FutureQueryValue&lt;TResult,TResult&gt;</returns>
-        public static QueryFutureValue<TResult> FutureValue<TResult>(this QueryDelayed<TResult> query)
+        public static QueryFutureValue<TResult> FutureValue<TResult>(this QueryDeferred<TResult> query)
         {
-            var objectQuery = query.Source.GetObjectQuery();
+            var objectQuery = query.Query.GetObjectQuery();
             var futureBatch = QueryFutureManager.AddOrGetBatch(objectQuery.Context);
             var futureQuery = new QueryFutureValue<TResult>(futureBatch, objectQuery);
             futureBatch.Queries.Add(futureQuery);

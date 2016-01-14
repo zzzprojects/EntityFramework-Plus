@@ -24,8 +24,8 @@ namespace Z.Test.EntityFramework.Plus
                 // BEFORE
                 var cacheCountBefore = QueryFutureManager.Cache.Count();
 
-                var futureValue1 = ctx.Entity_Basics.Where(x => x.ColumnInt < 5).DelayedCount().FutureValue();
-                var futureValue2 = ctx.Entity_Basics.Where(x => x.ColumnInt >= 5).DelayedCount().FutureValue();
+                var futureValue1 = ctx.Entity_Basics.Where(x => x.ColumnInt < 5).DeferredCount().FutureValue();
+                var futureValue2 = ctx.Entity_Basics.Where(x => x.ColumnInt >= 5).DeferredCount().FutureValue();
 
                 // TEST: The cache count are NOT equal (A new context has been added)
                 Assert.AreEqual(cacheCountBefore + 1, QueryFutureManager.Cache.Count());

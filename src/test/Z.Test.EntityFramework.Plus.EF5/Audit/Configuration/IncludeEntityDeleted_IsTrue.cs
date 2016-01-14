@@ -9,6 +9,7 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Z.EntityFramework.Plus;
+
 #if EF5 || EF6
 
 #elif EF7

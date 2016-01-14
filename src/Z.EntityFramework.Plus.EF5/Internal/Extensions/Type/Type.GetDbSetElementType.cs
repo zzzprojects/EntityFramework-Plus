@@ -8,6 +8,7 @@
 using System;
 using System.Data.Entity;
 using System.Reflection;
+
 #if EF5
 
 #elif EF6

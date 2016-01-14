@@ -15,7 +15,7 @@ using Microsoft.Data.Entity;
 
 namespace Z.EntityFramework.Plus
 {
-    public static class ChangeAuditExtensions
+    public static partial class ChangeAuditExtensions
     {
         /// <summary>Audits and saves all changes made in this context to the underlying database.</summary>
         /// <param name="context">The context used to audits and saves all changes made.</param>

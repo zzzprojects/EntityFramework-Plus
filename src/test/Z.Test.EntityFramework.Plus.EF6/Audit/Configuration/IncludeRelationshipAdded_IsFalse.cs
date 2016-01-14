@@ -1,6 +1,6 @@
 ﻿// Description: EF Bulk Operations & Utilities | Bulk Insert, Update, Delete, Merge from database.
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
-// Forum: http://zzzprojects.uservoice.com/forums/283924-entity-framework-plus
+// Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
 // License: http://www.zzzprojects.com/license-agreement/
 // More projects: http://www.zzzprojects.com/
 // Copyright (c) 2015 ZZZ Projects. All rights reserved.
@@ -35,7 +35,7 @@ namespace Z.Test.EntityFramework.Plus
             using (var ctx = new TestContext())
             {
                 var left = TestContext.Insert(ctx, x => x.Association_OneToMany_Lefts, 2).First();
-           
+
                 var right = new Association_OneToMany_Right {ColumnInt = 0};
 
                 left.Rights = new List<Association_OneToMany_Right> {right};
@@ -51,7 +51,7 @@ namespace Z.Test.EntityFramework.Plus
                 list[0].Rights.Clear();
 
                 // INSERT one
-                list[1].Rights = new List<Association_OneToMany_Right>() { right};
+                list[1].Rights = new List<Association_OneToMany_Right> {right};
 
                 ctx.SaveChanges(audit);
             }
