@@ -244,6 +244,6 @@ Learn more about the PRO Version **(Not available until 2016 Q1)**
   - [Extension Methods Library](https://github.com/zzzprojects/Z.ExtensionMethods/)
   - [LINQ Async](https://github.com/zzzprojects/Linq-AsyncExtensions)
 
-Need more info? info@zzzprojects.com
+**Need more info?** info@zzzprojects.com
 
 Contact our outstanding customer support for any request. We usually answer within the next business day, hour, or minutes!
