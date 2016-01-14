@@ -23,7 +23,7 @@ Z.EntityFramework.Plus.EF5 | <a href="https://www.nuget.org/packages/Z.EntityFra
 - Query
     - Query Batch Operations _(under development)_
     - [Query Cache (Second Level Cache)](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Cache)
-    - [Query Delayed](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Delayed)
+    - [Query Deferred](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Deferred)
     - [Query Filter](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Filter)    
     - [Query Future](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Future)
     - [Query IncludeOptimize](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-IncludeMany) (_Soon available_)
@@ -59,7 +59,7 @@ _Cache Tags_
 
 ```csharp
 var states = db.States.Where(x => x.IsActive).FromCache("countries", "states");
-var stateCount = db.States.Where(x => x.IsActive).DelayedCount().FromCache("countries", "states");
+var stateCount = db.States.Where(x => x.IsActive).DeferredCount().FromCache("countries", "states");
 
 // Expire all cache entry using the "countries" tag
 QueryCacheManager.ExpireTag("countries");
@@ -67,22 +67,22 @@ QueryCacheManager.ExpireTag("countries");
 
 **[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Cache)**
 
-## Query Delayed
-**Delay the execution of a query which is normally executed to allow some features like Query Cache and Query Future.**
+## Query Deferred
+**Defer the execution of a query which is normally executed to allow some features like Query Cache and Query Future.**
 
 ```csharp
 // Oops! The query is already executed, we cannot use Query Cache or Query Future features
 var count = ctx.Customers.Count();
 
 // Query Cache
-ctx.Customers.DelayedCount().FromCache();
+ctx.Customers.DeferredCount().FromCache();
 
 // Query Future
-ctx.Customers.DelayedCount().FutureValue();
+ctx.Customers.DeferredCount().FutureValue();
 ```
 > All LINQ extensions are supported: Count, First, FirstOrDefault, Sum, etc. 
 
-**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Delayed)**
+**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Deferred)**
 
 ## Query Filter
 **Filter query with predicate at global, instance or query level.**
@@ -153,8 +153,8 @@ _FutureValue_
 
 ```csharp
 // GET the first active customer and the number of avtive customers
-var futureFirstCustomer = db.Customers.Where(x => x.IsActive).DelayedFirstOrDefault().FutureValue();
-var futureCustomerCount = db.Customers.Where(x => x.IsActive).DelayedCount().FutureValue();
+var futureFirstCustomer = db.Customers.Where(x => x.IsActive).DeferredFirstOrDefault().FutureValue();
+var futureCustomerCount = db.Customers.Where(x => x.IsActive).DeferredCount().FutureValue();
 
 // TRIGGER all pending queries (futureFirstCustomer & futureCustomerCount)
 Customer firstCustomer = futureFirstCustomer.Value;
@@ -218,7 +218,7 @@ Features | FREE Version | PRO Version
 Audit | Yes | Yes
 Query Batch | Yes | Yes
 Query Cache | Yes | Yes
-Query Delayed | Yes | Yes
+Query Deferred | Yes | Yes
 Query Filter | Yes | Yes
 Query Future | Yes | Yes
 Query IncludeOptimize | Yes | Yes
