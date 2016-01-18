@@ -30,7 +30,7 @@ Z.EntityFramework.Plus.EF5 | <a href="https://www.nuget.org/packages/Z.EntityFra
     - [Query IncludeOptimize](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-IncludeMany) (_Alpha_) 
     - [Query IncludeQuery](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-IncludeQuery) (_Alpha_)  
     
-- [Audit](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Audit)
+- [Audit](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Audit) (_Alpha_)  
 - Save Change Security _(under development)_
 
 ## Query Cache
