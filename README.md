@@ -25,10 +25,10 @@ Z.EntityFramework.Plus.EF5 | <a href="https://www.nuget.org/packages/Z.EntityFra
     - Query Batch Operations _(under development)_
     - [Query Cache](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Cache-%7C-Entity-Framework-Second-Level-Caching)
     - [Query Deferred](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Deferred-%7C-Entity-Framework-deferring-immediate-LINQ-query-execution)
-    - [Query Filter](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Filter)    
+    - [Query Filter](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Filter) (_Alpha_)   
     - [Query Future](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Future)
-    - [Query IncludeOptimize](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-IncludeMany) (_Soon available_)
-    - [Query IncludeQuery](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-IncludeQuery)
+    - [Query IncludeOptimize](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-IncludeMany) (_Alpha_) 
+    - [Query IncludeQuery](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-IncludeQuery) (_Alpha_)  
     
 - [Audit](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Audit)
 - Save Change Security _(under development)_
