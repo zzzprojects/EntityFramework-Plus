@@ -91,12 +91,12 @@ _Global Filter_
 ```csharp
 QueryFilterManager.Filter<Customer>(x => x.Where(c => c.IsActive));
 
-// SELECT * FROM Customer WHERE IsActive = true
 var ctx = new EntityContext();
 
 // TIP: Add this line in EntitiesContext constructor instead
 QueryFilterManager.InitilizeGlobalFilter(ctx);
 
+// SELECT * FROM Customer WHERE IsActive = true
 var customer = ctx.Customers.ToList();
 ```
 
