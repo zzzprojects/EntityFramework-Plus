@@ -114,10 +114,10 @@ _Query Filter_
 var ctx = new EntityContext();
 
 // CREATE filter disabled
-ctx.Filter<Customer>(custom.EnumValue, x => x.Where(c => c.IsActive), false);
+ctx.Filter<Customer>(CustomEnum.EnumValue, x => x.Where(c => c.IsActive), false);
 
 // SELECT * FROM Customer WHERE IsActive = true
-var customer = ctx.Customers.Filter(MyEnum.Filter1).ToList();
+var customer = ctx.Customers.Filter(CustomEnum.EnumValue).ToList();
 ```
 
 **[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Filter)**
