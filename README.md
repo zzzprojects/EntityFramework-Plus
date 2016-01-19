@@ -23,7 +23,7 @@ Use [.NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotne
     - Query Batch Operations _(under development)_
     - [Query Cache](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Cache-%7C-Entity-Framework-Second-Level-Caching)
     - [Query Deferred](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Deferred-%7C-Entity-Framework-deferring-immediate-LINQ-query-execution)
-    - [Query Filter](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Filter)
+    - [Query Filter](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Filter-%7C-Entity-Framework-Dynamic-Instance-and-Global-Filters)
     - [Query Future](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Future-%7C-Entity-Framework-Combine-and-Execute-Multiple-SQL-Command)
     - [Query IncludeOptimize](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-IncludeMany) (_Alpha_) 
     - [Query IncludeQuery](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-IncludeQuery) (_Alpha_)  
@@ -120,7 +120,7 @@ ctx.Filter<Customer>(CustomEnum.EnumValue, x => x.Where(c => c.IsActive), false)
 var customer = ctx.Customers.Filter(CustomEnum.EnumValue).ToList();
 ```
 
-**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Filter)**
+**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Filter-%7C-Entity-Framework-Dynamic-Instance-and-Global-Filters)**
 
 ## Query Future
 **Query Future allow to reduce database roundtrip by batching multiple queries in the same sql command.**
