@@ -1,7 +1,3 @@
-This library is under construction. New features are added weekly.
-
-Use [.NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotnet-development/entity-framework-extensions/) for stable version.
-
 ##Entity Framework Bulk Operations & Utilities##
 
 ## Download
@@ -15,6 +11,8 @@ Z.EntityFramework.Plus.EF5 | <a href="https://www.nuget.org/packages/Z.EntityFra
 <a href="https://github.com/zzzprojects/EntityFramework-Plus/wiki/Downloads">More download options (Full and Standalone Version)</a>
 
 ## Features
+Use [.NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotnet-development/entity-framework-extensions/) for bulk operations
+
 - BulkSaveChanges _(under development)_
 - Bulk Operations
     - Bulk Insert _(under development)_
