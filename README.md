@@ -89,6 +89,7 @@ ctx.Customers.DeferredCount().FutureValue();
 
 _Global Filter_
 ```csharp
+// CREATE global filter
 QueryFilterManager.Filter<Customer>(x => x.Where(c => c.IsActive));
 
 var ctx = new EntityContext();
