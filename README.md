@@ -89,19 +89,12 @@ ctx.Customers.DeferredCount().FutureValue();
 
 _Global Filter_
 ```csharp
-public class EntityContext : DbContext
-{
-        public EntityContext() : base("MyDatabase")
-        {
-            // CONFIGURE all your filters for all context
-            this.Filter<Customer>(x => x.Where(c => c.IsActive));
-        }
-        
-        public DbSet<Customer> Customers { get; set; }
-}
+QueryFilterManager.Filter<Customer>(x => x.Where(c => c.IsActive));
 
 // SELECT * FROM Customer WHERE IsActive = true
 var ctx = new EntityContext();
+QueryFilterManager.InitilizeGlobalFilter(ctx);
+
 var customer = ctx.Customers.ToList();
 ```
 
