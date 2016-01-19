@@ -27,7 +27,6 @@ Use [.NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotne
     - [Query Future](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Future-%7C-Entity-Framework-Combine-and-Execute-Multiple-SQL-Command)
     - [Query IncludeOptimize](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-IncludeMany) (_Alpha_) 
     - [Query IncludeQuery](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-IncludeQuery) (_Alpha_)  
-    
 - [Audit](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Audit) (_Alpha_)  
 - Save Change Security _(under development)_
 
