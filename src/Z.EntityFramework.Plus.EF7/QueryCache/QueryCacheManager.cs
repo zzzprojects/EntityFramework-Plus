@@ -109,16 +109,14 @@ namespace Z.EntityFramework.Plus
             return CachePrefix + string.Join(";", tags) + query;
         }
 
-#if EF5 || EF6
-    /// <summary>Gets cached keys used to cache or retrieve a query from the QueryCacheManager.</summary>
-    /// <typeparam name="T">Generic type parameter.</typeparam>
-    /// <param name="query">The query to cache or retrieve from the QueryCacheManager.</param>
-    /// <param name="tags">A variable-length parameters list containing tags to create the cache key.</param>
-    /// <returns>The cache key used to cache or retrieve a query from the QueryCacheManager.</returns>
+        /// <summary>Gets cached keys used to cache or retrieve a query from the QueryCacheManager.</summary>
+        /// <typeparam name="T">Generic type parameter.</typeparam>
+        /// <param name="query">The query to cache or retrieve from the QueryCacheManager.</param>
+        /// <param name="tags">A variable-length parameters list containing tags to create the cache key.</param>
+        /// <returns>The cache key used to cache or retrieve a query from the QueryCacheManager.</returns>
         internal static string GetCacheKey<T>(QueryDeferred<T> query, string[] tags)
         {
             return CachePrefix + string.Join(";", tags) + query.Query.Expression;
         }
-#endif
     }
 }

@@ -19,42 +19,42 @@ namespace Z.EntityFramework.Plus
 {
     public static partial class QueryFilterExtensions
     {
-        /// <summary>Gets the filter from the context associated with the specified key.</summary>
-        /// <param name="context">The context.</param>
-        /// <param name="key">The filter key.</param>
-        /// <returns>The filter from the context associated with the specified key.</returns>
-        public static IQueryFilter Filter(this DbContext context, object key)
+        /// <summary>Gets the filter associated with the specified key from the context.</summary>
+        /// <param name="context">The context filtered.</param>
+        /// <param name="key">The filter key associated to the filter.</param>
+        /// <returns>The filter associated with the specified key from the context.</returns>
+        public static BaseQueryFilter Filter(this DbContext context, object key)
         {
             var filterContext = QueryFilterManager.AddOrGetFilterContext(context);
             return filterContext.GetFilter(key);
         }
 
         /// <summary>
-        ///     Creates and Gets the filter from the context associated with the specified key.
+        ///     Creates and return a filter added for the context.
         /// </summary>
-        /// <typeparam name="T">Generic type to filter.</typeparam>
-        /// <param name="context">The context.</param>
-        /// <param name="predicate">The filter predicate.</param>
+        /// <typeparam name="T">The type of elements of the query.</typeparam>
+        /// <param name="context">The context to filter.</param>
+        /// <param name="queryFilter">The query filter to apply to the the context.</param>
         /// <param name="isEnabled">true if the filter is enabled.</param>
-        /// <returns>The filter from the context associated with the specified key.</returns>
-        public static IQueryFilter Filter<T>(this DbContext context, Func<IQueryable<T>, IQueryable<T>> predicate, bool isEnabled = true)
+        /// <returns>The filter created and added to the the context.</returns>
+        public static BaseQueryFilter Filter<T>(this DbContext context, Func<IQueryable<T>, IQueryable<T>> queryFilter, bool isEnabled = true)
         {
-            return context.Filter(Guid.NewGuid(), predicate, isEnabled);
+            return context.Filter(Guid.NewGuid(), queryFilter, isEnabled);
         }
 
         /// <summary>
-        ///     Creates and Gets the filter from the context associated with the specified key.
+        ///     Creates and return a filter associated with the specified key added for the context.
         /// </summary>
-        /// <typeparam name="T">Generic type to filter.</typeparam>
-        /// <param name="context">The context.</param>
-        /// <param name="key">The filter key.</param>
-        /// <param name="predicate">The filter predicate.</param>
+        /// <typeparam name="T">The type of elements of the query.</typeparam>
+        /// <param name="context">The context filtered.</param>
+        /// <param name="key">The filter key associated to the filter.</param>
+        /// <param name="queryFilter">The query filter to apply to the the context.</param>
         /// <param name="isEnabled">true if the filter is enabled.</param>
-        /// <returns>The filter from the context associated with the specified key.</returns>
-        public static IQueryFilter Filter<T>(this DbContext context, object key, Func<IQueryable<T>, IQueryable<T>> predicate, bool isEnabled = true)
+        /// <returns>The filter created and added to the the context.</returns>
+        public static BaseQueryFilter Filter<T>(this DbContext context, object key, Func<IQueryable<T>, IQueryable<T>> queryFilter, bool isEnabled = true)
         {
             var filterContext = QueryFilterManager.AddOrGetFilterContext(context);
-            var filter = filterContext.AddFilter(key, predicate);
+            var filter = filterContext.AddFilter(key, queryFilter);
 
             if (isEnabled)
             {

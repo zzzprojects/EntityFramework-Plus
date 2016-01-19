@@ -20,7 +20,12 @@ namespace Z.EntityFramework.Plus
             if (func == null)
                 throw Error.ArgumentNull("func");
 
-            return new QueryDeferred<TSource>(source.GetObjectQuery(),
+            return new QueryDeferred<TSource>(
+#if EF5 || EF6
+                source.GetObjectQuery(),
+#elif EF7 
+                source,
+#endif
                 Expression.Call(
                     null,
                     GetMethodInfo(Queryable.Aggregate, source, func),
@@ -35,7 +40,12 @@ namespace Z.EntityFramework.Plus
             if (func == null)
                 throw Error.ArgumentNull("func");
 
-            return new QueryDeferred<TAccumulate>(source.GetObjectQuery(),
+            return new QueryDeferred<TAccumulate>(
+#if EF5 || EF6
+                source.GetObjectQuery(),
+#elif EF7 
+                source,
+#endif
                 Expression.Call(
                     null,
                     GetMethodInfo(Queryable.Aggregate, source, seed, func),
@@ -52,7 +62,12 @@ namespace Z.EntityFramework.Plus
             if (selector == null)
                 throw Error.ArgumentNull("selector");
 
-            return new QueryDeferred<TResult>(source.GetObjectQuery(),
+            return new QueryDeferred<TResult>(
+#if EF5 || EF6
+                source.GetObjectQuery(),
+#elif EF7 
+                source,
+#endif
                 Expression.Call(
                     null,
                     GetMethodInfo(Queryable.Aggregate, source, seed, func, selector),

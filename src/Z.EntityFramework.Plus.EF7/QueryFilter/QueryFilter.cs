@@ -10,90 +10,50 @@ using System.Linq;
 
 namespace Z.EntityFramework.Plus
 {
-    /// <summary>A query filter.</summary>
-    /// <typeparam name="T">Generic type to filter.</typeparam>
-    public class QueryFilter<T> : IQueryFilter
+    /// <summary>A class for query filter.</summary>
+    /// <typeparam name="T">The type of the filter element.</typeparam>
+    public class QueryFilter<T> : BaseQueryFilter
     {
-        /// <summary>Create a new QueryFilter.</summary>
+        /// <summary>Constructor.</summary>
         /// <param name="ownerFilterContext">The context that owns his filter.</param>
-        /// <param name="predicate">The filter delegate.</param>
-        public QueryFilter(QueryFilterContext ownerFilterContext, Func<IQueryable<T>, IQueryable<T>> predicate)
+        /// <param name="filter">The filter.</param>
+        public QueryFilter(QueryFilterContext ownerFilterContext, Func<IQueryable<T>, IQueryable<T>> filter)
         {
             ElementType = typeof (T);
+            Filter = filter;
             OwnerFilterContext = ownerFilterContext;
-            Predicate = predicate;
         }
 
-        /// <summary>Gets or sets the filter context that owns this filter.</summary>
-        /// <value>The owner filter context.</value>
-        public QueryFilterContext OwnerFilterContext { get; set; }
+        /// <summary>Gets or sets the filter.</summary>
+        /// <value>The filter.</value>
+        public Func<IQueryable<T>, IQueryable<T>> Filter { get; set; }
 
-        /// <summary>Gets or sets the filter predicate.</summary>
-        /// <value>The filter predicate.</value>
-        public Func<IQueryable<T>, IQueryable<T>> Predicate { get; set; }
-
-        /// <summary>Gets or sets the type of the filter element.</summary>
-        /// <value>The type of the filter element.</value>
-        public Type ElementType { get; set; }
-
-        /// <summary>Returns a new query where the entities are filtered by using the filter.</summary>
+        /// <summary>Apply the filter on the query and return the new filtered query.</summary>
         /// <param name="query">The query to filter.</param>
-        /// <returns>The new query where the entities are filtered by using the filter.</returns>
-        public object ApplyFilter<TEntity>(object query)
+        /// <returns>The new query filered query.</returns>
+        public override object ApplyFilter<TEntity>(object query)
         {
 #if EF5 || EF6
-            return Predicate((IQueryable<T>) query).Cast<TEntity>();
+            return Filter((IQueryable<T>) query).Cast<TEntity>();
 #elif EF7
-            // todo: Use the same code as (EF5 || EF6) once EF team fix the cast issue: https://github.com/aspnet/EntityFramework/issues/3736
-            return Predicate((IQueryable<T>) query);
+            // TODO: Use the same code as (EF5 || EF6) once EF team fix the cast issue: https://github.com/aspnet/EntityFramework/issues/3736
+            return Filter((IQueryable<T>) query);
 #endif
         }
 
-        /// <summary>Disables this filter.</summary>
-        public void Disable()
+        /// <summary>Gets the filter.</summary>
+        /// <returns>The filter.</returns>
+        public override object GetFilter()
         {
-            Disable(null);
+            return Filter;
         }
 
-        /// <summary>Disables this filter on the speficied type.</summary>
-        /// <typeparam name="TEntity">Type of the entity to disable the filter.</typeparam>
-        public void Disable<TEntity>()
+        /// <summary>Makes a deep copy of this filter.</summary>
+        /// <param name="filterContext">The filter context that owns the filter copy.</param>
+        /// <returns>A copy of this filter.</returns>
+        public override BaseQueryFilter Clone(QueryFilterContext filterContext)
         {
-            Disable(typeof (TEntity));
-        }
-
-        /// <summary>Disable this filter on the specified types.</summary>
-        /// <param name="types">A variable-length parameters list containing types to disable the filter on.</param>
-        public void Disable(params Type[] types)
-        {
-            OwnerFilterContext.DisableFilter(this, types);
-        }
-
-        /// <summary>Enables this filter.</summary>
-        public void Enable()
-        {
-            Enable(null);
-        }
-
-        /// <summary>Enables this filter on the specified type.</summary>
-        /// <typeparam name="TEntity">Type of the entity.</typeparam>
-        public void Enable<TEntity>()
-        {
-            Enable(typeof (TEntity));
-        }
-
-        /// <summary>Enables this filter on the spcified types.</summary>
-        /// <param name="types">A variable-length parameters list containing types to enable the filter on.</param>
-        public void Enable(params Type[] types)
-        {
-            OwnerFilterContext.EnableFilter(this, types);
-        }
-
-        /// <summary>Gets the filter predicate.</summary>
-        /// <returns>The filter predicate.</returns>
-        public object GetPredicate()
-        {
-            return Predicate;
+            return new QueryFilter<T>(filterContext, Filter);
         }
     }
 }

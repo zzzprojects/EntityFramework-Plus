@@ -109,7 +109,6 @@ namespace Z.EntityFramework.Plus
             return CachePrefix + string.Join(";", tags) + query;
         }
 
-#if EF5 || EF6
         /// <summary>Gets cached keys used to cache or retrieve a query from the QueryCacheManager.</summary>
         /// <typeparam name="T">Generic type parameter.</typeparam>
         /// <param name="query">The query to cache or retrieve from the QueryCacheManager.</param>
@@ -119,6 +118,5 @@ namespace Z.EntityFramework.Plus
         {
             return CachePrefix + string.Join(";", tags) + query.Query.Expression;
         }
-#endif
     }
 }

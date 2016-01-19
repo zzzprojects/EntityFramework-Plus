@@ -65,11 +65,11 @@ namespace Z.EntityFramework.Plus
         /// <value>The properties.</value>
         public List<AuditEntryProperty> Properties { get; set; }
 
-        /// <summary>Gets or sets the object state entry.</summary>
-        /// <value>The object state entry.</value>
-        /// <summary>Gets or sets the delayed key.</summary>
-        /// <value>The delayed key.</value>
-
         // internal object DelayedResolution { get; set; }
+        /// <value>The delayed key.</value>
+        /// <summary>Gets or sets the delayed key.</summary>
+        /// <value>The object state entry.</value>
+
+        /// <summary>Gets or sets the object state entry.</summary>
     }
 }

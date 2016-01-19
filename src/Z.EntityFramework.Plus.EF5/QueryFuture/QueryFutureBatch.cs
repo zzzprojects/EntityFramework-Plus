@@ -18,33 +18,49 @@ using System.Data.Entity.Core.EntityClient;
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure.Interception;
 
+#elif EF7
+using Microsoft.Data.Entity;
+
 #endif
 
 namespace Z.EntityFramework.Plus
 {
+    /// <summary>Class to own future queries in a batch</summary>
     public class QueryFutureBatch
     {
         /// <summary>Constructor.</summary>
-        /// <param name="context">The context.</param>
+        /// <param name="context">The context related to the query future batched.</param>
+#if EF5 || EF6
         public QueryFutureBatch(ObjectContext context)
+#elif EF7
+        public QueryFutureBatch(DbContext context)
+#endif
         {
             Context = context;
-            Queries = new List<QueryFutureBase>();
+            Queries = new List<BaseQueryFuture>();
         }
 
-        /// <summary>Gets or sets the context.</summary>
-        /// <value>The context.</value>
+        /// <summary>Gets or sets the context related to the query future batched.</summary>
+        /// <value>The context related to the query future batched.</value>
+#if EF5 || EF6
         public ObjectContext Context { get; set; }
+#elif EF7
+        public DbContext Context { get; set; }
+#endif
 
-        /// <summary>Gets or sets the query pending.</summary>
-        /// <value>The query pending.</value>
-        public List<QueryFutureBase> Queries { get; set; }
+        /// <summary>Gets or sets deferred query lists waiting to be executed.</summary>
+        /// <value>The deferred queries list waiting to be executed.</value>
+        public List<BaseQueryFuture> Queries { get; set; }
 
-        /// <summary>Executes the queries operation.</summary>
+        /// <summary>Executes deferred query lists.</summary>
         public void ExecuteQueries()
         {
+#if EF5 || EF6
             var connection = (EntityConnection) Context.Connection;
-            var command = CreateCommand();
+#elif EF7
+            var connection = Context.Database.GetDbConnection();
+#endif
+            var command = CreateCommandCombined();
 
             var ownConnection = false;
 
@@ -60,10 +76,6 @@ namespace Z.EntityFramework.Plus
                 {
 #if EF5
                     using (var reader = command.ExecuteReader())
-#elif EF6
-                    var interceptionContext = Context.GetInterceptionContext();
-                    using (var reader = DbInterception.Dispatch.Command.Reader(command, new DbCommandInterceptionContext(interceptionContext)))
-#endif
                     {
                         foreach (var query in Queries)
                         {
@@ -71,12 +83,33 @@ namespace Z.EntityFramework.Plus
                             reader.NextResult();
                         }
                     }
+#elif EF6
+                    var interceptionContext = Context.GetInterceptionContext();
+                    using (var reader = DbInterception.Dispatch.Command.Reader(command, new DbCommandInterceptionContext(interceptionContext)))
+                    {
+                        foreach (var query in Queries)
+                        {
+                            query.SetResult(reader);
+                            reader.NextResult();
+                        }
+                    }
+#elif EF7
+                    using (var reader = command.ExecuteReader())
+                    {
+                        var createEntityDataReader = new CreateEntityDataReader(reader);
+                        foreach (var query in Queries)
+                        {
+                            query.SetResult(createEntityDataReader);
+                            reader.NextResult();
+                        }
+                    }
+#endif
                 }
+
+                Queries.Clear();
             }
             finally
             {
-                QueryFutureManager.RemoveBatch(this);
-
                 if (ownConnection)
                 {
                     connection.Close();
@@ -84,9 +117,9 @@ namespace Z.EntityFramework.Plus
             }
         }
 
-        /// <summary>Creates the command.</summary>
-        /// <returns>The new command.</returns>
-        protected DbCommand CreateCommand()
+        /// <summary>Creates a new command combining deferred queries.</summary>
+        /// <returns>The combined command created from deferred queries.</returns>
+        protected DbCommand CreateCommandCombined()
         {
             var command = Context.CreateStoreCommand();
 
@@ -96,13 +129,20 @@ namespace Z.EntityFramework.Plus
             foreach (var query in Queries)
             {
                 // GENERATE SQL
+#if EF5 || EF6
                 var sql = query.Query.ToTraceString();
+                var parameters = query.Query.Parameters;
+#elif EF7
+                var queryCommand = query.CreateExecutorAndGetCommand();
+                var sql = queryCommand.CommandText;
+                var parameters = queryCommand.Parameters;
+#endif
 
                 // UPDATE parameter name
-                foreach (var parameter in query.Query.Parameters)
+                foreach (var parameter in parameters)
                 {
                     var oldValue = parameter.Name;
-                    var newValue = string.Concat("z", queryCount, "_", oldValue);
+                    var newValue = string.Concat("Z_", queryCount, "_", oldValue);
 
                     // CREATE parameter
                     var dbParameter = command.CreateParameter();
@@ -114,7 +154,7 @@ namespace Z.EntityFramework.Plus
                     sql = sql.Replace("@" + oldValue, "@" + newValue);
                 }
 
-                sb.AppendLine(string.Concat("-- Future Query (", queryCount, "/", Queries.Count, ")"));
+                sb.AppendLine(string.Concat("-- EF+ Query Future: ", queryCount, " of ", Queries.Count));
                 sb.AppendLine(sql);
                 sb.AppendLine();
                 sb.AppendLine();

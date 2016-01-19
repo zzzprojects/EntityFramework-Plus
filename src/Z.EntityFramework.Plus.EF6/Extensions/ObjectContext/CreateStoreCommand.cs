@@ -20,6 +20,9 @@ namespace Z.EntityFramework.Plus
 {
     public static partial class ObjectContextExtensions
     {
+        /// <summary>An ObjectContext extension method that creates store command .</summary>
+        /// <param name="context">The context to act on.</param>
+        /// <returns>The new store command from the context.</returns>
         public static DbCommand CreateStoreCommand(this ObjectContext context)
         {
             var entityConnection = (EntityConnection) context.Connection;

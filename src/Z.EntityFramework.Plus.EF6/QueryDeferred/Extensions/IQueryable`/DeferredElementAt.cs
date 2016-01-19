@@ -19,7 +19,12 @@ namespace Z.EntityFramework.Plus
             if (index < 0)
                 throw Error.ArgumentOutOfRange("index");
 
-            return new QueryDeferred<TSource>(source.GetObjectQuery(),
+            return new QueryDeferred<TSource>(
+#if EF5 || EF6
+                source.GetObjectQuery(),
+#elif EF7 
+                source,
+#endif
                 Expression.Call(
                     null,
                     GetMethodInfo(Queryable.ElementAt, source, index),

@@ -14,6 +14,9 @@ namespace Z.EntityFramework.Plus
 {
     public static partial class ObjectContextExtensions
     {
+        /// <summary>An ObjectContext extension method that gets interception context.</summary>
+        /// <param name="context">The context to act on.</param>
+        /// <returns>The interception context from the ObjectContext.</returns>
         public static DbInterceptionContext GetInterceptionContext(this ObjectContext context)
         {
             var interceptionContextProperty = context.GetType().GetProperty("InterceptionContext", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);

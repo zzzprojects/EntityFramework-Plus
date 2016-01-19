@@ -18,11 +18,9 @@ namespace Z.EntityFramework.Plus
 {
     public static partial class EntityConnectionExtensions
     {
-        /// <summary>
-        ///     A Database extension method that gets entity transaction.
-        /// </summary>
-        /// <param name="entityConnection">The @this to act on.</param>
-        /// <returns>The entity transaction.</returns>
+        /// <summary>An EntityConnection extension method that gets the entity transaction.</summary>
+        /// <param name="entityConnection">The entity connection to act on.</param>
+        /// <returns>The entity transaction from the entity connection.</returns>
         public static EntityTransaction GetEntityTransaction(this EntityConnection entityConnection)
         {
             var entityTransaction = entityConnection.GetType().GetField("_currentTransaction", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(entityConnection);

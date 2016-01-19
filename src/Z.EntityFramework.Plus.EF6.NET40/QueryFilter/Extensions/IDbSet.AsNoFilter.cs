@@ -18,18 +18,18 @@ namespace Z.EntityFramework.Plus
 {
     public static partial class QueryFilterExtensions
     {
-        /// <summary>Return the orginal query before the filter was applied.</summary>
-        /// <typeparam name="TEntity">Type of the entity.</typeparam>
-        /// <param name="query">The query to act on.</param>
-        /// <returns>The orginal query before the filter was applied.</returns>
+        /// <summary>Return the orginal query before the context was filtered.</summary>
+        /// <typeparam name="T">The type of elements of the query.</typeparam>
+        /// <param name="query">The filtered query from which the original query should be retrieved.</param>
+        /// <returns>The orginal query before the context was filtered.</returns>
 #if EF5 || EF6
-        public static IQueryable<TEntity> AsNoFilter<TEntity>(this IDbSet<TEntity> query) where TEntity : class
+        public static IQueryable<T> AsNoFilter<T>(this IDbSet<T> query) where T : class
 #elif EF7
-        public static IQueryable<TEntity> AsNoFilter<TEntity>(this DbSet<TEntity> query) where TEntity : class
+        public static IQueryable<T> AsNoFilter<T>(this DbSet<T> query) where T : class
 #endif
         {
             var queryFilterQueryable = QueryFilterManager.GetFilterQueryable(query);
-            return queryFilterQueryable != null ? (IQueryable<TEntity>) queryFilterQueryable.GetOriginalQuery() : query;
+            return queryFilterQueryable != null ? (IQueryable<T>) queryFilterQueryable.OriginalQuery : query;
         }
     }
 }

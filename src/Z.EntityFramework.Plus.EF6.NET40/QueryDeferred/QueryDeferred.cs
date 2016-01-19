@@ -15,6 +15,10 @@ using System.Data.Objects;
 #elif EF6
 using System.Data.Entity.Core.Objects;
 
+#elif EF7
+using Microsoft.Data.Entity.Query.Internal;
+using Remotion.Linq;
+
 #endif
 
 namespace Z.EntityFramework.Plus
@@ -24,16 +28,26 @@ namespace Z.EntityFramework.Plus
     public class QueryDeferred<TResult>
     {
         /// <summary>Constructor.</summary>
-        /// <param name="objectQuery">The deferred objectQuery.</param>
+        /// <param name="query">The deferred query.</param>
         /// <param name="expression">The deferred expression.</param>
-        public QueryDeferred(ObjectQuery objectQuery, Expression expression)
+#if EF5 || EF6
+        public QueryDeferred(ObjectQuery query, Expression expression)
+#elif EF7
+        public QueryDeferred(IQueryable query, Expression expression)
+#endif
         {
             Expression = expression;
 
+#if EF5 || EF6
             // CREATE query from the deferred expression
-            var provider = ((IQueryable) objectQuery).Provider;
+            var provider = ((IQueryable) query).Provider;
             var createQueryMethod = provider.GetType().GetMethod("CreateQuery", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new[] {typeof (Expression), typeof (Type)}, null);
             Query = (IQueryable) createQueryMethod.Invoke(provider, new object[] {expression, typeof (TResult)});
+#elif EF7
+            Query = new EntityQueryable<TResult>((IAsyncQueryProvider)query.Provider);
+            var expressionProperty = typeof(QueryableBase<>).MakeGenericType(typeof(TResult)).GetProperty("Expression", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            expressionProperty.SetValue(Query, expression);
+#endif
         }
 
         /// <summary>Gets or sets the deferred expression.</summary>
@@ -68,6 +82,12 @@ namespace Z.EntityFramework.Plus
             return Task.Run(() => Execute(), cancellationToken);
 #elif EF6
             var asyncQueryProvider = Query.Provider as IDbAsyncQueryProvider;
+
+            return asyncQueryProvider != null ?
+                asyncQueryProvider.ExecuteAsync<TResult>(Expression, cancellationToken) :
+                Task.Run(() => Execute(), cancellationToken);
+#elif EF7
+            var asyncQueryProvider = Query.Provider as IAsyncQueryProvider;
 
             return asyncQueryProvider != null ?
                 asyncQueryProvider.ExecuteAsync<TResult>(Expression, cancellationToken) :

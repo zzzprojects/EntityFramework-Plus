@@ -19,16 +19,19 @@ namespace Z.EntityFramework.Plus
     public static partial class QueryFilterExtensions
     {
         /// <summary>
-        ///     Returns a new query where the entities are filtered by using filter from specified keys.
+        ///     Filter the query using context filters associated with specified keys.
         /// </summary>
-        /// <typeparam name="TEntity">Type of the entity.</typeparam>
-        /// <param name="query">The query to act on.</param>
-        /// <param name="keys">A variable-length parameters list containing keys associated to filter to use.</param>
-        /// <returns>The new query where the entities are filtered by using filter from specified keys.</returns>
+        /// <typeparam name="T">The type of elements of the query.</typeparam>
+        /// <param name="query">The query to filter using context filters associated with specified keys.</param>
+        /// <param name="keys">
+        ///     A variable-length parameters list containing keys associated to context filters to use to filter the
+        ///     query.
+        /// </param>
+        /// <returns>The query filtered using context filters associated with specified keys.</returns>
 #if EF5 || EF6
-        public static IQueryable<TEntity> Filter<TEntity>(this IDbSet<TEntity> query, params object[] keys) where TEntity : class
+        public static IQueryable<T> Filter<T>(this IDbSet<T> query, params object[] keys) where T : class
 #elif EF7
-        public static IQueryable<TEntity> Filter<TEntity>(this DbSet<TEntity> query, params object[] keys) where TEntity : class
+        public static IQueryable<T> Filter<T>(this DbSet<T> query, params object[] keys) where T : class
 #endif
         {
             var queryFilterQueryable = QueryFilterManager.GetFilterQueryable(query);

@@ -5,8 +5,6 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright (c) 2015 ZZZ Projects. All rights reserved.
 
-using System;
-using System.Runtime.Caching;
 using System.Runtime.CompilerServices;
 #if EF5
 using System.Data.Objects;
@@ -14,44 +12,52 @@ using System.Data.Objects;
 #elif EF6
 using System.Data.Entity.Core.Objects;
 
+#elif EF7
+using Microsoft.Data.Entity;
+
 #endif
 
 namespace Z.EntityFramework.Plus
 {
-    /// <summary>Manager for future queries.</summary>
+    /// <summary>Manage EF+ Query Future Configuration.</summary>
     public static class QueryFutureManager
     {
         /// <summary>Static constructor.</summary>
         static QueryFutureManager()
         {
-            Cache = MemoryCache.Default;
-            DefaultCacheItemPolicy = new CacheItemPolicy {SlidingExpiration = TimeSpan.FromMinutes(5)};
+#if EF5 || EF6
+            CacheWeakFutureBatch = new ConditionalWeakTable<ObjectContext, QueryFutureBatch>();
+#elif EF7
+            CacheWeakFutureBatch = new ConditionalWeakTable<DbContext, QueryFutureBatch>();
+#endif
         }
 
-        /// <summary>Gets or sets the cache.</summary>
-        /// <value>The cache.</value>
-        public static ObjectCache Cache { get; set; }
+        /// <summary>Gets or sets the weak table used to cache future batch associated to a context.</summary>
+        /// <value>The weak table used to cache future batch associated to a context.</value>
+#if EF5 || EF6
+        public static ConditionalWeakTable<ObjectContext, QueryFutureBatch> CacheWeakFutureBatch { get; set; }
+#elif EF7
+        public static ConditionalWeakTable<DbContext, QueryFutureBatch> CacheWeakFutureBatch { get; set; }
+#endif
 
-        /// <summary>Gets or sets the default cache item policy.</summary>
-        /// <value>The default cache item policy.</value>
-        public static CacheItemPolicy DefaultCacheItemPolicy { get; set; }
-
-        /// <summary>Adds an or get batch.</summary>
-        /// <param name="context">The context.</param>
-        /// <returns>A FutureQueryBatch.</returns>
+        /// <summary>Adds or gets the future batch associated to the context.</summary>
+        /// <param name="context">The context used to cache the future batch.</param>
+        /// <returns>The future batch associated to the context.</returns>
+#if EF5 || EF6
         public static QueryFutureBatch AddOrGetBatch(ObjectContext context)
+#elif EF7
+        public static QueryFutureBatch AddOrGetBatch(DbContext context)
+#endif
         {
-            var key = RuntimeHelpers.GetHashCode(context).ToString();
-            var newQuery = new QueryFutureBatch(context);
-            return (QueryFutureBatch) Cache.AddOrGetExisting(key, newQuery, DefaultCacheItemPolicy) ?? newQuery;
-        }
+            QueryFutureBatch futureBatch;
 
-        /// <summary>Removes the batch described by context.</summary>
-        /// <param name="batch">The context.</param>
-        public static void RemoveBatch(QueryFutureBatch batch)
-        {
-            var key = RuntimeHelpers.GetHashCode(batch.Context).ToString();
-            Cache.Remove(key);
+            if (!CacheWeakFutureBatch.TryGetValue(context, out futureBatch))
+            {
+                futureBatch = new QueryFutureBatch(context);
+                CacheWeakFutureBatch.Add(context, futureBatch);
+            }
+
+            return futureBatch;
         }
     }
 }

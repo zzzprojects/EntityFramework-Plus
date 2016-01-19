@@ -20,7 +20,12 @@ namespace Z.EntityFramework.Plus
             if (predicate == null)
                 throw Error.ArgumentNull("predicate");
 
-            return new QueryDeferred<bool>(source.GetObjectQuery(),
+            return new QueryDeferred<bool>(
+#if EF5 || EF6
+                source.GetObjectQuery(),
+#elif EF7 
+                source,
+#endif
                 Expression.Call(
                     null,
                     GetMethodInfo(Queryable.All, source, predicate),

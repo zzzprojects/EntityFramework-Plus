@@ -20,7 +20,12 @@ namespace Z.EntityFramework.Plus
             if (source2 == null)
                 throw Error.ArgumentNull("source2");
 
-            return new QueryDeferred<bool>(source1.GetObjectQuery(),
+            return new QueryDeferred<bool>(
+#if EF5 || EF6
+                source1.GetObjectQuery(),
+#elif EF7 
+                source1,
+#endif
                 Expression.Call(
                     null,
                     GetMethodInfo(Queryable.SequenceEqual, source1, source2),
@@ -35,7 +40,12 @@ namespace Z.EntityFramework.Plus
             if (source2 == null)
                 throw Error.ArgumentNull("source2");
 
-            return new QueryDeferred<bool>(source1.GetObjectQuery(),
+            return new QueryDeferred<bool>(
+#if EF5 || EF6
+                source1.GetObjectQuery(),
+#elif EF7 
+                source1,
+#endif
                 Expression.Call(
                     null,
                     GetMethodInfo(Queryable.SequenceEqual, source1, source2, comparer),

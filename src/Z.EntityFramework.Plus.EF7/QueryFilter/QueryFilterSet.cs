@@ -26,19 +26,19 @@ using Microsoft.Data.Entity;
 
 namespace Z.EntityFramework.Plus
 {
-    /// <summary>A query filter database set.</summary>
+    /// <summary>A class for query filter set.</summary>
     public class QueryFilterSet
     {
         /// <summary>Constructor.</summary>
-        /// <param name="property">The property.</param>
-        public QueryFilterSet(PropertyInfo property)
+        /// <param name="dbSetProperty">The database set property.</param>
+        public QueryFilterSet(PropertyInfo dbSetProperty)
         {
-            CreateFilterQueryableCompiled = new Lazy<Func<DbContext, QueryFilterSet, object, IQueryFilterQueryable>>(CompileCreateFilterQueryable);
-            DbSetProperty = property;
-            ElementType = property.PropertyType.GetDbSetElementType();
-            GetDbSetCompiled = new Lazy<Func<DbContext, IQueryable>>(() => CompileGetDbSet(property));
+            CreateFilterQueryableCompiled = new Lazy<Func<DbContext, QueryFilterSet, object, BaseQueryFilterQueryable>>(CompileCreateFilterQueryable);
+            DbSetProperty = dbSetProperty;
+            ElementType = dbSetProperty.PropertyType.GetDbSetElementType();
+            GetDbSetCompiled = new Lazy<Func<DbContext, IQueryable>>(() => CompileGetDbSet(dbSetProperty));
 #if EF5 || EF6
-            UpdateInternalQueryCompiled = new Lazy<Action<DbContext, ObjectQuery>>(() => CompileUpdateInternalQuery(property));
+            UpdateInternalQueryCompiled = new Lazy<Action<DbContext, ObjectQuery>>(() => CompileUpdateInternalQuery(dbSetProperty));
 #elif EF7
             //UpdateInternalQueryCompiled = new Lazy<Action<DbContext, object>>(() => CompileUpdateInternalQuery(property));
 #endif
@@ -46,7 +46,7 @@ namespace Z.EntityFramework.Plus
 
         /// <summary>Gets or sets the compiled function to create a new filter queryable.</summary>
         /// <value>The compiled function to create a new filter queryable.</value>
-        public Lazy<Func<DbContext, QueryFilterSet, object, IQueryFilterQueryable>> CreateFilterQueryableCompiled { get; set; }
+        public Lazy<Func<DbContext, QueryFilterSet, object, BaseQueryFilterQueryable>> CreateFilterQueryableCompiled { get; set; }
 
         /// <summary>Gets or sets the database set property.</summary>
         /// <value>The database set property.</value>
@@ -62,18 +62,26 @@ namespace Z.EntityFramework.Plus
 
         /// <summary>Gets or sets the compiled action to update the internal query.</summary>
         /// <value>The compiled action to update the internal query.</value>
-        /// <summary>Adds an or get filter queryable.</summary>
-        /// <param name="context">The context.</param>
-        /// <returns>An IQueryFilterQueryable.</returns>
-        public IQueryFilterQueryable AddOrGetFilterQueryable(DbContext context)
+#if EF5 || EF6
+        public Lazy<Action<DbContext, ObjectQuery>> UpdateInternalQueryCompiled { get; set; }
+#elif EF7
+        public Lazy<Action<DbContext, object>> UpdateInternalQueryCompiled { get; set; }
+#endif
+
+        /// <summary>Gets or sets the compiled action to update the internal query.</summary>
+        /// <value>The compiled action to update the internal query.</value>
+        /// <summary>Adds an or get a filter queryable from the context.</summary>
+        /// <param name="context">The context to add or get a filter queryable.</param>
+        /// <returns>the filter queryable fromt the context.</returns>
+        public BaseQueryFilterQueryable AddOrGetFilterQueryable(DbContext context)
         {
-            IQueryFilterQueryable filterQueryable;
+            BaseQueryFilterQueryable filterQueryable;
             var set = GetDbSetCompiled.Value(context);
 
             if (!QueryFilterManager.CacheWeakFilterQueryable.TryGetValue(set, out filterQueryable))
             {
 #if EF5 || EF6
-                
+
                 var objectQuery = set.GetObjectQuery(ElementType);
                 filterQueryable = CreateFilterQueryableCompiled.Value(context, this, objectQuery);
                 QueryFilterManager.CacheWeakFilterQueryable.Add(set, filterQueryable);
@@ -93,8 +101,9 @@ namespace Z.EntityFramework.Plus
             return filterQueryable;
         }
 
-        /// <summary>Compile the function to create a new filter queryable.</summary>
-        public Func<DbContext, QueryFilterSet, object, IQueryFilterQueryable> CompileCreateFilterQueryable()
+        /// <summary>Compiles the function to create a new filter queryable.</summary>
+        /// <returns>The compiled the function to create a new filter queryable</returns>
+        public Func<DbContext, QueryFilterSet, object, BaseQueryFilterQueryable> CompileCreateFilterQueryable()
         {
             var p1 = Expression.Parameter(typeof (DbContext));
             var p2 = Expression.Parameter(typeof (QueryFilterSet));
@@ -104,24 +113,31 @@ namespace Z.EntityFramework.Plus
             var contructorInfo = typeof (QueryFilterQueryable<>).MakeGenericType(ElementType).GetConstructors()[0];
             var expression = Expression.New(contructorInfo, p1, p2, p3Convert);
 
-            return Expression.Lambda<Func<DbContext, QueryFilterSet, object, IQueryFilterQueryable>>(expression, p1, p2, p3).Compile();
+            return Expression.Lambda<Func<DbContext, QueryFilterSet, object, BaseQueryFilterQueryable>>(expression, p1, p2, p3).Compile();
         }
 
-        /// <summary>Compile the function to retrieve the DbSet from the DbContext.</summary>
-        /// <param name="property">The property.</param>
-        public Func<DbContext, IQueryable> CompileGetDbSet(PropertyInfo property)
+        /// <summary>Compiles the function to retrieve the DbSet from the DbContext.</summary>
+        /// <param name="dbSetProperty">The database set property.</param>
+        /// <returns>The compiled the function to retrieve the DbSet from the DbContext.</returns>
+        public Func<DbContext, IQueryable> CompileGetDbSet(PropertyInfo dbSetProperty)
         {
-            var p1 = Expression.Parameter(typeof (DbContext));
+            if (dbSetProperty.DeclaringType == null)
+            {
+                throw new Exception(ExceptionMessage.GeneralException);
+            }
 
-            var p1Convert = Expression.Convert(p1, property.DeclaringType);
-            var expression = Expression.Property(p1Convert, property);
+            var p1 = Expression.Parameter(typeof (DbContext));
+            var p1Convert = Expression.Convert(p1, dbSetProperty.DeclaringType);
+            var expression = Expression.Property(p1Convert, dbSetProperty);
 
             return Expression.Lambda<Func<DbContext, IQueryable>>(expression, p1).Compile();
         }
 
 #if EF5 || EF6
-    /// <summary>Compile the action to update the internal query.</summary>
-        public Action<DbContext, ObjectQuery> CompileUpdateInternalQuery(PropertyInfo property)
+    /// <summary>Compiles the action to update the internal query.</summary>
+    /// <param name="dbSetProperty">The database set property.</param>
+    /// <returns>The compiled the action to update the internal query.</returns>
+        public Action<DbContext, ObjectQuery> CompileUpdateInternalQuery(PropertyInfo dbSetProperty)
         {
             var dbQueryGenericType = typeof (DbQuery<>).MakeGenericType(ElementType);
             var internalQueryGenericType = typeof (DbContext).Assembly.GetType("System.Data.Entity.Internal.Linq.InternalQuery`1").MakeGenericType(ElementType);
@@ -141,9 +157,9 @@ namespace Z.EntityFramework.Plus
             var p1 = Expression.Parameter(typeof (DbContext));
             var p2 = Expression.Parameter(typeof (ObjectQuery));
 
-            var p1Convert = Expression.Convert(p1, property.DeclaringType);
+            var p1Convert = Expression.Convert(p1, dbSetProperty.DeclaringType);
 
-            Expression dbQuery = Expression.Property(p1Convert, property);
+            Expression dbQuery = Expression.Property(p1Convert, dbSetProperty);
             dbQuery = Expression.Convert(dbQuery, dbQueryGenericType);
 
             Expression expression = Expression.Field(dbQuery, internalQueryField);
@@ -155,8 +171,11 @@ namespace Z.EntityFramework.Plus
 
             return Expression.Lambda<Action<DbContext, ObjectQuery>>(expression, p1, p2).Compile();
         }
+
 #elif EF7
         /// <summary>Compile the action to update the internal query.</summary>
+        /// <param name="context">The context to update the query from.</param>
+        /// <param name="query">The query to change the internal query.</param>
         public void UpdateInternalQuery(DbContext context, object query)
         {
             // todo: Convert to expression once EF team fix the cast issue: https://github.com/aspnet/EntityFramework/issues/3736

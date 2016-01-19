@@ -8,6 +8,7 @@
 using System.Collections.Generic;
 using System.Linq;
 #if EF5 || EF6
+using System;
 using System.Data.Entity;
 using System.Runtime.Caching;
 

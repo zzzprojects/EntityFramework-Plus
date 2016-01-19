@@ -5,40 +5,47 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright (c) 2015 ZZZ Projects. All rights reserved.
 
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Reflection;
 #if EF5
 using System.Data.Objects;
 
 #elif EF6
 using System.Data.Entity.Core.Objects;
 
+#elif EF7
+using System.Linq;
+
 #endif
 
 namespace Z.EntityFramework.Plus
 {
-    /// <summary>A future query enumerable.</summary>
-    /// <typeparam name="T">Generic type parameter.</typeparam>
-    public class QueryFutureEnumerable<T> : QueryFutureBase, IEnumerable<T>
+    /// <summary>Class for query future value.</summary>
+    /// <typeparam name="T">The type of elements of the query.</typeparam>
+    public class QueryFutureEnumerable<T> : BaseQueryFuture, IEnumerable<T>
     {
+        /// <summary>The result of the query future.</summary>
+        private IEnumerable<T> _result;
+
         /// <summary>Constructor.</summary>
         /// <param name="ownerBatch">The batch that owns this item.</param>
-        /// <param name="query">The query.</param>
+        /// <param name="query">
+        ///     The query to defer the execution and to add in the batch of future
+        ///     queries.
+        /// </param>
+#if EF5 || EF6
         public QueryFutureEnumerable(QueryFutureBatch ownerBatch, ObjectQuery<T> query)
+#elif EF7
+        public QueryFutureEnumerable(QueryFutureBatch ownerBatch, IQueryable query)
+#endif
         {
             OwnerBatch = ownerBatch;
             Query = query;
         }
 
-        /// <summary>Gets or sets the result.</summary>
-        /// <value>The result.</value>
-        protected IEnumerable<T> Result { get; set; }
-
-        /// <summary>Gets the enumerator.</summary>
-        /// <returns>The enumerator.</returns>
+        /// <summary>Gets the enumerator of the query future.</summary>
+        /// <returns>The enumerator of the query future.</returns>
         public IEnumerator<T> GetEnumerator()
         {
             if (!HasValue)
@@ -46,55 +53,33 @@ namespace Z.EntityFramework.Plus
                 OwnerBatch.ExecuteQueries();
             }
 
-            return Result.GetEnumerator();
+            return _result.GetEnumerator();
         }
 
-        /// <summary>Gets the enumerator.</summary>
-        /// <returns>The enumerator.</returns>
+
+        /// <summary>Gets the enumerator of the query future.</summary>
+        /// <returns>The enumerator of the query future.</returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
 
-        /// <summary>Sets a result.</summary>
-        /// <param name="reader">The reader.</param>
-        internal override void SetResult(DbDataReader reader)
+
+        /// <summary>Sets the result of the query deferred.</summary>
+        /// <param name="reader">The reader returned from the query execution.</param>
+        public override void SetResult(DbDataReader reader)
         {
-            // REFLECTION: Query.QueryState
-            var queryStateProperty = Query.GetType().GetProperty("QueryState", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            var queryState = queryStateProperty.GetValue(Query, null);
+            var enumerator = GetQueryEnumerator<T>(reader);
 
-            // REFLECTION: Query.QueryState.GetExecutionPlan(null)
-            var getExecutionPlanMethod = queryState.GetType().GetMethod("GetExecutionPlan", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            var getExecutionPlan = getExecutionPlanMethod.Invoke(queryState, new object[] {null});
-
-            // REFLECTION: Query.QueryState.GetExecutionPlan(null).ResultShaperFactory
-            var resultShaperFactoryField = getExecutionPlan.GetType().GetField("ResultShaperFactory", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            var resultShaperFactory = resultShaperFactoryField.GetValue(getExecutionPlan);
-
-            // REFLECTION: Query.QueryState.GetExecutionPlan(null).ResultShaperFactory.Create(parameters)
-            var createMethod = resultShaperFactory.GetType().GetMethod("Create", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-
-#if EF5
-            var create = createMethod.Invoke(resultShaperFactory, new object[] {reader, Query.Context, Query.Context.MetadataWorkspace, MergeOption.AppendOnly, false});
-#elif EF6
-            var create = createMethod.Invoke(resultShaperFactory, new object[] {reader, Query.Context, Query.Context.MetadataWorkspace, MergeOption.AppendOnly, false, true});
-#endif
-
-            // REFLECTION: Query.QueryState.GetExecutionPlan(null).ResultShaperFactory.Create(parameters).GetEnumerator()
-            var getEnumeratorMethod = create.GetType().GetMethod("GetEnumerator", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            var getEnumerator = getEnumeratorMethod.Invoke(create, Type.EmptyTypes);
-
-            var enumerator = (IEnumerator<T>) getEnumerator;
+            // Enumerate on all items
             var list = new List<T>();
-
             while (enumerator.MoveNext())
             {
                 list.Add(enumerator.Current);
             }
+            _result = list;
 
             HasValue = true;
-            Result = list;
         }
     }
 }

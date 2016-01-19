@@ -18,10 +18,10 @@ using Microsoft.Data.Entity;
 
 namespace Z.EntityFramework.Plus
 {
-    /// <summary>A query filter context.</summary>
+    /// <summary>A class for query filter context.</summary>
     public class QueryFilterContext
     {
-        /// <summary>Create a new QueryFilterContext.</summary>
+        /// <summary>Constructor.</summary>
         /// <param name="context">The context associated to the filter context.</param>
         public QueryFilterContext(DbContext context) : this(context, false)
         {
@@ -39,7 +39,7 @@ namespace Z.EntityFramework.Plus
             else
             {
                 Context = context;
-                Filters = new Dictionary<object, IQueryFilter>();
+                Filters = new Dictionary<object, BaseQueryFilter>();
 
                 var genericContext = QueryFilterManager.AddOrGetGenericFilterContext(context);
                 FilterSetByType = genericContext.FilterSetByType;
@@ -53,7 +53,7 @@ namespace Z.EntityFramework.Plus
 
         /// <summary>Gets or sets the filters.</summary>
         /// <value>The filters.</value>
-        public Dictionary<object, IQueryFilter> Filters { get; set; }
+        public Dictionary<object, BaseQueryFilter> Filters { get; set; }
 
         /// <summary>Gets or sets filter set by type.</summary>
         /// <value>The filter set by type.</value>
@@ -63,25 +63,28 @@ namespace Z.EntityFramework.Plus
         /// <value>The filter sets.</value>
         public List<QueryFilterSet> FilterSets { get; set; }
 
-        /// <summary>Adds a filter to the filter context associated with the specified key.</summary>
-        /// <typeparam name="T">Generic type to filter.</typeparam>
+        /// <summary>Adds a query filter to the filter context associated with the specified key.</summary>
+        /// <typeparam name="T">The type of elements of the query.</typeparam>
         /// <param name="key">The filter key.</param>
-        /// <param name="predicate">The filter predicate.</param>
-        /// <returns>The filter context associated with the specified key.</returns>
-        public IQueryFilter AddFilter<T>(object key, Func<IQueryable<T>, IQueryable<T>> predicate)
+        /// <param name="filter">The filter.</param>
+        /// <returns>The query filter added to the filter context associated with the specified ke .</returns>
+        public BaseQueryFilter AddFilter<T>(object key, Func<IQueryable<T>, IQueryable<T>> filter)
         {
-            var filter = new QueryFilter<T>(this, predicate);
-            Filters.Add(key, filter);
+            var queryFilter = new QueryFilter<T>(this, filter);
+            Filters.Add(key, queryFilter);
 
-            return filter;
+            return queryFilter;
         }
 
-        /// <summary> Returns a new query where the entities are filtered by using filter from specified keys.</summary>
-        /// <typeparam name="TEntity">Type of the entity.</typeparam>
-        /// <param name="query">The query to act on.</param>
-        /// <param name="keys">A variable-length parameters list containing keys associated to filter to use.</param>
-        /// <returns>The new query where the entities are filtered by using filter from specified keys.</returns>
-        public IQueryable<TEntity> ApplyFilter<TEntity>(IQueryable<TEntity> query, object[] keys)
+        /// <summary>Filter the query using context filters associated with specified keys.</summary>
+        /// <typeparam name="T">The type of elements of the query.</typeparam>
+        /// <param name="query">The query to filter using context filters associated with specified keys.</param>
+        /// <param name="keys">
+        ///     A variable-length parameters list containing keys associated to context
+        ///     filters to use to filter the query.
+        /// </param>
+        /// <returns>The query filtered using context filters associated with specified keys.</returns>
+        public IQueryable<T> ApplyFilter<T>(IQueryable<T> query, object[] keys)
         {
             object newQuery = query;
             foreach (var key in keys)
@@ -90,20 +93,22 @@ namespace Z.EntityFramework.Plus
 
                 if (filter != null)
                 {
-                    newQuery = ((IQueryable) filter.ApplyFilter<TEntity>(newQuery));
+                    newQuery = ((IQueryable) filter.ApplyFilter<T>(newQuery));
                 }
             }
 
-            return (IQueryable<TEntity>) newQuery;
+            return (IQueryable<T>) newQuery;
         }
 
         /// <summary>Disable this filter on the specified types.</summary>
         /// <param name="filter">The filter to disable.</param>
         /// <param name="types">A variable-length parameters list containing types to disable the filter on.</param>
-        public void DisableFilter(IQueryFilter filter, params Type[] types)
+        /// m>
+        public void DisableFilter(BaseQueryFilter filter, params Type[] types)
         {
             List<QueryFilterSet> filterSets;
 
+            // CHECK if the element type can be used in the context
             if (FilterSetByType.TryGetValue(filter.ElementType, out filterSets))
             {
                 if (types != null)
@@ -119,6 +124,7 @@ namespace Z.EntityFramework.Plus
                         }
                     }
 
+                    // KEEP only applicable filter set
                     filterSets = filterSets.Intersect(applySets.Distinct()).ToList();
                 }
 
@@ -129,13 +135,14 @@ namespace Z.EntityFramework.Plus
             }
         }
 
-        /// <summary>Enable this filter on the specified types.</summary>
+        /// <summary>Enables this filter on the specified types.</summary>
         /// <param name="filter">The filter to enable.</param>
         /// <param name="types">A variable-length parameters list containing types to enable the filter on.</param>
-        public void EnableFilter(IQueryFilter filter, params Type[] types)
+        public void EnableFilter(BaseQueryFilter filter, params Type[] types)
         {
             List<QueryFilterSet> filterSets;
 
+            // CHECK if the element type can be used in the context
             if (FilterSetByType.TryGetValue(filter.ElementType, out filterSets))
             {
                 if (types != null)
@@ -151,6 +158,7 @@ namespace Z.EntityFramework.Plus
                         }
                     }
 
+                    // KEEP only applicable filter set
                     filterSets = filterSets.Intersect(applySets.Distinct()).ToList();
                 }
 
@@ -164,15 +172,15 @@ namespace Z.EntityFramework.Plus
         /// <summary>Gets the filter associated to the specified key.</summary>
         /// <param name="key">The filter key.</param>
         /// <returns>The filter associated to the specified key.</returns>
-        public IQueryFilter GetFilter(object key)
+        public BaseQueryFilter GetFilter(object key)
         {
-            IQueryFilter filter;
+            BaseQueryFilter filter;
             Filters.TryGetValue(key, out filter);
             return filter;
         }
 
-        /// <summary>Load generic filter context information.</summary>
-        /// <param name="context">The context to use to load the generic filter context information.</param>
+        /// <summary>Load context information to the generic context.</summary>
+        /// <param name="context">The context to use to load information to the generic context.</param>
         public void LoadGenericContextInfo(DbContext context)
         {
             FilterSetByType = new Dictionary<Type, List<QueryFilterSet>>();

@@ -10,9 +10,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+
 #if EF5
-using System.Data.Entity.Infrastructure;
-using System.Data.Objects;
 
 #elif EF6
 
@@ -48,36 +47,5 @@ namespace Z.EntityFramework.Plus
             if (q != null) return q.Expression;
             return Expression.Constant(source, typeof (IEnumerable<TSource>));
         }
-
-#if STANDALONE
-
-        private static ObjectQuery<TEntity> GetObjectQuery<TEntity>(this IQueryable<TEntity> query)
-        {
-            // CHECK ObjectQuery
-            var objectQuery = query as ObjectQuery<TEntity>;
-            if (objectQuery != null)
-            {
-                return objectQuery;
-            }
-
-            // CHECK DbQuery
-            var dbQuery = query as DbQuery<TEntity>;
-
-            if (dbQuery == null)
-            {
-                return null;
-            }
-
-            var internalQueryProperty = dbQuery.GetType().GetProperty("InternalQuery", BindingFlags.NonPublic | BindingFlags.Instance);
-            var internalQuery = internalQueryProperty.GetValue(dbQuery, null);
-            var objectQueryContextProperty = internalQuery.GetType().GetProperty("ObjectQuery", BindingFlags.Public | BindingFlags.Instance);
-            var objectQueryContext = objectQueryContextProperty.GetValue(internalQuery, null);
-
-            objectQuery = objectQueryContext as ObjectQuery<TEntity>;
-
-            return objectQuery;
-        }
-
-#endif
     }
 }

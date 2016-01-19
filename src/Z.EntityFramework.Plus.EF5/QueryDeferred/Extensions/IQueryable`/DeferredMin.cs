@@ -18,7 +18,12 @@ namespace Z.EntityFramework.Plus
             if (source == null)
                 throw Error.ArgumentNull("source");
 
-            return new QueryDeferred<TSource>(source.GetObjectQuery(),
+            return new QueryDeferred<TSource>(
+#if EF5 || EF6
+                source.GetObjectQuery(),
+#elif EF7 
+                source,
+#endif
                 Expression.Call(
                     null,
                     GetMethodInfo(Queryable.Min, source),
@@ -32,7 +37,12 @@ namespace Z.EntityFramework.Plus
             if (selector == null)
                 throw Error.ArgumentNull("selector");
 
-            return new QueryDeferred<TResult>(source.GetObjectQuery(),
+            return new QueryDeferred<TResult>(
+#if EF5 || EF6
+                source.GetObjectQuery(),
+#elif EF7 
+                source,
+#endif
                 Expression.Call(
                     null,
                     GetMethodInfo(Queryable.Min, source, selector),

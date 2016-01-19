@@ -5,10 +5,10 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright (c) 2015 ZZZ Projects. All rights reserved.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 #if EF5 || EF6
+using System;
 using System.Data.Entity;
 using System.Runtime.Caching;
 

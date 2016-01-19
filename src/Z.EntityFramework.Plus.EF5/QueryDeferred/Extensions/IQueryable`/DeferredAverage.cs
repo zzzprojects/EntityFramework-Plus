@@ -18,7 +18,12 @@ namespace Z.EntityFramework.Plus
             if (source == null)
                 throw Error.ArgumentNull("source");
 
-            return new QueryDeferred<double>(source.GetObjectQuery(),
+            return new QueryDeferred<double>(
+#if EF5 || EF6
+                source.GetObjectQuery(),
+#elif EF7 
+                source,
+#endif
                 Expression.Call(
                     null,
                     GetMethodInfo(Queryable.Average, source), source.Expression));
@@ -29,7 +34,12 @@ namespace Z.EntityFramework.Plus
             if (source == null)
                 throw Error.ArgumentNull("source");
 
-            return new QueryDeferred<double?>(source.GetObjectQuery(),
+            return new QueryDeferred<double?>(
+#if EF5 || EF6
+                source.GetObjectQuery(),
+#elif EF7 
+                source,
+#endif
                 Expression.Call(
                     null,
                     GetMethodInfo(Queryable.Average, source), source.Expression));
@@ -40,7 +50,12 @@ namespace Z.EntityFramework.Plus
             if (source == null)
                 throw Error.ArgumentNull("source");
 
-            return new QueryDeferred<double>(source.GetObjectQuery(),
+            return new QueryDeferred<double>(
+#if EF5 || EF6
+                source.GetObjectQuery(),
+#elif EF7 
+                source,
+#endif
                 Expression.Call(
                     null,
                     GetMethodInfo(Queryable.Average, source), source.Expression));
@@ -51,7 +66,12 @@ namespace Z.EntityFramework.Plus
             if (source == null)
                 throw Error.ArgumentNull("source");
 
-            return new QueryDeferred<double?>(source.GetObjectQuery(),
+            return new QueryDeferred<double?>(
+#if EF5 || EF6
+                source.GetObjectQuery(),
+#elif EF7 
+                source,
+#endif
                 Expression.Call(
                     null,
                     GetMethodInfo(Queryable.Average, source), source.Expression));
@@ -62,7 +82,12 @@ namespace Z.EntityFramework.Plus
             if (source == null)
                 throw Error.ArgumentNull("source");
 
-            return new QueryDeferred<float>(source.GetObjectQuery(),
+            return new QueryDeferred<float>(
+#if EF5 || EF6
+                source.GetObjectQuery(),
+#elif EF7 
+                source,
+#endif
                 Expression.Call(
                     null,
                     GetMethodInfo(Queryable.Average, source), source.Expression));
@@ -73,7 +98,12 @@ namespace Z.EntityFramework.Plus
             if (source == null)
                 throw Error.ArgumentNull("source");
 
-            return new QueryDeferred<float?>(source.GetObjectQuery(),
+            return new QueryDeferred<float?>(
+#if EF5 || EF6
+                source.GetObjectQuery(),
+#elif EF7 
+                source,
+#endif
                 Expression.Call(
                     null,
                     GetMethodInfo(Queryable.Average, source), source.Expression));
@@ -84,7 +114,12 @@ namespace Z.EntityFramework.Plus
             if (source == null)
                 throw Error.ArgumentNull("source");
 
-            return new QueryDeferred<double>(source.GetObjectQuery(),
+            return new QueryDeferred<double>(
+#if EF5 || EF6
+                source.GetObjectQuery(),
+#elif EF7 
+                source,
+#endif
                 Expression.Call(
                     null,
                     GetMethodInfo(Queryable.Average, source), source.Expression));
@@ -95,7 +130,12 @@ namespace Z.EntityFramework.Plus
             if (source == null)
                 throw Error.ArgumentNull("source");
 
-            return new QueryDeferred<double?>(source.GetObjectQuery(),
+            return new QueryDeferred<double?>(
+#if EF5 || EF6
+                source.GetObjectQuery(),
+#elif EF7 
+                source,
+#endif
                 Expression.Call(
                     null,
                     GetMethodInfo(Queryable.Average, source), source.Expression));
@@ -106,7 +146,12 @@ namespace Z.EntityFramework.Plus
             if (source == null)
                 throw Error.ArgumentNull("source");
 
-            return new QueryDeferred<decimal>(source.GetObjectQuery(),
+            return new QueryDeferred<decimal>(
+#if EF5 || EF6
+                source.GetObjectQuery(),
+#elif EF7 
+                source,
+#endif
                 Expression.Call(
                     null,
                     GetMethodInfo(Queryable.Average, source), source.Expression));
@@ -117,7 +162,12 @@ namespace Z.EntityFramework.Plus
             if (source == null)
                 throw Error.ArgumentNull("source");
 
-            return new QueryDeferred<decimal?>(source.GetObjectQuery(),
+            return new QueryDeferred<decimal?>(
+#if EF5 || EF6
+                source.GetObjectQuery(),
+#elif EF7 
+                source,
+#endif
                 Expression.Call(
                     null,
                     GetMethodInfo(Queryable.Average, source), source.Expression));
@@ -130,7 +180,12 @@ namespace Z.EntityFramework.Plus
             if (selector == null)
                 throw Error.ArgumentNull("selector");
 
-            return new QueryDeferred<double>(source.GetObjectQuery(),
+            return new QueryDeferred<double>(
+#if EF5 || EF6
+                source.GetObjectQuery(),
+#elif EF7 
+                source,
+#endif
                 Expression.Call(
                     null,
                     GetMethodInfo(Queryable.Average, source, selector),
@@ -145,7 +200,12 @@ namespace Z.EntityFramework.Plus
             if (selector == null)
                 throw Error.ArgumentNull("selector");
 
-            return new QueryDeferred<double?>(source.GetObjectQuery(),
+            return new QueryDeferred<double?>(
+#if EF5 || EF6
+                source.GetObjectQuery(),
+#elif EF7 
+                source,
+#endif
                 Expression.Call(
                     null,
                     GetMethodInfo(Queryable.Average, source, selector),
@@ -160,7 +220,12 @@ namespace Z.EntityFramework.Plus
             if (selector == null)
                 throw Error.ArgumentNull("selector");
 
-            return new QueryDeferred<float>(source.GetObjectQuery(),
+            return new QueryDeferred<float>(
+#if EF5 || EF6
+                source.GetObjectQuery(),
+#elif EF7 
+                source,
+#endif
                 Expression.Call(
                     null,
                     GetMethodInfo(Queryable.Average, source, selector),
@@ -175,7 +240,12 @@ namespace Z.EntityFramework.Plus
             if (selector == null)
                 throw Error.ArgumentNull("selector");
 
-            return new QueryDeferred<float?>(source.GetObjectQuery(),
+            return new QueryDeferred<float?>(
+#if EF5 || EF6
+                source.GetObjectQuery(),
+#elif EF7 
+                source,
+#endif
                 Expression.Call(
                     null,
                     GetMethodInfo(Queryable.Average, source, selector),
@@ -190,7 +260,12 @@ namespace Z.EntityFramework.Plus
             if (selector == null)
                 throw Error.ArgumentNull("selector");
 
-            return new QueryDeferred<double>(source.GetObjectQuery(),
+            return new QueryDeferred<double>(
+#if EF5 || EF6
+                source.GetObjectQuery(),
+#elif EF7 
+                source,
+#endif
                 Expression.Call(
                     null,
                     GetMethodInfo(Queryable.Average, source, selector),
@@ -205,7 +280,12 @@ namespace Z.EntityFramework.Plus
             if (selector == null)
                 throw Error.ArgumentNull("selector");
 
-            return new QueryDeferred<double?>(source.GetObjectQuery(),
+            return new QueryDeferred<double?>(
+#if EF5 || EF6
+                source.GetObjectQuery(),
+#elif EF7 
+                source,
+#endif
                 Expression.Call(
                     null,
                     GetMethodInfo(Queryable.Average, source, selector),
@@ -220,7 +300,12 @@ namespace Z.EntityFramework.Plus
             if (selector == null)
                 throw Error.ArgumentNull("selector");
 
-            return new QueryDeferred<double>(source.GetObjectQuery(),
+            return new QueryDeferred<double>(
+#if EF5 || EF6
+                source.GetObjectQuery(),
+#elif EF7 
+                source,
+#endif
                 Expression.Call(
                     null,
                     GetMethodInfo(Queryable.Average, source, selector),
@@ -235,7 +320,12 @@ namespace Z.EntityFramework.Plus
             if (selector == null)
                 throw Error.ArgumentNull("selector");
 
-            return new QueryDeferred<double?>(source.GetObjectQuery(),
+            return new QueryDeferred<double?>(
+#if EF5 || EF6
+                source.GetObjectQuery(),
+#elif EF7 
+                source,
+#endif
                 Expression.Call(
                     null,
                     GetMethodInfo(Queryable.Average, source, selector),
@@ -250,7 +340,12 @@ namespace Z.EntityFramework.Plus
             if (selector == null)
                 throw Error.ArgumentNull("selector");
 
-            return new QueryDeferred<decimal>(source.GetObjectQuery(),
+            return new QueryDeferred<decimal>(
+#if EF5 || EF6
+                source.GetObjectQuery(),
+#elif EF7 
+                source,
+#endif
                 Expression.Call(
                     null,
                     GetMethodInfo(Queryable.Average, source, selector),
@@ -265,7 +360,12 @@ namespace Z.EntityFramework.Plus
             if (selector == null)
                 throw Error.ArgumentNull("selector");
 
-            return new QueryDeferred<decimal?>(source.GetObjectQuery(),
+            return new QueryDeferred<decimal?>(
+#if EF5 || EF6
+                source.GetObjectQuery(),
+#elif EF7 
+                source,
+#endif
                 Expression.Call(
                     null,
                     GetMethodInfo(Queryable.Average, source, selector),

@@ -23,20 +23,18 @@ namespace Z.Test.EntityFramework.Plus
             using (var ctx = new TestContext())
             {
                 // BEFORE
-                var cacheCountBefore = QueryFutureManager.Cache.Count();
-
                 var futureValue1 = ctx.Entity_Basics.Where(x => x.ColumnInt < 5).OrderBy(x => x.ColumnInt).AsNoTracking().FutureValue();
                 var futureValue2 = ctx.Entity_Basics.Where(x => x.ColumnInt >= 5).OrderBy(x => x.ColumnInt).AsNoTracking().FutureValue();
 
-                // TEST: The cache count are NOT equal (A new context has been added)
-                Assert.AreEqual(cacheCountBefore + 1, QueryFutureManager.Cache.Count());
+                // TEST: The batch contains 2 queries
+                Assert.AreEqual(2, QueryFutureManager.AddOrGetBatch(ctx.GetObjectContext()).Queries.Count);
 
                 var value = futureValue1.Value;
 
                 // AFTER
 
-                // TEST: The cache count are equal (The new context has been removed)
-                Assert.AreEqual(cacheCountBefore, QueryFutureManager.Cache.Count());
+                // TEST: The batch contains 0 queries
+                Assert.AreEqual(0, QueryFutureManager.AddOrGetBatch(ctx.GetObjectContext()).Queries.Count);
 
                 // TEST: The futureList1 has a value and the first item is returned
                 Assert.IsTrue(futureValue1.HasValue);
