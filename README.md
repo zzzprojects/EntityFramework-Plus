@@ -85,7 +85,7 @@ ctx.Customers.DeferredCount().FutureValue();
 ## Query Filter
 **Filter query with predicate at global, instance or query level.**
 
-**Support**
+**Support:**
 
 _Global Filter_
 ```csharp
