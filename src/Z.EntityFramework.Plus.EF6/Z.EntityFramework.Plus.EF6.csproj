@@ -77,8 +77,17 @@
     <Compile Include="Extensions\ObjectContext\GetDbContext.cs" />
     <Compile Include="Internal\Extensions\Dictionary\Dictionary.AddOrAppend.cs" />
     <Compile Include="Internal\Extensions\DbContext\DbContext.GetDbSetProperties.cs" />
+    <Compile Include="Internal\Extensions\IQueryable`\IQueryable.Order.cs" />
+    <Compile Include="Internal\Extensions\IQueryable`\IQueryable.ThenByDescending.cs" />
+    <Compile Include="Internal\Extensions\IQueryable`\IQueryable.ThenBy.cs" />
+    <Compile Include="Internal\Extensions\IQueryable`\IQueryable.OrderByDescending.cs" />
+    <Compile Include="Internal\Extensions\IQueryable`\IQueryable.OrderBy.cs" />
     <Compile Include="Internal\Extensions\Object\Object.GetObjectQuery.cs" />
     <Compile Include="Internal\Extensions\Type\Type.GetDbSetElementType.cs" />
+    <Compile Include="QueryExtensions\QueryAddOrAppendOrder\Extensions\IQueryable`.AddOrAppendOrderByDescending.cs" />
+    <Compile Include="QueryExtensions\QueryAddOrAppendOrder\Extensions\IQueryable`.AddOrAppendOrderBy.cs" />
+    <Compile Include="QueryExtensions\QueryAddOrAppendOrder\QueryAddOrAppendOrderExpressionVisitor`2.cs" />
+    <Compile Include="QueryExtensions\QueryAddOrAppendOrder\QueryAddOrAppendOrderExpressionVisitor`.cs" />
     <Compile Include="QueryDeferred\Standalone\Extensions\IQueryable`.GetObjectQuery.cs" />
     <Compile Include="QueryDeferred\QueryDeferred.cs" />
     <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredAverage.cs" />
@@ -153,11 +162,16 @@
     <Compile Include="QueryFuture\Standalone\Extensions\IQueryable`.GetObjectQuery.cs" />
     <Compile Include="QueryFuture\Standalone\Extensions\ObjectContext.CreateStoreCommand.cs" />
     <Compile Include="QueryFuture\Standalone\Extensions\ObjectContext.GetInterceptionContext.cs" />
-    <Compile Include="QueryIncludeQuery\Extensions\IQueryable`.IncludeQuery.cs" />
-    <Compile Include="QueryIncludeQuery\QueryIncludeQueryProvider.cs" />
-    <Compile Include="QueryIncludeQuery\IQueryIncludeQueryQueryable.cs" />
-    <Compile Include="QueryIncludeQuery\QueryIncludeQueryQueryable`2.cs" />
-    <Compile Include="QueryIncludeQuery\QueryIncludeQueryQueryable`.cs" />
+    <Compile Include="QueryIncludeFilter\Extensions\IQueryable`.IncludeFilter.cs" />
+    <Compile Include="QueryIncludeFilter\QueryIncludeFilterProvider.cs" />
+    <Compile Include="QueryIncludeFilter\BaseQueryIncludeFilterChild.cs" />
+    <Compile Include="QueryIncludeFilter\QueryIncludeFilterChild`2.cs" />
+    <Compile Include="QueryIncludeFilter\QueryIncludeFilterParentQueryable`.cs" />
+    <Compile Include="QueryIncludeOptimize\BaseQueryIncludeOptimizeChild.cs" />
+    <Compile Include="QueryIncludeOptimize\Extensions\IQueryable`.IncludeOptimize.cs" />
+    <Compile Include="QueryIncludeOptimize\QueryIncludeOptimizeChild`2.cs" />
+    <Compile Include="QueryIncludeOptimize\QueryIncludeOptimizeParentQueryable`.cs" />
+    <Compile Include="QueryIncludeOptimize\QueryIncludeOptimizeProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -36,16 +36,16 @@ namespace Z.EntityFramework.Plus
         }
 
 #if EF5 || EF6
-    /// <summary>Gets or sets the cache to use for QueryCacheExtensions extension methods.</summary>
-    /// <value>The cache to use for QueryCacheExtensions extension methods.</value>
+        /// <summary>Gets or sets the cache to use for QueryCacheExtensions extension methods.</summary>
+        /// <value>The cache to use for QueryCacheExtensions extension methods.</value>
         public static ObjectCache Cache { get; set; }
 
         /// <summary>Gets or sets the default cache item policy to use when no policy is specified.</summary>
         /// <value>The default cache item policy to use when no policy is specified.</value>
         public static CacheItemPolicy DefaultCacheItemPolicy { get; set; }
 #elif EF7
-        /// <summary>Gets or sets the cache to use for the QueryCacheExtensions extension methods.</summary>
-        /// <value>The cache to use for the QueryCacheExtensions extension methods.</value>
+    /// <summary>Gets or sets the cache to use for the QueryCacheExtensions extension methods.</summary>
+    /// <value>The cache to use for the QueryCacheExtensions extension methods.</value>
         public static IMemoryCache Cache { get; set; }
 
         /// <summary>Gets or sets the default memory cache entry options to use when no policy is specified.</summary>

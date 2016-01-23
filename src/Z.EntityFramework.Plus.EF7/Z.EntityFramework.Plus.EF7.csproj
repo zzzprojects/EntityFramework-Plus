@@ -140,6 +140,11 @@
     <Compile Include="Extensions\DbSet`\GetDbContext.cs" />
     <Compile Include="Internal\Extensions\DbContext\DbContext.GetDbSetProperties.cs" />
     <Compile Include="Internal\Extensions\Dictionary\Dictionary.AddOrAppend.cs" />
+    <Compile Include="Internal\Extensions\IQueryable`\IQueryable.Order.cs" />
+    <Compile Include="Internal\Extensions\IQueryable`\IQueryable.OrderBy.cs" />
+    <Compile Include="Internal\Extensions\IQueryable`\IQueryable.OrderByDescending.cs" />
+    <Compile Include="Internal\Extensions\IQueryable`\IQueryable.ThenBy.cs" />
+    <Compile Include="Internal\Extensions\IQueryable`\IQueryable.ThenByDescending.cs" />
     <Compile Include="Internal\Extensions\Object\Object.GetObjectQuery.cs" />
     <Compile Include="Internal\Extensions\Type\Type.GetDbSetElementType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -171,6 +176,10 @@
     <Compile Include="QueryDeferred\QueryDeferredExtensions.cs" />
     <Compile Include="QueryDeferred\QueryDeferredExtensionsError.cs" />
     <Compile Include="QueryDeferred\Standalone\Extensions\IQueryable`.GetObjectQuery.cs" />
+    <Compile Include="QueryExtensions\QueryAddOrAppendOrder\Extensions\IQueryable`.AddOrAppendOrderBy.cs" />
+    <Compile Include="QueryExtensions\QueryAddOrAppendOrder\Extensions\IQueryable`.AddOrAppendOrderByDescending.cs" />
+    <Compile Include="QueryExtensions\QueryAddOrAppendOrder\QueryAddOrAppendOrderExpressionVisitor`.cs" />
+    <Compile Include="QueryExtensions\QueryAddOrAppendOrder\QueryAddOrAppendOrderExpressionVisitor`2.cs" />
     <Compile Include="QueryFilter\BaseQueryFilter.cs" />
     <Compile Include="QueryFilter\BaseQueryFilterQueryable.cs" />
     <Compile Include="QueryFilter\Extensions\DbContext.Filter.cs" />
@@ -210,6 +219,11 @@
     <Compile Include="QueryFuture\Standalone\Extensions\IQueryable`.GetObjectQuery.cs" />
     <Compile Include="QueryFuture\Standalone\Extensions\ObjectContext.CreateStoreCommand.cs" />
     <Compile Include="QueryFuture\Standalone\Extensions\ObjectContext.GetInterceptionContext.cs" />
+    <Compile Include="QueryIncludeFilter\BaseQueryIncludeFilterChild.cs" />
+    <Compile Include="QueryIncludeFilter\Extensions\IQueryable`.IncludeFilter.cs" />
+    <Compile Include="QueryIncludeFilter\QueryIncludeFilterChild`2.cs" />
+    <Compile Include="QueryIncludeFilter\QueryIncludeFilterParentQueryable`.cs" />
+    <Compile Include="QueryIncludeFilter\QueryIncludeFilterProvider.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

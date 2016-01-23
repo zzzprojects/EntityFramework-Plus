@@ -7,6 +7,7 @@
 
 using System.Linq;
 using System.Reflection;
+using Microsoft.Data.Entity.Infrastructure;
 using Microsoft.Data.Entity.Query;
 using Microsoft.Data.Entity.Query.ExpressionVisitors.Internal;
 using Microsoft.Data.Entity.Query.Internal;
@@ -90,6 +91,7 @@ namespace Z.EntityFramework.Plus
             var sqlQuery = queries.ToList()[0];
 
 
+      
             var command = sqlQuery.CreateGenerator().GenerateSql(queryContext.ParameterValues);
 
             return command;

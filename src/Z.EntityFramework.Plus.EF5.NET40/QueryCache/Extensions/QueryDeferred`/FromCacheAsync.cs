@@ -5,7 +5,6 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright (c) 2015 ZZZ Projects. All rights reserved.
 
-
 #if NET45
 using System.Threading.Tasks;
 #if EF5 || EF6

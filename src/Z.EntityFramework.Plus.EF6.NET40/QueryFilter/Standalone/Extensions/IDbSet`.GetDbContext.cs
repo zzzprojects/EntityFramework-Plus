@@ -6,6 +6,7 @@
 // Copyright (c) 2015 ZZZ Projects. All rights reserved.
 
 
+
 #if STANDALONE && (EF5 || EF6)
 using System.Data.Entity;
 using System.Reflection;

@@ -82,7 +82,7 @@ namespace Z.EntityFramework.Plus
                             query.SetResult(reader);
                             reader.NextResult();
                         }
-                    }
+}
 #elif EF6
                     var interceptionContext = Context.GetInterceptionContext();
                     using (var reader = DbInterception.Dispatch.Command.Reader(command, new DbCommandInterceptionContext(interceptionContext)))

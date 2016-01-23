@@ -83,6 +83,11 @@
     <Compile Include="Extensions\ObjectContext\GetInterceptionContext.cs" />
     <Compile Include="Internal\Extensions\DbContext\DbContext.GetDbSetProperties.cs" />
     <Compile Include="Internal\Extensions\Dictionary\Dictionary.AddOrAppend.cs" />
+    <Compile Include="Internal\Extensions\IQueryable`\IQueryable.Order.cs" />
+    <Compile Include="Internal\Extensions\IQueryable`\IQueryable.OrderBy.cs" />
+    <Compile Include="Internal\Extensions\IQueryable`\IQueryable.OrderByDescending.cs" />
+    <Compile Include="Internal\Extensions\IQueryable`\IQueryable.ThenBy.cs" />
+    <Compile Include="Internal\Extensions\IQueryable`\IQueryable.ThenByDescending.cs" />
     <Compile Include="Internal\Extensions\Object\Object.GetObjectQuery.cs" />
     <Compile Include="Internal\Extensions\Type\Type.GetDbSetElementType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

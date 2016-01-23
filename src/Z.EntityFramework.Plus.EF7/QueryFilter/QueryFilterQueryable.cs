@@ -52,7 +52,7 @@ namespace Z.EntityFramework.Plus
             FilterSet.UpdateInternalQueryCompiled.Value(Context, (ObjectQuery) query);
 
 #elif EF7
-            // todo: Use the same code as (EF5 || EF6) once EF team fix the cast issue: https://github.com/aspnet/EntityFramework/issues/3736
+    // todo: Use the same code as (EF5 || EF6) once EF team fix the cast issue: https://github.com/aspnet/EntityFramework/issues/3736
             FilterSet.UpdateInternalQuery(Context, query);
 
 #endif

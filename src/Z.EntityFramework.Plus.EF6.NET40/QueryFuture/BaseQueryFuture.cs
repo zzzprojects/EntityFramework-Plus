@@ -40,12 +40,12 @@ namespace Z.EntityFramework.Plus
         public QueryFutureBatch OwnerBatch { get; set; }
 
 #if EF5 || EF6
-        /// <summary>Gets or sets the query deferred.</summary>
-        /// <value>The query deferred.</value>
-        public ObjectQuery Query { get; set; }
-#elif EF7
     /// <summary>Gets or sets the query deferred.</summary>
     /// <value>The query deferred.</value>
+        public ObjectQuery Query { get; set; }
+#elif EF7
+        /// <summary>Gets or sets the query deferred.</summary>
+        /// <value>The query deferred.</value>
         public IQueryable Query { get; set; }
 
         /// <summary>Gets or sets the query deferred executor.</summary>
@@ -141,7 +141,7 @@ namespace Z.EntityFramework.Plus
         public IEnumerator<T> GetQueryEnumerator<T>(DbDataReader reader)
         {
 #if EF5 || EF6
-            // REFLECTION: Query.QueryState
+    // REFLECTION: Query.QueryState
             var queryStateProperty = Query.GetType().GetProperty("QueryState", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             var queryState = queryStateProperty.GetValue(Query, null);
 

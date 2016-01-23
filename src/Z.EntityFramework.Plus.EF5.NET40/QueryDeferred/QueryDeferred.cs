@@ -9,6 +9,8 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 #if EF5
 using System.Data.Objects;
 
@@ -67,8 +69,8 @@ namespace Z.EntityFramework.Plus
         }
 
 #if NET45
-    /// <summary>Execute asynchrounously the deferred expression and return the result.</summary>
-    /// <returns>The result of the deferred expression executed asynchrounously.</returns>
+        /// <summary>Execute asynchrounously the deferred expression and return the result.</summary>
+        /// <returns>The result of the deferred expression executed asynchrounously.</returns>
         public Task<TResult> ExecuteAsync()
         {
             return ExecuteAsync(default(CancellationToken));

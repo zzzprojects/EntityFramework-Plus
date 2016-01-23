@@ -6,6 +6,7 @@
 // Copyright (c) 2015 ZZZ Projects. All rights reserved.
 
 
+
 #if STANDALONE && EF6
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure.Interception;
