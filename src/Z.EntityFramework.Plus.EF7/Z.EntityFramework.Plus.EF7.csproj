@@ -137,6 +137,7 @@
     <Compile Include="EF7\Extensions\GetStateManager.cs" />
     <Compile Include="EF7\Extensions\GetDbContext.cs" />
     <Compile Include="ExceptionMessage.cs" />
+    <Compile Include="Extensions\DbContext\DbContext.MapReader.cs" />
     <Compile Include="Extensions\DbSet`\GetDbContext.cs" />
     <Compile Include="Internal\Extensions\DbContext\DbContext.GetDbSetProperties.cs" />
     <Compile Include="Internal\Extensions\Dictionary\Dictionary.AddOrAppend.cs" />

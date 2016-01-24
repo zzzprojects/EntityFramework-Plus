@@ -69,6 +69,7 @@
     <Compile Include="EF5\Extensions\DbSet`\DbContext.RemoveRange.cs" />
     <Compile Include="ExceptionMessage.cs" />
     <Compile Include="Extensions\DbContext\DbContext.GetObjectContext.cs" />
+    <Compile Include="Extensions\DbContext\DbContext.MapReader.cs" />
     <Compile Include="Extensions\EntityConnection\GetDbTransaction.cs" />
     <Compile Include="Extensions\EntityConnection\GetEntityTransaction.cs" />
     <Compile Include="Extensions\EntityConnection\GetStoreTransaction.cs" />
