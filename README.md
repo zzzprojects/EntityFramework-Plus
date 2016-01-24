@@ -156,7 +156,7 @@ Customer firstCustomer = futureFirstCustomer.Value;
 
 **[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Future-%7C-Entity-Framework-Combine-and-Execute-Multiple-SQL-Command)**
 
-## Query IncludeQuery
+## Query IncludeFilter
 Entity Framework already support eager loading however the major drawback is you cannot control what will be included. There is no way to load only active item or load only the first 10 comments.
 
 **EF+ Query Include** make it easy:
@@ -164,10 +164,22 @@ Entity Framework already support eager loading however the major drawback is you
 var ctx = new EntityContext();
 
 // Load only active comments
-var posts = ctx.Post.Include(x => x.Comments.Where(x => x.IsActive));
+var posts = ctx.Post.IncludeFilter(x => x.Comments.Where(x => x.IsActive));
 ```
 
-**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Query-Include)**
+**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-IncludeFilter-%7C-Entity-Framework-Include-Related-Entities-using-Where-Filter)**
+
+## Query IncludeOptimized
+Entity Framework already support eager loading however the major drawback is you cannot control what will be included. There is no way to load only active item or load only the first 10 comments.
+
+```csharp
+var ctx = new EntityContext();
+
+// Load only active comments using an optimized include
+var posts = ctx.Post.IncludeFilter(x => x.Comments.Where(x => x.IsActive));
+```
+
+**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-IncludeFilter-%7C-Entity-Framework-Include-Related-Entities-using-Where-Filter)**
 
 ## Audit
 Entity Framework allow to save changes but doesn’t log what change has been made in the Change Tracker. Audit allow to capture every changes made on entities and relations saved to your underling database.
