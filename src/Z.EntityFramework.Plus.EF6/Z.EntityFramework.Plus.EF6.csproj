@@ -197,6 +197,11 @@
     <Compile Include="QueryIncludeOptimized\Standalone\QueryFuture\QueryFuture\Standalone\Extensions\IQueryable`.GetObjectQuery.cs" />
     <Compile Include="QueryIncludeOptimized\Standalone\QueryFuture\QueryFuture\Standalone\Extensions\ObjectContext.CreateStoreCommand.cs" />
     <Compile Include="QueryIncludeOptimized\Standalone\QueryFuture\QueryFuture\Standalone\Extensions\ObjectContext.GetInterceptionContext.cs" />
+    <Compile Include="QueryInterceptor\Extensions\IQueryable`\Intercept.cs" />
+    <Compile Include="QueryInterceptor\QueryInterceptorProvider.cs" />
+    <Compile Include="QueryInterceptor\QueryInterceptorProvider`.cs" />
+    <Compile Include="QueryInterceptor\QueryInterceptorQueryable.cs" />
+    <Compile Include="QueryInterceptor\QueryInterceptorQueryable`.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
