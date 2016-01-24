@@ -227,8 +227,8 @@ Query Cache | Yes | Yes
 Query Deferred | Yes | Yes
 Query Filter | Yes | Yes
 Query Future | Yes | Yes
-Query IncludeOptimize | Yes | Yes
-Query IncludeQuery | Yes | Yes
+Query IncludeFilter | Yes | Yes
+Query IncludeOptimized | Yes | Yes
 Commercial License | Yes | Yes
 Royalty-Free | Yes | Yes
 Support & Upgrades (1 year) | **No** | Yes
