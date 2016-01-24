@@ -5,6 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright (c) 2015 ZZZ Projects. All rights reserved.
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -15,7 +16,7 @@ namespace Z.Test.EntityFramework.Plus
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ID { get; set; }
+        public Guid ID { get; set; }
 
         public int ColumnInt { get; set; }
 

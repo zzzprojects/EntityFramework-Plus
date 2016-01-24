@@ -33,7 +33,7 @@ namespace Z.Test.EntityFramework.Plus
         public static void CreateGlobalManagerFilter(bool isEnabled, string fixResharper = null, bool? enableFilter1 = null, bool? enableFilter2 = null, bool? enableFilter3 = null, bool? enableFilter4 = null, bool? excludeClass = null, bool? excludeInterface = null, bool? excludeBaseClass = null, bool? excludeBaseInterface = null, bool? includeClass = null, bool? includeInterface = null, bool? includeBaseClass = null, bool? includeBaseInterface = null)
         {
 #if EF7
-    // TODO: Remove this when cast issue will be fixed
+            // TODO: Remove this when cast issue will be fixed
             QueryFilterManager.GlobalFilters.Clear();
             QueryFilterManager.GlobalInitializeFilterActions.Clear();
 #endif

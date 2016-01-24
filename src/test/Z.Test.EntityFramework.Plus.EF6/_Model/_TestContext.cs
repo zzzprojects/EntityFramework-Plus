@@ -43,7 +43,7 @@ namespace Z.Test.EntityFramework.Plus
             Database.EnsureCreated();
 #endif
 #if EF7
-    // TODO: Remove this when cast issue will be fixed
+            // TODO: Remove this when cast issue will be fixed
             QueryFilterManager.GlobalFilters.Clear();
             QueryFilterManager.GlobalInitializeFilterActions.Clear();
 #endif

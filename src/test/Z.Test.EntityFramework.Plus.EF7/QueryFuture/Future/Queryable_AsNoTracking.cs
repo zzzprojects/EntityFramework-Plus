@@ -16,6 +16,7 @@ using Microsoft.Data.Entity;
 
 #endif
 
+
 namespace Z.Test.EntityFramework.Plus
 {
     public partial class QueryFuture_Future

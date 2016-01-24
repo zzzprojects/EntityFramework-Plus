@@ -219,11 +219,6 @@
     <Compile Include="QueryFuture\Standalone\Extensions\IQueryable`.GetObjectQuery.cs" />
     <Compile Include="QueryFuture\Standalone\Extensions\ObjectContext.CreateStoreCommand.cs" />
     <Compile Include="QueryFuture\Standalone\Extensions\ObjectContext.GetInterceptionContext.cs" />
-    <Compile Include="QueryIncludeFilter\BaseQueryIncludeFilterChild.cs" />
-    <Compile Include="QueryIncludeFilter\Extensions\IQueryable`.IncludeFilter.cs" />
-    <Compile Include="QueryIncludeFilter\QueryIncludeFilterChild`2.cs" />
-    <Compile Include="QueryIncludeFilter\QueryIncludeFilterParentQueryable`.cs" />
-    <Compile Include="QueryIncludeFilter\QueryIncludeFilterProvider.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

@@ -5,7 +5,6 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright (c) 2015 ZZZ Projects. All rights reserved.
 
-
 #if EF5 || EF6
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

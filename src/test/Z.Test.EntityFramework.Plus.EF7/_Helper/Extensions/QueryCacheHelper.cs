@@ -5,8 +5,11 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright (c) 2015 ZZZ Projects. All rights reserved.
 
+using System.Linq;
 using Microsoft.Data.Entity;
+using Z.EntityFramework.Plus;
 #if EF7
+using Microsoft.Extensions.Caching.Memory;
 
 #endif
 
