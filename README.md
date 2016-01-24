@@ -170,13 +170,13 @@ var posts = ctx.Post.IncludeFilter(x => x.Comments.Where(x => x.IsActive));
 **[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-IncludeFilter-%7C-Entity-Framework-Include-Related-Entities-using-Where-Filter)**
 
 ## Query IncludeOptimized
-Entity Framework already support eager loading however the major drawback is you cannot control what will be included. There is no way to load only active item or load only the first 10 comments.
+Improve SQL generate by Include and filter child collections at the same times!
 
 ```csharp
 var ctx = new EntityContext();
 
 // Load only active comments using an optimized include
-var posts = ctx.Post.IncludeFilter(x => x.Comments.Where(x => x.IsActive));
+var posts = ctx.Post.IncludeOptimized(x => x.Comments.Where(x => x.IsActive));
 ```
 
 **[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-IncludeFilter-%7C-Entity-Framework-Include-Related-Entities-using-Where-Filter)**
