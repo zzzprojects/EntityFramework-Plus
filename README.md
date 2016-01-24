@@ -219,7 +219,7 @@ AuditManager.DefaultConfiguration.AutoSaveAction = (context, audit) =>
 ## FREE vs PRO
 Every month, a new monthly trial of the PRO Version is available to let you evaluate all its features without limitations.
 
-Features | FREE Version | PRO Version
+Features | FREE Version | [PRO Version](http://entityframework-plus.net/#pro)
 ------------ | :-------------: | :-------------:
 Audit | Yes | Yes
 Query Batch | Yes | Yes
@@ -232,7 +232,7 @@ Query IncludeOptimized | Yes | Yes
 Commercial License | Yes | Yes
 Royalty-Free | Yes | Yes
 Support & Upgrades (1 year) | **No** | Yes
-Learn more about the PRO Version **(Not available until 2016 Q1)**
+Learn more about the **[PRO Version](http://entityframework-plus.net/#pro)**
 
 (Compatible with license from [.NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotnet-development/entity-framework-extensions/))
 
