@@ -71,6 +71,7 @@
     <Compile Include="EF5\Extensions\DbSet`\DbContext.AddRange.cs" />
     <Compile Include="EF5\Extensions\DbSet`\DbContext.RemoveRange.cs" />
     <Compile Include="ExceptionMessage.cs" />
+    <Compile Include="Extensions\DbContext\DbContext.MapReader.cs" />
     <Compile Include="Extensions\DbContext\DbContext.GetObjectContext.cs" />
     <Compile Include="Extensions\IDbSet`\GetDbContext.cs" />
     <Compile Include="Extensions\IQueryable`\IQueryable.GetObjectQuery.cs" />

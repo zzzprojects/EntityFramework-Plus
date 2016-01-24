@@ -15,7 +15,7 @@ using System.Data.Entity.Core.Objects;
 
 #endif
 
-public static class DbContextExtensions
+public static partial class DbContextExtensions
 {
     public static ObjectContext GetObjectContext(this DbContext @this)
     {
