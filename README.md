@@ -243,7 +243,7 @@ The FREE version helped you or you received support from us?
 
 Contributon for FREE features and support are always optional.
 
-
+<a href="http://www.zzzprojects.com/contribute/" target="_blank"><img src="http://www.zzzprojects.com/images/paypal-contribute.png" alt="Contribute" height="64"></a>
 
 A **huge thank** for the extra support. It keep me motivated to make even more effort to provide you amazing library and support.
 
