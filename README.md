@@ -239,7 +239,7 @@ Learn more about the **[PRO Version](http://entityframework-plus.net/#pro)**
 (Compatible with license from [.NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotnet-development/entity-framework-extensions/))
 
 ## Contributing
-You received support from us and/or the FREE version helped you?
+_You received support from us and/or the FREE version helped you?_
 
 Contribute to keep us developing FREE features and to thank us for our support.
 
