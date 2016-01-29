@@ -253,8 +253,8 @@ A **huge thanks** for your extra support.
 ## More Projects
 
 **Entity Framework**
-- [NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotnet-development/entity-framework-extensions/)
-- [EF+ (EntityFramework Plus)](https://github.com/zzzprojects/EntityFramework-Plus)
+- [Entity Framework Extensions](http://www.zzzprojects.com/products/dotnet-development/entity-framework-extensions/)
+- [Entity Framework Plus](https://github.com/zzzprojects/EntityFramework-Plus)
 
 **Bulk Operations**
 - [NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotnet-development/entity-framework-extensions/)
