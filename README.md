@@ -239,13 +239,14 @@ Learn more about the **[PRO Version](http://entityframework-plus.net/#pro)**
 (Compatible with license from [.NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotnet-development/entity-framework-extensions/))
 
 ## Contributing
-The FREE version helped you or you received support from us?
+You received support from us and/or the FREE version helped you?
 
-Contributon for FREE features and support are always optional.
+Contribute to keep us developing FREE features and to thank us for our support.
+We'll never require donations, but we appreciate them greatly
 
 <a href="http://www.zzzprojects.com/contribute/" target="_blank"><img src="http://www.zzzprojects.com/images/paypal-contribute.png" alt="Contribute" height="64"></a>
 
-A **huge thank** for the extra support. It keep me motivated to make even more effort to provide you amazing library and support.
+A **huge thanks** for your extra support.
 
 
 ## More Projects
