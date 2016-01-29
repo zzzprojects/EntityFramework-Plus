@@ -251,18 +251,21 @@ A **huge thanks** for your extra support.
 
 
 ## More Projects
-- Entity Framework
-  - [NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotnet-development/entity-framework-extensions/)
-  - [EntityFramework Plus](https://github.com/zzzprojects/EntityFramework-Plus)
-- Bulk Operations
-  - [NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotnet-development/entity-framework-extensions/)
-  - [NET Bulk Operations](http://www.zzzprojects.com/products/dotnet-development/bulk-operations/)
-- Expression Evaluator
-  - [Eval Expression.NET](https://github.com/zzzprojects/Eval-Expression.NET)
-  - [Eval SQL.NET](https://github.com/zzzprojects/Eval-SQL.NET)
-- Others
-  - [Extension Methods Library](https://github.com/zzzprojects/Z.ExtensionMethods/)
-  - [LINQ Async](https://github.com/zzzprojects/Linq-AsyncExtensions)
+Entity Framework
+- [NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotnet-development/entity-framework-extensions/)
+- [EntityFramework Plus](https://github.com/zzzprojects/EntityFramework-Plus)
+
+Bulk Operations
+- [NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotnet-development/entity-framework-extensions/)
+- [NET Bulk Operations](http://www.zzzprojects.com/products/dotnet-development/bulk-operations/)
+
+Expression Evaluator
+- [Eval Expression.NET](https://github.com/zzzprojects/Eval-Expression.NET)
+- [Eval SQL.NET](https://github.com/zzzprojects/Eval-SQL.NET)
+
+Others
+- [Extension Methods Library](https://github.com/zzzprojects/Z.ExtensionMethods/)
+- [LINQ Async](https://github.com/zzzprojects/Linq-AsyncExtensions)
 
 **Need more info?** info@zzzprojects.com
 
