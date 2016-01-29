@@ -261,8 +261,8 @@ A **huge thanks** for your extra support.
 - [NET Bulk Operations](http://www.zzzprojects.com/products/dotnet-development/bulk-operations/)
 
 **Expression Evaluator**
-- [Eval Expression.NET](https://github.com/zzzprojects/Eval-Expression.NET)
 - [Eval SQL.NET](https://github.com/zzzprojects/Eval-SQL.NET)
+- [Eval Expression.NET](https://github.com/zzzprojects/Eval-Expression.NET)
 
 **Others**
 - [Extension Methods Library](https://github.com/zzzprojects/Z.ExtensionMethods/)
