@@ -242,6 +242,7 @@ Learn more about the **[PRO Version](http://entityframework-plus.net/#pro)**
 You received support from us and/or the FREE version helped you?
 
 Contribute to keep us developing FREE features and to thank us for our support.
+
 We'll never require donations, but we appreciate them greatly
 
 <a href="http://www.zzzprojects.com/contribute/" target="_blank"><img src="http://www.zzzprojects.com/images/paypal-contribute.png" alt="Contribute" height="64"></a>
