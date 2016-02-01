@@ -245,7 +245,7 @@ Contribute to keep us developing FREE features and to thank us for our support.
 
 We'll never require donations, but we appreciate them greatly
 
-<a href="http://www.zzzprojects.com/contribute/" target="_blank"><img src="http://www.zzzprojects.com/images/paypal-contribute.png" alt="Contribute" height="64"></a>
+<a href="http://www.zzzprojects.com/contribute/" target="_blank"><img src="http://www.zzzprojects.com/images/paypal-contribute.png" alt="Contribute" height="48"></a>
 
 A **huge thanks** for your extra support.
 
