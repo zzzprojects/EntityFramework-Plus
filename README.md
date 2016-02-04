@@ -27,7 +27,7 @@ Use [.NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotne
     - [Query Future](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Future-%7C-Entity-Framework-Combine-and-Execute-Multiple-SQL-Command)
     - [Query IncludeFilter](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-IncludeFilter-%7C-Entity-Framework-Include-Related-Entities-using-Where-Filter) 
     - [Query IncludeOptimized](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-IncludeOptimized-%7C-Entity-Framework-Filter-Child-Collections-and-Optimize-Include)
-- [Audit](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Audit) (_Alpha_)  
+- [Audit](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Audit)
 - Save Change Security _(under development)_
 - Utilities
    - DbContext.MapReader&lt;TEntity&gt;(reader)
