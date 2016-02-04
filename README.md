@@ -27,7 +27,7 @@ Use [.NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotne
     - [Query Future](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Future-%7C-Entity-Framework-Combine-and-Execute-Multiple-SQL-Command)
     - [Query IncludeFilter](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-IncludeFilter-%7C-Entity-Framework-Include-Related-Entities-using-Where-Filter) 
     - [Query IncludeOptimized](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-IncludeOptimized-%7C-Entity-Framework-Filter-Child-Collections-and-Optimize-Include)
-- [Audit](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Audit)
+- [Audit](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Audit-%7C-Entity-Framework-Audit-Trail-Context-and-Track-Change)
 - Save Change Security _(under development)_
 
 
@@ -192,13 +192,16 @@ Entity Framework allow to save changes but doesn’t log what change has been ma
  - Audit AutoSaving
 
 ```csharp
-var ctx = new EntityContext();
+// using Z.EntityFramework.Plus; // Don't forget to include this.
 
+var ctx = new EntityContext();
 // ... ctx changes ...
+
 var audit = new Audit();
+audit.CreatedBy = "ZZZ Projects"; // Optional
 ctx.SaveChanges(audit);
 
-// You have now access to all captured informations
+// Access to all auditing information
 var entries = audit.Entries;
 foreach(var entry in entries)
 {
@@ -210,12 +213,11 @@ foreach(var entry in entries)
 
 Want to save audit entries automatically after every SaveChanges(audit) call?
 ```csharp
-// ADD AuditEntry && AuditEntryProperty to your context or use your own entity
-AuditManager.DefaultConfiguration.AutoSaveAction = (context, audit) =>
+AuditManager.DefaultConfiguration.AutoSavePreAction = (context, audit) =>
     (context as EntityContext).AuditEntries.AddRange(audit.Entries);
 ```
 
-**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Audit)**
+**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Audit-%7C-Entity-Framework-Audit-Trail-Context-and-Track-Change)**
 
 ## FREE vs PRO
 Every month, a new monthly trial of the PRO Version is available to let you evaluate all its features without limitations.
