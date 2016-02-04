@@ -183,13 +183,16 @@ var posts = ctx.Post.IncludeOptimized(x => x.Comments.Where(x => x.IsActive));
 **[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-IncludeFilter-%7C-Entity-Framework-Include-Related-Entities-using-Where-Filter)**
 
 ## Audit
-Entity Framework allow to save changes but doesn’t log what change has been made in the Change Tracker. Audit allow to capture every changes made on entities and relations saved to your underling database.
+Allow to easily track changes, exclude/include entity or property and auto save audit entries in the database.
 
 **Support:**
- - Identity
- - All kind of entity/inheritance (Complex Type, TPC, TPH, TPT)
- - All kind of relations (Many to Many, One to Many, One to One, etc.)
- - Audit AutoSaving
+ - AutoSave Audit
+ - Exclude & Include Entity
+ - Exclude & Include Property
+ - Format Value
+ - Ignore Events
+ - Property Unchanged
+ - Soft Add & Soft Delete
 
 ```csharp
 // using Z.EntityFramework.Plus; // Don't forget to include this.
@@ -211,7 +214,7 @@ foreach(var entry in entries)
 }
 ```
 
-Want to save audit entries automatically after every SaveChanges(audit) call?
+AutoSave audit in your database
 ```csharp
 AuditManager.DefaultConfiguration.AutoSavePreAction = (context, audit) =>
     (context as EntityContext).AuditEntries.AddRange(audit.Entries);
