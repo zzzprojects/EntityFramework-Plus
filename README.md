@@ -29,8 +29,7 @@ Use [.NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotne
     - [Query IncludeOptimized](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-IncludeOptimized-%7C-Entity-Framework-Filter-Child-Collections-and-Optimize-Include)
 - [Audit](https://github.com/zzzprojects/EntityFramework-Plus/wiki/Audit)
 - Save Change Security _(under development)_
-- Utilities
-   - DbContext.MapReader&lt;TEntity&gt;(reader)
+
 
 ## Query Cache
 **Query cache is the second level cache for Entity Framework.**
