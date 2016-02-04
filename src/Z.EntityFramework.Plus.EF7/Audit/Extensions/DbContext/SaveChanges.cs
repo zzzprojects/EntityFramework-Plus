@@ -1,9 +1,9 @@
-﻿// Description: EF Bulk Operations & Utilities | Bulk Insert, Update, Delete, Merge from database.
+﻿// Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update, Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
 // Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
-// License: http://www.zzzprojects.com/license-agreement/
+// License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
 // More projects: http://www.zzzprojects.com/
-// Copyright (c) 2015 ZZZ Projects. All rights reserved.
+// Copyright (c) 2016 ZZZ Projects. All rights reserved.
 
 #if EF5 || EF6
 using System.Data.Entity;
@@ -15,7 +15,7 @@ using Microsoft.Data.Entity;
 
 namespace Z.EntityFramework.Plus
 {
-    public static partial class ChangeAuditExtensions
+    public static partial class AuditExtensions
     {
         /// <summary>Audits and saves all changes made in this context to the underlying database.</summary>
         /// <param name="context">The context used to audits and saves all changes made.</param>
@@ -23,17 +23,17 @@ namespace Z.EntityFramework.Plus
         /// <returns>The number of objects written to the underlying database.</returns>
         public static int SaveChanges(this DbContext context, Audit audit)
         {
-            AuditStateEntry.PreSaveChanges(audit, context);
-            var result = context.SaveChanges();
-            AuditStateEntry.PostSaveChanges(audit);
+            audit.PreSaveChanges(context);
+            var rowAffecteds = context.SaveChanges();
+            audit.PostSaveChanges();
 
-            if (audit.Configuration.AutoSaveAction != null)
+            if (audit.CurrentOrDefaultConfiguration.AutoSavePreAction != null)
             {
-                audit.Configuration.AutoSaveAction(context, audit);
+                audit.CurrentOrDefaultConfiguration.AutoSavePreAction(context, audit);
                 context.SaveChanges();
             }
 
-            return result;
+            return rowAffecteds;
         }
     }
 }

@@ -1,9 +1,9 @@
-﻿// Description: EF Bulk Operations & Utilities | Bulk Insert, Update, Delete, Merge from database.
+﻿// Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update, Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
 // Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
-// License: http://www.zzzprojects.com/license-agreement/
+// License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
 // More projects: http://www.zzzprojects.com/
-// Copyright (c) 2015 ZZZ Projects. All rights reserved.
+// Copyright (c) 2016 ZZZ Projects. All rights reserved.
 
 using System.Linq;
 using Z.EntityFramework.Plus;
@@ -205,7 +205,6 @@ namespace Z.Test.EntityFramework.Plus
             optionsBuilder.UseSqlServer(new SqlConnection(ConfigurationManager.ConnectionStrings["TestDatabase"].ConnectionString));
         }
 
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Association
@@ -214,9 +213,12 @@ namespace Z.Test.EntityFramework.Plus
 
             // Audit
             {
-                //modelBuilder.Entity<AuditEntry>().HasKey(x => x.AuditEntryID);
+                //  modelBuilder.Entity<AuditEntry>().Ignore(x => x.Parent);
                 //modelBuilder.Entity<AuditEntryProperty>().Ignore(x => x.NewValue);
                 //modelBuilder.Entity<AuditEntryProperty>().Ignore(x => x.OldValue);
+
+                //modelBuilder.Entity<AuditEntry>().HasKey(x => x.AuditEntryID);
+
                 //modelBuilder.Entity<AuditEntry>().HasMany(x => x.Properties).WithOne(x => x.AuditEntry);
                 //modelBuilder.Entity<AuditEntryProperty>().HasKey(x => x.AuditEntryPropertyID);
             }
@@ -250,13 +252,9 @@ namespace Z.Test.EntityFramework.Plus
 
         #region Audit
 
-#if EF5 || EF6
-
         public DbSet<AuditEntry> AuditEntries { get; set; }
 
         public DbSet<AuditEntryProperty> AuditEntryProperties { get; set; }
-
-#endif
 
         #endregion
 

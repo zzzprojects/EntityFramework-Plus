@@ -1,9 +1,9 @@
-﻿// Description: EF Bulk Operations & Utilities | Bulk Insert, Update, Delete, Merge from database.
+﻿// Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update, Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
 // Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
-// License: http://www.zzzprojects.com/license-agreement/
+// License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
 // More projects: http://www.zzzprojects.com/
-// Copyright (c) 2015 ZZZ Projects. All rights reserved.
+// Copyright (c) 2016 ZZZ Projects. All rights reserved.
 
 using System.Linq;
 using Z.EntityFramework.Plus;
@@ -33,11 +33,10 @@ namespace Z.Test.EntityFramework.Plus
         public static void CreateGlobalManagerFilter(bool isEnabled, string fixResharper = null, bool? enableFilter1 = null, bool? enableFilter2 = null, bool? enableFilter3 = null, bool? enableFilter4 = null, bool? excludeClass = null, bool? excludeInterface = null, bool? excludeBaseClass = null, bool? excludeBaseInterface = null, bool? includeClass = null, bool? includeInterface = null, bool? includeBaseClass = null, bool? includeBaseInterface = null)
         {
 #if EF7
-            // TODO: Remove this when cast issue will be fixed
+    // TODO: Remove this when cast issue will be fixed
             QueryFilterManager.GlobalFilters.Clear();
             QueryFilterManager.GlobalInitializeFilterActions.Clear();
 #endif
-
             if (enableFilter1 != null)
             {
                 QueryFilterManager.Filter<Inheritance_Interface_Entity>(Filter.Filter1, entities => entities.Where(x => x.ColumnInt != 1), isEnabled);

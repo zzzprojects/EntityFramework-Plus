@@ -1,16 +1,15 @@
-﻿// Description: EF Bulk Operations & Utilities | Bulk Insert, Update, Delete, Merge from database.
+﻿// Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update, Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
 // Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
-// License: http://www.zzzprojects.com/license-agreement/
+// License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
 // More projects: http://www.zzzprojects.com/
-// Copyright (c) 2015 ZZZ Projects. All rights reserved.
+// Copyright (c) 2016 ZZZ Projects. All rights reserved.
 
 
 #if EF5 || EF6
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Z.EntityFramework.Plus;
-
 #if EF5 || EF6
 using System.Data.Entity;
 
@@ -26,6 +25,7 @@ namespace Z.Test.EntityFramework.Plus
         [TestMethod]
         public void Inheritance_TPC()
         {
+            TestContext.DeleteAll(x => x.AuditEntryProperties);
             TestContext.DeleteAll(x => x.AuditEntries);
             TestContext.DeleteAll(x => x.Inheritance_TPC_Animals);
 
@@ -52,7 +52,7 @@ namespace Z.Test.EntityFramework.Plus
                         dog.ColumnDog++;
                     }
                 });
-                
+
                 ctx.SaveChanges(audit);
             }
 
@@ -76,9 +76,9 @@ namespace Z.Test.EntityFramework.Plus
                     Assert.AreEqual(TestContext.TypeName(x => x.Inheritance_TPC_Animals), entries[2].EntitySetName);
 
                     // Entries TypeName
-                    Assert.AreEqual(typeof (Inheritance_TPC_Cat).Name, entries[0].TypeName);
-                    Assert.AreEqual(typeof (Inheritance_TPC_Dog).Name, entries[1].TypeName);
-                    Assert.AreEqual(typeof (Inheritance_TPC_Dog).Name, entries[2].TypeName);
+                    Assert.AreEqual(typeof (Inheritance_TPC_Dog).Name, entries[0].EntityTypeName);
+                    Assert.AreEqual(typeof (Inheritance_TPC_Dog).Name, entries[1].EntityTypeName);
+                    Assert.AreEqual(typeof (Inheritance_TPC_Cat).Name, entries[2].EntityTypeName);
                 }
 
                 // Properties
@@ -96,23 +96,23 @@ namespace Z.Test.EntityFramework.Plus
                     Assert.AreEqual("ColumnInt", entries[1].Properties[propertyIndex].PropertyName);
                     Assert.AreEqual("ColumnInt", entries[2].Properties[propertyIndex].PropertyName);
                     Assert.AreEqual(0, entries[0].Properties[propertyIndex].OldValue);
-                    Assert.AreEqual(0, entries[1].Properties[propertyIndex].OldValue);
-                    Assert.AreEqual(1, entries[2].Properties[propertyIndex].OldValue);
+                    Assert.AreEqual(1, entries[1].Properties[propertyIndex].OldValue);
+                    Assert.AreEqual(0, entries[2].Properties[propertyIndex].OldValue);
                     Assert.AreEqual(1, entries[0].Properties[propertyIndex].NewValue);
-                    Assert.AreEqual(1, entries[1].Properties[propertyIndex].NewValue);
-                    Assert.AreEqual(2, entries[2].Properties[propertyIndex].NewValue);
+                    Assert.AreEqual(2, entries[1].Properties[propertyIndex].NewValue);
+                    Assert.AreEqual(1, entries[2].Properties[propertyIndex].NewValue);
 
                     // ColumnCat | ColumnDog
                     propertyIndex = 1;
-                    Assert.AreEqual("ColumnCat", entries[0].Properties[propertyIndex].PropertyName);
+                    Assert.AreEqual("ColumnDog", entries[0].Properties[propertyIndex].PropertyName);
                     Assert.AreEqual("ColumnDog", entries[1].Properties[propertyIndex].PropertyName);
-                    Assert.AreEqual("ColumnDog", entries[2].Properties[propertyIndex].PropertyName);
+                    Assert.AreEqual("ColumnCat", entries[2].Properties[propertyIndex].PropertyName);
                     Assert.AreEqual(0, entries[0].Properties[propertyIndex].OldValue);
-                    Assert.AreEqual(0, entries[1].Properties[propertyIndex].OldValue);
-                    Assert.AreEqual(1, entries[2].Properties[propertyIndex].OldValue);
+                    Assert.AreEqual(1, entries[1].Properties[propertyIndex].OldValue);
+                    Assert.AreEqual(0, entries[2].Properties[propertyIndex].OldValue);
                     Assert.AreEqual(1, entries[0].Properties[propertyIndex].NewValue);
-                    Assert.AreEqual(1, entries[1].Properties[propertyIndex].NewValue);
-                    Assert.AreEqual(2, entries[2].Properties[propertyIndex].NewValue);
+                    Assert.AreEqual(2, entries[1].Properties[propertyIndex].NewValue);
+                    Assert.AreEqual(1, entries[2].Properties[propertyIndex].NewValue);
                 }
             }
 
@@ -140,9 +140,9 @@ namespace Z.Test.EntityFramework.Plus
                         Assert.AreEqual(TestContext.TypeName(x => x.Inheritance_TPC_Animals), entries[2].EntitySetName);
 
                         // Entries TypeName
-                        Assert.AreEqual(typeof(Inheritance_TPC_Cat).Name, entries[0].TypeName);
-                        Assert.AreEqual(typeof(Inheritance_TPC_Dog).Name, entries[1].TypeName);
-                        Assert.AreEqual(typeof(Inheritance_TPC_Dog).Name, entries[2].TypeName);
+                        Assert.AreEqual(typeof (Inheritance_TPC_Dog).Name, entries[0].EntityTypeName);
+                        Assert.AreEqual(typeof (Inheritance_TPC_Dog).Name, entries[1].EntityTypeName);
+                        Assert.AreEqual(typeof (Inheritance_TPC_Cat).Name, entries[2].EntityTypeName);
                     }
 
                     // Properties
@@ -160,27 +160,28 @@ namespace Z.Test.EntityFramework.Plus
                         Assert.AreEqual("ColumnInt", entries[1].Properties[propertyIndex].PropertyName);
                         Assert.AreEqual("ColumnInt", entries[2].Properties[propertyIndex].PropertyName);
                         Assert.AreEqual("0", entries[0].Properties[propertyIndex].OldValue);
-                        Assert.AreEqual("0", entries[1].Properties[propertyIndex].OldValue);
-                        Assert.AreEqual("1", entries[2].Properties[propertyIndex].OldValue);
+                        Assert.AreEqual("1", entries[1].Properties[propertyIndex].OldValue);
+                        Assert.AreEqual("0", entries[2].Properties[propertyIndex].OldValue);
                         Assert.AreEqual("1", entries[0].Properties[propertyIndex].NewValue);
-                        Assert.AreEqual("1", entries[1].Properties[propertyIndex].NewValue);
-                        Assert.AreEqual("2", entries[2].Properties[propertyIndex].NewValue);
+                        Assert.AreEqual("2", entries[1].Properties[propertyIndex].NewValue);
+                        Assert.AreEqual("1", entries[2].Properties[propertyIndex].NewValue);
 
                         // ColumnCat | ColumnDog
                         propertyIndex = 1;
-                        Assert.AreEqual("ColumnCat", entries[0].Properties[propertyIndex].PropertyName);
+                        Assert.AreEqual("ColumnDog", entries[0].Properties[propertyIndex].PropertyName);
                         Assert.AreEqual("ColumnDog", entries[1].Properties[propertyIndex].PropertyName);
-                        Assert.AreEqual("ColumnDog", entries[2].Properties[propertyIndex].PropertyName);
+                        Assert.AreEqual("ColumnCat", entries[2].Properties[propertyIndex].PropertyName);
                         Assert.AreEqual("0", entries[0].Properties[propertyIndex].OldValue);
-                        Assert.AreEqual("0", entries[1].Properties[propertyIndex].OldValue);
-                        Assert.AreEqual("1", entries[2].Properties[propertyIndex].OldValue);
+                        Assert.AreEqual("1", entries[1].Properties[propertyIndex].OldValue);
+                        Assert.AreEqual("0", entries[2].Properties[propertyIndex].OldValue);
                         Assert.AreEqual("1", entries[0].Properties[propertyIndex].NewValue);
-                        Assert.AreEqual("1", entries[1].Properties[propertyIndex].NewValue);
-                        Assert.AreEqual("2", entries[2].Properties[propertyIndex].NewValue);
+                        Assert.AreEqual("2", entries[1].Properties[propertyIndex].NewValue);
+                        Assert.AreEqual("1", entries[2].Properties[propertyIndex].NewValue);
                     }
                 }
             }
         }
     }
 }
+
 #endif

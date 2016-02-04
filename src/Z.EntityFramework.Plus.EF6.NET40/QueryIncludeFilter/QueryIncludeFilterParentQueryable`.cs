@@ -1,9 +1,9 @@
-﻿// Description: EF Bulk Operations & Utilities | Bulk Insert, Update, Delete, Merge from database.
+﻿// Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update, Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
 // Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
-// License: http://www.zzzprojects.com/license-agreement/
+// License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
 // More projects: http://www.zzzprojects.com/
-// Copyright (c) 2015 ZZZ Projects. All rights reserved.
+// Copyright (c) 2016 ZZZ Projects. All rights reserved.
 
 using System;
 using System.Collections;
@@ -109,7 +109,7 @@ namespace Z.EntityFramework.Plus
                 {
                     // REFLECTION: newQuery.CreateAnonymousFromQuery<TElement>(newQuery, childQuery);
                     var createAnonymousFromQueryMethodGeneric = createAnonymousFromQueryMethod.MakeGenericMethod(newQuery.ElementType);
-                    newQuery = (IQueryable)createAnonymousFromQueryMethodGeneric.Invoke(this, new object[] {newQuery, childQuery});
+                    newQuery = (IQueryable) createAnonymousFromQueryMethodGeneric.Invoke(this, new object[] {newQuery, childQuery});
                 }
             }
 
@@ -157,14 +157,15 @@ namespace Z.EntityFramework.Plus
                 {
                     // REFLECTION: newQuery.CreateAnonymousFromQuery<TElement>(newQuery, childQuery);
                     var createAnonymousFromQueryMethodGeneric = createAnonymousFromQueryMethod.MakeGenericMethod(newQuery.ElementType);
-                    newQuery = (IQueryable)createAnonymousFromQueryMethodGeneric.Invoke(this, new object[] {newQuery, childQuery});
+                    newQuery = (IQueryable) createAnonymousFromQueryMethodGeneric.Invoke(this, new object[] {newQuery, childQuery});
                 }
             }
 
             return newQuery;
         }
+
         /// <summary>
-        /// Create a new Queryable selecting parent and child query in an anonymous type.
+        ///     Create a new Queryable selecting parent and child query in an anonymous type.
         /// </summary>
         /// <typeparam name="TElement">The type of elements of the query.</typeparam>
         /// <param name="parent">The parent query.</param>

@@ -1,10 +1,11 @@
-﻿// Description: EF Bulk Operations & Utilities | Bulk Insert, Update, Delete, Merge from database.
+﻿// Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update, Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
 // Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
-// License: http://www.zzzprojects.com/license-agreement/
+// License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
 // More projects: http://www.zzzprojects.com/
-// Copyright (c) 2015 ZZZ Projects. All rights reserved.
+// Copyright (c) 2016 ZZZ Projects. All rights reserved.
 
+#if EF5 || EF6
 using System.Data.Common;
 using System.Reflection;
 #if EF5
@@ -19,11 +20,9 @@ namespace Z.EntityFramework.Plus
 {
     public static partial class EntityConnectionExtensions
     {
-        /// <summary>
-        ///     A Database extension method that gets entity transaction.
-        /// </summary>
-        /// <param name="entityConnection">The @this to act on.</param>
-        /// <returns>The entity transaction.</returns>
+        /// <summary>An EntityConnection extension method that gets the store transaction.</summary>
+        /// <param name="entityConnection">The entity connection to act on.</param>
+        /// <returns>The store transaction from the entity connection.</returns>
         public static DbTransaction GetStoreTransaction(this EntityConnection entityConnection)
         {
             var entityTransaction = entityConnection.GetEntityTransaction();
@@ -33,9 +32,10 @@ namespace Z.EntityFramework.Plus
                 return null;
             }
 
-            // todo: Use field instead?
             var storeTransactionProperty = entityTransaction.GetType().GetProperty("StoreTransaction", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             return (DbTransaction) storeTransactionProperty.GetValue(entityTransaction, null);
         }
     }
 }
+
+#endif

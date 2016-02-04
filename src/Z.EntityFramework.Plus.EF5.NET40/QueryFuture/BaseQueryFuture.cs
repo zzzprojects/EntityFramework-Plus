@@ -1,9 +1,9 @@
-﻿// Description: EF Bulk Operations & Utilities | Bulk Insert, Update, Delete, Merge from database.
+﻿// Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update, Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
 // Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
-// License: http://www.zzzprojects.com/license-agreement/
+// License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
 // More projects: http://www.zzzprojects.com/
-// Copyright (c) 2015 ZZZ Projects. All rights reserved.
+// Copyright (c) 2016 ZZZ Projects. All rights reserved.
 
 using System;
 using System.Collections.Generic;
@@ -40,12 +40,12 @@ namespace Z.EntityFramework.Plus
         public QueryFutureBatch OwnerBatch { get; set; }
 
 #if EF5 || EF6
-    /// <summary>Gets or sets the query deferred.</summary>
-    /// <value>The query deferred.</value>
-        public ObjectQuery Query { get; set; }
-#elif EF7
         /// <summary>Gets or sets the query deferred.</summary>
         /// <value>The query deferred.</value>
+        public ObjectQuery Query { get; set; }
+#elif EF7
+    /// <summary>Gets or sets the query deferred.</summary>
+    /// <value>The query deferred.</value>
         public IQueryable Query { get; set; }
 
         /// <summary>Gets or sets the query deferred executor.</summary>
@@ -141,7 +141,7 @@ namespace Z.EntityFramework.Plus
         public IEnumerator<T> GetQueryEnumerator<T>(DbDataReader reader)
         {
 #if EF5 || EF6
-    // REFLECTION: Query.QueryState
+            // REFLECTION: Query.QueryState
             var queryStateProperty = Query.GetType().GetProperty("QueryState", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             var queryState = queryStateProperty.GetValue(Query, null);
 

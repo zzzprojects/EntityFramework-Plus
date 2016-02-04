@@ -1,19 +1,24 @@
-﻿// Description: EF Bulk Operations & Utilities | Bulk Insert, Update, Delete, Merge from database.
+﻿// Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update, Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
 // Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
-// License: http://www.zzzprojects.com/license-agreement/
+// License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
 // More projects: http://www.zzzprojects.com/
-// Copyright (c) 2015 ZZZ Projects. All rights reserved.
-
+// Copyright (c) 2016 ZZZ Projects. All rights reserved.
 
 #if NET45
-using System.Data.Entity;
+
 using System.Threading;
 using System.Threading.Tasks;
+#if EF5 || EF6
+using System.Data.Entity;
+
+#elif EF7
+using Microsoft.Data.Entity;
+#endif
 
 namespace Z.EntityFramework.Plus
 {
-    public static partial class ChangeAuditExtensions
+    public static partial class AuditExtensions
     {
         /// <summary>Asynchronously audits and saves all changes made in this context to the underlying database.</summary>
         /// <param name="context">The context used to audits and saves all changes made.</param>
@@ -35,22 +40,19 @@ namespace Z.EntityFramework.Plus
         ///     A task that represents the asynchronous save operation. The task result contains the number of objects written
         ///     to the underlying database
         /// </returns>
-        public static Task<int> SaveChangesAsync(this DbContext context, Audit audit, CancellationToken cancellationToken)
+        public static async Task<int> SaveChangesAsync(this DbContext context, Audit audit, CancellationToken cancellationToken)
         {
-            AuditStateEntry.PreSaveChanges(audit, context);
-            var result = context.SaveChangesAsync(cancellationToken);
-            AuditStateEntry.PostSaveChanges(audit);
+            audit.PreSaveChanges(context);
+            var rowAffecteds = await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            audit.PostSaveChanges();
 
-            if (audit.Configuration.AutoSaveAsyncAction != null)
+            if (audit.CurrentOrDefaultConfiguration.AutoSavePreAction != null)
             {
-                result.ContinueWith(x =>
-                {
-                    audit.Configuration.AutoSaveAsyncAction(context, audit, cancellationToken);
-                    return x.Result;
-                }, cancellationToken).ConfigureAwait(false);
+                audit.CurrentOrDefaultConfiguration.AutoSavePreAction(context, audit);
+                await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             }
 
-            return result;
+            return rowAffecteds;
         }
     }
 }

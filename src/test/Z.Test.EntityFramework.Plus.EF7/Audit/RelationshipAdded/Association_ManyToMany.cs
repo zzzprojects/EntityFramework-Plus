@@ -1,9 +1,9 @@
-﻿// Description: EF Bulk Operations & Utilities | Bulk Insert, Update, Delete, Merge from database.
+﻿// Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update, Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
 // Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
-// License: http://www.zzzprojects.com/license-agreement/
+// License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
 // More projects: http://www.zzzprojects.com/
-// Copyright (c) 2015 ZZZ Projects. All rights reserved.
+// Copyright (c) 2016 ZZZ Projects. All rights reserved.
 
 
 #if EF5 || EF6
@@ -30,6 +30,7 @@ namespace Z.Test.EntityFramework.Plus
             int rightID_0;
             int rightID_1;
 
+            TestContext.DeleteAll(x => x.AuditEntryProperties);
             TestContext.DeleteAll(x => x.AuditEntries);
             TestContext.DeleteAll(x => x.Association_ManyToMany_Lefts);
             TestContext.DeleteAll(x => x.Association_ManyToMany_Rights);
@@ -68,8 +69,8 @@ namespace Z.Test.EntityFramework.Plus
                     Assert.AreEqual("Association_ManyToMany_Left_Rights", entries[1].EntitySetName);
 
                     // Entries TypeName
-                    Assert.AreEqual(null, entries[0].TypeName);
-                    Assert.AreEqual(null, entries[1].TypeName);
+                    Assert.AreEqual(null, entries[0].EntityTypeName);
+                    Assert.AreEqual(null, entries[1].EntityTypeName);
                 }
 
                 // Properties
@@ -82,16 +83,20 @@ namespace Z.Test.EntityFramework.Plus
 
                     // Association_ManyToMany_Left_Rights_Source;ID
                     propertyIndex = 0;
-                    Assert.AreEqual("Association_ManyToMany_Left_Rights_Source;ID", entries[0].Properties[propertyIndex].PropertyName);
-                    Assert.AreEqual("Association_ManyToMany_Left_Rights_Source;ID", entries[1].Properties[propertyIndex].PropertyName);
+                    Assert.AreEqual("Association_ManyToMany_Left_Rights_Source", entries[0].Properties[propertyIndex].RelationName);
+                    Assert.AreEqual("Association_ManyToMany_Left_Rights_Source", entries[1].Properties[propertyIndex].RelationName);
+                    Assert.AreEqual("ID", entries[0].Properties[propertyIndex].PropertyName);
+                    Assert.AreEqual("ID", entries[1].Properties[propertyIndex].PropertyName);
                     Assert.AreEqual(null, entries[0].Properties[propertyIndex].OldValue);
                     Assert.AreEqual(null, entries[1].Properties[propertyIndex].OldValue);
                     Assert.AreEqual(leftID, entries[0].Properties[propertyIndex].NewValue);
                     Assert.AreEqual(leftID, entries[1].Properties[propertyIndex].NewValue);
 
                     propertyIndex = 1;
-                    Assert.AreEqual("Association_ManyToMany_Left_Rights_Target;ID", entries[0].Properties[propertyIndex].PropertyName);
-                    Assert.AreEqual("Association_ManyToMany_Left_Rights_Target;ID", entries[1].Properties[propertyIndex].PropertyName);
+                    Assert.AreEqual("Association_ManyToMany_Left_Rights_Target", entries[0].Properties[propertyIndex].RelationName);
+                    Assert.AreEqual("Association_ManyToMany_Left_Rights_Target", entries[1].Properties[propertyIndex].RelationName);
+                    Assert.AreEqual("ID", entries[0].Properties[propertyIndex].PropertyName);
+                    Assert.AreEqual("ID", entries[1].Properties[propertyIndex].PropertyName);
                     Assert.AreEqual(null, entries[0].Properties[propertyIndex].OldValue);
                     Assert.AreEqual(null, entries[1].Properties[propertyIndex].OldValue);
                     Assert.AreEqual(rightID_0, entries[0].Properties[propertyIndex].NewValue);
@@ -121,8 +126,8 @@ namespace Z.Test.EntityFramework.Plus
                         Assert.AreEqual("Association_ManyToMany_Left_Rights", entries[1].EntitySetName);
 
                         // Entries TypeName
-                        Assert.AreEqual(null, entries[0].TypeName);
-                        Assert.AreEqual(null, entries[1].TypeName);
+                        Assert.AreEqual(null, entries[0].EntityTypeName);
+                        Assert.AreEqual(null, entries[1].EntityTypeName);
                     }
 
                     // Properties
@@ -135,16 +140,20 @@ namespace Z.Test.EntityFramework.Plus
 
                         // Association_ManyToMany_Left_Rights_Source;ID
                         propertyIndex = 0;
-                        Assert.AreEqual("Association_ManyToMany_Left_Rights_Source;ID", entries[0].Properties[propertyIndex].PropertyName);
-                        Assert.AreEqual("Association_ManyToMany_Left_Rights_Source;ID", entries[1].Properties[propertyIndex].PropertyName);
+                        Assert.AreEqual("Association_ManyToMany_Left_Rights_Source", entries[0].Properties[propertyIndex].RelationName);
+                        Assert.AreEqual("Association_ManyToMany_Left_Rights_Source", entries[1].Properties[propertyIndex].RelationName);
+                        Assert.AreEqual("ID", entries[0].Properties[propertyIndex].PropertyName);
+                        Assert.AreEqual("ID", entries[1].Properties[propertyIndex].PropertyName);
                         Assert.AreEqual(null, entries[0].Properties[propertyIndex].OldValue);
                         Assert.AreEqual(null, entries[1].Properties[propertyIndex].OldValue);
                         Assert.AreEqual(leftID.ToString(), entries[0].Properties[propertyIndex].NewValue);
                         Assert.AreEqual(leftID.ToString(), entries[1].Properties[propertyIndex].NewValue);
 
                         propertyIndex = 1;
-                        Assert.AreEqual("Association_ManyToMany_Left_Rights_Target;ID", entries[0].Properties[propertyIndex].PropertyName);
-                        Assert.AreEqual("Association_ManyToMany_Left_Rights_Target;ID", entries[1].Properties[propertyIndex].PropertyName);
+                        Assert.AreEqual("Association_ManyToMany_Left_Rights_Target", entries[0].Properties[propertyIndex].RelationName);
+                        Assert.AreEqual("Association_ManyToMany_Left_Rights_Target", entries[1].Properties[propertyIndex].RelationName);
+                        Assert.AreEqual("ID", entries[0].Properties[propertyIndex].PropertyName);
+                        Assert.AreEqual("ID", entries[1].Properties[propertyIndex].PropertyName);
                         Assert.AreEqual(null, entries[0].Properties[propertyIndex].OldValue);
                         Assert.AreEqual(null, entries[1].Properties[propertyIndex].OldValue);
                         Assert.AreEqual(rightID_0.ToString(), entries[0].Properties[propertyIndex].NewValue);
@@ -155,4 +164,5 @@ namespace Z.Test.EntityFramework.Plus
         }
     }
 }
+
 #endif

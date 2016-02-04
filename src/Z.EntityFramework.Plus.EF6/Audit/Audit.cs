@@ -1,21 +1,32 @@
-﻿// Description: EF Bulk Operations & Utilities | Bulk Insert, Update, Delete, Merge from database.
+﻿// Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update, Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
 // Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
-// License: http://www.zzzprojects.com/license-agreement/
+// License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
 // More projects: http://www.zzzprojects.com/
-// Copyright (c) 2015 ZZZ Projects. All rights reserved.
+// Copyright (c) 2016 ZZZ Projects. All rights reserved.
 
+using System;
 using System.Collections.Generic;
+#if EF5 || EF6
+using System.Data.Entity;
+
+#elif EF7
+using Microsoft.Data.Entity;
+
+#endif
 
 namespace Z.EntityFramework.Plus
 {
     /// <summary>An audit.</summary>
-    public class Audit
+    public partial class Audit
     {
+        /// <summary>The lazy configuration.</summary>
+        private readonly Lazy<AuditConfiguration> _configuration;
+
         /// <summary>Default constructor.</summary>
         public Audit()
         {
-            Configuration = new AuditConfiguration();
+            _configuration = new Lazy<AuditConfiguration>(() => AuditManager.DefaultConfiguration.Clone());
             Entries = new List<AuditEntry>();
         }
 
@@ -23,8 +34,35 @@ namespace Z.EntityFramework.Plus
         /// <value>The entries.</value>
         public List<AuditEntry> Entries { get; set; }
 
+        /// <summary>Gets or sets the  created by username.</summary>
+        /// <value>The created by username.</value>
+        public string CreatedBy { get; set; }
+
         /// <summary>Gets the configuration.</summary>
         /// <value>The configuration.</value>
-        public AuditConfiguration Configuration { get; }
+        public AuditConfiguration Configuration
+        {
+            get { return _configuration.Value; }
+        }
+
+        /// <summary>Gets the current or default configuration.</summary>
+        /// <value>The current or default configuration.</value>
+        internal AuditConfiguration CurrentOrDefaultConfiguration
+        {
+            get { return _configuration.IsValueCreated ? _configuration.Value : AuditManager.DefaultConfiguration; }
+        }
+
+        /// <summary>Updates audit entries after the save changes has been executed.</summary>
+        public void PostSaveChanges()
+        {
+            PostSaveChanges(this);
+        }
+
+        /// <summary>Adds audit entries before the save changes has been executed.</summary>
+        /// <param name="context">The context.</param>
+        public void PreSaveChanges(DbContext context)
+        {
+            PreSaveChanges(this, context);
+        }
     }
 }

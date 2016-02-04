@@ -1,16 +1,15 @@
-﻿// Description: EF Bulk Operations & Utilities | Bulk Insert, Update, Delete, Merge from database.
+﻿// Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update, Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
 // Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
-// License: http://www.zzzprojects.com/license-agreement/
+// License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
 // More projects: http://www.zzzprojects.com/
-// Copyright (c) 2015 ZZZ Projects. All rights reserved.
+// Copyright (c) 2016 ZZZ Projects. All rights reserved.
 
 
 #if EF5 || EF6
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Z.EntityFramework.Plus;
-
 #if EF5 || EF6
 using System.Data.Entity;
 
@@ -28,6 +27,7 @@ namespace Z.Test.EntityFramework.Plus
         {
             var identitySeed = TestContext.GetIdentitySeed(x => x.Entity_Complexes);
 
+            TestContext.DeleteAll(x => x.AuditEntryProperties);
             TestContext.DeleteAll(x => x.AuditEntries);
             TestContext.DeleteAll(x => x.Entity_Complexes);
 
@@ -61,9 +61,9 @@ namespace Z.Test.EntityFramework.Plus
                     Assert.AreEqual(TestContext.TypeName(x => x.Entity_Complexes), entries[2].EntitySetName);
 
                     // Entries TypeName
-                    Assert.AreEqual(typeof (Entity_Complex).Name, entries[0].TypeName);
-                    Assert.AreEqual(typeof (Entity_Complex).Name, entries[1].TypeName);
-                    Assert.AreEqual(typeof (Entity_Complex).Name, entries[2].TypeName);
+                    Assert.AreEqual(typeof (Entity_Complex).Name, entries[0].EntityTypeName);
+                    Assert.AreEqual(typeof (Entity_Complex).Name, entries[1].EntityTypeName);
+                    Assert.AreEqual(typeof (Entity_Complex).Name, entries[2].EntityTypeName);
                 }
 
                 // Properties
@@ -149,9 +149,9 @@ namespace Z.Test.EntityFramework.Plus
                         Assert.AreEqual(TestContext.TypeName(x => x.Entity_Complexes), entries[2].EntitySetName);
 
                         // Entries TypeName
-                        Assert.AreEqual(typeof (Entity_Complex).Name, entries[0].TypeName);
-                        Assert.AreEqual(typeof (Entity_Complex).Name, entries[1].TypeName);
-                        Assert.AreEqual(typeof (Entity_Complex).Name, entries[2].TypeName);
+                        Assert.AreEqual(typeof (Entity_Complex).Name, entries[0].EntityTypeName);
+                        Assert.AreEqual(typeof (Entity_Complex).Name, entries[1].EntityTypeName);
+                        Assert.AreEqual(typeof (Entity_Complex).Name, entries[2].EntityTypeName);
                     }
 
                     // Properties
@@ -216,4 +216,5 @@ namespace Z.Test.EntityFramework.Plus
         }
     }
 }
+
 #endif

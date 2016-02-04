@@ -1,10 +1,11 @@
-﻿// Description: EF Bulk Operations & Utilities | Bulk Insert, Update, Delete, Merge from database.
+﻿// Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update, Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
 // Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
-// License: http://www.zzzprojects.com/license-agreement/
+// License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
 // More projects: http://www.zzzprojects.com/
-// Copyright (c) 2015 ZZZ Projects. All rights reserved.
+// Copyright (c) 2016 ZZZ Projects. All rights reserved.
 
+using System.Collections.Generic;
 using System.Linq;
 using Z.EntityFramework.Plus;
 #if EF5 || EF6
@@ -21,12 +22,34 @@ namespace Z.Test.EntityFramework.Plus
 {
     public partial class TestContext : DbContext
     {
+        private static bool InitialLoad;
+
 #if EF5 || EF6
-        public TestContext() : base("TestDatabase")
+        public TestContext() : base(My.Config.ConnectionStrings.TestDatabase)
 #elif EF7
         public TestContext()
 #endif
         {
+            if (!InitialLoad)
+            {
+                // FIX TPC
+                InitialLoad = true;
+
+                // TODO: Run a script checking for identity seed instead!
+                var list = new List<Inheritance_TPC_Cat>();
+                for (var i = 0; i < 10; i++)
+                {
+                    list.Add(new Inheritance_TPC_Cat {ColumnInt = i, ColumnCat = i});
+                }
+                using (var ctx = new TestContext())
+                {
+                    ctx.Inheritance_TPC_Animals.AddRange(list);
+                    ctx.SaveChanges();
+
+                    ctx.Inheritance_TPC_Animals.RemoveRange(list);
+                    ctx.SaveChanges();
+                }
+            }
 #if EF7
             Database.EnsureCreated();
 #endif
@@ -41,6 +64,11 @@ namespace Z.Test.EntityFramework.Plus
         {
 #if EF7
             Database.EnsureCreated();
+#endif
+#if EF7
+    // TODO: Remove this when cast issue will be fixed
+            QueryFilterManager.GlobalFilters.Clear();
+            QueryFilterManager.GlobalInitializeFilterActions.Clear();
 #endif
 
             if (enableFilter1 != null)
@@ -170,6 +198,14 @@ namespace Z.Test.EntityFramework.Plus
                     modelBuilder.Entity<Association_Multi_OneToMany_Left>()
                         .HasMany(x => x.Right2s)
                         .WithRequired(x => x.Left);
+
+                    modelBuilder.Entity<Association_OneToManyToMany_Left>()
+                        .HasMany(x => x.Rights)
+                        .WithRequired(x => x.Left);
+
+                    modelBuilder.Entity<Association_OneToManyToMany_Right>()
+                        .HasMany(x => x.Rights)
+                        .WithRequired(x => x.Left);
                 }
             }
 
@@ -244,6 +280,16 @@ namespace Z.Test.EntityFramework.Plus
 
         #endregion
 
+        #region Association ToManyToMany
+
+        public DbSet<Association_OneToManyToMany_Left> Association_Multi_OneToManyToMany_Lefts { get; set; }
+
+        public DbSet<Association_OneToManyToMany_Right> Association_Multi_OneToManyToMany_Rights { get; set; }
+
+        public DbSet<Association_OneToManyToMany_RightRight> Association_Multi_OneToManyToMany_RightRights { get; set; }
+
+        #endregion
+
         #region Audit
 
 #if EF5 || EF6
@@ -259,6 +305,8 @@ namespace Z.Test.EntityFramework.Plus
         #region Entity
 
         public DbSet<Entity_Basic> Entity_Basics { get; set; }
+
+        public DbSet<Entity_Basic_Many> Entity_Basic_Manies { get; set; }
 
 #if EF5 || EF6
         public DbSet<Entity_Complex> Entity_Complexes { get; set; }
@@ -278,6 +326,8 @@ namespace Z.Test.EntityFramework.Plus
         public DbSet<Inheritance_TPT_Animal> Inheritance_TPT_Animals { get; set; }
 
 #endif
+
+        public DbSet<Property_AllType> Property_AllTypes { get; set; }
 
         #endregion
     }

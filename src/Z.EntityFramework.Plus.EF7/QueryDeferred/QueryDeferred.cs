@@ -1,11 +1,10 @@
-﻿// Description: EF Bulk Operations & Utilities | Bulk Insert, Update, Delete, Merge from database.
+﻿// Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update, Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
 // Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
-// License: http://www.zzzprojects.com/license-agreement/
+// License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
 // More projects: http://www.zzzprojects.com/
-// Copyright (c) 2015 ZZZ Projects. All rights reserved.
+// Copyright (c) 2016 ZZZ Projects. All rights reserved.
 
-using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -42,13 +41,13 @@ namespace Z.EntityFramework.Plus
             Expression = expression;
 
 #if EF5 || EF6
-            // CREATE query from the deferred expression
+    // CREATE query from the deferred expression
             var provider = ((IQueryable) query).Provider;
             var createQueryMethod = provider.GetType().GetMethod("CreateQuery", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new[] {typeof (Expression), typeof (Type)}, null);
             Query = (IQueryable) createQueryMethod.Invoke(provider, new object[] {expression, typeof (TResult)});
 #elif EF7
-            Query = new EntityQueryable<TResult>((IAsyncQueryProvider)query.Provider);
-            var expressionProperty = typeof(QueryableBase<>).MakeGenericType(typeof(TResult)).GetProperty("Expression", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            Query = new EntityQueryable<TResult>((IAsyncQueryProvider) query.Provider);
+            var expressionProperty = typeof (QueryableBase<>).MakeGenericType(typeof (TResult)).GetProperty("Expression", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             expressionProperty.SetValue(Query, expression);
 #endif
         }

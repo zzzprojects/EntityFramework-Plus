@@ -1,16 +1,20 @@
-﻿// Description: EF Bulk Operations & Utilities | Bulk Insert, Update, Delete, Merge from database.
+﻿// Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update, Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
 // Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
-// License: http://www.zzzprojects.com/license-agreement/
+// License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
 // More projects: http://www.zzzprojects.com/
-// Copyright (c) 2015 ZZZ Projects. All rights reserved.
+// Copyright (c) 2016 ZZZ Projects. All rights reserved.
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-#if EF5 || EF6
+#if EF5
+using System.Data.Entity;
+using Z.EntityFramework.Plus;
+
+#elif EF6
 using System.Data.Entity;
 
 #elif EF7
@@ -38,6 +42,24 @@ namespace Z.Test.EntityFramework.Plus
                 PropertyInfo property;
 
                 property = item.GetType().GetProperty("ColumnInt");
+                if (property != null)
+                {
+                    property.SetValue(item, i);
+                }
+
+                property = item.GetType().GetProperty("Column1");
+                if (property != null)
+                {
+                    property.SetValue(item, i);
+                }
+
+                property = item.GetType().GetProperty("Column2");
+                if (property != null)
+                {
+                    property.SetValue(item, i);
+                }
+
+                property = item.GetType().GetProperty("Column3");
                 if (property != null)
                 {
                     property.SetValue(item, i);

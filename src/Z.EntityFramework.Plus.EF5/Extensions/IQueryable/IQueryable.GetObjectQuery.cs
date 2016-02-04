@@ -1,10 +1,12 @@
-﻿// Description: EF Bulk Operations & Utilities | Bulk Insert, Update, Delete, Merge from database.
+﻿// Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update, Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
 // Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
-// License: http://www.zzzprojects.com/license-agreement/
+// License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
 // More projects: http://www.zzzprojects.com/
-// Copyright (c) 2015 ZZZ Projects. All rights reserved.
+// Copyright (c) 2016 ZZZ Projects. All rights reserved.
 
+#if EF5 || EF6
+using System;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Reflection;
@@ -20,9 +22,9 @@ namespace Z.EntityFramework.Plus
 {
     public static partial class IQueryableExtensions
     {
-        /// <summary>An IQueryable&lt;TEntity&gt; extension method that gets a context.</summary>
-        /// <param name="query">The query to act on.</param>
-        /// <returns>The context.</returns>
+        /// <summary>An IQueryable&lt;TEntity&gt; extension method that get the ObjectQuery from the query.</summary>
+        /// <param name="query">The query to get the ObjectQuery from.</param>
+        /// <returns>The ObjectQuery from the query.</returns>
         public static ObjectQuery GetObjectQuery(this IQueryable query)
         {
             // CHECK ObjectQuery
@@ -37,7 +39,7 @@ namespace Z.EntityFramework.Plus
 
             if (dbQuery == null)
             {
-                return null;
+                throw new Exception(ExceptionMessage.GeneralException);
             }
 
             var internalQueryProperty = dbQuery.GetType().GetProperty("InternalQuery", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -51,3 +53,5 @@ namespace Z.EntityFramework.Plus
         }
     }
 }
+
+#endif

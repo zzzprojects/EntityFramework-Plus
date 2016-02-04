@@ -1,9 +1,9 @@
-﻿// Description: EF Bulk Operations & Utilities | Bulk Insert, Update, Delete, Merge from database.
+﻿// Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update, Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
 // Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
-// License: http://www.zzzprojects.com/license-agreement/
+// License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
 // More projects: http://www.zzzprojects.com/
-// Copyright (c) 2015 ZZZ Projects. All rights reserved.
+// Copyright (c) 2016 ZZZ Projects. All rights reserved.
 
 using System;
 using System.Linq;
@@ -40,7 +40,7 @@ namespace Z.EntityFramework.Plus
 #if EF5 || EF6
             UpdateInternalQueryCompiled = new Lazy<Action<DbContext, ObjectQuery>>(() => CompileUpdateInternalQuery(dbSetProperty));
 #elif EF7
-    //UpdateInternalQueryCompiled = new Lazy<Action<DbContext, object>>(() => CompileUpdateInternalQuery(property));
+            //UpdateInternalQueryCompiled = new Lazy<Action<DbContext, object>>(() => CompileUpdateInternalQuery(property));
 #endif
         }
 
@@ -86,7 +86,7 @@ namespace Z.EntityFramework.Plus
                 filterQueryable = CreateFilterQueryableCompiled.Value(context, this, objectQuery);
                 QueryFilterManager.CacheWeakFilterQueryable.Add(set, filterQueryable);
 #elif EF7
-    // todo: Create compiled version
+                // todo: Create compiled version
                 var field = set.GetType().GetField("_entityQueryable", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                 var internalQuery = field.GetValue(set);
 
@@ -134,9 +134,9 @@ namespace Z.EntityFramework.Plus
         }
 
 #if EF5 || EF6
-        /// <summary>Compiles the action to update the internal query.</summary>
-        /// <param name="dbSetProperty">The database set property.</param>
-        /// <returns>The compiled the action to update the internal query.</returns>
+    /// <summary>Compiles the action to update the internal query.</summary>
+    /// <param name="dbSetProperty">The database set property.</param>
+    /// <returns>The compiled the action to update the internal query.</returns>
         public Action<DbContext, ObjectQuery> CompileUpdateInternalQuery(PropertyInfo dbSetProperty)
         {
             var dbQueryGenericType = typeof (DbQuery<>).MakeGenericType(ElementType);
@@ -173,9 +173,9 @@ namespace Z.EntityFramework.Plus
         }
 
 #elif EF7
-    /// <summary>Compile the action to update the internal query.</summary>
-    /// <param name="context">The context to update the query from.</param>
-    /// <param name="query">The query to change the internal query.</param>
+        /// <summary>Compile the action to update the internal query.</summary>
+        /// <param name="context">The context to update the query from.</param>
+        /// <param name="query">The query to change the internal query.</param>
         public void UpdateInternalQuery(DbContext context, object query)
         {
             // todo: Convert to expression once EF team fix the cast issue: https://github.com/aspnet/EntityFramework/issues/3736
