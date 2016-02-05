@@ -24,6 +24,8 @@ namespace Z.Test.EntityFramework.Plus
         [TestMethod]
         public void IgnorePropertyUnchanged_IsTrue()
         {
+            var identitySeed = TestContext.GetIdentitySeed(x => x.Entity_Complexes);
+
             TestContext.DeleteAll(x => x.AuditEntryProperties);
             TestContext.DeleteAll(x => x.AuditEntries);
             TestContext.DeleteAll(x => x.Entity_Complexes);
@@ -57,10 +59,16 @@ namespace Z.Test.EntityFramework.Plus
                     var propertyIndex = -1;
 
                     // Properties Count
-                    Assert.AreEqual(1, entries[0].Properties.Count);
+                    Assert.AreEqual(2, entries[0].Properties.Count);
+
+                    // ID
+                    propertyIndex = 0;
+                    Assert.AreEqual("ID", entries[0].Properties[propertyIndex].PropertyName);
+                    Assert.AreEqual(identitySeed + 1, entries[0].Properties[propertyIndex].OldValue);
+                    Assert.AreEqual(identitySeed + 1, entries[0].Properties[propertyIndex].NewValue);
 
                     // Info.Info.ColumnInt
-                    propertyIndex = 0;
+                    propertyIndex = 1;
                     Assert.AreEqual("Info.Info.ColumnInt", entries[0].Properties[propertyIndex].PropertyName);
                     Assert.AreEqual(1000000, entries[0].Properties[propertyIndex].OldValue);
                     Assert.AreEqual(1000001, entries[0].Properties[propertyIndex].NewValue);
@@ -80,10 +88,16 @@ namespace Z.Test.EntityFramework.Plus
                         var propertyIndex = -1;
 
                         // Properties Count
-                        Assert.AreEqual(1, entries[0].Properties.Count);
+                        Assert.AreEqual(2, entries[0].Properties.Count);
+
+                        // ID
+                        propertyIndex = 0;
+                        Assert.AreEqual("ID", entries[0].Properties[propertyIndex].PropertyName);
+                        Assert.AreEqual((identitySeed + 1).ToString(), entries[0].Properties[propertyIndex].OldValue);
+                        Assert.AreEqual((identitySeed + 1).ToString(), entries[0].Properties[propertyIndex].NewValue);
 
                         // Info.Info.ColumnInt
-                        propertyIndex = 0;
+                        propertyIndex = 1;
                         Assert.AreEqual("Info.Info.ColumnInt", entries[0].Properties[propertyIndex].PropertyName);
                         Assert.AreEqual("1000000", entries[0].Properties[propertyIndex].OldValue);
                         Assert.AreEqual("1000001", entries[0].Properties[propertyIndex].NewValue);

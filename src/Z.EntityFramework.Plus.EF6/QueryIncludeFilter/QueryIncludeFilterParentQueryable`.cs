@@ -10,12 +10,21 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
+#if NET45
+using System.Data.Entity.Infrastructure;
+
+#endif
 
 namespace Z.EntityFramework.Plus
 {
     /// <summary>A class for query include filter parent queryable.</summary>
     /// <typeparam name="T">The type of elements of the query.</typeparam>
-    public class QueryIncludeFilterParentQueryable<T> : IOrderedQueryable<T>
+#if EF6 && NET45
+    public class QueryIncludeFilterParentQueryable<T> : IOrderedQueryable<T>, IDbAsyncEnumerable<T>
+#else
+   public class QueryIncludeFilterParentQueryable<T> : IOrderedQueryable<T>
+#endif
     {
         /// <summary>Constructor.</summary>
         /// <param name="query">The query parent.</param>
@@ -175,5 +184,30 @@ namespace Z.EntityFramework.Plus
         {
             return parent.Select(x => new {x, child});
         }
+
+        /// <summary>Includes the related entities path in the query.</summary>
+        /// <param name="path">The related entities path in the query to include.</param>
+        /// <returns>The new queryable.</returns>
+        public IQueryable Include(string path)
+        {
+            throw new Exception(ExceptionMessage.QueryIncludeFilter_Include);
+        }
+
+#if EF6 && NET45
+        /// <summary>Gets the asynchrounously enumerator.</summary>
+        /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
+        /// <returns>The asynchrounously enumerator.</returns>
+        IDbAsyncEnumerator<T> IDbAsyncEnumerable<T>.GetAsyncEnumerator()
+        {
+            return new LazyAsyncEnumerator<T>(token => Task.Run(() => CreateEnumerable(), token));
+        }
+
+        /// <summary>Gets the asynchrounously enumerator.</summary>
+        /// <returns>The asynchrounously enumerator.</returns>
+        public IDbAsyncEnumerator GetAsyncEnumerator()
+        {
+            return new LazyAsyncEnumerator<T>(token => Task.Run(() => CreateEnumerable(), token));
+        }
+#endif
     }
 }

@@ -112,6 +112,7 @@
     <Compile Include="Internal\Extensions\List`\List`.GetVersion.cs" />
     <Compile Include="Internal\Extensions\Object\Object.GetObjectQuery.cs" />
     <Compile Include="Internal\Extensions\Type\Type.GetDbSetElementType.cs" />
+    <Compile Include="Internal\LazyAsyncEnumerator\LazyAsyncEnumerator.cs" />
     <Compile Include="Internal\LinqExpressionExtensions\LambdaExpression\LambdaExpression.GetPropertyOrFieldAccessor.cs" />
     <Compile Include="Internal\LinqExpressionExtensions\LambdaExpression\LambdaExpression.GetPropertyOrFieldAccessors.cs" />
     <Compile Include="Internal\LinqExpressionExtensions\PropertyOrFieldAccessor.cs" />
@@ -202,12 +203,14 @@
     <Compile Include="QueryIncludeFilter\QueryIncludeFilterChild`2.cs" />
     <Compile Include="QueryIncludeFilter\QueryIncludeFilterParentQueryable`.cs" />
     <Compile Include="QueryIncludeFilter\Standalone\ExceptionMessage.cs" />
+    <Compile Include="QueryIncludeFilter\Standalone\LazyAsyncEnumerator\LazyAsyncEnumerator.cs" />
     <Compile Include="QueryIncludeOptimized\BaseQueryIncludeOptimizedChild.cs" />
     <Compile Include="QueryIncludeOptimized\Extensions\IQueryable`.IncludeOptimized.cs" />
     <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedChild`2.cs" />
     <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedParentQueryable`.cs" />
     <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedProvider.cs" />
     <Compile Include="QueryIncludeOptimized\Standalone\ExceptionMessage.cs" />
+    <Compile Include="QueryIncludeOptimized\Standalone\LazyAsyncEnumerator\LazyAsyncEnumerator.cs" />
     <Compile Include="QueryIncludeOptimized\Standalone\QueryAddOrAppendOrder\Extensions\IQueryable`.AddToRootOrAppendOrderBy.cs" />
     <Compile Include="QueryIncludeOptimized\Standalone\QueryAddOrAppendOrder\QueryAddOrAppendOrderExpressionVisitor`.cs" />
     <Compile Include="QueryIncludeOptimized\Standalone\QueryFuture\QueryFuture\BaseQueryFuture.cs" />

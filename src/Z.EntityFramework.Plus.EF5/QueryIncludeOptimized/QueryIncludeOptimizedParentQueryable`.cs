@@ -10,11 +10,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 #if EF5
 using System.Data.Metadata.Edm;
 
 #elif EF6
 using System.Data.Entity.Core.Metadata.Edm;
+#endif
+#if NET45
+using System.Data.Entity.Infrastructure;
 
 #endif
 
@@ -22,7 +26,11 @@ namespace Z.EntityFramework.Plus
 {
     /// <summary>A class for query include optimized parent queryable.</summary>
     /// <typeparam name="T">The type of elements of the query.</typeparam>
+#if EF6 && NET45
+    public class QueryIncludeOptimizedParentQueryable<T> : IOrderedQueryable<T>, IDbAsyncEnumerable<T>
+#else
     public class QueryIncludeOptimizedParentQueryable<T> : IOrderedQueryable<T>
+#endif
     {
         /// <summary>Constructor.</summary>
         /// <param name="query">The query parent.</param>
@@ -130,5 +138,30 @@ namespace Z.EntityFramework.Plus
                 child.CreateIncludeQuery(query);
             }
         }
+
+        /// <summary>Includes the related entities path in the query.</summary>
+        /// <param name="path">The related entities path in the query to include.</param>
+        /// <returns>The new queryable.</returns>
+        public IQueryable Include(string path)
+        {
+            throw new Exception(ExceptionMessage.QueryIncludeOptimized_Include);
+        }
+
+#if EF6 && NET45
+        /// <summary>Gets the asynchrounously enumerator.</summary>
+        /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
+        /// <returns>The asynchrounously enumerator.</returns>
+        IDbAsyncEnumerator<T> IDbAsyncEnumerable<T>.GetAsyncEnumerator()
+        {
+            return new LazyAsyncEnumerator<T>(token => Task.Run(() => CreateEnumerable(), token));
+        }
+
+        /// <summary>Gets the asynchrounously enumerator.</summary>
+        /// <returns>The asynchrounously enumerator.</returns>
+        public IDbAsyncEnumerator GetAsyncEnumerator()
+        {
+            return new LazyAsyncEnumerator<T>(token => Task.Run(() => CreateEnumerable(), token));
+        }
+#endif
     }
 }

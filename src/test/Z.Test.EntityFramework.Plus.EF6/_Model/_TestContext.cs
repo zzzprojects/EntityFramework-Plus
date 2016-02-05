@@ -5,8 +5,13 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright (c) 2016 ZZZ Projects. All rights reserved.
 
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Z.EntityFramework.Plus;
 #if EF5 || EF6
 using System.Data.Entity;
@@ -229,6 +234,11 @@ namespace Z.Test.EntityFramework.Plus
                     m.ToTable("Inheritance_TPC_Dog");
                 });
             }
+
+            // Many
+            {
+                modelBuilder.Entity<AuditEntry>().HasMany(x => x.Properties).WithRequired(x => x.Parent);
+            }
         }
 #elif EF7
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -330,5 +340,42 @@ namespace Z.Test.EntityFramework.Plus
         public DbSet<Property_AllType> Property_AllTypes { get; set; }
 
         #endregion
+
+        //public override int SaveChanges()
+        //{
+        //    var audit = new Audit();
+        //    audit.PreSaveChanges(this);
+        //    var rowAffecteds = base.SaveChanges();
+        //    audit.PostSaveChanges();
+
+        //    if (audit.Configuration.AutoSavePreAction != null)
+        //    {
+        //        audit.Configuration.AutoSavePreAction(this, audit);
+        //        base.SaveChanges();
+        //    }
+
+        //    return rowAffecteds;
+        //}
+
+        //public override Task<int> SaveChangesAsync()
+        //{
+        //    return SaveChangesAsync(CancellationToken.None);
+        //}
+
+        //public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
+        //{
+        //    var audit = new Audit();
+        //    audit.PreSaveChanges(this);
+        //    var rowAffecteds = await base.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        //    audit.PostSaveChanges();
+
+        //    if (audit.Configuration.AutoSavePreAction != null)
+        //    {
+        //        audit.Configuration.AutoSavePreAction(this, audit);
+        //        await base.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        //    }
+
+        //    return rowAffecteds;
+        //}
     }
 }

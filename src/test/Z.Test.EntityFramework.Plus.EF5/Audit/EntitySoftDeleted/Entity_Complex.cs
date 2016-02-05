@@ -24,6 +24,8 @@ namespace Z.Test.EntityFramework.Plus
         [TestMethod]
         public void Entity_Complex()
         {
+            var identitySeed = TestContext.GetIdentitySeed(x => x.Entity_Complexes);
+
             TestContext.DeleteAll(x => x.AuditEntryProperties);
             TestContext.DeleteAll(x => x.AuditEntries);
             TestContext.DeleteAll(x => x.Entity_Complexes);
@@ -75,12 +77,24 @@ namespace Z.Test.EntityFramework.Plus
                     var propertyIndex = -1;
 
                     // Properties Count
-                    Assert.AreEqual(3, entries[0].Properties.Count);
-                    Assert.AreEqual(3, entries[1].Properties.Count);
-                    Assert.AreEqual(3, entries[2].Properties.Count);
+                    Assert.AreEqual(4, entries[0].Properties.Count);
+                    Assert.AreEqual(4, entries[1].Properties.Count);
+                    Assert.AreEqual(4, entries[2].Properties.Count);
+
+                    // ID
+                    propertyIndex = 0;
+                    Assert.AreEqual("ID", entries[0].Properties[propertyIndex].PropertyName);
+                    Assert.AreEqual("ID", entries[1].Properties[propertyIndex].PropertyName);
+                    Assert.AreEqual("ID", entries[2].Properties[propertyIndex].PropertyName);
+                    Assert.AreEqual(identitySeed + 1, entries[0].Properties[propertyIndex].OldValue);
+                    Assert.AreEqual(identitySeed + 2, entries[1].Properties[propertyIndex].OldValue);
+                    Assert.AreEqual(identitySeed + 3, entries[2].Properties[propertyIndex].OldValue);
+                    Assert.AreEqual(identitySeed + 1, entries[0].Properties[propertyIndex].NewValue);
+                    Assert.AreEqual(identitySeed + 2, entries[1].Properties[propertyIndex].NewValue);
+                    Assert.AreEqual(identitySeed + 3, entries[2].Properties[propertyIndex].NewValue);
 
                     // ColumnInt
-                    propertyIndex = 0;
+                    propertyIndex = 1;
                     Assert.AreEqual("ColumnInt", entries[0].Properties[propertyIndex].PropertyName);
                     Assert.AreEqual("ColumnInt", entries[1].Properties[propertyIndex].PropertyName);
                     Assert.AreEqual("ColumnInt", entries[2].Properties[propertyIndex].PropertyName);
@@ -92,7 +106,7 @@ namespace Z.Test.EntityFramework.Plus
                     Assert.AreEqual(3, entries[2].Properties[propertyIndex].NewValue);
 
                     // Info.ColumnInt
-                    propertyIndex = 1;
+                    propertyIndex = 2;
                     Assert.AreEqual("Info.ColumnInt", entries[0].Properties[propertyIndex].PropertyName);
                     Assert.AreEqual("Info.ColumnInt", entries[1].Properties[propertyIndex].PropertyName);
                     Assert.AreEqual("Info.ColumnInt", entries[2].Properties[propertyIndex].PropertyName);
@@ -104,7 +118,7 @@ namespace Z.Test.EntityFramework.Plus
                     Assert.AreEqual(1003, entries[2].Properties[propertyIndex].NewValue);
 
                     // Info.Info.ColumnInt
-                    propertyIndex = 2;
+                    propertyIndex = 3;
                     Assert.AreEqual("Info.Info.ColumnInt", entries[0].Properties[propertyIndex].PropertyName);
                     Assert.AreEqual("Info.Info.ColumnInt", entries[1].Properties[propertyIndex].PropertyName);
                     Assert.AreEqual("Info.Info.ColumnInt", entries[2].Properties[propertyIndex].PropertyName);
@@ -151,12 +165,24 @@ namespace Z.Test.EntityFramework.Plus
                         var propertyIndex = -1;
 
                         // Properties Count
-                        Assert.AreEqual(3, entries[0].Properties.Count);
-                        Assert.AreEqual(3, entries[1].Properties.Count);
-                        Assert.AreEqual(3, entries[2].Properties.Count);
+                        Assert.AreEqual(4, entries[0].Properties.Count);
+                        Assert.AreEqual(4, entries[1].Properties.Count);
+                        Assert.AreEqual(4, entries[2].Properties.Count);
+
+                        // ID
+                        propertyIndex = 0;
+                        Assert.AreEqual("ID", entries[0].Properties[propertyIndex].PropertyName);
+                        Assert.AreEqual("ID", entries[1].Properties[propertyIndex].PropertyName);
+                        Assert.AreEqual("ID", entries[2].Properties[propertyIndex].PropertyName);
+                        Assert.AreEqual((identitySeed + 1).ToString(), entries[0].Properties[propertyIndex].OldValue);
+                        Assert.AreEqual((identitySeed + 2).ToString(), entries[1].Properties[propertyIndex].OldValue);
+                        Assert.AreEqual((identitySeed + 3).ToString(), entries[2].Properties[propertyIndex].OldValue);
+                        Assert.AreEqual((identitySeed + 1).ToString(), entries[0].Properties[propertyIndex].NewValue);
+                        Assert.AreEqual((identitySeed + 2).ToString(), entries[1].Properties[propertyIndex].NewValue);
+                        Assert.AreEqual((identitySeed + 3).ToString(), entries[2].Properties[propertyIndex].NewValue);
 
                         // ColumnInt
-                        propertyIndex = 0;
+                        propertyIndex = 1;
                         Assert.AreEqual("ColumnInt", entries[0].Properties[propertyIndex].PropertyName);
                         Assert.AreEqual("ColumnInt", entries[1].Properties[propertyIndex].PropertyName);
                         Assert.AreEqual("ColumnInt", entries[2].Properties[propertyIndex].PropertyName);
@@ -168,7 +194,7 @@ namespace Z.Test.EntityFramework.Plus
                         Assert.AreEqual("3", entries[2].Properties[propertyIndex].NewValue);
 
                         // Info.ColumnInt
-                        propertyIndex = 1;
+                        propertyIndex = 2;
                         Assert.AreEqual("Info.ColumnInt", entries[0].Properties[propertyIndex].PropertyName);
                         Assert.AreEqual("Info.ColumnInt", entries[1].Properties[propertyIndex].PropertyName);
                         Assert.AreEqual("Info.ColumnInt", entries[2].Properties[propertyIndex].PropertyName);
@@ -180,7 +206,7 @@ namespace Z.Test.EntityFramework.Plus
                         Assert.AreEqual("1003", entries[2].Properties[propertyIndex].NewValue);
 
                         // Info.Info.ColumnInt
-                        propertyIndex = 2;
+                        propertyIndex = 3;
                         Assert.AreEqual("Info.Info.ColumnInt", entries[0].Properties[propertyIndex].PropertyName);
                         Assert.AreEqual("Info.Info.ColumnInt", entries[1].Properties[propertyIndex].PropertyName);
                         Assert.AreEqual("Info.Info.ColumnInt", entries[2].Properties[propertyIndex].PropertyName);

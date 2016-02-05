@@ -9,6 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 #if EF5
 using System.Data.Metadata.Edm;
 using System.Data.Objects;
@@ -18,18 +20,25 @@ using System.Linq;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Core.Objects;
 using System.Linq;
-
 #elif EF7
 using Microsoft.Data.Entity.Internal;
 using Microsoft.Data.Entity.Query.Internal;
 using Remotion.Linq;
 
 #endif
+#if NET45
+using System.Data.Entity.Infrastructure;
+
+#endif
 
 namespace Z.EntityFramework.Plus
 {
     /// <summary>A class for query include optimized provider.</summary>
+#if EF6 && NET45
+    public class QueryIncludeOptimizedProvider<T> : IDbAsyncQueryProvider
+#else
     public class QueryIncludeOptimizedProvider<T> : IQueryProvider
+#endif
     {
         /// <summary>Constructor.</summary>
         /// <param name="originalProvider">The original provider.</param>
@@ -199,5 +208,27 @@ namespace Z.EntityFramework.Plus
             return (TResult)value;
 #endif
         }
+
+#if EF6 && NET45
+        /// <summary>Executes the given expression asynchronously.</summary>
+        /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
+        /// <param name="expression">The expression to execute.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The object returned by the execution of the expression.</returns>
+        public Task<object> ExecuteAsync(Expression expression, CancellationToken cancellationToken)
+        {
+            throw new Exception(ExceptionMessage.GeneralException);
+        }
+
+        /// <summary>Executes the given expression asynchronously.</summary>
+        /// <typeparam name="TResult">Type of the result.</typeparam>
+        /// <param name="expression">The expression to execute.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The object returned by the execution of the expression.</returns>
+        public Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
+        {
+            return Task.Run(() => Execute<TResult>(expression), cancellationToken);
+        }
+#endif
     }
 }

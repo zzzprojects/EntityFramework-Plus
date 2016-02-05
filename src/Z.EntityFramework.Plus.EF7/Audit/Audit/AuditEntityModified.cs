@@ -6,6 +6,8 @@
 // Copyright (c) 2016 ZZZ Projects. All rights reserved.
 
 using System.Data.Common;
+using System.Linq;
+
 #if EF5
 using System.Data.Objects;
 
@@ -13,6 +15,7 @@ using System.Data.Objects;
 using System.Data.Entity.Core.Objects;
 
 #elif EF7
+using Microsoft.Data.Entity;
 using Microsoft.Data.Entity.ChangeTracking;
 
 #endif
@@ -36,7 +39,7 @@ namespace Z.EntityFramework.Plus
             };
 
 #if EF5 || EF6
-            AuditEntityModified(audit, entry, objectStateEntry.OriginalValues, objectStateEntry.CurrentValues);
+            AuditEntityModified(audit, entry, objectStateEntry, objectStateEntry.OriginalValues, objectStateEntry.CurrentValues);
 #elif EF7
             AuditEntityModified(audit, entry, objectStateEntry);
 #endif
@@ -47,10 +50,11 @@ namespace Z.EntityFramework.Plus
         /// <summary>Audit entity modified.</summary>
         /// <param name="audit">The audit to use to add changes made to the context.</param>
         /// <param name="entry">The entry.</param>
+        /// <param name="objectStateEntry">The object state entry.</param>
         /// <param name="orginalRecord">The orginal record.</param>
         /// <param name="currentRecord">The current record.</param>
         /// <param name="prefix">The prefix.</param>
-        public static void AuditEntityModified(Audit audit, AuditEntry entry, DbDataRecord orginalRecord, DbUpdatableDataRecord currentRecord, string prefix = "")
+        public static void AuditEntityModified(Audit audit, AuditEntry entry, ObjectStateEntry objectStateEntry, DbDataRecord orginalRecord, DbUpdatableDataRecord currentRecord, string prefix = "")
         {
             for (var i = 0; i < orginalRecord.FieldCount; i++)
             {
@@ -62,11 +66,14 @@ namespace Z.EntityFramework.Plus
                 if (valueRecord != null)
                 {
                     // Complex Type
-                    AuditEntityModified(audit, entry, valueRecord, currentValue as DbUpdatableDataRecord, string.Concat(prefix, name, "."));
+                    AuditEntityModified(audit, entry, objectStateEntry, valueRecord, currentValue as DbUpdatableDataRecord, string.Concat(prefix, name, "."));
                 }
+
                 else if (entry.Parent.CurrentOrDefaultConfiguration.IsAuditedProperty(entry.Entry, name))
                 {
-                    if (!audit.Configuration.IgnorePropertyUnchanged || !Equals(currentValue, originalValue))
+                    if (!audit.Configuration.IgnorePropertyUnchanged
+                        || objectStateEntry.EntityKey.EntityKeyValues.Any(x => x.Key == name)
+                        || !Equals(currentValue, originalValue))
                     {
                         entry.Properties.Add(new AuditEntryProperty(entry, string.Concat(prefix, name), originalValue, currentValue));
                     }
@@ -84,7 +91,7 @@ namespace Z.EntityFramework.Plus
 
                 if (entry.Parent.CurrentOrDefaultConfiguration.IsAuditedProperty(entry.Entry, propertyEntry.Name))
                 {
-                    if (audit.Configuration.IgnorePropertyUnchanged || property.IsModified)
+                    if (audit.Configuration.IgnorePropertyUnchanged || property.Metadata.IsKey() || property.IsModified)
                     {
                         entry.Properties.Add(new AuditEntryProperty(entry, propertyEntry.Name, property.OriginalValue, property.CurrentValue));
                     }

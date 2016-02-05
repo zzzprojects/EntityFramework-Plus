@@ -9,11 +9,21 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+#if NET45
+using System.Data.Entity.Infrastructure;
+
+#endif
 
 namespace Z.EntityFramework.Plus
 {
     /// <summary>A class for query include filter provider.</summary>
-    public class QueryIncludeFilterProvider<T> : IQueryProvider
+#if EF6 && NET45
+    public class QueryIncludeFilterProvider<T> : IDbAsyncQueryProvider
+#else
+    public class  QueryIncludeFilterProvider<T> : IQueryProvider
+#endif
     {
         /// <summary>Constructor.</summary>
         /// <param name="originalProvider">The original provider.</param>
@@ -149,5 +159,17 @@ namespace Z.EntityFramework.Plus
 
             return (TResult) result;
         }
+
+#if EF6 && NET45
+        public Task<object> ExecuteAsync(Expression expression, CancellationToken cancellationToken)
+        {
+            throw new Exception(ExceptionMessage.GeneralException);
+        }
+
+        public Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
+        {
+            return Task.Run(() => Execute<TResult>(expression), cancellationToken);
+        }
+#endif
     }
 }

@@ -24,6 +24,9 @@ namespace Z.Test.EntityFramework.Plus
         [TestMethod]
         public void Inheritance_TPC()
         {
+            var identitySeedCat = TestContext.GetIdentitySeed(x => x.Inheritance_TPC_Animals, Inheritance_TPC_Cat.Create);
+            var identitySeedDog = TestContext.GetIdentitySeed(x => x.Inheritance_TPC_Animals, Inheritance_TPC_Dog.Create);
+
             TestContext.DeleteAll(x => x.AuditEntryProperties);
             TestContext.DeleteAll(x => x.AuditEntries);
             TestContext.DeleteAll(x => x.Inheritance_TPC_Animals);
@@ -86,12 +89,24 @@ namespace Z.Test.EntityFramework.Plus
                     var propertyIndex = -1;
 
                     // Properties Count
-                    Assert.AreEqual(2, entries[0].Properties.Count);
-                    Assert.AreEqual(2, entries[1].Properties.Count);
-                    Assert.AreEqual(2, entries[2].Properties.Count);
+                    Assert.AreEqual(3, entries[0].Properties.Count);
+                    Assert.AreEqual(3, entries[1].Properties.Count);
+                    Assert.AreEqual(3, entries[2].Properties.Count);
+
+                    // ID
+                    propertyIndex = 0;
+                    Assert.AreEqual("ID", entries[0].Properties[propertyIndex].PropertyName);
+                    Assert.AreEqual("ID", entries[1].Properties[propertyIndex].PropertyName);
+                    Assert.AreEqual("ID", entries[2].Properties[propertyIndex].PropertyName);
+                    Assert.AreEqual(identitySeedDog + 1, entries[0].Properties[propertyIndex].OldValue);
+                    Assert.AreEqual(identitySeedDog + 2, entries[1].Properties[propertyIndex].OldValue);
+                    Assert.AreEqual(identitySeedCat + 1, entries[2].Properties[propertyIndex].OldValue);
+                    Assert.AreEqual(identitySeedDog + 1, entries[0].Properties[propertyIndex].NewValue);
+                    Assert.AreEqual(identitySeedDog + 2, entries[1].Properties[propertyIndex].NewValue);
+                    Assert.AreEqual(identitySeedCat + 1, entries[2].Properties[propertyIndex].NewValue);
 
                     // ColumnInt
-                    propertyIndex = 0;
+                    propertyIndex = 1;
                     Assert.AreEqual("ColumnInt", entries[0].Properties[propertyIndex].PropertyName);
                     Assert.AreEqual("ColumnInt", entries[1].Properties[propertyIndex].PropertyName);
                     Assert.AreEqual("ColumnInt", entries[2].Properties[propertyIndex].PropertyName);
@@ -103,7 +118,7 @@ namespace Z.Test.EntityFramework.Plus
                     Assert.AreEqual(1, entries[2].Properties[propertyIndex].NewValue);
 
                     // ColumnCat | ColumnDog
-                    propertyIndex = 1;
+                    propertyIndex = 2;
                     Assert.AreEqual("ColumnDog", entries[0].Properties[propertyIndex].PropertyName);
                     Assert.AreEqual("ColumnDog", entries[1].Properties[propertyIndex].PropertyName);
                     Assert.AreEqual("ColumnCat", entries[2].Properties[propertyIndex].PropertyName);
@@ -150,12 +165,24 @@ namespace Z.Test.EntityFramework.Plus
                         var propertyIndex = -1;
 
                         // Properties Count
-                        Assert.AreEqual(2, entries[0].Properties.Count);
-                        Assert.AreEqual(2, entries[1].Properties.Count);
-                        Assert.AreEqual(2, entries[2].Properties.Count);
+                        Assert.AreEqual(3, entries[0].Properties.Count);
+                        Assert.AreEqual(3, entries[1].Properties.Count);
+                        Assert.AreEqual(3, entries[2].Properties.Count);
+
+                        // ID
+                        propertyIndex = 0;
+                        Assert.AreEqual("ID", entries[0].Properties[propertyIndex].PropertyName);
+                        Assert.AreEqual("ID", entries[1].Properties[propertyIndex].PropertyName);
+                        Assert.AreEqual("ID", entries[2].Properties[propertyIndex].PropertyName);
+                        Assert.AreEqual((identitySeedDog + 1).ToString(), entries[0].Properties[propertyIndex].OldValue);
+                        Assert.AreEqual((identitySeedDog + 2).ToString(), entries[1].Properties[propertyIndex].OldValue);
+                        Assert.AreEqual((identitySeedCat + 1).ToString(), entries[2].Properties[propertyIndex].OldValue);
+                        Assert.AreEqual((identitySeedDog + 1).ToString(), entries[0].Properties[propertyIndex].NewValue);
+                        Assert.AreEqual((identitySeedDog + 2).ToString(), entries[1].Properties[propertyIndex].NewValue);
+                        Assert.AreEqual((identitySeedCat + 1).ToString(), entries[2].Properties[propertyIndex].NewValue);
 
                         // ColumnInt
-                        propertyIndex = 0;
+                        propertyIndex = 1;
                         Assert.AreEqual("ColumnInt", entries[0].Properties[propertyIndex].PropertyName);
                         Assert.AreEqual("ColumnInt", entries[1].Properties[propertyIndex].PropertyName);
                         Assert.AreEqual("ColumnInt", entries[2].Properties[propertyIndex].PropertyName);
@@ -167,7 +194,7 @@ namespace Z.Test.EntityFramework.Plus
                         Assert.AreEqual("1", entries[2].Properties[propertyIndex].NewValue);
 
                         // ColumnCat | ColumnDog
-                        propertyIndex = 1;
+                        propertyIndex = 2;
                         Assert.AreEqual("ColumnDog", entries[0].Properties[propertyIndex].PropertyName);
                         Assert.AreEqual("ColumnDog", entries[1].Properties[propertyIndex].PropertyName);
                         Assert.AreEqual("ColumnCat", entries[2].Properties[propertyIndex].PropertyName);

@@ -5,16 +5,18 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright (c) 2016 ZZZ Projects. All rights reserved.
 
+using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Z.EntityFramework.Plus;
 
 namespace Z.Test.EntityFramework.Plus
 {
-    public partial class QueryIncludeOptimized_Where
+    public partial class QueryIncludeFilter_FirstWithPredicate_Async
     {
         [TestMethod]
-        public void Many_Executor()
+        public async Task Many_ExecutorAsync()
         {
             TestContext.DeleteAll(x => x.Association_Multi_OneToMany_Right1s);
             TestContext.DeleteAll(x => x.Association_Multi_OneToMany_Right2s);
@@ -30,10 +32,10 @@ namespace Z.Test.EntityFramework.Plus
 
             using (var ctx = new TestContext())
             {
-                var item = ctx.Association_Multi_OneToMany_Lefts
+                var item = await ctx.Association_Multi_OneToMany_Lefts
                     .IncludeOptimized(left => left.Right1s.Where(y => y.ColumnInt > 2))
                     .IncludeOptimized(left => left.Right2s.Where(y => y.ColumnInt > 2))
-                    .First();
+                    .FirstAsync(x => x.ColumnInt < 10);
 
                 // TEST: context
                 Assert.AreEqual(5, ctx.ChangeTracker.Entries().Count());

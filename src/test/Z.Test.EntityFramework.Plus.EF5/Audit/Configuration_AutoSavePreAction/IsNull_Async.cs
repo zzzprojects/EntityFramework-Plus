@@ -5,11 +5,18 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright (c) 2016 ZZZ Projects. All rights reserved.
 
-using System.Data.Entity;
+#if EF5 || EF6
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Z.EntityFramework.Plus;
+#if EF5 || EF6
+using System.Data.Entity;
+
+#elif EF7
+using Microsoft.Data.Entity;
+
+#endif
 
 namespace Z.Test.EntityFramework.Plus
 {
@@ -111,3 +118,5 @@ namespace Z.Test.EntityFramework.Plus
         }
     }
 }
+
+#endif

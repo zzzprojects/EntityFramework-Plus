@@ -12,8 +12,9 @@ namespace Z.EntityFramework.Plus
     internal class ExceptionMessage
     {
         public static string GeneralException = "Oops! A general error has occurred. Please report the issue including the stack trace to our support team: info@zzzprojects.com";
-        public static string QueryIncludeFilter_ArgumentExpression = "Oops! immediate method with expression argument are not supported. Filter using \"Where\" extension method instead! For more information, contact us: info@zzzprojects.com";
-        public static string QueryIncludeFilter_CreateQueryElement = "Oops! Select projection are not supported in EF+ Query IncludeFilter! For more information, contact us: info@zzzprojects.com";
+        public static string QueryIncludeFilter_ArgumentExpression = "Oops! immediate method with expression argument are not supported in EF+ Query IncludeFilter. For more information, contact us: info@zzzprojects.com";
+        public static string QueryIncludeFilter_CreateQueryElement = "Oops! Select projection are not supported in EF+ Query IncludeFilter. For more information, contact us: info@zzzprojects.com";
+        public static string QueryIncludeFilter_Include = "Oops! 'Include' method from Entity Framework is not supported, use only IncludeFilter method. For more information, contact us: info@zzzprojects.com";
     }
 }
 #endif
