@@ -10,7 +10,7 @@ Z.EntityFramework.Plus.EF5 | <a href="https://www.nuget.org/packages/Z.EntityFra
 
 <a href="https://github.com/zzzprojects/EntityFramework-Plus/wiki/Downloads">More download options (Full and Standalone Version)</a>
 
-_Stay updated with latest changes_
+Stay updated with latest changes
 
 <a href="https://twitter.com/zzzprojects" target="_blank"><img src="http://www.zzzprojects.com/images/twitter_follow.png" alt="Twitter Follow" height="24" /></a>
 <a href="https://www.facebook.com/zzzprojects/" target="_blank"><img src="http://www.zzzprojects.com/images/facebook_like.png" alt="Facebook Like" height="24" /></a>
