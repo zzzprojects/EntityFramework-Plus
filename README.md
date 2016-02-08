@@ -51,6 +51,9 @@ ctx.Users.Where(x => x.LastLoginDate < DateTime.Now.AddYears(-2))
 ctx.Users.Where(x => x.LastLoginDate < DateTime.Now.AddYears(-2))
          .Delete(x => x.BatchSize = 1000);
 ```
+
+**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Batch-Delete-%7C-Entity-Framework-Delete-object-without-retrieving-it)**
+
 ## Batch Update
 Updates multiples rows using an expression in a single database roundtrip and without loading entities in the context.
 
@@ -66,6 +69,8 @@ ctx.Users.Where(x => x.LastLoginDate < DateTime.Now.AddYears(-2))
          .Update(x => new User() { IsSoftDeleted = 1 },
                  x => x.BatchSize = 1000);
 ```
+
+**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Batch-Update-%7C-Entity-Framework-Update-object-without-retrieving-it)**
 
 ## Query Cache
 **Query cache is the second level cache for Entity Framework.**
