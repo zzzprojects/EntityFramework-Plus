@@ -289,7 +289,7 @@ Learn more about the **[PRO Version](http://entityframework-plus.net/#pro)**
 
 ## Contribution
 
-Supporting & developing FREE features takes hundreds and thousands of hours! If you like our product please consider making a donation to keep us running.
+Supporting & developing FREE features takes **hundreds** and **thousands** of hours! If you like our product please consider making a donation to keep us running.
 
 <a href="http://www.zzzprojects.com/contribute/" target="_blank"><img src="http://www.zzzprojects.com/images/paypal-contribute.png" alt="Contribute" height="48"></a>
 
