@@ -288,7 +288,6 @@ Learn more about the **[PRO Version](http://entityframework-plus.net/#pro)**
 (Compatible with license from [.NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotnet-development/entity-framework-extensions/))
 
 ## Contribution
-_You received support from us and/or the FREE version helped you?_
 
 Supporting & developing FREE features takes hundreds and thousands of hours! If you like our product please consider making a donation to encourage and keep us running.
 
