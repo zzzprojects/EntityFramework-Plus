@@ -297,7 +297,6 @@ We'll never require donations, but we appreciate them greatly
 
 A **huge thanks** for your extra support.
 
-
 ## More Projects
 
 **Entity Framework**
