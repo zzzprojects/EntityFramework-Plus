@@ -289,7 +289,7 @@ Learn more about the **[PRO Version](http://entityframework-plus.net/#pro)**
 
 ## Contribution
 
-Supporting & developing FREE features takes hundreds and thousands of hours! If you like our product please consider making a donation to encourage and keep us running.
+Supporting & developing FREE features takes hundreds and thousands of hours! If you like our product please consider making a donation to keep us running.
 
 We'll never require donations, but we appreciate them greatly
 
