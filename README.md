@@ -274,7 +274,6 @@ Bulk Merge | **No** | Yes
 Audit | Yes | Yes
 Batch Delete | Yes | Yes
 Batch Update | Yes | Yes
-Query Batch | Yes | Yes
 Query Cache | Yes | Yes
 Query Deferred | Yes | Yes
 Query Filter | Yes | Yes
