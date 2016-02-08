@@ -30,11 +30,10 @@ Stay updated with latest changes
 
 **Bulk Operation only available with [Entity Framework Extensions](http://www.zzzprojects.com/products/dotnet-development/entity-framework-extensions/)**
 - Bulk SaveChanges
-- Bulk Operations
-    - Bulk Insert
-    - Bulk Update
-    - Bulk Delete
-    - Bulk Merge
+- Bulk Insert
+- Bulk Update
+- Bulk Delete
+- Bulk Merge
 
 ## Batch Delete
 Deletes multiples rows in a single database roundtrip and without loading entities in the context.
