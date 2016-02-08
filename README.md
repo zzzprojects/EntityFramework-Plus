@@ -28,7 +28,7 @@ Stay updated with latest changes
     - [Query IncludeOptimized](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-IncludeOptimized-%7C-Entity-Framework-Filter-Child-Collections-and-Optimize-Include)
 - [Audit](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Audit-%7C-Entity-Framework-Audit-Trail-Context-and-Track-Change)
 
-Bulk Operation only available with [.NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotnet-development/entity-framework-extensions/)
+**Bulk Operation only available with [.NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotnet-development/entity-framework-extensions/)**
 - Bulk SaveChanges
 - Bulk Operations
     - Bulk Insert
