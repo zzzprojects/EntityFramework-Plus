@@ -18,12 +18,12 @@ Stay updated with latest changes
 ## Features
 Use [.NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotnet-development/entity-framework-extensions/) for BulkSaveChanges and Bulk Operations
 
-- BulkSaveChanges _(under development)_
+- BulkSaveChanges
 - Bulk Operations
-    - Bulk Insert _(under development)_
-    - Bulk Update _(under development)_
-    - Bulk Delete _(under development)_
-    - Bulk Merge _(under development)_
+    - Bulk Insert
+    - Bulk Update
+    - Bulk Delete
+    - Bulk Merge
 - Batch Operations _(Available very soon)_
     - [Batch Delete](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Batch-Delete-%7C-Entity-Framework-Delete-object-without-retrieving-it)
     - [Batch Update](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Batch-Update-%7C-Entity-Framework-Update-object-without-retrieving-it)
