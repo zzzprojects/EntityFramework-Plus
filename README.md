@@ -268,6 +268,8 @@ Every month, a new monthly trial of the PRO Version is available to let you eval
 Features | FREE Version | [PRO Version](http://entityframework-plus.net/#pro)
 ------------ | :-------------: | :-------------:
 Audit | Yes | Yes
+Batch Delete | Yes | Yes
+Batch Update | Yes | Yes
 Query Batch | Yes | Yes
 Query Cache | Yes | Yes
 Query Deferred | Yes | Yes
