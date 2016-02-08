@@ -35,7 +35,6 @@ Use [.NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotne
     - [Query IncludeFilter](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-IncludeFilter-%7C-Entity-Framework-Include-Related-Entities-using-Where-Filter) 
     - [Query IncludeOptimized](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-IncludeOptimized-%7C-Entity-Framework-Filter-Child-Collections-and-Optimize-Include)
 - [Audit](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Audit-%7C-Entity-Framework-Audit-Trail-Context-and-Track-Change)
-- Save Change Security _(under development)_
 
 ## Batch Delete
 Deletes multiples rows in a single database roundtrip and without loading entities in the context.
