@@ -37,6 +37,35 @@ Use [.NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotne
 - [Audit](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Audit-%7C-Entity-Framework-Audit-Trail-Context-and-Track-Change)
 - Save Change Security _(under development)_
 
+## Batch Delete
+Deletes multiples rows in a single database roundtrip and without loading entities in the context.
+
+```csharp
+// using Z.EntityFramework.Plus; // Don't forget to include this.
+
+// DELETE all users which has been inactive for 2 years
+ctx.Users.Where(x => x.LastLoginDate < DateTime.Now.AddYears(-2))
+         .Delete();
+
+// DELETE using a BatchSize
+ctx.Users.Where(x => x.LastLoginDate < DateTime.Now.AddYears(-2))
+         .Delete(x => x.BatchSize = 1000);
+```
+## Batch Update
+Updates multiples rows using an expression in a single database roundtrip and without loading entities in the context.
+
+```csharp
+// using Z.EntityFramework.Plus; // Don't forget to include this.
+
+// UPDATE all users which has been inactive for 2 years
+ctx.Users.Where(x => x.LastLoginDate < DateTime.Now.AddYears(-2))
+         .Update(x => new User() { IsSoftDeleted = 1 });
+
+// UPDATE using a BatchSize
+ctx.Users.Where(x => x.LastLoginDate < DateTime.Now.AddYears(-2))
+         .Update(x => new User() { IsSoftDeleted = 1 },
+                 x => x.BatchSize = 1000);
+```
 
 ## Query Cache
 **Query cache is the second level cache for Entity Framework.**
