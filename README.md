@@ -24,8 +24,10 @@ Use [.NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotne
     - Bulk Update _(under development)_
     - Bulk Delete _(under development)_
     - Bulk Merge _(under development)_
+- Batch Operations (_Alpha_)
+    - [Batch Delete](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Batch-Delete-%7C-Entity-Framework-Delete-object-without-retrieving-it)
+    - [Batch Update](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Batch-Update-%7C-Entity-Framework-Update-object-without-retrieving-it)
 - Query
-    - Query Batch Operations _(under development)_
     - [Query Cache](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Cache-%7C-Entity-Framework-Second-Level-Caching)
     - [Query Deferred](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Deferred-%7C-Entity-Framework-deferring-immediate-LINQ-query-execution)
     - [Query Filter](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Filter-%7C-Entity-Framework-Dynamic-Instance-and-Global-Filters)
