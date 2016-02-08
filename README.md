@@ -268,8 +268,8 @@ Features | FREE Version | [PRO Version](http://entityframework-plus.net/#pro)
 ------------ | :-------------: | :-------------:
 Bulk SaveChanges | **No** | Yes
 Bulk Insert | **No** | Yes
-Bulk Delete | **No** | Yes
 Bulk Update | **No** | Yes
+Bulk Delete | **No** | Yes
 Bulk Merge | **No** | Yes
 Audit | Yes | Yes
 Batch Delete | Yes | Yes
