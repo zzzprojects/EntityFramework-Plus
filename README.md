@@ -61,11 +61,6 @@ Updates multiples rows using an expression in a single database roundtrip and wi
 // UPDATE all users which has been inactive for 2 years
 ctx.Users.Where(x => x.LastLoginDate < DateTime.Now.AddYears(-2))
          .Update(x => new User() { IsSoftDeleted = 1 });
-
-// UPDATE using a BatchSize
-ctx.Users.Where(x => x.LastLoginDate < DateTime.Now.AddYears(-2))
-         .Update(x => new User() { IsSoftDeleted = 1 },
-                 x => x.BatchSize = 1000);
 ```
 
 **[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Batch-Update-%7C-Entity-Framework-Update-object-without-retrieving-it)**
