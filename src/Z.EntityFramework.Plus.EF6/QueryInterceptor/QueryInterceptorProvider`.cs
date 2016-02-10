@@ -1,11 +1,10 @@
 ﻿// Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update, Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
-// Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
+// Forum & Issues: https://github.com/zzzprojects/EntityFramework-Plus/issues
 // License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
 // More projects: http://www.zzzprojects.com/
-// Copyright (c) 2016 ZZZ Projects. All rights reserved.
+// Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
-using System;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Linq.Expressions;
@@ -45,7 +44,6 @@ namespace Z.EntityFramework.Plus
 #endif
 
         /// <summary>Creates a query from the expression.</summary>
-        /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
         /// <param name="expression">The expression to create the query from.</param>
         /// <returns>The new query created from the expression.</returns>
         public IQueryable CreateQuery(Expression expression)
@@ -65,7 +63,6 @@ namespace Z.EntityFramework.Plus
         }
 
         /// <summary>Executes the given expression.</summary>
-        /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
         /// <param name="expression">The expression to execute.</param>
         /// <returns>The object returned by the execution of the expression.</returns>
         public object Execute(Expression expression)
@@ -75,7 +72,6 @@ namespace Z.EntityFramework.Plus
         }
 
         /// <summary>Executes the given expression.</summary>
-        /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
         /// <typeparam name="TResult">Type of the result.</typeparam>
         /// <param name="expression">The expression to execute.</param>
         /// <returns>The object returned by the execution of the expression.</returns>
@@ -85,12 +81,21 @@ namespace Z.EntityFramework.Plus
             return OriginalProvider.Execute<TResult>(expression);
         }
 
+        /// <summary>Executes the asynchronous operation.</summary>
+        /// <param name="expression">The expression.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A Task&lt;object&gt;</returns>
         public Task<object> ExecuteAsync(Expression expression, CancellationToken cancellationToken)
         {
             expression = CurrentQueryable.Visit(expression);
             return OriginalProvider.ExecuteAsync(expression, cancellationToken);
         }
 
+        /// <summary>Executes the asynchronous operation.</summary>
+        /// <typeparam name="TResult">Type of the result.</typeparam>
+        /// <param name="expression">The expression.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A Task&lt;TResult&gt;</returns>
         public Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
         {
             expression = CurrentQueryable.Visit(expression);

@@ -1,21 +1,21 @@
 ﻿// Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update, Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
-// Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
+// Forum & Issues: https://github.com/zzzprojects/EntityFramework-Plus/issues
 // License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
 // More projects: http://www.zzzprojects.com/
-// Copyright (c) 2016 ZZZ Projects. All rights reserved.
+// Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 #if EF5
 using System.Data.Metadata.Edm;
 
 #elif EF6
 using System.Data.Entity.Core.Metadata.Edm;
+
 #endif
 #if NET45
 using System.Data.Entity.Infrastructure;
@@ -148,9 +148,9 @@ namespace Z.EntityFramework.Plus
         }
 
 #if EF6 && NET45
-        /// <summary>Gets the asynchrounously enumerator.</summary>
-        /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
-        /// <returns>The asynchrounously enumerator.</returns>
+    /// <summary>Gets the asynchrounously enumerator.</summary>
+    /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
+    /// <returns>The asynchrounously enumerator.</returns>
         IDbAsyncEnumerator<T> IDbAsyncEnumerable<T>.GetAsyncEnumerator()
         {
             return new LazyAsyncEnumerator<T>(token => Task.Run(() => CreateEnumerable(), token));

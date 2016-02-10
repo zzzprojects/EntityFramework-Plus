@@ -1,9 +1,9 @@
 ﻿// Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update, Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
-// Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
+// Forum & Issues: https://github.com/zzzprojects/EntityFramework-Plus/issues
 // License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
 // More projects: http://www.zzzprojects.com/
-// Copyright (c) 2016 ZZZ Projects. All rights reserved.
+// Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 using System;
 using System.Collections;
@@ -22,12 +22,17 @@ namespace Z.EntityFramework.Plus
     public class QueryInterceptorQueryable : IOrderedQueryable
 #endif
     {
+        /// <summary>Constructor.</summary>
+        /// <param name="query">The query.</param>
+        /// <param name="visitors">The visitors.</param>
         public QueryInterceptorQueryable(IQueryable query, ExpressionVisitor[] visitors)
         {
             OriginalQueryable = query;
             Visitors = visitors;
         }
 
+        /// <summary>Gets or sets the visitors.</summary>
+        /// <value>The visitors.</value>
         public ExpressionVisitor[] Visitors { get; set; }
 
         /// <summary>Gets or sets the internal provider.</summary>
@@ -67,6 +72,8 @@ namespace Z.EntityFramework.Plus
             return Visit().GetEnumerator();
         }
 
+        /// <summary>Gets the visit.</summary>
+        /// <returns>An IQueryable.</returns>
         public IQueryable Visit()
         {
             var query = OriginalQueryable;
@@ -84,6 +91,9 @@ namespace Z.EntityFramework.Plus
             return query;
         }
 
+        /// <summary>Gets the visit.</summary>
+        /// <param name="expression">The expression.</param>
+        /// <returns>An IQueryable.</returns>
         public Expression Visit(Expression expression)
         {
             foreach (var visitor in Visitors)
@@ -94,6 +104,9 @@ namespace Z.EntityFramework.Plus
             return expression;
         }
 
+        /// <summary>Includes the given file.</summary>
+        /// <param name="path">Full pathname of the file.</param>
+        /// <returns>An IQueryable.</returns>
         public IQueryable Include(string path)
         {
             var objectQuery = OriginalQueryable.GetObjectQuery();
@@ -102,6 +115,8 @@ namespace Z.EntityFramework.Plus
         }
 
 #if NET45
+        /// <summary>Gets asynchronous enumerator.</summary>
+        /// <returns>The asynchronous enumerator.</returns>
         public IDbAsyncEnumerator GetAsyncEnumerator()
         {
             return ((IDbAsyncEnumerable) Visit().GetObjectQuery()).GetAsyncEnumerator();

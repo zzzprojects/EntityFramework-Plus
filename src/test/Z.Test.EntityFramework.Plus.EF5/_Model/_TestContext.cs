@@ -1,11 +1,11 @@
 ﻿// Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update, Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
-// Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
+// Forum & Issues: https://github.com/zzzprojects/EntityFramework-Plus/issues
 // License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
 // More projects: http://www.zzzprojects.com/
-// Copyright (c) 2016 ZZZ Projects. All rights reserved.
+// Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
-using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using Z.EntityFramework.Plus;
 #if EF5 || EF6
@@ -20,49 +20,55 @@ using Microsoft.Data.Entity;
 
 namespace Z.Test.EntityFramework.Plus
 {
+    public class TestContextInitializer : CreateDatabaseIfNotExists<TestContext>
+    {
+        protected override void Seed(TestContext context)
+        {
+#if EF5 || EF6
+            var sql = @"
+TRUNCATE TABLE Inheritance_TPC_Cat
+IF IDENT_CURRENT( 'Inheritance_TPC_Cat' ) < 1000000
+BEGIN
+	DBCC CHECKIDENT('Inheritance_TPC_Cat', RESEED, 1000000)
+END
+";
+            using (var connection = new SqlConnection(My.Config.ConnectionStrings.TestDatabase))
+            using (var command = new SqlCommand(sql, connection))
+            {
+                connection.Open();
+                command.ExecuteNonQuery();
+            }
+
+#endif
+            base.Seed(context);
+        }
+    }
+
     public partial class TestContext : DbContext
     {
-        private static bool InitialLoad;
-
 #if EF5 || EF6
         public TestContext() : base(My.Config.ConnectionStrings.TestDatabase)
 #elif EF7
         public TestContext()
 #endif
         {
-            if (!InitialLoad)
-            {
-                // FIX TPC
-                InitialLoad = true;
-
-                // TODO: Run a script checking for identity seed instead!
-                var list = new List<Inheritance_TPC_Cat>();
-                for (var i = 0; i < 10; i++)
-                {
-                    list.Add(new Inheritance_TPC_Cat {ColumnInt = i, ColumnCat = i});
-                }
-                using (var ctx = new TestContext())
-                {
-                    ctx.Inheritance_TPC_Animals.AddRange(list);
-                    ctx.SaveChanges();
-
-                    ctx.Inheritance_TPC_Animals.RemoveRange(list);
-                    ctx.SaveChanges();
-                }
-            }
-#if EF7
+#if EF5 || EF6
+            Database.SetInitializer(new TestContextInitializer());
+#elif EF7
             Database.EnsureCreated();
 #endif
         }
 
 
 #if EF5 || EF6
-        public TestContext(bool isEnabled, string fixResharper = null, bool? enableFilter1 = null, bool? enableFilter2 = null, bool? enableFilter3 = null, bool? enableFilter4 = null, bool? excludeClass = null, bool? excludeInterface = null, bool? excludeBaseClass = null, bool? excludeBaseInterface = null, bool? includeClass = null, bool? includeInterface = null, bool? includeBaseClass = null, bool? includeBaseInterface = null) : base("TestDatabase")
+        public TestContext(bool isEnabled, string fixResharper = null, bool? enableFilter1 = null, bool? enableFilter2 = null, bool? enableFilter3 = null, bool? enableFilter4 = null, bool? excludeClass = null, bool? excludeInterface = null, bool? excludeBaseClass = null, bool? excludeBaseInterface = null, bool? includeClass = null, bool? includeInterface = null, bool? includeBaseClass = null, bool? includeBaseInterface = null) : base(My.Config.ConnectionStrings.TestDatabase)
 #elif EF7
         public TestContext(bool isEnabled, string fixResharper = null, bool? enableFilter1 = null, bool? enableFilter2 = null, bool? enableFilter3 = null, bool? enableFilter4 = null, bool? excludeClass = null, bool? excludeInterface = null, bool? excludeBaseClass = null, bool? excludeBaseInterface = null, bool? includeClass = null, bool? includeInterface = null, bool? includeBaseClass = null, bool? includeBaseInterface = null)
 #endif
         {
-#if EF7
+#if EF5 || EF6
+            Database.SetInitializer(new CreateDatabaseIfNotExists<TestContext>());
+#elif EF7
             Database.EnsureCreated();
 #endif
 #if EF7
@@ -229,11 +235,19 @@ namespace Z.Test.EntityFramework.Plus
                     m.ToTable("Inheritance_TPC_Dog");
                 });
             }
+
+            // Many
+            {
+                modelBuilder.Entity<AuditEntry>().HasMany(x => x.Properties).WithRequired(x => x.Parent);
+            }
+
+            modelBuilder.Configurations.Add(new Internal_Entity_Basic.EntityPropertyVisibilityConfiguration());
+            modelBuilder.Configurations.Add(new Internal_Entity_Basic_Many.EntityPropertyVisibilityConfiguration());
         }
 #elif EF7
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(new SqlConnection(ConfigurationManager.ConnectionStrings["TestDatabase"].ConnectionString));
+            optionsBuilder.UseSqlServer(new SqlConnection(My.Config.ConnectionStrings.TestDatabase));
         }
 
 
@@ -306,7 +320,17 @@ namespace Z.Test.EntityFramework.Plus
 
         public DbSet<Entity_Basic> Entity_Basics { get; set; }
 
+        public DbSet<ZZZ_Entity_Basic> ZZZ_Entity_Basics { get; set; }
+
         public DbSet<Entity_Basic_Many> Entity_Basic_Manies { get; set; }
+
+        public DbSet<Internal_Entity_Basic> Internal_Entity_Basics { get; set; }
+
+        public DbSet<Internal_Entity_Basic_Many> Internal_Entity_Basic_Manies { get; set; }
+
+        public DbSet<Entity_Guid> Entity_Guids { get; set; }
+
+        public DbSet<Entity_ManyGuid> Entity_ManyGuids { get; set; }
 
 #if EF5 || EF6
         public DbSet<Entity_Complex> Entity_Complexes { get; set; }
@@ -326,6 +350,7 @@ namespace Z.Test.EntityFramework.Plus
         public DbSet<Inheritance_TPT_Animal> Inheritance_TPT_Animals { get; set; }
 
 #endif
+        public DbSet<Inheritance_TPT_Cat> Inheritance_TPT_Cats { get; set; }
 
         public DbSet<Property_AllType> Property_AllTypes { get; set; }
 

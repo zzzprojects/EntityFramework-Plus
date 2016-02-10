@@ -1,9 +1,9 @@
 ﻿// Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update, Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
-// Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
+// Forum & Issues: https://github.com/zzzprojects/EntityFramework-Plus/issues
 // License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
 // More projects: http://www.zzzprojects.com/
-// Copyright (c) 2016 ZZZ Projects. All rights reserved.
+// Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 #if EF5 || EF6
 using System;
@@ -37,19 +37,31 @@ namespace Z.EntityFramework.Plus
             // CHECK DbQuery
             var dbQuery = query as DbQuery;
 
-            if (dbQuery == null)
+            if (dbQuery != null)
             {
-                throw new Exception(ExceptionMessage.GeneralException);
+                var internalQueryProperty = dbQuery.GetType().GetProperty("InternalQuery", BindingFlags.NonPublic | BindingFlags.Instance);
+                var internalQuery = internalQueryProperty.GetValue(dbQuery, null);
+                var objectQueryContextProperty = internalQuery.GetType().GetProperty("ObjectQuery", BindingFlags.Public | BindingFlags.Instance);
+                var objectQueryContext = objectQueryContextProperty.GetValue(internalQuery, null);
+
+                objectQuery = objectQueryContext as ObjectQuery;
+
+                return objectQuery;
             }
 
-            var internalQueryProperty = dbQuery.GetType().GetProperty("InternalQuery", BindingFlags.NonPublic | BindingFlags.Instance);
-            var internalQuery = internalQueryProperty.GetValue(dbQuery, null);
-            var objectQueryContextProperty = internalQuery.GetType().GetProperty("ObjectQuery", BindingFlags.Public | BindingFlags.Instance);
-            var objectQueryContext = objectQueryContextProperty.GetValue(internalQuery, null);
+            if (query.GetType().IsGenericType && query.GetType().GetGenericTypeDefinition() == typeof(DbQuery<>))
+            {
+                var internalQueryProperty = typeof(DbQuery<>).MakeGenericType(query.ElementType).GetProperty("InternalQuery", BindingFlags.NonPublic | BindingFlags.Instance);
+                var internalQuery = internalQueryProperty.GetValue(query, null);
+                var objectQueryContextProperty = internalQuery.GetType().GetProperty("ObjectQuery", BindingFlags.Public | BindingFlags.Instance);
+                var objectQueryContext = objectQueryContextProperty.GetValue(internalQuery, null);
 
-            objectQuery = objectQueryContext as ObjectQuery;
+                objectQuery = objectQueryContext as ObjectQuery;
 
-            return objectQuery;
+                return objectQuery;
+            }
+
+            throw new Exception(ExceptionMessage.GeneralException);
         }
     }
 }

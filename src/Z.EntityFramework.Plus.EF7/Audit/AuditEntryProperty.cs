@@ -1,9 +1,9 @@
 ﻿// Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update, Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
-// Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
+// Forum & Issues: https://github.com/zzzprojects/EntityFramework-Plus/issues
 // License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
 // More projects: http://www.zzzprojects.com/
-// Copyright (c) 2016 ZZZ Projects. All rights reserved.
+// Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -79,7 +79,7 @@ namespace Z.EntityFramework.Plus
         [NotMapped]
         public object NewValue { get; set; }
 #elif EF7
-    // EF7 still have some issue with "NotMapped" attribute
+        // EF7 still have some issue with "NotMapped" attribute
         public object NewValue;
 #endif
 
@@ -103,12 +103,12 @@ namespace Z.EntityFramework.Plus
         }
 
 #if EF5 || EF6
-        /// <summary>Gets or sets the old value audited.</summary>
-        /// <value>The old value audited.</value>
+    /// <summary>Gets or sets the old value audited.</summary>
+    /// <value>The old value audited.</value>
         [NotMapped]
         public object OldValue { get; set; }
 #elif EF7
-    // EF7 still have some issue with "NotMapped" attribute
+        // EF7 still have some issue with "NotMapped" attribute
         public object OldValue;
 #endif
 

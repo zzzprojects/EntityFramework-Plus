@@ -1,11 +1,10 @@
 ﻿// Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update, Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
-// Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
+// Forum & Issues: https://github.com/zzzprojects/EntityFramework-Plus/issues
 // License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
 // More projects: http://www.zzzprojects.com/
-// Copyright (c) 2016 ZZZ Projects. All rights reserved.
+// Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
-using System.Data.Common;
 #if EF5
 using System.Data.Objects;
 
@@ -45,10 +44,10 @@ namespace Z.EntityFramework.Plus
         }
 
 #if EF5 || EF6
-        /// <summary>Audit entity deleted.</summary>
-        /// <param name="entry">The entry.</param>
-        /// <param name="record">The record.</param>
-        /// <param name="prefix">The prefix.</param>
+    /// <summary>Audit entity deleted.</summary>
+    /// <param name="entry">The entry.</param>
+    /// <param name="record">The record.</param>
+    /// <param name="prefix">The prefix.</param>
         public static void AuditEntityDeleted(AuditEntry entry, DbDataRecord record, string prefix = "")
         {
             for (var i = 0; i < record.FieldCount; i++)
@@ -69,8 +68,8 @@ namespace Z.EntityFramework.Plus
             }
         }
 #elif EF7
-    /// <summary>Audit entity deleted.</summary>
-    /// <param name="objectStateEntry">The object state entry.</param>
+        /// <summary>Audit entity deleted.</summary>
+        /// <param name="objectStateEntry">The object state entry.</param>
         public static void AuditEntityDeleted(AuditEntry entry, EntityEntry objectStateEntry)
         {
             foreach (var propertyEntry in objectStateEntry.Metadata.GetProperties())

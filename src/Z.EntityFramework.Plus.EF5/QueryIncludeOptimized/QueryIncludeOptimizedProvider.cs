@@ -1,21 +1,18 @@
 ﻿// Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update, Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
-// Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
+// Forum & Issues: https://github.com/zzzprojects/EntityFramework-Plus/issues
 // License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
 // More projects: http://www.zzzprojects.com/
-// Copyright (c) 2016 ZZZ Projects. All rights reserved.
+// Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 #if EF5
 using System.Data.Metadata.Edm;
 using System.Data.Objects;
 using System.Linq;
-
 #elif EF6
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Core.Objects;
@@ -27,7 +24,6 @@ using Remotion.Linq;
 
 #endif
 #if NET45
-using System.Data.Entity.Infrastructure;
 
 #endif
 
@@ -210,11 +206,11 @@ namespace Z.EntityFramework.Plus
         }
 
 #if EF6 && NET45
-        /// <summary>Executes the given expression asynchronously.</summary>
-        /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
-        /// <param name="expression">The expression to execute.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The object returned by the execution of the expression.</returns>
+    /// <summary>Executes the given expression asynchronously.</summary>
+    /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
+    /// <param name="expression">The expression to execute.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The object returned by the execution of the expression.</returns>
         public Task<object> ExecuteAsync(Expression expression, CancellationToken cancellationToken)
         {
             throw new Exception(ExceptionMessage.GeneralException);

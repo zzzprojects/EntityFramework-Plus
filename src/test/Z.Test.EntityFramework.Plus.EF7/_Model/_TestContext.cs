@@ -1,10 +1,11 @@
 ﻿// Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update, Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
-// Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
+// Forum & Issues: https://github.com/zzzprojects/EntityFramework-Plus/issues
 // License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
 // More projects: http://www.zzzprojects.com/
-// Copyright (c) 2016 ZZZ Projects. All rights reserved.
+// Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
+using System.Data.SqlClient;
 using System.Linq;
 using Z.EntityFramework.Plus;
 #if EF5 || EF6
@@ -19,31 +20,58 @@ using Microsoft.Data.Entity;
 
 namespace Z.Test.EntityFramework.Plus
 {
+#if EF5 || EF6
+    public class TestContextInitializer : CreateDatabaseIfNotExists<TestContext>
+    {
+        protected override void Seed(TestContext context)
+        {
+            var sql = @"
+TRUNCATE TABLE Inheritance_TPC_Cat
+IF IDENT_CURRENT( 'Inheritance_TPC_Cat' ) < 1000000
+BEGIN
+	DBCC CHECKIDENT('Inheritance_TPC_Cat', RESEED, 1000000)
+END
+";
+            using (var connection = new SqlConnection(My.Config.ConnectionStrings.TestDatabase))
+            using (var command = new SqlCommand(sql, connection))
+            {
+                connection.Open();
+                command.ExecuteNonQuery();
+            }
+            base.Seed(context);
+        }
+    }
+#endif
+
     public partial class TestContext : DbContext
     {
 #if EF5 || EF6
-        public TestContext() : base("TestDatabase")
+        public TestContext() : base(My.Config.ConnectionStrings.TestDatabase)
 #elif EF7
         public TestContext()
 #endif
         {
-#if EF7
+#if EF5 || EF6
+            Database.SetInitializer(new TestContextInitializer());
+#elif EF7
             Database.EnsureCreated();
 #endif
         }
 
 
 #if EF5 || EF6
-        public TestContext(bool isEnabled, string fixResharper = null, bool? enableFilter1 = null, bool? enableFilter2 = null, bool? enableFilter3 = null, bool? enableFilter4 = null, bool? excludeClass = null, bool? excludeInterface = null, bool? excludeBaseClass = null, bool? excludeBaseInterface = null, bool? includeClass = null, bool? includeInterface = null, bool? includeBaseClass = null, bool? includeBaseInterface = null) : base("TestDatabase")
+        public TestContext(bool isEnabled, string fixResharper = null, bool? enableFilter1 = null, bool? enableFilter2 = null, bool? enableFilter3 = null, bool? enableFilter4 = null, bool? excludeClass = null, bool? excludeInterface = null, bool? excludeBaseClass = null, bool? excludeBaseInterface = null, bool? includeClass = null, bool? includeInterface = null, bool? includeBaseClass = null, bool? includeBaseInterface = null) : base(My.Config.ConnectionStrings.TestDatabase)
 #elif EF7
         public TestContext(bool isEnabled, string fixResharper = null, bool? enableFilter1 = null, bool? enableFilter2 = null, bool? enableFilter3 = null, bool? enableFilter4 = null, bool? excludeClass = null, bool? excludeInterface = null, bool? excludeBaseClass = null, bool? excludeBaseInterface = null, bool? includeClass = null, bool? includeInterface = null, bool? includeBaseClass = null, bool? includeBaseInterface = null)
 #endif
         {
-#if EF7
+#if EF5 || EF6
+            Database.SetInitializer(new CreateDatabaseIfNotExists<TestContext>());
+#elif EF7
             Database.EnsureCreated();
 #endif
 #if EF7
-            // TODO: Remove this when cast issue will be fixed
+    // TODO: Remove this when cast issue will be fixed
             QueryFilterManager.GlobalFilters.Clear();
             QueryFilterManager.GlobalInitializeFilterActions.Clear();
 #endif
@@ -175,6 +203,14 @@ namespace Z.Test.EntityFramework.Plus
                     modelBuilder.Entity<Association_Multi_OneToMany_Left>()
                         .HasMany(x => x.Right2s)
                         .WithRequired(x => x.Left);
+
+                    modelBuilder.Entity<Association_OneToManyToMany_Left>()
+                        .HasMany(x => x.Rights)
+                        .WithRequired(x => x.Left);
+
+                    modelBuilder.Entity<Association_OneToManyToMany_Right>()
+                        .HasMany(x => x.Rights)
+                        .WithRequired(x => x.Left);
                 }
             }
 
@@ -198,29 +234,38 @@ namespace Z.Test.EntityFramework.Plus
                     m.ToTable("Inheritance_TPC_Dog");
                 });
             }
+
+            // Many
+            {
+                modelBuilder.Entity<AuditEntry>().HasMany(x => x.Properties).WithRequired(x => x.Parent);
+            }
+
+            modelBuilder.Configurations.Add(new Internal_Entity_Basic.EntityPropertyVisibilityConfiguration());
+            modelBuilder.Configurations.Add(new Internal_Entity_Basic_Many.EntityPropertyVisibilityConfiguration());
         }
 #elif EF7
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(new SqlConnection(ConfigurationManager.ConnectionStrings["TestDatabase"].ConnectionString));
+            optionsBuilder.UseSqlServer(new SqlConnection(My.Config.ConnectionStrings.TestDatabase));
         }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Entity_ManyGuid>().HasKey(guid => new {guid.ID1, guid.ID2, guid.ID3});
+
             // Association
             {
             }
 
             // Audit
             {
-                //  modelBuilder.Entity<AuditEntry>().Ignore(x => x.Parent);
+                //modelBuilder.Entity<AuditEntry>().HasKey(x => x.AuditEntryID);
                 //modelBuilder.Entity<AuditEntryProperty>().Ignore(x => x.NewValue);
                 //modelBuilder.Entity<AuditEntryProperty>().Ignore(x => x.OldValue);
-
-                //modelBuilder.Entity<AuditEntry>().HasKey(x => x.AuditEntryID);
-
                 //modelBuilder.Entity<AuditEntry>().HasMany(x => x.Properties).WithOne(x => x.AuditEntry);
                 //modelBuilder.Entity<AuditEntryProperty>().HasKey(x => x.AuditEntryPropertyID);
+
             }
         }
 
@@ -250,6 +295,16 @@ namespace Z.Test.EntityFramework.Plus
 
         #endregion
 
+        #region Association ToManyToMany
+
+        public DbSet<Association_OneToManyToMany_Left> Association_Multi_OneToManyToMany_Lefts { get; set; }
+
+        public DbSet<Association_OneToManyToMany_Right> Association_Multi_OneToManyToMany_Rights { get; set; }
+
+        public DbSet<Association_OneToManyToMany_RightRight> Association_Multi_OneToManyToMany_RightRights { get; set; }
+
+        #endregion
+
         #region Audit
 
         public DbSet<AuditEntry> AuditEntries { get; set; }
@@ -262,13 +317,28 @@ namespace Z.Test.EntityFramework.Plus
 
         public DbSet<Entity_Basic> Entity_Basics { get; set; }
 
+        public DbSet<ZZZ_Entity_Basic> ZZZ_Entity_Basics { get; set; }
+
+        public DbSet<Entity_Basic_Many> Entity_Basic_Manies { get; set; }
+
+#if EF5 || EF6
+        public DbSet<Internal_Entity_Basic> Internal_Entity_Basics { get; set; }
+
+        public DbSet<Internal_Entity_Basic_Many> Internal_Entity_Basic_Manies { get; set; }
+#endif
+
+
+        public DbSet<Entity_Guid> Entity_Guids { get; set; }
+
+        public DbSet<Entity_ManyGuid> Entity_ManyGuids { get; set; }
+
 #if EF5 || EF6
         public DbSet<Entity_Complex> Entity_Complexes { get; set; }
 #endif
 
-        #endregion
+#endregion
 
-        #region Inheritance
+#region Inheritance
 
         public DbSet<Inheritance_Interface_Entity> Inheritance_Interface_Entities { get; set; }
 
@@ -280,7 +350,10 @@ namespace Z.Test.EntityFramework.Plus
         public DbSet<Inheritance_TPT_Animal> Inheritance_TPT_Animals { get; set; }
 
 #endif
+        public DbSet<Inheritance_TPT_Cat> Inheritance_TPT_Cats { get; set; }
 
-        #endregion
+        public DbSet<Property_AllType> Property_AllTypes { get; set; }
+
+#endregion
     }
 }

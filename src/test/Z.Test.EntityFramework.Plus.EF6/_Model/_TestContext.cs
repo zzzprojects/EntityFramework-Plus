@@ -1,17 +1,12 @@
 ﻿// Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update, Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
-// Forum: https://github.com/zzzprojects/EntityFramework-Plus/issues
+// Forum & Issues: https://github.com/zzzprojects/EntityFramework-Plus/issues
 // License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
 // More projects: http://www.zzzprojects.com/
-// Copyright (c) 2016 ZZZ Projects. All rights reserved.
+// Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.SqlClient;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Z.EntityFramework.Plus;
 #if EF5 || EF6
 using System.Data.Entity;
@@ -25,37 +20,40 @@ using Microsoft.Data.Entity;
 
 namespace Z.Test.EntityFramework.Plus
 {
+#if EF5 || EF6
+    public class TestContextInitializer : CreateDatabaseIfNotExists<TestContext>
+    {
+        protected override void Seed(TestContext context)
+        {
+            var sql = @"
+TRUNCATE TABLE Inheritance_TPC_Cat
+IF IDENT_CURRENT( 'Inheritance_TPC_Cat' ) < 1000000
+BEGIN
+	DBCC CHECKIDENT('Inheritance_TPC_Cat', RESEED, 1000000)
+END
+";
+            using (var connection = new SqlConnection(My.Config.ConnectionStrings.TestDatabase))
+            using (var command = new SqlCommand(sql, connection))
+            {
+                connection.Open();
+                command.ExecuteNonQuery();
+            }
+            base.Seed(context);
+        }
+    }
+#endif
+
     public partial class TestContext : DbContext
     {
-        private static bool InitialLoad;
-
 #if EF5 || EF6
         public TestContext() : base(My.Config.ConnectionStrings.TestDatabase)
 #elif EF7
         public TestContext()
 #endif
         {
-            if (!InitialLoad)
-            {
-                // FIX TPC
-                InitialLoad = true;
-
-                // TODO: Run a script checking for identity seed instead!
-                var list = new List<Inheritance_TPC_Cat>();
-                for (var i = 0; i < 10; i++)
-                {
-                    list.Add(new Inheritance_TPC_Cat {ColumnInt = i, ColumnCat = i});
-                }
-                using (var ctx = new TestContext())
-                {
-                    ctx.Inheritance_TPC_Animals.AddRange(list);
-                    ctx.SaveChanges();
-
-                    ctx.Inheritance_TPC_Animals.RemoveRange(list);
-                    ctx.SaveChanges();
-                }
-            }
-#if EF7
+#if EF5 || EF6
+            Database.SetInitializer(new TestContextInitializer());
+#elif EF7
             Database.EnsureCreated();
 #endif
         }
@@ -67,7 +65,9 @@ namespace Z.Test.EntityFramework.Plus
         public TestContext(bool isEnabled, string fixResharper = null, bool? enableFilter1 = null, bool? enableFilter2 = null, bool? enableFilter3 = null, bool? enableFilter4 = null, bool? excludeClass = null, bool? excludeInterface = null, bool? excludeBaseClass = null, bool? excludeBaseInterface = null, bool? includeClass = null, bool? includeInterface = null, bool? includeBaseClass = null, bool? includeBaseInterface = null)
 #endif
         {
-#if EF7
+#if EF5 || EF6
+            Database.SetInitializer(new CreateDatabaseIfNotExists<TestContext>());
+#elif EF7
             Database.EnsureCreated();
 #endif
 #if EF7
@@ -239,6 +239,9 @@ namespace Z.Test.EntityFramework.Plus
             {
                 modelBuilder.Entity<AuditEntry>().HasMany(x => x.Properties).WithRequired(x => x.Parent);
             }
+
+            modelBuilder.Configurations.Add(new Internal_Entity_Basic.EntityPropertyVisibilityConfiguration());
+            modelBuilder.Configurations.Add(new Internal_Entity_Basic_Many.EntityPropertyVisibilityConfiguration());
         }
 #elif EF7
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -249,6 +252,8 @@ namespace Z.Test.EntityFramework.Plus
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Entity_ManyGuid>().HasKey(guid => new {guid.ID1, guid.ID2, guid.ID3});
+
             // Association
             {
             }
@@ -302,13 +307,9 @@ namespace Z.Test.EntityFramework.Plus
 
         #region Audit
 
-#if EF5 || EF6
-
         public DbSet<AuditEntry> AuditEntries { get; set; }
 
         public DbSet<AuditEntryProperty> AuditEntryProperties { get; set; }
-
-#endif
 
         #endregion
 
@@ -316,15 +317,28 @@ namespace Z.Test.EntityFramework.Plus
 
         public DbSet<Entity_Basic> Entity_Basics { get; set; }
 
+        public DbSet<ZZZ_Entity_Basic> ZZZ_Entity_Basics { get; set; }
+
         public DbSet<Entity_Basic_Many> Entity_Basic_Manies { get; set; }
+
+#if EF5 || EF6
+        public DbSet<Internal_Entity_Basic> Internal_Entity_Basics { get; set; }
+
+        public DbSet<Internal_Entity_Basic_Many> Internal_Entity_Basic_Manies { get; set; }
+#endif
+
+
+        public DbSet<Entity_Guid> Entity_Guids { get; set; }
+
+        public DbSet<Entity_ManyGuid> Entity_ManyGuids { get; set; }
 
 #if EF5 || EF6
         public DbSet<Entity_Complex> Entity_Complexes { get; set; }
 #endif
 
-        #endregion
+#endregion
 
-        #region Inheritance
+#region Inheritance
 
         public DbSet<Inheritance_Interface_Entity> Inheritance_Interface_Entities { get; set; }
 
@@ -336,46 +350,10 @@ namespace Z.Test.EntityFramework.Plus
         public DbSet<Inheritance_TPT_Animal> Inheritance_TPT_Animals { get; set; }
 
 #endif
+        public DbSet<Inheritance_TPT_Cat> Inheritance_TPT_Cats { get; set; }
 
         public DbSet<Property_AllType> Property_AllTypes { get; set; }
 
-        #endregion
-
-        //public override int SaveChanges()
-        //{
-        //    var audit = new Audit();
-        //    audit.PreSaveChanges(this);
-        //    var rowAffecteds = base.SaveChanges();
-        //    audit.PostSaveChanges();
-
-        //    if (audit.Configuration.AutoSavePreAction != null)
-        //    {
-        //        audit.Configuration.AutoSavePreAction(this, audit);
-        //        base.SaveChanges();
-        //    }
-
-        //    return rowAffecteds;
-        //}
-
-        //public override Task<int> SaveChangesAsync()
-        //{
-        //    return SaveChangesAsync(CancellationToken.None);
-        //}
-
-        //public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
-        //{
-        //    var audit = new Audit();
-        //    audit.PreSaveChanges(this);
-        //    var rowAffecteds = await base.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-        //    audit.PostSaveChanges();
-
-        //    if (audit.Configuration.AutoSavePreAction != null)
-        //    {
-        //        audit.Configuration.AutoSavePreAction(this, audit);
-        //        await base.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-        //    }
-
-        //    return rowAffecteds;
-        //}
+#endregion
     }
 }
