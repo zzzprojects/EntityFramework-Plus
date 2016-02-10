@@ -6,9 +6,11 @@
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 
-#if STANDALONE && EF7
+#if STANDALONE && EFCORE
 using System.Data.Common;
 using Microsoft.Data.Entity;
+using Microsoft.Data.Entity.Infrastructure;
+using Microsoft.Data.Entity.Storage;
 
 namespace Z.EntityFramework.Plus
 {
@@ -21,8 +23,7 @@ namespace Z.EntityFramework.Plus
         {
             var entityConnection = context.Database.GetDbConnection();
             var command = entityConnection.CreateCommand();
-            //command.Transaction = entityConnection.GetStoreTransaction();
-
+            command.Transaction = context.Database.GetService<IRelationalConnection>().DbTransaction;
             var commandTimeout = context.Database.GetCommandTimeout();
             if (commandTimeout.HasValue)
             {

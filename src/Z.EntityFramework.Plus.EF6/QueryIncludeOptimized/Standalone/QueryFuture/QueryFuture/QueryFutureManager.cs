@@ -14,7 +14,7 @@ using System.Data.Objects;
 #elif EF6
 using System.Data.Entity.Core.Objects;
 
-#elif EF7
+#elif EFCORE
 using Microsoft.Data.Entity;
 
 #endif
@@ -29,7 +29,7 @@ namespace Z.EntityFramework.Plus
         {
 #if EF5 || EF6
             CacheWeakFutureBatch = new ConditionalWeakTable<ObjectContext, QueryFutureBatch>();
-#elif EF7
+#elif EFCORE
             CacheWeakFutureBatch = new ConditionalWeakTable<DbContext, QueryFutureBatch>();
 #endif
         }
@@ -38,7 +38,7 @@ namespace Z.EntityFramework.Plus
         /// <value>The weak table used to cache future batch associated to a context.</value>
 #if EF5 || EF6
         public static ConditionalWeakTable<ObjectContext, QueryFutureBatch> CacheWeakFutureBatch { get; set; }
-#elif EF7
+#elif EFCORE
         public static ConditionalWeakTable<DbContext, QueryFutureBatch> CacheWeakFutureBatch { get; set; }
 #endif
 
@@ -47,7 +47,7 @@ namespace Z.EntityFramework.Plus
         /// <returns>The future batch associated to the context.</returns>
 #if EF5 || EF6
         public static QueryFutureBatch AddOrGetBatch(ObjectContext context)
-#elif EF7
+#elif EFCORE
         public static QueryFutureBatch AddOrGetBatch(DbContext context)
 #endif
         {

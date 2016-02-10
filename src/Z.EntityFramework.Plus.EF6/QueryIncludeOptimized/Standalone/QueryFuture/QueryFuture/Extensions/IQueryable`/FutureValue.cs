@@ -31,7 +31,7 @@ namespace Z.EntityFramework.Plus
             var objectQuery = query.GetObjectQuery();
             var futureBatch = QueryFutureManager.AddOrGetBatch(objectQuery.Context);
             var futureQuery = new QueryFutureValue<TResult>(futureBatch, objectQuery);
-#elif EF7
+#elif EFCORE
             var context = query.GetDbContext();
             var futureBatch = QueryFutureManager.AddOrGetBatch(context);
             var futureQuery = new QueryFutureValue<TResult>(futureBatch, query);

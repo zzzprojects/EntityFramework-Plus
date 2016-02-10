@@ -20,7 +20,7 @@ using System.Linq;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Core.Objects;
 using System.Linq;
-#elif EF7
+#elif EFCORE
 using Microsoft.Data.Entity.Internal;
 using Microsoft.Data.Entity.Query.Internal;
 using Remotion.Linq;
@@ -155,7 +155,7 @@ namespace Z.EntityFramework.Plus
                 var objectContext = CurrentQueryable.OriginalQueryable.GetObjectQuery().Context;
                 var keyMembers = ((dynamic) objectContext).CreateObjectSet<T>().EntitySet.ElementType.KeyMembers;
                 var keyNames = ((IEnumerable<EdmMember>) keyMembers).Select(x => x.Name).ToArray();
-#elif EF7
+#elif EFCORE
 
                 var context = currentQuery.OriginalQueryable.GetDbContext();
 
@@ -185,7 +185,7 @@ namespace Z.EntityFramework.Plus
             var createQueryMethod = provider.GetType().GetMethod("CreateQuery", BindingFlags.NonPublic | BindingFlags.Instance, null, new[] {typeof (Expression)}, null);
             createQueryMethod = createQueryMethod.MakeGenericMethod(typeof (TResult));
             var immediateQuery = (ObjectQuery<T>) createQueryMethod.Invoke(provider, new object[] {expression});
-#elif EF7
+#elif EFCORE
             var immediateQuery = new EntityQueryable<TResult>((IAsyncQueryProvider)OriginalProvider);
             var expressionProperty = typeof(QueryableBase<>).MakeGenericType(typeof(TResult)).GetProperty("Expression", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             expressionProperty.SetValue(immediateQuery, expression);
@@ -204,7 +204,7 @@ namespace Z.EntityFramework.Plus
 
 #if EF5 || EF6
             return (TResult) (object) value;
-#elif EF7
+#elif EFCORE
             return (TResult)value;
 #endif
         }

@@ -14,7 +14,7 @@ using System.Data.Objects;
 #elif EF6
 using System.Data.Entity.Core.Objects;
 
-#elif EF7
+#elif EFCORE
 using System.Linq;
 
 #endif
@@ -36,7 +36,7 @@ namespace Z.EntityFramework.Plus
         /// </param>
 #if EF5 || EF6
         public QueryFutureValue(QueryFutureBatch ownerBatch, ObjectQuery query)
-#elif EF7
+#elif EFCORE
         public QueryFutureValue(QueryFutureBatch ownerBatch, IQueryable query)
 #endif
         {

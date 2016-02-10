@@ -109,7 +109,7 @@ namespace Z.EntityFramework.Plus
             var objectContext = OriginalQueryable.GetObjectQuery().Context;
             var keyMembers = ((dynamic) objectContext).CreateObjectSet<T>().EntitySet.ElementType.KeyMembers;
             var keyNames = ((IEnumerable<EdmMember>) keyMembers).Select(x => x.Name).ToArray();
-#elif EF7
+#elif EFCORE
 
                 var context = currentQuery.OriginalQueryable.GetDbContext();
 

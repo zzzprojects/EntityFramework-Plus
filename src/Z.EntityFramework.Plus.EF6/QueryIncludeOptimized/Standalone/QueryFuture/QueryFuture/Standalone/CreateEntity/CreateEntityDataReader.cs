@@ -6,7 +6,7 @@
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 
-#if STANDALONE && EF7
+#if STANDALONE && EFCORE
 using System;
 using System.Collections;
 using System.Data;

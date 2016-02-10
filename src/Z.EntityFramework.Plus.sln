@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.EntityFramework.Plus.EF6"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.EntityFramework.Plus.EF6.NET40", "Z.EntityFramework.Plus.EF6.NET40\Z.EntityFramework.Plus.EF6.NET40.csproj", "{AC398EB8-0A31-4D06-A804-84D10B6DA96D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.EntityFramework.Plus.EF7", "Z.EntityFramework.Plus.EF7\Z.EntityFramework.Plus.EF7.csproj", "{01BCB005-E336-4D9D-897D-3B7CD887AE55}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.EntityFramework.Plus.EFCore", "Z.EntityFramework.Plus.EFCore\Z.EntityFramework.Plus.EFCore.csproj", "{01BCB005-E336-4D9D-897D-3B7CD887AE55}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{14D8985E-0AA8-444A-A32E-D766ABA114D6}"
 EndProject
@@ -19,7 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.Test.EntityFramework.Plus
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.Test.EntityFramework.Plus.EF6", "test\Z.Test.EntityFramework.Plus.EF6\Z.Test.EntityFramework.Plus.EF6.csproj", "{063FA382-DFDA-4BCB-BBB6-AAC04D0ED88E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.Test.EntityFramework.Plus.EF7", "test\Z.Test.EntityFramework.Plus.EF7\Z.Test.EntityFramework.Plus.EF7.csproj", "{29838946-1188-4919-9FF2-BF9FEC9E2D9B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.Test.EntityFramework.Plus.EFCore", "test\Z.Test.EntityFramework.Plus.EFCore\Z.Test.EntityFramework.Plus.EFCore.csproj", "{29838946-1188-4919-9FF2-BF9FEC9E2D9B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

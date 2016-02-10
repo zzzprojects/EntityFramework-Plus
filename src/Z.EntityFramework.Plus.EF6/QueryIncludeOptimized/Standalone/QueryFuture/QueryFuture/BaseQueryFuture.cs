@@ -17,7 +17,7 @@ using System.Data.Objects;
 #elif EF6
 using System.Data.Entity.Core.Objects;
 
-#elif EF7
+#elif EFCORE
 using System.Linq;
 using Microsoft.Data.Entity.Query;
 using Microsoft.Data.Entity.Query.ExpressionVisitors.Internal;
@@ -45,7 +45,7 @@ namespace Z.EntityFramework.Plus
     /// <summary>Gets or sets the query deferred.</summary>
     /// <value>The query deferred.</value>
         public ObjectQuery Query { get; set; }
-#elif EF7
+#elif EFCORE
         /// <summary>Gets or sets the query deferred.</summary>
         /// <value>The query deferred.</value>
         public IQueryable Query { get; set; }
@@ -174,7 +174,7 @@ namespace Z.EntityFramework.Plus
 
             var enumerator = (IEnumerator<T>) getEnumerator;
             return enumerator;
-#elif EF7
+#elif EFCORE
             QueryConnection.OriginalDataReader = reader;
             var queryExecutor = (Func<QueryContext, IEnumerable<T>>) QueryExecutor;
             var queryEnumerable = queryExecutor(QueryContext);

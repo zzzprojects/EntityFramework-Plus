@@ -20,7 +20,7 @@ using System.Data.Entity.Core.EntityClient;
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure.Interception;
 
-#elif EF7
+#elif EFCORE
 using Microsoft.Data.Entity;
 
 #endif
@@ -34,7 +34,7 @@ namespace Z.EntityFramework.Plus
         /// <param name="context">The context related to the query future batched.</param>
 #if EF5 || EF6
         public QueryFutureBatch(ObjectContext context)
-#elif EF7
+#elif EFCORE
         public QueryFutureBatch(DbContext context)
 #endif
         {
@@ -46,7 +46,7 @@ namespace Z.EntityFramework.Plus
         /// <value>The context related to the query future batched.</value>
 #if EF5 || EF6
         public ObjectContext Context { get; set; }
-#elif EF7
+#elif EFCORE
         public DbContext Context { get; set; }
 #endif
 
@@ -59,7 +59,7 @@ namespace Z.EntityFramework.Plus
         {
 #if EF5 || EF6
             var connection = (EntityConnection) Context.Connection;
-#elif EF7
+#elif EFCORE
             var connection = Context.Database.GetDbConnection();
 #endif
             var command = CreateCommandCombined();
@@ -95,7 +95,7 @@ namespace Z.EntityFramework.Plus
                             reader.NextResult();
                         }
                     }
-#elif EF7
+#elif EFCORE
                     using (var reader = command.ExecuteReader())
                     {
                         var createEntityDataReader = new CreateEntityDataReader(reader);
@@ -134,7 +134,7 @@ namespace Z.EntityFramework.Plus
 #if EF5 || EF6
                 var sql = query.Query.ToTraceString();
                 var parameters = query.Query.Parameters;
-#elif EF7
+#elif EFCORE
                 var queryCommand = query.CreateExecutorAndGetCommand();
                 var sql = queryCommand.CommandText;
                 var parameters = queryCommand.Parameters;
