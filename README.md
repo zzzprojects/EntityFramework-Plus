@@ -292,8 +292,8 @@ Contribution isn't all about money!
  - Blog it
  - Comment it
  - Fork it
+ - Star it
  - Share it
- - Start it
 
 A **HUGE thanks** for your extra support.
 
