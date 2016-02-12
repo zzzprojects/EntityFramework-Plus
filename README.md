@@ -17,8 +17,8 @@ Stay updated with latest changes
 
 ## Features
 - Batch Operations
-    - [Batch Delete](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Batch-Delete-%7C-Entity-Framework-Delete-object-without-retrieving-it)
-    - [Batch Update](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Batch-Update-%7C-Entity-Framework-Update-object-without-retrieving-it)
+    - [Batch Delete](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Batch-Delete-%7C-Entity-Framework-Batch-Delete-Objects-Without-Loading-Them)
+    - [Batch Update](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Batch-Update-%7C-Entity-Framework-Batch-Update-Objects-Without-Loading-Them)
 - Query
     - [Query Cache](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Cache-%7C-Entity-Framework-Second-Level-Caching)
     - [Query Deferred](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Deferred-%7C-Entity-Framework-deferring-immediate-LINQ-query-execution)
@@ -50,7 +50,7 @@ ctx.Users.Where(x => x.LastLoginDate < DateTime.Now.AddYears(-2))
          .Delete(x => x.BatchSize = 1000);
 ```
 
-**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Batch-Delete-%7C-Entity-Framework-Delete-object-without-retrieving-it)**
+**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Batch-Delete-%7C-Entity-Framework-Batch-Delete-Objects-Without-Loading-Them)**
 
 ## Batch Update
 Updates multiples rows using an expression in a single database roundtrip and without loading entities in the context.
@@ -63,7 +63,7 @@ ctx.Users.Where(x => x.LastLoginDate < DateTime.Now.AddYears(-2))
          .Update(x => new User() { IsSoftDeleted = 1 });
 ```
 
-**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Batch-Update-%7C-Entity-Framework-Update-object-without-retrieving-it)**
+**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Batch-Update-%7C-Entity-Framework-Batch-Update-Objects-Without-Loading-Them)**
 
 ## Query Cache
 **Query cache is the second level cache for Entity Framework.**
