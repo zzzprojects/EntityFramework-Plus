@@ -1,4 +1,4 @@
-# Enhance Entity Framework performance and overcome EF limitation with MUST-HAVE features
+# Improve Entity Framework performance and overcome limitations with MUST-HAVE features
 
 ## Download
 
