@@ -300,16 +300,15 @@ A **HUGE thanks** for your extra support.
 ## More Projects
 
 **Entity Framework**
-- [Entity Framework Extensions](http://www.zzzprojects.com/products/dotnet-development/entity-framework-extensions/)
-- [Entity Framework Plus](https://github.com/zzzprojects/EntityFramework-Plus)
+- [EntityFramework Extensions](http://entityframework-extensions.net/)
+- [EntityFramework Plus](http://entityframework-plus.net)
 
 **Bulk Operations**
-- [NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotnet-development/entity-framework-extensions/)
-- [NET Bulk Operations](http://www.zzzprojects.com/products/dotnet-development/bulk-operations/)
+- [Bulk Operations](http://bulk-operations.net/)
 
 **Expression Evaluator**
-- [Eval SQL.NET](https://github.com/zzzprojects/Eval-SQL.NET)
-- [Eval Expression.NET](https://github.com/zzzprojects/Eval-Expression.NET)
+- [Eval-SQL.NET](http://eval-sql.net/)
+- [Eval-Expression.NET](http://eval-expression.net/)
 
 **Others**
 - [Extension Methods Library](https://github.com/zzzprojects/Z.ExtensionMethods/)
