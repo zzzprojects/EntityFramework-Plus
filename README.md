@@ -1,4 +1,4 @@
-##Entity Framework Bulk Operations & Utilities##
+# Enhance Entity Framework performance and overcome EF limitation with MUST-HAVE features
 
 ## Download
 
