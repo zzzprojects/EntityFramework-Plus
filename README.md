@@ -291,7 +291,7 @@ The best way to contribute is by **spreading the word** about the library:
  - Star it
  - Share it
  
-A **HUGE THANK** for your help.
+A **HUGE THANKS** for your help.
 
 ## More Projects
 
