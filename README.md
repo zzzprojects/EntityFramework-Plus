@@ -19,6 +19,8 @@ Stay updated with latest changes
 - Batch Operations
     - [Batch Delete](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Batch-Delete-%7C-Entity-Framework-Batch-Delete-Objects-Without-Loading-Them)
     - [Batch Update](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Batch-Update-%7C-Entity-Framework-Batch-Update-Objects-Without-Loading-Them)
+- LINQ
+    - [LINQ Dynamic](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-LINQ-Dynamic)
 - Query
     - [Query Cache](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Cache-%7C-Entity-Framework-Second-Level-Caching)
     - [Query Deferred](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Deferred-%7C-Entity-Framework-deferring-immediate-LINQ-query-execution)
