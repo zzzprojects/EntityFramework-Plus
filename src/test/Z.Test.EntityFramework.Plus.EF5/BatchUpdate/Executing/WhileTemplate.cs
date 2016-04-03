@@ -57,7 +57,7 @@ INNER JOIN ( SELECT
     WHERE ([Extent1].[ColumnInt] > 10) AND ([Extent1].[ColumnInt] <= 40)
            ) AS B ON A.[ID] = B.[ID]
 ", sql);
-#elif EF7
+#elif EFCORE
                 Assert.AreEqual(@"
 UPDATE A 
 SET A.[ColumnInt] = @zzz_BatchUpdate_0

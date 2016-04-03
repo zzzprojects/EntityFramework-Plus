@@ -19,7 +19,7 @@ using Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel;
 using System.Data.Entity.Core.Objects;
 using Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel;
 
-#elif EF7
+#elif EFCORE
 using System.Reflection;
 using Microsoft.Data.Entity;
 using Microsoft.Data.Entity.Metadata;
@@ -163,7 +163,7 @@ SELECT  @totalRowAffected
                     innerObjectQuery.Context.Connection.Close();
                 }
             }
-#elif EF7
+#elif EFCORE
             var dbContext = query.GetDbContext();
             var entity = dbContext.Model.FindEntityType(typeof (T));
            
@@ -272,7 +272,11 @@ SELECT  @totalRowAffected
             var parameterCollection = query.Parameters;
             foreach (var parameter in parameterCollection)
             {
-                command.Parameters.Add(parameter);
+                var param = command.CreateParameter();
+                param.ParameterName = parameter.Name;
+                param.Value = parameter.Value;
+
+                command.Parameters.Add(param);
             }
 
             for (var i = 0; i < values.Count; i++)
@@ -292,7 +296,7 @@ SELECT  @totalRowAffected
 
             return command;
         }
-#elif EF7
+#elif EFCORE
         public DbCommand CreateCommand(IQueryable query, IEntityType entity, List<Tuple<string, object>> values)
         {
             var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName == "EntityFramework.MicrosoftSqlServer, Version=7.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60");
@@ -355,7 +359,11 @@ SELECT  @totalRowAffected
                 var parameterCollection = relationalCommand.Parameters;
                 foreach (var parameter in parameterCollection)
                 {
-                    command.Parameters.Add(parameter);
+                    var param = command.CreateParameter();
+                    param.ParameterName = parameter.Name;
+                    param.Value = parameter.Value;
+
+                    command.Parameters.Add(param);
                 }
 
                 for (var i = 0; i < values.Count; i++)
@@ -381,14 +389,14 @@ SELECT  @totalRowAffected
 
 #if EF5 || EF6
         internal List<Tuple<string, object>> GetInnerValues<T>(IQueryable<T> query, Expression<Func<T, T>> updateFactory, SchemaEntityType<T> entity) where T : class
-#elif EF7
+#elif EFCORE
         public List<Tuple<string, object>> GetInnerValues<T>(IQueryable<T> query, Expression<Func<T, T>> updateFactory, IEntityType entity) where T : class
 #endif
         {
 #if EF5 || EF6
             // GET mapping
             var mapping = entity.Info.EntityTypeMapping.MappingFragment;
-#elif EF7
+#elif EFCORE
             var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName == "EntityFramework.MicrosoftSqlServer, Version=7.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60");
 
             if (assembly == null)
@@ -415,7 +423,7 @@ SELECT  @totalRowAffected
                     throw new Exception("The destination column could not be found:" + value.Key);
                 }
                 var columnName = column.ColumnName;
-#elif EF7
+#elif EFCORE
 
                 var property = entity.FindProperty(value.Key);
                 var mappingProperty = sqlServerPropertyMethod.Invoke(null, new[] {property});
@@ -458,7 +466,7 @@ SELECT  @totalRowAffected
                     // Add the destination name
                     valueSql = valueSql.Replace("AS [C1]", "");
                     valueSql = valueSql.Replace("[Extent1]", "B");
-#elif EF7
+#elif EFCORE
                     var command = ((IQueryable) result).CreateCommand();
                     var commandText = command.CommandText;
 

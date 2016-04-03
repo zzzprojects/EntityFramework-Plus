@@ -6,7 +6,7 @@
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 #if STANDALONE
-#if EF7
+#if EFCORE
 using System.Data.Common;
 using Microsoft.Data.Entity;
 using Microsoft.Data.Entity.Infrastructure;

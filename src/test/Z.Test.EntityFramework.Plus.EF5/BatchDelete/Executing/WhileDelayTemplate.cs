@@ -97,7 +97,7 @@ WHILE @rowAffected IS NULL
 
 SELECT  @totalRowAffected
 ", sql);
-#elif EF7
+#elif EFCORE
                 Assert.AreEqual(@"
 DECLARE @rowAffected INT
 DECLARE @totalRowAffected INT

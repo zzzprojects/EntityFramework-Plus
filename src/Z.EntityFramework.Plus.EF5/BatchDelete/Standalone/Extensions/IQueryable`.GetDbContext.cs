@@ -27,10 +27,10 @@ namespace Z.EntityFramework.Plus
 #if EF5
             var provider = query.Provider;
             var internalContextProperty = provider.GetType().GetProperty("InternalContext", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            var internalContext = internalContextProperty.GetValue(provider);
+            var internalContext = internalContextProperty.GetValue(provider, null);
 
             var ownerProperty = internalContext.GetType().GetProperty("Owner", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            var owner = ownerProperty.GetValue(internalContext);
+            var owner = ownerProperty.GetValue(internalContext, null);
             return (DbContext) owner;
 #elif EF6
             return query.GetObjectQuery().Context.GetDbContext();

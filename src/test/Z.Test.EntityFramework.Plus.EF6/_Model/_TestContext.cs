@@ -5,6 +5,8 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
+using System.Data.Common;
+using System.Data.Entity.Infrastructure.Interception;
 using System.Data.SqlClient;
 using System.Linq;
 using Z.EntityFramework.Plus;
@@ -20,6 +22,8 @@ using Microsoft.Data.Entity;
 
 namespace Z.Test.EntityFramework.Plus
 {
+   
+
 #if EF5 || EF6
     public class TestContextInitializer : CreateDatabaseIfNotExists<TestContext>
     {
@@ -56,6 +60,8 @@ END
 #elif EFCORE
             Database.EnsureCreated();
 #endif
+
+
         }
 
 
@@ -334,11 +340,13 @@ END
 
 #if EF5 || EF6
         public DbSet<Entity_Complex> Entity_Complexes { get; set; }
+
+        public DbSet<Entity_Enum> Entity_Enums { get; set; }
 #endif
 
-#endregion
+        #endregion
 
-#region Inheritance
+        #region Inheritance
 
         public DbSet<Inheritance_Interface_Entity> Inheritance_Interface_Entities { get; set; }
 

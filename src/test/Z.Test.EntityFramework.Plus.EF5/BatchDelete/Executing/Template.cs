@@ -63,7 +63,7 @@ FROM    [dbo].[Entity_Basic] AS A
 
 SELECT @@ROWCOUNT
 ", sql);
-#elif EF7
+#elif EFCORE
                 Assert.AreEqual(@"
 DELETE
 FROM    A

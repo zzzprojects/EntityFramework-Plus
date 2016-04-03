@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{29838946-1188-4919-9FF2-BF9FEC9E2D9B}</ProjectGuid>
+    <ProjectGuid>{C47F920B-8064-44B0-BF3F-CD29298597A0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Z.Test.EntityFramework.Plus.EFCore</RootNamespace>
@@ -225,6 +225,7 @@
     <Compile Include="BatchDelete\BatchDelete_PrimaryKey.cs" />
     <Compile Include="BatchDelete\BatchDelete_SqlSchema.cs" />
     <Compile Include="BatchDelete\BatchDelete_Transaction.cs" />
+    <Compile Include="BatchDelete\BatchDelete_WhereValue.cs" />
     <Compile Include="BatchDelete\BatchSize\Default.cs" />
     <Compile Include="BatchDelete\BatchSize\One.cs" />
     <Compile Include="BatchDelete\BatchSize\Ten.cs" />
@@ -238,6 +239,10 @@
     <Compile Include="BatchDelete\SqlSchema\ZZZ.cs" />
     <Compile Include="BatchDelete\Transaction\Commit.cs" />
     <Compile Include="BatchDelete\Transaction\Rollback.cs" />
+    <Compile Include="BatchDelete\WhereValue\Many_Constant.cs" />
+    <Compile Include="BatchDelete\WhereValue\Many_Variable.cs" />
+    <Compile Include="BatchDelete\WhereValue\Single_Constant.cs" />
+    <Compile Include="BatchDelete\WhereValue\Single_Variable.cs" />
     <Compile Include="BatchUpdate\ActionAsync\TenAsync.cs" />
     <Compile Include="BatchUpdate\ActionAsync\ThirtyAsync.cs" />
     <Compile Include="BatchUpdate\ActionAsync\TwentyAsync.cs" />
@@ -259,6 +264,7 @@
     <Compile Include="BatchUpdate\BatchUpdate_SqlSchema.cs" />
     <Compile Include="BatchUpdate\BatchUpdate_Transaction.cs" />
     <Compile Include="BatchUpdate\BatchUpdate_Value.cs" />
+    <Compile Include="BatchUpdate\BatchUpdate_WhereValue.cs" />
     <Compile Include="BatchUpdate\Executing\Template.cs" />
     <Compile Include="BatchUpdate\Executing\WhileDelayTemplate.cs" />
     <Compile Include="BatchUpdate\Executing\WhileTemplate.cs" />
@@ -284,6 +290,10 @@
     <Compile Include="BatchUpdate\Value\Single_Property_Object.cs" />
     <Compile Include="BatchUpdate\Value\Single_Property_Type.cs" />
     <Compile Include="BatchUpdate\Value\Single_Variable.cs" />
+    <Compile Include="BatchUpdate\WhereValue\Many_Constant.cs" />
+    <Compile Include="BatchUpdate\WhereValue\Many_Variable.cs" />
+    <Compile Include="BatchUpdate\WhereValue\Single_Constant.cs" />
+    <Compile Include="BatchUpdate\WhereValue\Single_Variable.cs" />
     <Compile Include="My.cs" />
     <Compile Include="QueryCache\FromCacheAsync\Queryable_WithDefault.cs" />
     <Compile Include="QueryCache\FromCacheAsync\Queryable_WithExpiration.cs" />

@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{01BCB005-E336-4D9D-897D-3B7CD887AE55}</ProjectGuid>
+    <ProjectGuid>{C41195F5-937E-4F2B-9F36-20650A804CAA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Z.EntityFramework.Plus.EFCore</RootNamespace>
@@ -204,10 +204,12 @@
     <Compile Include="Extensions\ObjectContext\GetDbContext.cs" />
     <Compile Include="Extensions\ObjectContext\GetInterceptionContext.cs" />
     <Compile Include="Internal\CreateEntity\CreateEntityCommand.cs">
-      <SubType>Component</SubType>
+      <SubType>
+      </SubType>
     </Compile>
     <Compile Include="Internal\CreateEntity\CreateEntityConnection.cs">
-      <SubType>Component</SubType>
+      <SubType>
+      </SubType>
     </Compile>
     <Compile Include="Internal\CreateEntity\CreateEntityDataReader.cs" />
     <Compile Include="Internal\CreateEntity\CreateEntityRelationalConnection.cs" />

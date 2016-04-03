@@ -150,8 +150,13 @@
     <Compile Include="Audit\EntitySoftAdded\Inheritance_TPH.cs" />
     <Compile Include="Audit\EntitySoftAdded\Inheritance_TPT.cs" />
     <Compile Include="BatchDelete\BatchDelete_PrimaryKey.cs" />
+    <Compile Include="BatchDelete\BatchDelete_WhereValue.cs" />
     <Compile Include="BatchDelete\PrimaryKey\Single.cs" />
     <Compile Include="BatchDelete\PrimaryKey\Many.cs" />
+    <Compile Include="BatchDelete\WhereValue\Many_Constant.cs" />
+    <Compile Include="BatchDelete\WhereValue\Many_Variable.cs" />
+    <Compile Include="BatchDelete\WhereValue\Single_Constant.cs" />
+    <Compile Include="BatchDelete\WhereValue\Single_Variable.cs" />
     <Compile Include="BatchUpdate\ActionAsync\TenAsync.cs" />
     <Compile Include="BatchUpdate\ActionAsync\ThirtyAsync.cs" />
     <Compile Include="BatchUpdate\ActionAsync\TwentyAsync.cs" />
@@ -167,6 +172,7 @@
     <Compile Include="BatchUpdate\BatchUpdate_BatchSize.cs" />
     <Compile Include="BatchUpdate\BatchUpdate_Executing.cs" />
     <Compile Include="BatchUpdate\BatchUpdate_SqlSchema.cs" />
+    <Compile Include="BatchUpdate\BatchUpdate_WhereValue.cs" />
     <Compile Include="BatchUpdate\BatchUpdate_Value.cs" />
     <Compile Include="BatchUpdate\BatchUpdate_Transaction.cs" />
     <Compile Include="BatchUpdate\BatchSize\Default.cs" />
@@ -224,6 +230,10 @@
     <Compile Include="BatchUpdate\Value\Single_Property_Type.cs" />
     <Compile Include="BatchUpdate\Value\Many_Variable.cs" />
     <Compile Include="BatchUpdate\Value\Single_Variable.cs" />
+    <Compile Include="BatchUpdate\WhereValue\Many_Constant.cs" />
+    <Compile Include="BatchUpdate\WhereValue\Many_Variable.cs" />
+    <Compile Include="BatchUpdate\WhereValue\Single_Constant.cs" />
+    <Compile Include="BatchUpdate\WhereValue\Single_Variable.cs" />
     <Compile Include="My.cs" />
     <Compile Include="QueryCache\FromCacheAsync\QueryDeferred_WithDefault.cs" />
     <Compile Include="QueryCache\FromCacheAsync\QueryDeferred_WithExpiration.cs" />
@@ -389,6 +399,7 @@
     <Compile Include="_Model\Association_OneToManyToMany_Left.cs" />
     <Compile Include="_Model\Association_OneToManyToMany_RightRight.cs" />
     <Compile Include="_Model\Association_OneToManyToMany_Right.cs" />
+    <Compile Include="_Model\Entity_Enum.cs" />
     <Compile Include="_Model\Entity_Guid.cs" />
     <Compile Include="_Model\Entity_ManyGuid.cs" />
     <Compile Include="_Model\Internal_Entity_Basic_Many.cs" />

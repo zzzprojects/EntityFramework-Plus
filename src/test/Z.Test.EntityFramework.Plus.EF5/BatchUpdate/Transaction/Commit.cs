@@ -5,11 +5,11 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
-#if EF6 || EF7
+#if EF6 || EFCORE
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Z.EntityFramework.Plus;
-#if EF7
+#if EFCORE
 using Microsoft.Data.Entity;
 
 #endif

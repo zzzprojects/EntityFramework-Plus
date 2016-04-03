@@ -18,7 +18,7 @@ using Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel;
 using System.Data.Entity.Core.Objects;
 using Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel;
 
-#elif EF7
+#elif EFCORE
 using System.Reflection;
 using Microsoft.Data.Entity;
 using Microsoft.Data.Entity.Metadata;
@@ -155,7 +155,7 @@ SELECT  @totalRowAffected
                     innerObjectQuery.Context.Connection.Close();
                 }
             }
-#elif EF7
+#elif EFCORE
             var dbContext = query.GetDbContext();
             var entity = dbContext.Model.FindEntityType(typeof (T));
             var keys = entity.GetKeys().ToList()[0].Properties;
@@ -250,12 +250,16 @@ SELECT  @totalRowAffected
             var parameterCollection = query.Parameters;
             foreach (var parameter in parameterCollection)
             {
-                command.Parameters.Add(parameter);
+                var param = command.CreateParameter();
+                param.ParameterName = parameter.Name;
+                param.Value = parameter.Value;
+
+                command.Parameters.Add(param);
             }
 
             return command;
         }
-#elif EF7
+#elif EFCORE
         public DbCommand CreateCommand(IQueryable query, IEntityType entity)
         {
             var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName == "EntityFramework.MicrosoftSqlServer, Version=7.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60");
@@ -311,7 +315,11 @@ SELECT  @totalRowAffected
                 var parameterCollection = relationalCommand.Parameters;
                 foreach (var parameter in parameterCollection)
                 {
-                    command.Parameters.Add(parameter);
+                    var param = command.CreateParameter();
+                    param.ParameterName = parameter.Name;
+                    param.Value = parameter.Value;
+
+                    command.Parameters.Add(param);
                 }
 
                 return command;

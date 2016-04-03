@@ -250,7 +250,11 @@ SELECT  @totalRowAffected
             var parameterCollection = query.Parameters;
             foreach (var parameter in parameterCollection)
             {
-                command.Parameters.Add(parameter);
+                var param = command.CreateParameter();
+                param.ParameterName = parameter.Name;
+                param.Value = parameter.Value;
+
+                command.Parameters.Add(param);
             }
 
             return command;
@@ -311,7 +315,11 @@ SELECT  @totalRowAffected
                 var parameterCollection = relationalCommand.Parameters;
                 foreach (var parameter in parameterCollection)
                 {
-                    command.Parameters.Add(parameter);
+                    var param = command.CreateParameter();
+                    param.ParameterName = parameter.Name;
+                    param.Value = parameter.Value;
+
+                    command.Parameters.Add(param);
                 }
 
                 return command;
