@@ -118,6 +118,10 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Transactions" />
+    <Reference Include="Z.EntityFramework.Plus.EFCore, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\artifacts\bin\Z.EntityFramework.Plus.EFCore\Debug\net451\Z.EntityFramework.Plus.EFCore.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -450,12 +454,6 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Z.EntityFramework.Plus.EFCore\Z.EntityFramework.Plus.EFCore.csproj">
-      <Project>{c41195f5-937e-4f2b-9f36-20650a804caa}</Project>
-      <Name>Z.EntityFramework.Plus.EFCore</Name>
-    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

@@ -7,6 +7,7 @@
 
 #if EF5 || EF6
 using System;
+using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Reflection;
@@ -49,9 +50,23 @@ namespace Z.EntityFramework.Plus
                 return objectQuery;
             }
 
+            var type = query.GetType();
+
             if (query.GetType().IsGenericType && query.GetType().GetGenericTypeDefinition() == typeof(DbQuery<>))
             {
                 var internalQueryProperty = typeof(DbQuery<>).MakeGenericType(query.ElementType).GetProperty("InternalQuery", BindingFlags.NonPublic | BindingFlags.Instance);
+                var internalQuery = internalQueryProperty.GetValue(query, null);
+                var objectQueryContextProperty = internalQuery.GetType().GetProperty("ObjectQuery", BindingFlags.Public | BindingFlags.Instance);
+                var objectQueryContext = objectQueryContextProperty.GetValue(internalQuery, null);
+
+                objectQuery = objectQueryContext as ObjectQuery;
+
+                return objectQuery;
+            }
+
+            if (query.GetType().IsGenericType && query.GetType().GetGenericTypeDefinition() == typeof(DbSet<>))
+            {
+                var internalQueryProperty = typeof(DbSet<>).MakeGenericType(query.ElementType).GetProperty("InternalQuery", BindingFlags.NonPublic | BindingFlags.Instance);
                 var internalQuery = internalQueryProperty.GetValue(query, null);
                 var objectQueryContextProperty = internalQuery.GetType().GetProperty("ObjectQuery", BindingFlags.Public | BindingFlags.Instance);
                 var objectQueryContext = objectQueryContextProperty.GetValue(internalQuery, null);

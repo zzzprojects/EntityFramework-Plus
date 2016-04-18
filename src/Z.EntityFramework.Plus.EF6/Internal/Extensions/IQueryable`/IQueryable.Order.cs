@@ -7,7 +7,9 @@
 
 using System.Linq;
 using System.Linq.Expressions;
-
+#if DNXCORE50
+using System.Reflection;
+#endif
 namespace Z.EntityFramework.Plus
 {
     public static partial class IQueryableExtensions

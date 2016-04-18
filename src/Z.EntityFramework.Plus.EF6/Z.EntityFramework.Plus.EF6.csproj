@@ -82,7 +82,9 @@
     <Compile Include="Audit\Standalone\LinqExpressionExtensions\LambdaExpression\LambdaExpression.GetPropertyOrFieldAccessors.cs" />
     <Compile Include="Audit\Standalone\LinqExpressionExtensions\PropertyOrFieldAccessor.cs" />
     <Compile Include="Audit\Standalone\LinqExpressionExtensions\_Internal\ExpressionExtensions.cs" />
-    <Compile Include="Audit\Standalone\LinqExpressionExtensions\_Internal\ExpressionExtensions.PropertyOrField.cs" />
+    <Compile Include="Audit\Standalone\LinqExpressionExtensions\_Internal\ExpressionExtensions.PropertyOrField.cs">
+      <DependentUpon>ExpressionExtensions.cs</DependentUpon>
+    </Compile>
     <Compile Include="BatchDelete\BatchDelete.cs" />
     <Compile Include="BatchDelete\BatchDeleteManager.cs" />
     <Compile Include="BatchDelete\Extensions\DeleteAsync.cs" />
@@ -159,7 +161,9 @@
     <Compile Include="Internal\LinqExpressionExtensions\LambdaExpression\LambdaExpression.GetPropertyOrFieldAccessors.cs" />
     <Compile Include="Internal\LinqExpressionExtensions\PropertyOrFieldAccessor.cs" />
     <Compile Include="Internal\LinqExpressionExtensions\_Internal\ExpressionExtensions.cs" />
-    <Compile Include="Internal\LinqExpressionExtensions\_Internal\ExpressionExtensions.PropertyOrField.cs" />
+    <Compile Include="Internal\LinqExpressionExtensions\_Internal\ExpressionExtensions.PropertyOrField.cs">
+      <DependentUpon>ExpressionExtensions.cs</DependentUpon>
+    </Compile>
     <Compile Include="Internal\Visitor\ExpressionVisitor.cs" />
     <Compile Include="Model\Model\Model.GetConceptualModelString.cs" />
     <Compile Include="Model\Model\Model.GetMappingModelString.cs" />
@@ -188,6 +192,9 @@
     <Compile Include="Model\SchemaObjectModel\SchemaEntityType.cs" />
     <Compile Include="Model\SchemaObjectModel\SchemaEntityType_Generic.cs" />
     <Compile Include="Model\Extensions\String\String.SubstringLastIndexOf.cs" />
+    <Compile Include="QueryCache\Standalone\CreateCommand.cs" />
+    <Compile Include="QueryCache\Standalone\ExceptionMessage.cs" />
+    <Compile Include="QueryCache\Standalone\IQueryable\IQueryable.GetObjectQuery.cs" />
     <Compile Include="QueryExtensions\QueryAddOrAppendOrder\Extensions\IQueryable`.AddToRootOrAppendOrderBy.cs" />
     <Compile Include="QueryExtensions\QueryAddOrAppendOrder\Extensions\IQueryable`.AddOrAppendOrderByDescending.cs" />
     <Compile Include="QueryExtensions\QueryAddOrAppendOrder\Extensions\IQueryable`.AddOrAppendOrderBy.cs" />
@@ -309,6 +316,9 @@
     <Compile Include="QueryInterceptor\QueryInterceptorQueryable`.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Audit\Extensions\DbContext\SaveChanges.cs.bak">
+      <DependentUpon>SaveChanges.cs</DependentUpon>
+    </Content>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

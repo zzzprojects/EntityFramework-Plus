@@ -5,7 +5,6 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
-
 #if NET45
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +14,7 @@ using System;
 using System.Data.Entity;
 using System.Runtime.Caching;
 
-#elif EF7
+#elif EFCORE
 using Microsoft.Data.Entity;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -107,7 +106,7 @@ namespace Z.EntityFramework.Plus
         {
             return query.FromCacheAsync(QueryCacheManager.DefaultCacheItemPolicy, tags);
         }
-#elif EF7
+#elif EFCORE
     /// <summary>
     ///     Return the result of the <paramref name="query" /> from the cache. If the query is not cached
     ///     yet, the query is materialized and cached before being returned.

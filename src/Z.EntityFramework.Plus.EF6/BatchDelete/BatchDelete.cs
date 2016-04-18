@@ -195,10 +195,10 @@ SELECT  @totalRowAffected
         }
 
 #if EF5 || EF6
-        /// <summary>Creates a command to execute the batch operation.</summary>
-        /// <param name="query">The query.</param>
-        /// <param name="entity">The schema entity.</param>
-        /// <returns>The new command to execute the batch operation.</returns>
+    /// <summary>Creates a command to execute the batch operation.</summary>
+    /// <param name="query">The query.</param>
+    /// <param name="entity">The schema entity.</param>
+    /// <returns>The new command to execute the batch operation.</returns>
         internal DbCommand CreateCommand<T>(ObjectQuery query, SchemaEntityType<T> entity)
         {
             // GET mapping
@@ -262,6 +262,79 @@ SELECT  @totalRowAffected
 #elif EFCORE
         public DbCommand CreateCommand(IQueryable query, IEntityType entity)
         {
+#if DNXCORE50
+            try
+            {
+                var assembly = Assembly.Load(new AssemblyName("EntityFramework.MicrosoftSqlServer, Version = 7.0.0.0, Culture = neutral, PublicKeyToken = adb9793829ddae60"));
+
+                if (assembly != null)
+                {
+                    var type = assembly.GetType("Microsoft.Data.Entity.SqlServerMetadataExtensions");
+
+                    var sqlServerEntityTypeMethod = type.GetMethod("SqlServer", new[] {typeof (IEntityType)});
+                    var sqlServerPropertyMethod = type.GetMethod("SqlServer", new[] {typeof (IProperty)});
+                    var sqlServer = (IRelationalEntityTypeAnnotations) sqlServerEntityTypeMethod.Invoke(null, new[] {entity});
+
+                    // GET mapping
+                    var tableName = string.IsNullOrEmpty(sqlServer.Schema) ?
+                        string.Concat("[", sqlServer.TableName, "]") :
+                        string.Concat("[", sqlServer.Schema, "].[", sqlServer.TableName, "]");
+
+                    // GET keys mappings
+                    var columnKeys = new List<string>();
+                    foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
+                    {
+                        var mappingProperty = sqlServerPropertyMethod.Invoke(null, new[] {propertyKey});
+
+                        var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
+                        columnKeys.Add((string) columnNameProperty.GetValue(mappingProperty));
+                    }
+
+                    // GET command text template
+                    var commandTextTemplate = BatchSize > 0 ?
+                        BatchDelayInterval > 0 ?
+                            CommandTextWhileDelayTemplate :
+                            CommandTextWhileTemplate :
+                        CommandTextTemplate;
+
+                    // GET inner query
+                    var relationalCommand = query.CreateCommand();
+                    var querySelect = relationalCommand.CommandText;
+
+                    // GET primary key join
+                    var primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.[", x, "] = B.[", x, "]")));
+
+                    // REPLACE template
+                    commandTextTemplate = commandTextTemplate.Replace("{TableName}", tableName)
+                        .Replace("{Select}", querySelect)
+                        .Replace("{PrimaryKeys}", primaryKeys)
+                        .Replace("{Top}", BatchSize.ToString())
+                        .Replace("{Delay}", TimeSpan.FromMilliseconds(BatchDelayInterval).ToString(@"hh\:mm\:ss\:fff"));
+
+                    // CREATE command
+                    var command = query.GetDbContext().CreateStoreCommand();
+                    command.CommandText = commandTextTemplate;
+
+                    // ADD Parameter
+                    var parameterCollection = relationalCommand.Parameters;
+                    foreach (var parameter in parameterCollection)
+                    {
+                        var param = command.CreateParameter();
+                        param.ParameterName = parameter.Name;
+                        param.Value = parameter.Value;
+
+                        command.Parameters.Add(param);
+                    }
+
+                    return command;
+                }
+                return null;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+#else
             var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName == "EntityFramework.MicrosoftSqlServer, Version=7.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60");
 
             if (assembly != null)
@@ -325,6 +398,7 @@ SELECT  @totalRowAffected
                 return command;
             }
             return null;
+#endif
         }
 #endif
     }

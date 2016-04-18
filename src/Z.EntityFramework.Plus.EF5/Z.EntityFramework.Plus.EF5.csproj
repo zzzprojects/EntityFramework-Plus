@@ -200,6 +200,9 @@
     <Compile Include="QueryCache\Extensions\QueryDeferred`\FromCache.cs" />
     <Compile Include="QueryCache\Extensions\QueryDeferred`\FromCacheAsync.cs" />
     <Compile Include="QueryCache\QueryCacheManager.cs" />
+    <Compile Include="QueryCache\Standalone\CreateCommand.cs" />
+    <Compile Include="QueryCache\Standalone\ExceptionMessage.cs" />
+    <Compile Include="QueryCache\Standalone\IQueryable\IQueryable.GetObjectQuery.cs" />
     <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredAggregate.cs" />
     <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredAll.cs" />
     <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredAny.cs" />

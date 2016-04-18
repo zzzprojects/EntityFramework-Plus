@@ -17,8 +17,13 @@ namespace Z.EntityFramework.Plus
 {
     internal static class DynamicAnonymousType
     {
+
         private static readonly AssemblyName AssemblyName = new AssemblyName {Name = "<>f__AnonymousType"};
+#if DNXCORE50
+        private static readonly ModuleBuilder ModuleBuilder = System.Reflection.Emit.AssemblyBuilder.DefineDynamicAssembly(AssemblyName, AssemblyBuilderAccess.Run).DefineDynamicModule(AssemblyName.Name);
+#else
         private static readonly ModuleBuilder ModuleBuilder = Thread.GetDomain().DefineDynamicAssembly(AssemblyName, AssemblyBuilderAccess.Run).DefineDynamicModule(AssemblyName.Name);
+#endif
         private static readonly Dictionary<string, Tuple<string, Type>> BuiltTypes = new Dictionary<string, Tuple<string, Type>>();
 
         public static object Create(List<Tuple<string, object>> values)
@@ -106,7 +111,11 @@ namespace Z.EntityFramework.Plus
                 foreach (var field in fields)
                     typeBuilder.DefineField(field.Item1, field.Item2, FieldAttributes.Public);
 
+#if DNXCORE50
+                BuiltTypes[typeKey] = new Tuple<string, Type>(typeName, typeBuilder.CreateTypeInfo().AsType());
+#else
                 BuiltTypes[typeKey] = new Tuple<string, Type>(typeName, typeBuilder.CreateType());
+#endif
 
                 return BuiltTypes[typeKey].Item2;
             }

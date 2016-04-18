@@ -8,10 +8,11 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 #if EF5 || EF6
 using System.Runtime.Caching;
 
-#elif EF7
+#elif EFCORE
 using Microsoft.Extensions.Caching.Memory;
 
 #endif
@@ -27,7 +28,7 @@ namespace Z.EntityFramework.Plus
 #if EF5 || EF6
             Cache = MemoryCache.Default;
             DefaultCacheItemPolicy = new CacheItemPolicy();
-#elif EF7
+#elif EFCORE
             Cache = new MemoryCache(new MemoryCacheOptions());
             DefaultMemoryCacheEntryOptions = new MemoryCacheEntryOptions();
 #endif
@@ -36,16 +37,16 @@ namespace Z.EntityFramework.Plus
         }
 
 #if EF5 || EF6
-        /// <summary>Gets or sets the cache to use for QueryCacheExtensions extension methods.</summary>
-        /// <value>The cache to use for QueryCacheExtensions extension methods.</value>
+    /// <summary>Gets or sets the cache to use for QueryCacheExtensions extension methods.</summary>
+    /// <value>The cache to use for QueryCacheExtensions extension methods.</value>
         public static ObjectCache Cache { get; set; }
 
         /// <summary>Gets or sets the default cache item policy to use when no policy is specified.</summary>
         /// <value>The default cache item policy to use when no policy is specified.</value>
         public static CacheItemPolicy DefaultCacheItemPolicy { get; set; }
-#elif EF7
-    /// <summary>Gets or sets the cache to use for the QueryCacheExtensions extension methods.</summary>
-    /// <value>The cache to use for the QueryCacheExtensions extension methods.</value>
+#elif EFCORE
+        /// <summary>Gets or sets the cache to use for the QueryCacheExtensions extension methods.</summary>
+        /// <value>The cache to use for the QueryCacheExtensions extension methods.</value>
         public static IMemoryCache Cache { get; set; }
 
         /// <summary>Gets or sets the default memory cache entry options to use when no policy is specified.</summary>
@@ -104,9 +105,41 @@ namespace Z.EntityFramework.Plus
         /// <param name="query">The query to cache or retrieve from the QueryCacheManager.</param>
         /// <param name="tags">A variable-length parameters list containing tags to create the cache key.</param>
         /// <returns>The cache key used to cache or retrieve a query from the QueryCacheManager.</returns>
-        internal static string GetCacheKey(IQueryable query, string[] tags)
+        public static string GetCacheKey(IQueryable query, string[] tags)
         {
-            return CachePrefix + string.Join(";", tags) + query;
+            var sb = new StringBuilder();
+
+#if EF5 || EF6
+            var objectQuery = query.GetObjectQuery();
+
+            sb.AppendLine(CachePrefix);
+            sb.AppendLine(string.Join(";", tags));
+            sb.AppendLine(objectQuery.ToTraceString());
+
+            foreach (var parameter in objectQuery.Parameters)
+            {
+                sb.Append(parameter.Name);
+                sb.Append(";");
+                sb.Append(parameter.Value);
+                sb.AppendLine(";");
+            }
+#elif EFCORE
+            var command = query.CreateCommand();
+
+            sb.AppendLine(CachePrefix);
+            sb.AppendLine(string.Join(";", tags));
+            sb.AppendLine(command.CommandText);
+
+            foreach (var parameter in command.Parameters)
+            {
+                sb.Append(parameter.Name);
+                sb.Append(";");
+                sb.Append(parameter.Value);
+                sb.AppendLine(";");
+            }
+#endif
+
+            return sb.ToString();
         }
 
         /// <summary>Gets cached keys used to cache or retrieve a query from the QueryCacheManager.</summary>
@@ -114,9 +147,41 @@ namespace Z.EntityFramework.Plus
         /// <param name="query">The query to cache or retrieve from the QueryCacheManager.</param>
         /// <param name="tags">A variable-length parameters list containing tags to create the cache key.</param>
         /// <returns>The cache key used to cache or retrieve a query from the QueryCacheManager.</returns>
-        internal static string GetCacheKey<T>(QueryDeferred<T> query, string[] tags)
+        public static string GetCacheKey<T>(QueryDeferred<T> query, string[] tags)
         {
-            return CachePrefix + string.Join(";", tags) + query.Query.Expression;
+            var sb = new StringBuilder();
+
+#if EF5 || EF6
+            var objectQuery = query.Query.GetObjectQuery();
+
+            sb.AppendLine(CachePrefix);
+            sb.AppendLine(string.Join(";", tags));
+            sb.AppendLine(objectQuery.ToTraceString());
+
+            foreach (var parameter in objectQuery.Parameters)
+            {
+                sb.Append(parameter.Name);
+                sb.Append(";");
+                sb.Append(parameter.Value);
+                sb.AppendLine(";");
+            }
+#elif EFCORE
+            var command = query.Query.CreateCommand();
+
+            sb.AppendLine(CachePrefix);
+            sb.AppendLine(string.Join(";", tags));
+            sb.AppendLine(command.CommandText);
+
+            foreach (var parameter in command.Parameters)
+            {
+                sb.Append(parameter.Name);
+                sb.Append(";");
+                sb.Append(parameter.Value);
+                sb.AppendLine(";");
+            }
+#endif
+
+            return sb.ToString();
         }
     }
 }

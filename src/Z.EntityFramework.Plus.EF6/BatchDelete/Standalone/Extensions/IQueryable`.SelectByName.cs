@@ -10,6 +10,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
+#if DNXCORE50
+using System.Reflection;
+#endif
+
 namespace Z.EntityFramework.Plus
 {
     internal static partial class IQueryableExtensions
@@ -21,25 +25,25 @@ namespace Z.EntityFramework.Plus
         /// <returns>An IQueryable with the name selected.</returns>
         internal static IQueryable SelectByName<T>(this IQueryable<T> query, List<string> names)
         {
-            var type = typeof (T);
+            var type = typeof(T);
 
             if (names.Count == 1)
             {
-                var expressionQuery = Expression.Parameter(typeof (IQueryable<T>));
+                var expressionQuery = Expression.Parameter(typeof(IQueryable<T>));
 
                 var expressionParameter = Expression.Parameter(type);
                 var expressionProperty = Expression.Property(expressionParameter, type.GetProperty(names[0]));
                 var lambdaSelector = Expression.Lambda(expressionProperty, expressionParameter);
-                var selectMethod = typeof (Queryable).GetMethods().First(x => x.Name == "Select"
-                                                                              && x.GetParameters().Length == 2
-                                                                              && x.GetParameters()[1].ParameterType.GetGenericArguments()[0].GetGenericArguments().Length == 2);
+                var selectMethod = typeof(Queryable).GetMethods().First(x => x.Name == "Select"
+                                                                             && x.GetParameters().Length == 2
+                                                                             && x.GetParameters()[1].ParameterType.GetGenericArguments()[0].GetGenericArguments().Length == 2);
 
                 var selectMethodGeneric = selectMethod.MakeGenericMethod(type, expressionProperty.Type);
-                var expressionSelect = Expression.Call(selectMethodGeneric, new Expression[] {expressionQuery, lambdaSelector});
+                var expressionSelect = Expression.Call(selectMethodGeneric, new Expression[] { expressionQuery, lambdaSelector });
                 var lambdaSelect = Expression.Lambda<Func<IQueryable<T>, object>>(expressionSelect, expressionQuery).Compile();
 
                 // query.Select(x => x.Property1);
-                return (IQueryable) lambdaSelect(query);
+                return (IQueryable)lambdaSelect(query);
             }
             else
             {
@@ -50,17 +54,17 @@ namespace Z.EntityFramework.Plus
 
                 var lambdaSelector = Expression.Lambda(anonymousType, expressionParameter);
 
-                var selectMethod = typeof (Queryable).GetMethods().First(x => x.Name == "Select"
-                                                                              && x.GetParameters().Length == 2
-                                                                              && x.GetParameters()[1].ParameterType.GetGenericArguments()[0].GetGenericArguments().Length == 2);
+                var selectMethod = typeof(Queryable).GetMethods().First(x => x.Name == "Select"
+                                                                             && x.GetParameters().Length == 2
+                                                                             && x.GetParameters()[1].ParameterType.GetGenericArguments()[0].GetGenericArguments().Length == 2);
 
-                var expressionQuery = Expression.Parameter(typeof (IQueryable<T>));
+                var expressionQuery = Expression.Parameter(typeof(IQueryable<T>));
                 var selectMethodGeneric = selectMethod.MakeGenericMethod(type, anonymousType.Type);
-                var expressionSelect = Expression.Call(selectMethodGeneric, new Expression[] {expressionQuery, lambdaSelector});
+                var expressionSelect = Expression.Call(selectMethodGeneric, new Expression[] { expressionQuery, lambdaSelector });
                 var lambdaSelect = Expression.Lambda<Func<IQueryable<T>, object>>(expressionSelect, expressionQuery).Compile();
 
                 // query.Select(x => new { x.Property1, x.Property2, ..., x.PropertyN });
-                return (IQueryable) lambdaSelect(query);
+                return (IQueryable)lambdaSelect(query);
             }
         }
     }

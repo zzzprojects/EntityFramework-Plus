@@ -20,7 +20,7 @@ namespace Z.EntityFramework.Plus
         /// <summary>Audits and saves all changes made in this context to the underlying database.</summary>
         /// <param name="context">The context used to audits and saves all changes made.</param>
         /// <param name="audit">The audit to use to add changes made to the context.</param>
-        /// <returns>The number of objects written to the underlying database.</returns>-
+        /// <returns>The number of objects written to the underlying database.</returns>
         public static int SaveChanges(this DbContext context, Audit audit)
         {
             audit.PreSaveChanges(context);

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System;
 using System.Runtime.Caching;
 
-#elif EF7
+#elif EFCORE
 using Microsoft.Extensions.Caching.Memory;
 
 #endif
@@ -102,7 +102,7 @@ namespace Z.EntityFramework.Plus
         {
             return query.FromCacheAsync(QueryCacheManager.DefaultCacheItemPolicy, tags);
         }
-#elif EF7
+#elif EFCORE
     /// <summary>
     ///     Return the result of the <paramref name="query" /> from the cache. If the query is not cached
     ///     yet, the query is materialized and cached before being returned.

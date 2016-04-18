@@ -1,0 +1,40 @@
+{
+  "version": "1.0.7-*",
+  "description": "EF Bulk Operations & Utilities | Bulk Insert, Update, Delete, Merge from database.",
+  "authors": [ "ZZZ Projects Inc." ],
+  "tags": [ "" ],
+  "projectUrl": "https://github.com/zzzprojects/EntityFramework-Plus",
+  "licenseUrl": "https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE",
+  "compilationOptions": {
+    "define": [ "EFCORE", "NET45" ]
+  },
+  "frameworks": {
+    "net451": {
+      "dependencies": {
+        "System.Linq.Expressions": "4.0.11-beta-23516"
+
+      },
+      "frameworkAssemblies": {
+        "System.Data": "4.0.0.0",
+        "System.Linq.Expressions": "4.0.0.0",
+        "System.Runtime": "4.0.10.0",
+        "System.XML": "4.0.0.0",
+        "System.Xml.Linq": "4.0.0.0"
+      }
+    },
+    "dnxcore50": {
+      "dependencies": {
+        "Microsoft.CSharp": "4.0.1-beta-23516",
+        "System.Collections": "4.0.11-beta-23516",
+        "System.Linq": "4.0.1-beta-23516",
+        "System.Threading": "4.0.11-beta-23516",
+        "System.Runtime": "4.0.21-beta-23516"
+      }
+    }
+  },
+  "dependencies": {
+    "EntityFramework.Relational": "7.0.0-rc1-final",
+    "System.Dynamic.Runtime": "4.0.11-beta-23516",
+    "System.Reflection.Emit": "4.0.1-beta-23516"
+  }
+}

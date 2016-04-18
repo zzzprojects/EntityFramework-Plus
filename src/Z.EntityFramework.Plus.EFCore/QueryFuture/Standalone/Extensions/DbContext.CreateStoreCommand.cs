@@ -9,6 +9,8 @@
 #if STANDALONE && EFCORE
 using System.Data.Common;
 using Microsoft.Data.Entity;
+using Microsoft.Data.Entity.Infrastructure;
+using Microsoft.Data.Entity.Storage;
 
 namespace Z.EntityFramework.Plus
 {

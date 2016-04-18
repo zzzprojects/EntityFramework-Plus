@@ -8,7 +8,6 @@
 #if EFCORE
 using System;
 using System.Collections;
-using System.Data;
 using System.Data.Common;
 
 namespace Z.EntityFramework.Plus
@@ -57,10 +56,12 @@ namespace Z.EntityFramework.Plus
             get { return OriginalDataReader.RecordsAffected; }
         }
 
+#if !DNXCORE50
         public override void Close()
         {
             // DO NOT close reader
         }
+#endif
 
         public override bool GetBoolean(int ordinal)
         {
@@ -152,10 +153,13 @@ namespace Z.EntityFramework.Plus
             return OriginalDataReader.GetOrdinal(name);
         }
 
+#if TODO
         public override DataTable GetSchemaTable()
         {
             return OriginalDataReader.GetSchemaTable();
         }
+#endif
+
 
         public override string GetString(int ordinal)
         {

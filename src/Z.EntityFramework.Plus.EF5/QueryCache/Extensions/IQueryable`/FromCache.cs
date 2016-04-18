@@ -12,7 +12,7 @@ using System;
 using System.Data.Entity;
 using System.Runtime.Caching;
 
-#elif EF7
+#elif EFCORE
 using Microsoft.Data.Entity;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -94,7 +94,7 @@ namespace Z.EntityFramework.Plus
         {
             return query.FromCache(QueryCacheManager.DefaultCacheItemPolicy, tags);
         }
-#elif EF7
+#elif EFCORE
     /// <summary>
     ///     Return the result of the <paramref name="query" /> from the cache. If the query is not cached
     ///     yet, the query is materialized asynchronously and cached before being returned.

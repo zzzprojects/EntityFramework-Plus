@@ -299,7 +299,32 @@ SELECT  @totalRowAffected
 #elif EFCORE
         public DbCommand CreateCommand(IQueryable query, IEntityType entity, List<Tuple<string, object>> values)
         {
-            var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName == "EntityFramework.MicrosoftSqlServer, Version=7.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60");
+#if DNXCORE50
+            var assembly = Assembly.Load(new AssemblyName("EntityFramework.MicrosoftSqlServer, Version = 7.0.0.0, Culture = neutral, PublicKeyToken = adb9793829ddae60"));
+
+            if (assembly != null)
+            {
+                var type = assembly.GetType("Microsoft.Data.Entity.SqlServerMetadataExtensions");
+                var sqlServerEntityTypeMethod = type.GetMethod("SqlServer", new[] {typeof (IEntityType)});
+                var sqlServerPropertyMethod = type.GetMethod("SqlServer", new[] {typeof (IProperty)});
+                var sqlServer = (IRelationalEntityTypeAnnotations) sqlServerEntityTypeMethod.Invoke(null, new[] {entity});
+
+                // GET mapping
+                var tableName = string.IsNullOrEmpty(sqlServer.Schema) ?
+                    string.Concat("[", sqlServer.TableName, "]") :
+                    string.Concat("[", sqlServer.Schema, "].[", sqlServer.TableName, "]");
+
+                // GET keys mappings
+                var columnKeys = new List<string>();
+                foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
+                {
+                    var mappingProperty = sqlServerPropertyMethod.Invoke(null, new[] {propertyKey});
+
+                    var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
+                    columnKeys.Add((string) columnNameProperty.GetValue(mappingProperty));
+                }
+#else
+                            var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName == "EntityFramework.MicrosoftSqlServer, Version=7.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60");
 
             if (assembly != null)
             {
@@ -322,7 +347,7 @@ SELECT  @totalRowAffected
                     var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
                     columnKeys.Add((string) columnNameProperty.GetValue(mappingProperty));
                 }
-
+#endif
                 // GET command text template
                 var commandTextTemplate =
 #if TODO
@@ -397,6 +422,27 @@ SELECT  @totalRowAffected
             // GET mapping
             var mapping = entity.Info.EntityTypeMapping.MappingFragment;
 #elif EFCORE
+
+#if DNXCORE50
+            Assembly assembly;
+
+            try
+            {
+                assembly = Assembly.Load(new AssemblyName("EntityFramework.MicrosoftSqlServer, Version = 7.0.0.0, Culture = neutral, PublicKeyToken = adb9793829ddae60"));
+            }
+            catch (Exception)
+            {
+                throw new Exception("");
+            }
+
+            if (assembly == null)
+            {
+                throw new Exception("");
+            }
+
+            var type = assembly.GetType("Microsoft.Data.Entity.SqlServerMetadataExtensions");
+            var sqlServerPropertyMethod = type.GetMethod("SqlServer", new[] {typeof (IProperty)});
+#else
             var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName == "EntityFramework.MicrosoftSqlServer, Version=7.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60");
 
             if (assembly == null)
@@ -408,6 +454,8 @@ SELECT  @totalRowAffected
             var sqlServerPropertyMethod = type.GetMethod("SqlServer", BindingFlags.Public | BindingFlags.Static, null, new[] {typeof (IProperty)}, null);
 
 #endif
+#endif
+
 
             // GET updateFactory command
             var values = ResolveUpdateFromQueryDictValues(updateFactory);
@@ -470,10 +518,17 @@ SELECT  @totalRowAffected
                     var command = ((IQueryable) result).CreateCommand();
                     var commandText = command.CommandText;
 
+#if DNXCORE50
                     // GET the 'value' part
+                    var valueSql = commandText.IndexOf("AS [value]" + Environment.NewLine + "FROM", StringComparison.CurrentCultureIgnoreCase) != -1 ?
+                        commandText.Substring(6, commandText.IndexOf("AS [value]" + Environment.NewLine + "FROM", StringComparison.CurrentCultureIgnoreCase) - 6) :
+                        commandText.Substring(6, commandText.IndexOf("FROM", StringComparison.CurrentCultureIgnoreCase) - 6);
+#else
+                                        // GET the 'value' part
                     var valueSql = commandText.IndexOf("AS [value]" + Environment.NewLine + "FROM", StringComparison.InvariantCultureIgnoreCase) != -1 ?
                         commandText.Substring(6, commandText.IndexOf("AS [value]" + Environment.NewLine + "FROM", StringComparison.InvariantCultureIgnoreCase) - 6) :
                         commandText.Substring(6, commandText.IndexOf("FROM", StringComparison.InvariantCultureIgnoreCase) - 6);
+#endif                
 
                     // Add the destination name
                     valueSql = valueSql.Replace("[x]", "B");

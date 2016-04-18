@@ -90,7 +90,7 @@ namespace Z.EntityFramework.Plus
 
                 if (entry.Parent.CurrentOrDefaultConfiguration.IsAuditedProperty(entry.Entry, propertyEntry.Name))
                 {
-                    if (audit.Configuration.IgnorePropertyUnchanged || property.Metadata.IsKey() || property.IsModified)
+                    if (!audit.Configuration.IgnorePropertyUnchanged || property.Metadata.IsKey() || property.IsModified)
                     {
                         entry.Properties.Add(new AuditEntryProperty(entry, propertyEntry.Name, property.OriginalValue, property.CurrentValue));
                     }

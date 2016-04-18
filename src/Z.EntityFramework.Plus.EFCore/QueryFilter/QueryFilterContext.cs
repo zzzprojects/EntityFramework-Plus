@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 #if EF5 || EF6
 using System.Data.Entity;
 
@@ -211,7 +212,12 @@ namespace Z.EntityFramework.Plus
                         FilterSetByType.AddOrAppend(@interface, filterDbSet);
                     }
 
+#if DNXCORE50
+                    baseType = baseType.GetTypeInfo().BaseType;
+#else
                     baseType = baseType.BaseType;
+#endif
+
                 }
             }
         }

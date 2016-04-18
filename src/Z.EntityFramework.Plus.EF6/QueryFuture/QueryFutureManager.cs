@@ -28,7 +28,7 @@ namespace Z.EntityFramework.Plus
 #if EF5 || EF6
             CacheWeakFutureBatch = new ConditionalWeakTable<ObjectContext, QueryFutureBatch>();
 #elif EFCORE
-            CacheWeakFutureBatch = new ConditionalWeakTable<DbContext, QueryFutureBatch>();
+            CacheWeakFutureBatch = new System.Runtime.CompilerServices.ConditionalWeakTable<DbContext, QueryFutureBatch>();
 #endif
         }
 
@@ -37,7 +37,7 @@ namespace Z.EntityFramework.Plus
 #if EF5 || EF6
         public static ConditionalWeakTable<ObjectContext, QueryFutureBatch> CacheWeakFutureBatch { get; set; }
 #elif EFCORE
-        public static ConditionalWeakTable<DbContext, QueryFutureBatch> CacheWeakFutureBatch { get; set; }
+        public static System.Runtime.CompilerServices.ConditionalWeakTable<DbContext, QueryFutureBatch> CacheWeakFutureBatch { get; set; }
 #endif
 
         /// <summary>Adds or gets the future batch associated to the context.</summary>

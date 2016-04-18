@@ -11,15 +11,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.EntityFramework.Plus.EF6"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.EntityFramework.Plus.EF6.NET40", "Z.EntityFramework.Plus.EF6.NET40\Z.EntityFramework.Plus.EF6.NET40.csproj", "{AC398EB8-0A31-4D06-A804-84D10B6DA96D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.EntityFramework.Plus.EFCore", "Z.EntityFramework.Plus.EFCore\Z.EntityFramework.Plus.EFCore.csproj", "{01BCB005-E336-4D9D-897D-3B7CD887AE55}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{14D8985E-0AA8-444A-A32E-D766ABA114D6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.Test.EntityFramework.Plus.EF5", "test\Z.Test.EntityFramework.Plus.EF5\Z.Test.EntityFramework.Plus.EF5.csproj", "{149EC03D-4F7D-4EBA-9F24-0777FB7AB7F2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.Test.EntityFramework.Plus.EF6", "test\Z.Test.EntityFramework.Plus.EF6\Z.Test.EntityFramework.Plus.EF6.csproj", "{063FA382-DFDA-4BCB-BBB6-AAC04D0ED88E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.Test.EntityFramework.Plus.EFCore", "test\Z.Test.EntityFramework.Plus.EFCore\Z.Test.EntityFramework.Plus.EFCore.csproj", "{29838946-1188-4919-9FF2-BF9FEC9E2D9B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.Test.EntityFramework.Plus.EFCore", "test\Z.Test.EntityFramework.Plus.EFCore\Z.Test.EntityFramework.Plus.EFCore.csproj", "{C47F920B-8064-44B0-BF3F-CD29298597A0}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Z.EntityFramework.Plus.EFCore", "Z.EntityFramework.Plus.EFCore\Z.EntityFramework.Plus.EFCore.xproj", "{AE726FF5-89DE-42BE-B75D-834A7C1EB6E4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,10 +43,6 @@ Global
 		{AC398EB8-0A31-4D06-A804-84D10B6DA96D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AC398EB8-0A31-4D06-A804-84D10B6DA96D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AC398EB8-0A31-4D06-A804-84D10B6DA96D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{01BCB005-E336-4D9D-897D-3B7CD887AE55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{01BCB005-E336-4D9D-897D-3B7CD887AE55}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{01BCB005-E336-4D9D-897D-3B7CD887AE55}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{01BCB005-E336-4D9D-897D-3B7CD887AE55}.Release|Any CPU.Build.0 = Release|Any CPU
 		{149EC03D-4F7D-4EBA-9F24-0777FB7AB7F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{149EC03D-4F7D-4EBA-9F24-0777FB7AB7F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{149EC03D-4F7D-4EBA-9F24-0777FB7AB7F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -55,10 +51,14 @@ Global
 		{063FA382-DFDA-4BCB-BBB6-AAC04D0ED88E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{063FA382-DFDA-4BCB-BBB6-AAC04D0ED88E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{063FA382-DFDA-4BCB-BBB6-AAC04D0ED88E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{29838946-1188-4919-9FF2-BF9FEC9E2D9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{29838946-1188-4919-9FF2-BF9FEC9E2D9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{29838946-1188-4919-9FF2-BF9FEC9E2D9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{29838946-1188-4919-9FF2-BF9FEC9E2D9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C47F920B-8064-44B0-BF3F-CD29298597A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C47F920B-8064-44B0-BF3F-CD29298597A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C47F920B-8064-44B0-BF3F-CD29298597A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C47F920B-8064-44B0-BF3F-CD29298597A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE726FF5-89DE-42BE-B75D-834A7C1EB6E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE726FF5-89DE-42BE-B75D-834A7C1EB6E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE726FF5-89DE-42BE-B75D-834A7C1EB6E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE726FF5-89DE-42BE-B75D-834A7C1EB6E4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,6 +66,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{149EC03D-4F7D-4EBA-9F24-0777FB7AB7F2} = {14D8985E-0AA8-444A-A32E-D766ABA114D6}
 		{063FA382-DFDA-4BCB-BBB6-AAC04D0ED88E} = {14D8985E-0AA8-444A-A32E-D766ABA114D6}
-		{29838946-1188-4919-9FF2-BF9FEC9E2D9B} = {14D8985E-0AA8-444A-A32E-D766ABA114D6}
+		{C47F920B-8064-44B0-BF3F-CD29298597A0} = {14D8985E-0AA8-444A-A32E-D766ABA114D6}
 	EndGlobalSection
 EndGlobal

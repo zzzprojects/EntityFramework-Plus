@@ -6,6 +6,7 @@
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 using System;
+using System.Reflection;
 
 #if EF5
 using System.Data.Entity;
@@ -42,7 +43,11 @@ namespace Z.EntityFramework.Plus
             return null;
 #elif EFCORE
 
+#if DNXCORE50
+            return type.GetTypeInfo().GenericTypeArguments[0];
+#else
             return type.GetGenericArguments()[0];
+#endif
 #endif
         }
     }

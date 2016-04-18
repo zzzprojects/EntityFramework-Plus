@@ -58,10 +58,12 @@ namespace Z.EntityFramework.Plus
             get { return OriginalDataReader.RecordsAffected; }
         }
 
+#if !DNXCORE50
         public override void Close()
         {
             // DO NOT close reader
         }
+#endif
 
         public override bool GetBoolean(int ordinal)
         {
@@ -153,10 +155,12 @@ namespace Z.EntityFramework.Plus
             return OriginalDataReader.GetOrdinal(name);
         }
 
+#if !DNXCORE50
         public override DataTable GetSchemaTable()
         {
             return OriginalDataReader.GetSchemaTable();
         }
+#endif
 
         public override string GetString(int ordinal)
         {
