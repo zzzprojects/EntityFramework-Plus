@@ -303,6 +303,7 @@ A **HUGE THANKS** for your help.
 
 **Bulk Operations**
 - [Bulk Operations](http://bulk-operations.net/)
+- [Dapper Plus](http://dapper-plus.net/)
 
 **Expression Evaluator**
 - [Eval-SQL.NET](http://eval-sql.net/)
