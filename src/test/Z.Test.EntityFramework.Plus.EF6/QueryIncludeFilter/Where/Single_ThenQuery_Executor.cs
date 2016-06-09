@@ -44,9 +44,6 @@ namespace Z.Test.EntityFramework.Plus
                 // TEST: context
                 Assert.AreEqual(3, ctx.ChangeTracker.Entries().Count());
 
-                // TEST: context
-                Assert.AreEqual(3, ctx.ChangeTracker.Entries().Count());
-
                 // TEST: right
                 Assert.AreEqual(2, item.Rights.Count);
 

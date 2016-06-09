@@ -8,14 +8,14 @@
 #if EF5 || EF6
 using System.Data.Entity;
 
-#elif EF7
-using Microsoft.Data.Entity;
+#elif EFCORE
+using Microsoft.EntityFrameworkCore;
 
 #endif
 
 namespace Z.EntityFramework.Plus
 {
-    public static class AuditExtensions
+    public static partial class AuditExtensions
     {
         /// <summary>Audits and saves all changes made in this context to the underlying database.</summary>
         /// <param name="context">The context used to audits and saves all changes made.</param>

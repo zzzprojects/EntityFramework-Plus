@@ -5,11 +5,12 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
+#if !QUERY_INCLUDEOPTIMIZED
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-#if DNXCORE50
+#if NETCORE50
 using System.Reflection;
 #endif
 
@@ -102,3 +103,4 @@ namespace Z.EntityFramework.Plus
         }
     }
 }
+#endif

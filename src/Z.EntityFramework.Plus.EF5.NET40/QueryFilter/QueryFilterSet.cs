@@ -19,8 +19,8 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Core.Objects;
 
-#elif EF7
-using Microsoft.Data.Entity;
+#elif EFCORE
+using Microsoft.EntityFrameworkCore;
 
 #endif
 
@@ -39,7 +39,7 @@ namespace Z.EntityFramework.Plus
             GetDbSetCompiled = new Lazy<Func<DbContext, IQueryable>>(() => CompileGetDbSet(dbSetProperty));
 #if EF5 || EF6
             UpdateInternalQueryCompiled = new Lazy<Action<DbContext, ObjectQuery>>(() => CompileUpdateInternalQuery(dbSetProperty));
-#elif EF7
+#elif EFCORE
     //UpdateInternalQueryCompiled = new Lazy<Action<DbContext, object>>(() => CompileUpdateInternalQuery(property));
 #endif
         }
@@ -64,7 +64,7 @@ namespace Z.EntityFramework.Plus
         /// <value>The compiled action to update the internal query.</value>
 #if EF5 || EF6
         public Lazy<Action<DbContext, ObjectQuery>> UpdateInternalQueryCompiled { get; set; }
-#elif EF7
+#elif EFCORE
         public Lazy<Action<DbContext, object>> UpdateInternalQueryCompiled { get; set; }
 #endif
 
@@ -85,7 +85,7 @@ namespace Z.EntityFramework.Plus
                 var objectQuery = set.GetObjectQuery(ElementType);
                 filterQueryable = CreateFilterQueryableCompiled.Value(context, this, objectQuery);
                 QueryFilterManager.CacheWeakFilterQueryable.Add(set, filterQueryable);
-#elif EF7
+#elif EFCORE
     // todo: Create compiled version
                 var field = set.GetType().GetField("_entityQueryable", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                 var internalQuery = field.GetValue(set);
@@ -105,12 +105,12 @@ namespace Z.EntityFramework.Plus
         /// <returns>The compiled the function to create a new filter queryable</returns>
         public Func<DbContext, QueryFilterSet, object, BaseQueryFilterQueryable> CompileCreateFilterQueryable()
         {
-            var p1 = Expression.Parameter(typeof (DbContext));
-            var p2 = Expression.Parameter(typeof (QueryFilterSet));
-            var p3 = Expression.Parameter(typeof (object));
+            var p1 = Expression.Parameter(typeof(DbContext));
+            var p2 = Expression.Parameter(typeof(QueryFilterSet));
+            var p3 = Expression.Parameter(typeof(object));
 
-            var p3Convert = Expression.Convert(p3, typeof (IQueryable<>).MakeGenericType(ElementType));
-            var contructorInfo = typeof (QueryFilterQueryable<>).MakeGenericType(ElementType).GetConstructors()[0];
+            var p3Convert = Expression.Convert(p3, typeof(IQueryable<>).MakeGenericType(ElementType));
+            var contructorInfo = typeof(QueryFilterQueryable<>).MakeGenericType(ElementType).GetConstructors()[0];
             var expression = Expression.New(contructorInfo, p1, p2, p3Convert);
 
             return Expression.Lambda<Func<DbContext, QueryFilterSet, object, BaseQueryFilterQueryable>>(expression, p1, p2, p3).Compile();
@@ -126,7 +126,7 @@ namespace Z.EntityFramework.Plus
                 throw new Exception(ExceptionMessage.GeneralException);
             }
 
-            var p1 = Expression.Parameter(typeof (DbContext));
+            var p1 = Expression.Parameter(typeof(DbContext));
             var p1Convert = Expression.Convert(p1, dbSetProperty.DeclaringType);
             var expression = Expression.Property(p1Convert, dbSetProperty);
 
@@ -139,23 +139,23 @@ namespace Z.EntityFramework.Plus
         /// <returns>The compiled the action to update the internal query.</returns>
         public Action<DbContext, ObjectQuery> CompileUpdateInternalQuery(PropertyInfo dbSetProperty)
         {
-            var dbQueryGenericType = typeof (DbQuery<>).MakeGenericType(ElementType);
-            var internalQueryGenericType = typeof (DbContext).Assembly.GetType("System.Data.Entity.Internal.Linq.InternalQuery`1").MakeGenericType(ElementType);
-            var lazyInternalContext = typeof (DbContext).Assembly.GetType("System.Data.Entity.Internal.LazyInternalContext");
+            var dbQueryGenericType = typeof(DbQuery<>).MakeGenericType(ElementType);
+            var internalQueryGenericType = typeof(DbContext).Assembly.GetType("System.Data.Entity.Internal.Linq.InternalQuery`1").MakeGenericType(ElementType);
+            var lazyInternalContext = typeof(DbContext).Assembly.GetType("System.Data.Entity.Internal.LazyInternalContext");
 
             var internalQueryField = dbQueryGenericType.GetField("_internalQuery", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             var internalContextField = internalQueryGenericType.GetField("_internalContext", BindingFlags.NonPublic | BindingFlags.Instance);
-            var internalQueryGenericConstructor = internalQueryGenericType.GetConstructor(new[] {lazyInternalContext, typeof (ObjectQuery)});
+            var internalQueryGenericConstructor = internalQueryGenericType.GetConstructor(new[] { lazyInternalContext, typeof(ObjectQuery) });
 
             if (internalQueryField == null || internalContextField == null || internalQueryGenericConstructor == null)
             {
                 throw new Exception(ExceptionMessage.GeneralException);
             }
 
-            var internalQuerySetValueMethod = internalQueryField.GetType().GetMethod("SetValue", new[] {typeof (object), typeof (object)});
+            var internalQuerySetValueMethod = internalQueryField.GetType().GetMethod("SetValue", new[] { typeof(object), typeof(object) });
 
-            var p1 = Expression.Parameter(typeof (DbContext));
-            var p2 = Expression.Parameter(typeof (ObjectQuery));
+            var p1 = Expression.Parameter(typeof(DbContext));
+            var p2 = Expression.Parameter(typeof(ObjectQuery));
 
             var p1Convert = Expression.Convert(p1, dbSetProperty.DeclaringType);
 
@@ -167,12 +167,12 @@ namespace Z.EntityFramework.Plus
             expression = Expression.Field(expression, internalContextField);
 
             expression = Expression.New(internalQueryGenericConstructor, expression, p2);
-            expression = Expression.Call(Expression.Constant(internalQueryField), internalQuerySetValueMethod, dbQuery, Expression.Convert(expression, typeof (object)));
+            expression = Expression.Call(Expression.Constant(internalQueryField), internalQuerySetValueMethod, dbQuery, Expression.Convert(expression, typeof(object)));
 
             return Expression.Lambda<Action<DbContext, ObjectQuery>>(expression, p1, p2).Compile();
         }
 
-#elif EF7
+#elif EFCORE
     /// <summary>Compile the action to update the internal query.</summary>
     /// <param name="context">The context to update the query from.</param>
     /// <param name="query">The query to change the internal query.</param>

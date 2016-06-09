@@ -7,7 +7,7 @@
 
 
 #if EFCORE
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
 #endif

@@ -14,7 +14,7 @@ using System.Data.Objects;
 using System.Data.Entity.Core;
 using System.Data.Entity.Core.Objects;
 
-#elif EF7
+#elif EFCORE
 using Microsoft.Data.Entity.ChangeTracking;
 
 #endif
@@ -28,7 +28,7 @@ namespace Z.EntityFramework.Plus
         /// <param name="objectStateEntry">The object state entry.</param>
 #if EF5 || EF6
         public static void AuditRelationDeleted(Audit audit, ObjectStateEntry objectStateEntry)
-#elif EF7
+#elif EFCORE
         public static void AuditRelationDeleted(Audit audit, EntityEntry objectStateEntry)
 #endif
         {

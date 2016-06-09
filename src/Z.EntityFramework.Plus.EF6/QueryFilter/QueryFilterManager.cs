@@ -9,11 +9,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+
 #if EF5 || EF6
 using System.Data.Entity;
 
 #elif EFCORE
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 #endif
 
@@ -140,7 +141,7 @@ namespace Z.EntityFramework.Plus
             BaseQueryFilter filter;
             if (!GlobalFilters.TryGetValue(key, out filter))
             {
-                filter = new QueryFilter<T>(null, queryFilter) {IsDefaultEnabled = isEnabled};
+                filter = new QueryFilter<T>(null, queryFilter) { IsDefaultEnabled = isEnabled };
                 GlobalFilters.Add(key, filter);
             }
 

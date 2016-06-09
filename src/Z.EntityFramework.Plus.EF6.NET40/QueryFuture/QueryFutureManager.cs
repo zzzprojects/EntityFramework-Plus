@@ -12,23 +12,27 @@ using System.Data.Objects;
 #elif EF6
 using System.Data.Entity.Core.Objects;
 
-#elif EF7
-using Microsoft.Data.Entity;
+#elif EFCORE
+using Microsoft.EntityFrameworkCore;
 
 #endif
 
 namespace Z.EntityFramework.Plus
 {
     /// <summary>Manage EF+ Query Future Configuration.</summary>
+#if QUERY_INCLUDEOPTIMIZED
+    internal static class QueryFutureManager
+#else
     public static class QueryFutureManager
+#endif
     {
         /// <summary>Static constructor.</summary>
         static QueryFutureManager()
         {
 #if EF5 || EF6
             CacheWeakFutureBatch = new ConditionalWeakTable<ObjectContext, QueryFutureBatch>();
-#elif EF7
-            CacheWeakFutureBatch = new ConditionalWeakTable<DbContext, QueryFutureBatch>();
+#elif EFCORE
+            CacheWeakFutureBatch = new System.Runtime.CompilerServices.ConditionalWeakTable<DbContext, QueryFutureBatch>();
 #endif
         }
 
@@ -36,8 +40,8 @@ namespace Z.EntityFramework.Plus
         /// <value>The weak table used to cache future batch associated to a context.</value>
 #if EF5 || EF6
         public static ConditionalWeakTable<ObjectContext, QueryFutureBatch> CacheWeakFutureBatch { get; set; }
-#elif EF7
-        public static ConditionalWeakTable<DbContext, QueryFutureBatch> CacheWeakFutureBatch { get; set; }
+#elif EFCORE
+        public static System.Runtime.CompilerServices.ConditionalWeakTable<DbContext, QueryFutureBatch> CacheWeakFutureBatch { get; set; }
 #endif
 
         /// <summary>Adds or gets the future batch associated to the context.</summary>
@@ -45,7 +49,7 @@ namespace Z.EntityFramework.Plus
         /// <returns>The future batch associated to the context.</returns>
 #if EF5 || EF6
         public static QueryFutureBatch AddOrGetBatch(ObjectContext context)
-#elif EF7
+#elif EFCORE
         public static QueryFutureBatch AddOrGetBatch(DbContext context)
 #endif
         {

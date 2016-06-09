@@ -13,9 +13,9 @@ using System.Data.Objects;
 #elif EF6
 using System.Data.Entity.Core.Objects;
 
-#elif EF7
-using Microsoft.Data.Entity;
-using Microsoft.Data.Entity.ChangeTracking;
+#elif EFCORE
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 #endif
 
@@ -28,7 +28,7 @@ namespace Z.EntityFramework.Plus
         /// <param name="objectStateEntry">The object state entry.</param>
 #if EF5 || EF6
         public static void AuditEntityModified(Audit audit, ObjectStateEntry objectStateEntry, AuditEntryState state)
-#elif EF7
+#elif EFCORE
         public static void AuditEntityModified(Audit audit, EntityEntry objectStateEntry, AuditEntryState state)
 #endif
         {
@@ -39,7 +39,7 @@ namespace Z.EntityFramework.Plus
 
 #if EF5 || EF6
             AuditEntityModified(audit, entry, objectStateEntry, objectStateEntry.OriginalValues, objectStateEntry.CurrentValues);
-#elif EF7
+#elif EFCORE
             AuditEntityModified(audit, entry, objectStateEntry);
 #endif
             audit.Entries.Add(entry);
@@ -79,7 +79,7 @@ namespace Z.EntityFramework.Plus
                 }
             }
         }
-#elif EF7
+#elif EFCORE
     /// <summary>Audit entity modified.</summary>
     /// <param name="objectStateEntry">The object state entry.</param>
         public static void AuditEntityModified(Audit audit, AuditEntry entry, EntityEntry objectStateEntry)
@@ -90,7 +90,7 @@ namespace Z.EntityFramework.Plus
 
                 if (entry.Parent.CurrentOrDefaultConfiguration.IsAuditedProperty(entry.Entry, propertyEntry.Name))
                 {
-                    if (audit.Configuration.IgnorePropertyUnchanged || property.Metadata.IsKey() || property.IsModified)
+                    if (!audit.Configuration.IgnorePropertyUnchanged || property.Metadata.IsKey() || property.IsModified)
                     {
                         entry.Properties.Add(new AuditEntryProperty(entry, propertyEntry.Name, property.OriginalValue, property.CurrentValue));
                     }

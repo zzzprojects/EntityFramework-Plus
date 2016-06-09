@@ -14,8 +14,8 @@ using System.Data.Objects;
 using System.Data.Entity.Core;
 using System.Data.Entity.Core.Objects;
 
-#elif EF7
-using Microsoft.Data.Entity.ChangeTracking;
+#elif EFCORE
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 #endif
 
@@ -33,7 +33,7 @@ namespace Z.EntityFramework.Plus
                 {
 #if EF5 || EF6
                     var objectStateEntry = entry.DelayedKey as ObjectStateEntry;
-#elif EF7
+#elif EFCORE
                     var objectStateEntry = entry.DelayedKey as EntityEntry;
 #endif
                     if (objectStateEntry != null)
@@ -71,7 +71,7 @@ namespace Z.EntityFramework.Plus
                             }
                         }
                     }
-#elif EF7
+#elif EFCORE
                         foreach (var keyValue in objectStateEntry.Metadata.GetKeys())
                         {
                             var key = objectStateEntry.Property(keyValue.Properties[0].Name);

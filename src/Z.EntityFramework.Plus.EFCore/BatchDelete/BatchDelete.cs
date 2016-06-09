@@ -9,7 +9,10 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.IO;
 using System.Linq;
+using System.Threading;
+
 #if EF5
 using System.Data.Objects;
 using Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel;
@@ -20,8 +23,9 @@ using Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel;
 
 #elif EFCORE
 using System.Reflection;
-using Microsoft.Data.Entity;
-using Microsoft.Data.Entity.Metadata;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Query;
 
 #endif
 
@@ -39,6 +43,12 @@ FROM    {TableName} AS A
                     ) AS B ON {PrimaryKeys}
 
 SELECT @@ROWCOUNT
+";
+
+        /// <summary>The command text postgre SQL template.</summary>
+        internal const string CommandTextPostgreSQLTemplate = @"
+DELETE FROM {TableName} AS A
+USING ( {Select} ) AS B WHERE {PrimaryKeys}
 ";
 
         /// <summary>The command text template with WHILE loop.</summary>
@@ -140,13 +150,34 @@ SELECT  @totalRowAffected
                     innerObjectQuery.Context.Connection.Open();
                 }
 
-                if (Executing != null)
+                if (command.GetType().Name == "NpgsqlCommand")
                 {
-                    Executing(command);
+                    command.CommandText = command.CommandText.Replace("[", "\"").Replace("]", "\"");
+                    int totalRowAffecteds = 0;
+                    int rowAffecteds = 0;
+                    do
+                    {
+                        if (rowAffecteds > 0 && BatchDelayInterval != 0)
+                        {
+                            Thread.Sleep(BatchDelayInterval);
+                        }
+                        rowAffecteds = (int)command.ExecuteNonQuery();
+                        totalRowAffecteds += rowAffecteds;
+                    } while (rowAffecteds > 0);
+
+                    return totalRowAffecteds;
+                }
+                else
+                {
+                    if (Executing != null)
+                    {
+                        Executing(command);
+                    }
+
+                    var rowAffecteds = (int)command.ExecuteScalar();
+                    return rowAffecteds;
                 }
 
-                var rowAffecteds = (int) command.ExecuteScalar();
-                return rowAffecteds;
             }
             finally
             {
@@ -157,7 +188,7 @@ SELECT  @totalRowAffected
             }
 #elif EFCORE
             var dbContext = query.GetDbContext();
-            var entity = dbContext.Model.FindEntityType(typeof (T));
+            var entity = dbContext.Model.FindEntityType(typeof(T));
             var keys = entity.GetKeys().ToList()[0].Properties;
 
             var queryKeys = query.SelectByName(keys.Select(x => x.Name).ToList());
@@ -181,7 +212,7 @@ SELECT  @totalRowAffected
                     Executing(command);
                 }
 
-                var rowAffecteds = (int) command.ExecuteScalar();
+                var rowAffecteds = (int)command.ExecuteScalar();
                 return rowAffecteds;
             }
             finally
@@ -195,10 +226,10 @@ SELECT  @totalRowAffected
         }
 
 #if EF5 || EF6
-    /// <summary>Creates a command to execute the batch operation.</summary>
-    /// <param name="query">The query.</param>
-    /// <param name="entity">The schema entity.</param>
-    /// <returns>The new command to execute the batch operation.</returns>
+        /// <summary>Creates a command to execute the batch operation.</summary>
+        /// <param name="query">The query.</param>
+        /// <param name="entity">The schema entity.</param>
+        /// <returns>The new command to execute the batch operation.</returns>
         internal DbCommand CreateCommand<T>(ObjectQuery query, SchemaEntityType<T> entity)
         {
             // GET mapping
@@ -207,6 +238,9 @@ SELECT  @totalRowAffected
             var tableName = string.IsNullOrEmpty(store.Schema) ?
                 string.Concat("[", store.Table, "]") :
                 string.Concat("[", store.Schema, "].[", store.Table, "]");
+
+            // GET command
+            var command = query.Context.CreateStoreCommand();
 
             // GET keys mappings
             var columnKeys = new List<string>();
@@ -223,7 +257,8 @@ SELECT  @totalRowAffected
             }
 
             // GET command text template
-            var commandTextTemplate = BatchSize > 0 ?
+            var commandTextTemplate = command.GetType().Name == "NpgsqlCommand" ?
+                CommandTextPostgreSQLTemplate : BatchSize > 0 ?
                 BatchDelayInterval > 0 ?
                     CommandTextWhileDelayTemplate :
                     CommandTextWhileTemplate :
@@ -243,7 +278,6 @@ SELECT  @totalRowAffected
                 .Replace("{Delay}", TimeSpan.FromMilliseconds(BatchDelayInterval).ToString(@"hh\:mm\:ss\:fff"));
 
             // CREATE command
-            var command = query.Context.CreateStoreCommand();
             command.CommandText = commandTextTemplate;
 
             // ADD Parameter
@@ -262,7 +296,7 @@ SELECT  @totalRowAffected
 #elif EFCORE
         public DbCommand CreateCommand(IQueryable query, IEntityType entity)
         {
-#if DNXCORE50
+#if NETCORE50
             try
             {
                 var assembly = Assembly.Load(new AssemblyName("EntityFramework.MicrosoftSqlServer, Version = 7.0.0.0, Culture = neutral, PublicKeyToken = adb9793829ddae60"));
@@ -298,7 +332,13 @@ SELECT  @totalRowAffected
                         CommandTextTemplate;
 
                     // GET inner query
+#if EFCORE
+                    RelationalQueryContext queryContext;
+                    var relationalCommand = query.CreateCommand(out queryContext);
+#else
                     var relationalCommand = query.CreateCommand();
+#endif
+
                     var querySelect = relationalCommand.CommandText;
 
                     // GET primary key join
@@ -315,16 +355,28 @@ SELECT  @totalRowAffected
                     var command = query.GetDbContext().CreateStoreCommand();
                     command.CommandText = commandTextTemplate;
 
+#if EFCORE
                     // ADD Parameter
-                    var parameterCollection = relationalCommand.Parameters;
-                    foreach (var parameter in parameterCollection)
+                    foreach (var parameter in queryContext.ParameterValues)
                     {
                         var param = command.CreateParameter();
-                        param.ParameterName = parameter.Name;
+                        param.ParameterName = parameter.Key;
                         param.Value = parameter.Value;
 
                         command.Parameters.Add(param);
                     }
+#else
+                // ADD Parameter
+                var parameterCollection = relationalCommand.Parameters;
+                foreach (var parameter in parameterCollection)
+                {
+                    var param = command.CreateParameter();
+                    param.ParameterName = parameter.Name;
+                    param.Value = parameter.Value;
+
+                    command.Parameters.Add(param);
+                }
+#endif
 
                     return command;
                 }
@@ -335,14 +387,14 @@ SELECT  @totalRowAffected
                 return null;
             }
 #else
-            var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName == "EntityFramework.MicrosoftSqlServer, Version=7.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60");
+            var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName.StartsWith("Microsoft.EntityFrameworkCore.SqlServer", StringComparison.InvariantCulture));
 
             if (assembly != null)
             {
-                var type = assembly.GetType("Microsoft.Data.Entity.SqlServerMetadataExtensions");
-                var sqlServerEntityTypeMethod = type.GetMethod("SqlServer", BindingFlags.Public | BindingFlags.Static, null, new[] {typeof (IEntityType)}, null);
-                var sqlServerPropertyMethod = type.GetMethod("SqlServer", BindingFlags.Public | BindingFlags.Static, null, new[] {typeof (IProperty)}, null);
-                var sqlServer = (IRelationalEntityTypeAnnotations) sqlServerEntityTypeMethod.Invoke(null, new[] {entity});
+                var type = assembly.GetType("Microsoft.EntityFrameworkCore.SqlServerMetadataExtensions");
+                var sqlServerEntityTypeMethod = type.GetMethod("SqlServer", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(IEntityType) }, null);
+                var sqlServerPropertyMethod = type.GetMethod("SqlServer", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(IProperty) }, null);
+                var sqlServer = (IRelationalEntityTypeAnnotations)sqlServerEntityTypeMethod.Invoke(null, new[] { entity });
 
                 // GET mapping
                 var tableName = string.IsNullOrEmpty(sqlServer.Schema) ?
@@ -353,10 +405,10 @@ SELECT  @totalRowAffected
                 var columnKeys = new List<string>();
                 foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
                 {
-                    var mappingProperty = sqlServerPropertyMethod.Invoke(null, new[] {propertyKey});
+                    var mappingProperty = sqlServerPropertyMethod.Invoke(null, new[] { propertyKey });
 
                     var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
-                    columnKeys.Add((string) columnNameProperty.GetValue(mappingProperty));
+                    columnKeys.Add((string)columnNameProperty.GetValue(mappingProperty));
                 }
 
                 // GET command text template
@@ -367,7 +419,12 @@ SELECT  @totalRowAffected
                     CommandTextTemplate;
 
                 // GET inner query
+#if EFCORE
+                RelationalQueryContext queryContext;
+                var relationalCommand = query.CreateCommand(out queryContext);
+#else
                 var relationalCommand = query.CreateCommand();
+#endif
                 var querySelect = relationalCommand.CommandText;
 
                 // GET primary key join
@@ -384,6 +441,17 @@ SELECT  @totalRowAffected
                 var command = query.GetDbContext().CreateStoreCommand();
                 command.CommandText = commandTextTemplate;
 
+#if EFCORE
+                // ADD Parameter
+                foreach (var parameter in queryContext.ParameterValues)
+                {
+                    var param = command.CreateParameter();
+                    param.ParameterName = parameter.Key;
+                    param.Value = parameter.Value;
+
+                    command.Parameters.Add(param);
+                }
+#else
                 // ADD Parameter
                 var parameterCollection = relationalCommand.Parameters;
                 foreach (var parameter in parameterCollection)
@@ -394,6 +462,7 @@ SELECT  @totalRowAffected
 
                     command.Parameters.Add(param);
                 }
+#endif
 
                 return command;
             }

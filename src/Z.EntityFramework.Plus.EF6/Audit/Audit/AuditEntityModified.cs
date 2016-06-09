@@ -14,8 +14,8 @@ using System.Data.Objects;
 using System.Data.Entity.Core.Objects;
 
 #elif EFCORE
-using Microsoft.Data.Entity;
-using Microsoft.Data.Entity.ChangeTracking;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 #endif
 

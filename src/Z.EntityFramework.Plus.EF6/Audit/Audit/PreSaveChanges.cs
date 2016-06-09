@@ -16,7 +16,7 @@ using System.Data.Entity.Infrastructure;
 
 #elif EFCORE
 using System.Linq;
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 #endif
 

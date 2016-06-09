@@ -15,8 +15,8 @@ using System.Data.Objects;
 #elif EF6
 using System.Data.Entity.Core.Objects;
 
-#elif EF7
-using Microsoft.Data.Entity.ChangeTracking;
+#elif EFCORE
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 #endif
 
@@ -36,7 +36,7 @@ namespace Z.EntityFramework.Plus
         /// <param name="entry">The object state entry.</param>
 #if EF5 || EF6
         public AuditEntry(Audit parent, ObjectStateEntry entry)
-#elif EF7
+#elif EFCORE
         public AuditEntry(Audit parent, EntityEntry entry)
 #endif
         {
@@ -52,7 +52,7 @@ namespace Z.EntityFramework.Plus
             {
                 EntityTypeName = entry.Entity.GetType().Name;
             }
-#elif EF7
+#elif EFCORE
             EntityTypeName = Entry.Entity.GetType().Name;
 #endif
         }
@@ -78,7 +78,7 @@ namespace Z.EntityFramework.Plus
 #if EF5 || EF6
         [NotMapped]
         internal object DelayedKey { get; set; }
-#elif EF7
+#elif EFCORE
         internal object DelayedKey;
 #endif
 
@@ -87,8 +87,8 @@ namespace Z.EntityFramework.Plus
         [NotMapped]
 #if EF5 || EF6
             public ObjectStateEntry Entry { get; set; }
-#elif EF7
-    // EF7 still have some issue with "NotMapped" attribute
+#elif EFCORE
+    // EFCORE still have some issue with "NotMapped" attribute
         public EntityEntry Entry { get; set; }
 #endif
 
@@ -109,8 +109,8 @@ namespace Z.EntityFramework.Plus
 #if EF5 || EF6
         [NotMapped]
         public Audit Parent { get; set; }
-#elif EF7
-    // EF7 still have some issue with "NotMapped" attribute
+#elif EFCORE
+    // EFCORE still have some issue with "NotMapped" attribute
         public Audit Parent;
 #endif
 

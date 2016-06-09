@@ -24,9 +24,20 @@ namespace Z.EntityFramework.Plus
             Filter = filter;
         }
 
+        /// <summary>Constructor.</summary>
+        /// <param name="filter">The query filter to apply on included related entities.</param>
+        public QueryIncludeOptimizedChild(Expression<Func<T, TChild>> filter)
+        {
+            FilterSingle = filter;
+        }
+
         /// <summary>Gets or sets the query filter to include related entities.</summary>
         /// <value>The query filter to include related entities.</value>
         public Expression<Func<T, IEnumerable<TChild>>> Filter { get; set; }
+
+        /// <summary>Gets or sets the query filter to include related entities.</summary>
+        /// <value>The query filter to include related entities.</value>
+        public Expression<Func<T, TChild>> FilterSingle { get; set; }
 
         /// <summary>Creates the query to use to load related entities.</summary>
         /// <param name="rootQuery">The root query.</param>
@@ -39,7 +50,14 @@ namespace Z.EntityFramework.Plus
                 throw new Exception(ExceptionMessage.GeneralException);
             }
 
-            queryable.Select(Filter).Future();
+            if (Filter != null)
+            {
+                queryable.Select(Filter).Future();
+            }
+            else
+            {
+                queryable.Select(FilterSingle).Future();
+            }
         }
     }
 }

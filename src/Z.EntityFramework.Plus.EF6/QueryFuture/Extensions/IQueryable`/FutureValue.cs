@@ -9,7 +9,11 @@ using System.Linq;
 
 namespace Z.EntityFramework.Plus
 {
+#if QUERY_INCLUDEOPTIMIZED
+    internal static partial class QueryFutureExtensions
+#else
     public static partial class QueryFutureExtensions
+#endif
     {
         /// <summary>
         ///     Defer the execution of the <paramref name="query" /> and batch the query command with other

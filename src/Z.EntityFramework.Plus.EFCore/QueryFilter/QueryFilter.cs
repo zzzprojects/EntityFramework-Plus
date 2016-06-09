@@ -19,7 +19,7 @@ namespace Z.EntityFramework.Plus
         /// <param name="filter">The filter.</param>
         public QueryFilter(QueryFilterContext ownerFilterContext, Func<IQueryable<T>, IQueryable<T>> filter)
         {
-            ElementType = typeof (T);
+            ElementType = typeof(T);
             Filter = filter;
             OwnerFilterContext = ownerFilterContext;
         }
@@ -34,9 +34,10 @@ namespace Z.EntityFramework.Plus
         public override object ApplyFilter<TEntity>(object query)
         {
 #if EF5 || EF6
-            return Filter((IQueryable<T>) query).Cast<TEntity>();
+            return Filter((IQueryable<T>)query).Cast<TEntity>();
 #elif EFCORE
-    // TODO: Use the same code as (EF5 || EF6) once EF team fix the cast issue: https://github.com/aspnet/EntityFramework/issues/3736
+            // TODO: Use the same code as (EF5 || EF6) once EF team fix the cast issue: https://github.com/aspnet/EntityFramework/issues/3736
+            //return Filter((IQueryable<T>) query).Cast<TEntity>();
             return Filter((IQueryable<T>) query);
 #endif
         }

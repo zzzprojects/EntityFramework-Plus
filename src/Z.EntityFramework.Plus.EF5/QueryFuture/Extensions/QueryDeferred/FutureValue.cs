@@ -5,6 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
+#if !QUERY_INCLUDEOPTIMIZED
 namespace Z.EntityFramework.Plus
 {
     public static partial class QueryFutureExtensions
@@ -24,7 +25,7 @@ namespace Z.EntityFramework.Plus
             var objectQuery = query.Query.GetObjectQuery();
             var futureBatch = QueryFutureManager.AddOrGetBatch(objectQuery.Context);
             var futureQuery = new QueryFutureValue<TResult>(futureBatch, objectQuery);
-#elif EF7
+#elif EFCORE
             var context = query.Query.GetDbContext();
             var futureBatch = QueryFutureManager.AddOrGetBatch(context);
             var futureQuery = new QueryFutureValue<TResult>(futureBatch, query.Query);
@@ -35,3 +36,4 @@ namespace Z.EntityFramework.Plus
         }
     }
 }
+#endif

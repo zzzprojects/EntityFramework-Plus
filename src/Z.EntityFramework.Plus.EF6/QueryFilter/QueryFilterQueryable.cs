@@ -16,7 +16,7 @@ using System.Data.Entity;
 using System.Data.Entity.Core.Objects;
 
 #elif EFCORE
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 #endif
 
@@ -49,11 +49,12 @@ namespace Z.EntityFramework.Plus
             }
 
 #if EF5 || EF6
-            FilterSet.UpdateInternalQueryCompiled.Value(Context, (ObjectQuery) query);
+            FilterSet.UpdateInternalQueryCompiled.Value(Context, (ObjectQuery)query);
 
 #elif EFCORE
-    // todo: Use the same code as (EF5 || EF6) once EF team fix the cast issue: https://github.com/aspnet/EntityFramework/issues/3736
+            // todo: Use the same code as (EF5 || EF6) once EF team fix the cast issue: https://github.com/aspnet/EntityFramework/issues/3736
             FilterSet.UpdateInternalQuery(Context, query);
+            //FilterSet.UpdateInternalQuery(Context, query);
 
 #endif
         }

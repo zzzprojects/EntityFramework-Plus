@@ -6,6 +6,7 @@
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 using System;
+
 #if EF5
 using System.Data;
 using System.Data.Entity;
@@ -16,8 +17,8 @@ using System.Data.Entity;
 using System.Data.Entity.Core.Objects;
 
 #elif EFCORE
-using Microsoft.Data.Entity;
-using Microsoft.Data.Entity.ChangeTracking;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 #endif
 

@@ -13,14 +13,18 @@ using System.Data.Objects;
 using System.Data.Entity.Core.Objects;
 
 #elif EFCORE
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 #endif
 
 namespace Z.EntityFramework.Plus
 {
     /// <summary>Manage EF+ Query Future Configuration.</summary>
+#if QUERY_INCLUDEOPTIMIZED
+    internal static class QueryFutureManager
+#else
     public static class QueryFutureManager
+#endif
     {
         /// <summary>Static constructor.</summary>
         static QueryFutureManager()

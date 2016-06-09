@@ -6,6 +6,7 @@
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 using System;
+
 #if EF5
 using System.Data;
 using System.Data.Entity;
@@ -15,9 +16,9 @@ using System.Data.Objects;
 using System.Data.Entity;
 using System.Data.Entity.Core.Objects;
 
-#elif EF7
-using Microsoft.Data.Entity;
-using Microsoft.Data.Entity.ChangeTracking;
+#elif EFCORE
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 #endif
 
@@ -31,7 +32,7 @@ namespace Z.EntityFramework.Plus
         /// <returns>The formatted value.</returns>
 #if EF5 || EF6
         public string FormatValue(ObjectStateEntry entry, string propertyName, object currentValue)
-#elif EF7
+#elif EFCORE
         public string FormatValue(EntityEntry entry, string propertyName, object currentValue)
 #endif
         {

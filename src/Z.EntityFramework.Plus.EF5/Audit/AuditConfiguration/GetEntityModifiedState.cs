@@ -11,8 +11,8 @@ using System.Data.Objects;
 #elif EF6
 using System.Data.Entity.Core.Objects;
 
-#elif EF7
-using Microsoft.Data.Entity.ChangeTracking;
+#elif EFCORE
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 #endif
 
@@ -25,7 +25,7 @@ namespace Z.EntityFramework.Plus
         /// <returns>The state of the entity modified (EntityModified, EntitySoftAdded, EntitySoftDeleted).</returns>
 #if EF5 || EF6
         public AuditEntryState GetEntityModifiedState(ObjectStateEntry entry)
-#elif EF7
+#elif EFCORE
         public AuditEntryState GetEntityModifiedState(EntityEntry entry)
 #endif
         {

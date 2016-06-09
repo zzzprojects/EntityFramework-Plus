@@ -23,7 +23,7 @@ namespace Z.EntityFramework.Plus
             return new QueryDeferred<bool>(
 #if EF5 || EF6
                 source.GetObjectQuery(),
-#elif EF7 
+#elif EFCORE 
                 source,
 #endif
                 Expression.Call(

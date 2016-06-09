@@ -9,7 +9,11 @@ using System.Linq;
 
 namespace Z.EntityFramework.Plus
 {
+#if QUERY_INCLUDEOPTIMIZED
+    internal static partial class QueryAddOrAppendOrderExtensions
+#else
     public static partial class QueryAddOrAppendOrderExtensions
+#endif
     {
         public static IQueryable<T> AddToRootOrAppendOrderBy<T>(this IQueryable<T> query, params string[] columns)
         {

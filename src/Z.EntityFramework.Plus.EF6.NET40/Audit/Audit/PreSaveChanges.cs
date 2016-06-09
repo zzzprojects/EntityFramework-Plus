@@ -14,9 +14,9 @@ using System.Data.Entity.Infrastructure;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 
-#elif EF7
+#elif EFCORE
 using System.Linq;
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 #endif
 
@@ -33,7 +33,7 @@ namespace Z.EntityFramework.Plus
             var objectContext = ((IObjectContextAdapter) context).ObjectContext;
             objectContext.DetectChanges();
             var changes = objectContext.ObjectStateManager.GetObjectStateEntries(EntityState.Added | EntityState.Modified | EntityState.Deleted);
-#elif EF7
+#elif EFCORE
             context.ChangeTracker.DetectChanges();
             var changes = context.ChangeTracker.Entries().Where(x => x.State == EntityState.Added ||
                                                                      x.State == EntityState.Modified ||

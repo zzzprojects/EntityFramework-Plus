@@ -33,5 +33,26 @@ namespace Z.EntityFramework.Plus
             // RETURN root
             return includeOrderedQueryable;
         }
+
+        /// <summary>
+        ///     An IQueryable&lt;T&gt; extension method that include and filter related entities with a
+        ///     optimized SQL.
+        /// </summary>
+        /// <typeparam name="T">Generic type parameter.</typeparam>
+        /// <typeparam name="TChild">Type of the child.</typeparam>
+        /// <param name="query">The query to filter included related entities.</param>
+        /// <param name="queryIncludeFilter">The query filter to apply on included related entities.</param>
+        /// <returns>An IQueryable&lt;T&gt; that include and filter related entities.</returns>
+        public static IQueryable<T> IncludeOptimized<T, TChild>(this IQueryable<T> query, Expression<Func<T, TChild>> queryIncludeFilter) where T : class where TChild : class
+        {
+            // GET query root
+            var includeOrderedQueryable = query as QueryIncludeOptimizedParentQueryable<T> ?? new QueryIncludeOptimizedParentQueryable<T>(query);
+
+            // ADD sub query
+            includeOrderedQueryable.Childs.Add(new QueryIncludeOptimizedChild<T, TChild>(queryIncludeFilter));
+
+            // RETURN root
+            return includeOrderedQueryable;
+        }
     }
 }

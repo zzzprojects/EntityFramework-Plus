@@ -21,7 +21,7 @@ namespace Z.EntityFramework.Plus
             return new QueryDeferred<int>(
 #if EF5 || EF6
                 source.GetObjectQuery(),
-#elif EF7 
+#elif EFCORE 
                 source,
 #endif
                 Expression.Call(
@@ -37,7 +37,7 @@ namespace Z.EntityFramework.Plus
             return new QueryDeferred<int?>(
 #if EF5 || EF6
                 source.GetObjectQuery(),
-#elif EF7 
+#elif EFCORE 
                 source,
 #endif
                 Expression.Call(
@@ -53,7 +53,7 @@ namespace Z.EntityFramework.Plus
             return new QueryDeferred<long>(
 #if EF5 || EF6
                 source.GetObjectQuery(),
-#elif EF7 
+#elif EFCORE 
                 source,
 #endif
                 Expression.Call(
@@ -69,7 +69,7 @@ namespace Z.EntityFramework.Plus
             return new QueryDeferred<long?>(
 #if EF5 || EF6
                 source.GetObjectQuery(),
-#elif EF7 
+#elif EFCORE 
                 source,
 #endif
                 Expression.Call(
@@ -85,7 +85,7 @@ namespace Z.EntityFramework.Plus
             return new QueryDeferred<float>(
 #if EF5 || EF6
                 source.GetObjectQuery(),
-#elif EF7 
+#elif EFCORE 
                 source,
 #endif
                 Expression.Call(
@@ -101,7 +101,7 @@ namespace Z.EntityFramework.Plus
             return new QueryDeferred<float?>(
 #if EF5 || EF6
                 source.GetObjectQuery(),
-#elif EF7 
+#elif EFCORE 
                 source,
 #endif
                 Expression.Call(
@@ -117,7 +117,7 @@ namespace Z.EntityFramework.Plus
             return new QueryDeferred<double>(
 #if EF5 || EF6
                 source.GetObjectQuery(),
-#elif EF7 
+#elif EFCORE 
                 source,
 #endif
                 Expression.Call(
@@ -133,7 +133,7 @@ namespace Z.EntityFramework.Plus
             return new QueryDeferred<double?>(
 #if EF5 || EF6
                 source.GetObjectQuery(),
-#elif EF7 
+#elif EFCORE 
                 source,
 #endif
                 Expression.Call(
@@ -149,7 +149,7 @@ namespace Z.EntityFramework.Plus
             return new QueryDeferred<decimal>(
 #if EF5 || EF6
                 source.GetObjectQuery(),
-#elif EF7 
+#elif EFCORE 
                 source,
 #endif
                 Expression.Call(
@@ -165,7 +165,7 @@ namespace Z.EntityFramework.Plus
             return new QueryDeferred<decimal?>(
 #if EF5 || EF6
                 source.GetObjectQuery(),
-#elif EF7 
+#elif EFCORE 
                 source,
 #endif
                 Expression.Call(
@@ -183,7 +183,7 @@ namespace Z.EntityFramework.Plus
             return new QueryDeferred<int>(
 #if EF5 || EF6
                 source.GetObjectQuery(),
-#elif EF7 
+#elif EFCORE 
                 source,
 #endif
                 Expression.Call(
@@ -203,7 +203,7 @@ namespace Z.EntityFramework.Plus
             return new QueryDeferred<int?>(
 #if EF5 || EF6
                 source.GetObjectQuery(),
-#elif EF7 
+#elif EFCORE 
                 source,
 #endif
                 Expression.Call(
@@ -223,7 +223,7 @@ namespace Z.EntityFramework.Plus
             return new QueryDeferred<long>(
 #if EF5 || EF6
                 source.GetObjectQuery(),
-#elif EF7 
+#elif EFCORE 
                 source,
 #endif
                 Expression.Call(
@@ -243,7 +243,7 @@ namespace Z.EntityFramework.Plus
             return new QueryDeferred<long?>(
 #if EF5 || EF6
                 source.GetObjectQuery(),
-#elif EF7 
+#elif EFCORE 
                 source,
 #endif
                 Expression.Call(
@@ -263,7 +263,7 @@ namespace Z.EntityFramework.Plus
             return new QueryDeferred<float>(
 #if EF5 || EF6
                 source.GetObjectQuery(),
-#elif EF7 
+#elif EFCORE 
                 source,
 #endif
                 Expression.Call(
@@ -283,7 +283,7 @@ namespace Z.EntityFramework.Plus
             return new QueryDeferred<float?>(
 #if EF5 || EF6
                 source.GetObjectQuery(),
-#elif EF7 
+#elif EFCORE 
                 source,
 #endif
                 Expression.Call(
@@ -303,7 +303,7 @@ namespace Z.EntityFramework.Plus
             return new QueryDeferred<double>(
 #if EF5 || EF6
                 source.GetObjectQuery(),
-#elif EF7 
+#elif EFCORE 
                 source,
 #endif
                 Expression.Call(
@@ -323,7 +323,7 @@ namespace Z.EntityFramework.Plus
             return new QueryDeferred<double?>(
 #if EF5 || EF6
                 source.GetObjectQuery(),
-#elif EF7 
+#elif EFCORE 
                 source,
 #endif
                 Expression.Call(
@@ -343,7 +343,7 @@ namespace Z.EntityFramework.Plus
             return new QueryDeferred<decimal>(
 #if EF5 || EF6
                 source.GetObjectQuery(),
-#elif EF7 
+#elif EFCORE 
                 source,
 #endif
                 Expression.Call(
@@ -363,7 +363,7 @@ namespace Z.EntityFramework.Plus
             return new QueryDeferred<decimal?>(
 #if EF5 || EF6
                 source.GetObjectQuery(),
-#elif EF7 
+#elif EFCORE 
                 source,
 #endif
                 Expression.Call(

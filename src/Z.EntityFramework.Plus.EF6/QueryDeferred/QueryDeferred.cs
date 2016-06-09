@@ -6,12 +6,12 @@
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 using System;
-using System.CodeDom;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+
 #if EF5
 using System.Data.Objects;
 
@@ -20,7 +20,7 @@ using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
 
 #elif EFCORE
-using Microsoft.Data.Entity.Query.Internal;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Remotion.Linq;
 
 #endif
@@ -44,9 +44,9 @@ namespace Z.EntityFramework.Plus
 
 #if EF5 || EF6
             // CREATE query from the deferred expression
-            var provider = ((IQueryable) query).Provider;
-            var createQueryMethod = provider.GetType().GetMethod("CreateQuery", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new[] {typeof (Expression), typeof (Type)}, null);
-            Query = (IQueryable<TResult>) createQueryMethod.Invoke(provider, new object[] {expression, typeof (TResult)});
+            var provider = ((IQueryable)query).Provider;
+            var createQueryMethod = provider.GetType().GetMethod("CreateQuery", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(Expression), typeof(Type) }, null);
+            Query = (IQueryable<TResult>)createQueryMethod.Invoke(provider, new object[] { expression, typeof(TResult) });
 #elif EFCORE
             Query = new EntityQueryable<TResult>((IAsyncQueryProvider)query.Provider);
             var expressionProperty = typeof(QueryableBase<>).MakeGenericType(typeof(TResult)).GetProperty("Expression", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);

@@ -9,10 +9,13 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
 #if EF5 || EF6
 using System.Runtime.Caching;
 
 #elif EFCORE
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Caching.Memory;
 
 #endif
@@ -37,8 +40,8 @@ namespace Z.EntityFramework.Plus
         }
 
 #if EF5 || EF6
-    /// <summary>Gets or sets the cache to use for QueryCacheExtensions extension methods.</summary>
-    /// <value>The cache to use for QueryCacheExtensions extension methods.</value>
+        /// <summary>Gets or sets the cache to use for QueryCacheExtensions extension methods.</summary>
+        /// <value>The cache to use for QueryCacheExtensions extension methods.</value>
         public static ObjectCache Cache { get; set; }
 
         /// <summary>Gets or sets the default cache item policy to use when no policy is specified.</summary>
@@ -69,7 +72,7 @@ namespace Z.EntityFramework.Plus
         {
             foreach (var tag in tags)
             {
-                CacheTags.AddOrUpdate(tag, x => new List<string> {cacheKey}, (x, list) =>
+                CacheTags.AddOrUpdate(tag, x => new List<string> { cacheKey }, (x, list) =>
                 {
                     if (!list.Contains(x))
                     {
@@ -124,15 +127,17 @@ namespace Z.EntityFramework.Plus
                 sb.AppendLine(";");
             }
 #elif EFCORE
-            var command = query.CreateCommand();
+
+            RelationalQueryContext queryContext;
+            var command = query.CreateCommand(out queryContext);
 
             sb.AppendLine(CachePrefix);
             sb.AppendLine(string.Join(";", tags));
             sb.AppendLine(command.CommandText);
 
-            foreach (var parameter in command.Parameters)
+            foreach (var parameter in queryContext.ParameterValues)
             {
-                sb.Append(parameter.Name);
+                sb.Append(parameter.Key);
                 sb.Append(";");
                 sb.Append(parameter.Value);
                 sb.AppendLine(";");
@@ -166,15 +171,16 @@ namespace Z.EntityFramework.Plus
                 sb.AppendLine(";");
             }
 #elif EFCORE
-            var command = query.Query.CreateCommand();
+            RelationalQueryContext queryContext;
+            var command = query.Query.CreateCommand(out queryContext);
 
             sb.AppendLine(CachePrefix);
             sb.AppendLine(string.Join(";", tags));
             sb.AppendLine(command.CommandText);
 
-            foreach (var parameter in command.Parameters)
+            foreach (var parameter in queryContext.ParameterValues)
             {
-                sb.Append(parameter.Name);
+                sb.Append(parameter.Key);
                 sb.Append(";");
                 sb.Append(parameter.Value);
                 sb.AppendLine(";");

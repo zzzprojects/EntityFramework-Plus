@@ -5,6 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
+#if !QUERY_INCLUDEOPTIMIZED
 namespace Z.EntityFramework.Plus
 {
     public static partial class QueryFutureExtensions
@@ -35,3 +36,4 @@ namespace Z.EntityFramework.Plus
         }
     }
 }
+#endif

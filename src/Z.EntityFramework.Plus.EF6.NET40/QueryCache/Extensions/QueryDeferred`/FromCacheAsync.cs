@@ -103,18 +103,18 @@ namespace Z.EntityFramework.Plus
             return query.FromCacheAsync(QueryCacheManager.DefaultCacheItemPolicy, tags);
         }
 #elif EFCORE
-    /// <summary>
-    ///     Return the result of the <paramref name="query" /> from the cache. If the query is not cached
-    ///     yet, the query is materialized and cached before being returned.
-    /// </summary>
-    /// <typeparam name="T">The generic type of the query.</typeparam>
-    /// <param name="query">The query to cache in the QueryCacheManager.</param>
-    /// <param name="options">The cache entry options to use to cache the query.</param>
-    /// <param name="tags">
-    ///     A variable-length parameters list containing tags to expire cached
-    ///     entries.
-    /// </param>
-    /// <returns>The result of the query.</returns>
+        /// <summary>
+        ///     Return the result of the <paramref name="query" /> from the cache. If the query is not cached
+        ///     yet, the query is materialized and cached before being returned.
+        /// </summary>
+        /// <typeparam name="T">The generic type of the query.</typeparam>
+        /// <param name="query">The query to cache in the QueryCacheManager.</param>
+        /// <param name="options">The cache entry options to use to cache the query.</param>
+        /// <param name="tags">
+        ///     A variable-length parameters list containing tags to expire cached
+        ///     entries.
+        /// </param>
+        /// <returns>The result of the query.</returns>
         public static Task<T> FromCacheAsync<T>(this QueryDeferred<T> query, MemoryCacheEntryOptions options, params string[] tags)
         {
             var key = QueryCacheManager.GetCacheKey(query, tags);
@@ -129,7 +129,7 @@ namespace Z.EntityFramework.Plus
                     QueryCacheManager.AddCacheTag(key, tags);
                 }
 
-                return (T) item;
+                return (T)item;
             });
 
             return result;

@@ -11,9 +11,9 @@ using System.Collections.Generic;
 #if EF5 || EF6
 using System.Data.Entity;
 
-#elif EF7
-using Microsoft.Data.Entity;
-using Microsoft.Data.Entity.ChangeTracking;
+#elif EFCORE
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 #endif
 

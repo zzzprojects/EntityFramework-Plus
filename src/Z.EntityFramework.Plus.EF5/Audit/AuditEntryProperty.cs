@@ -78,8 +78,8 @@ namespace Z.EntityFramework.Plus
 #if EF5 || EF6
         [NotMapped]
         public object NewValue { get; set; }
-#elif EF7
-    // EF7 still have some issue with "NotMapped" attribute
+#elif EFCORE
+    // EFCORE still have some issue with "NotMapped" attribute
         public object NewValue;
 #endif
 
@@ -107,8 +107,8 @@ namespace Z.EntityFramework.Plus
         /// <value>The old value audited.</value>
         [NotMapped]
         public object OldValue { get; set; }
-#elif EF7
-    // EF7 still have some issue with "NotMapped" attribute
+#elif EFCORE
+    // EFCORE still have some issue with "NotMapped" attribute
         public object OldValue;
 #endif
 

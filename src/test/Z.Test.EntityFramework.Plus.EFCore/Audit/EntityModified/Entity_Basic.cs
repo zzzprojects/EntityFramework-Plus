@@ -5,7 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
-#if EF5 || EF6
+
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Z.EntityFramework.Plus;
@@ -13,7 +13,7 @@ using Z.EntityFramework.Plus;
 using System.Data.Entity;
 
 #elif EFCORE
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 #endif
 
@@ -167,5 +167,3 @@ namespace Z.Test.EntityFramework.Plus
         }
     }
 }
-
-#endif

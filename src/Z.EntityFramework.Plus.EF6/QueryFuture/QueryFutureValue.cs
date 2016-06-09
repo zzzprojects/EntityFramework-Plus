@@ -21,7 +21,11 @@ namespace Z.EntityFramework.Plus
 {
     /// <summary>Class for query future value.</summary>
     /// <typeparam name="TResult">Type of the result.</typeparam>
+#if QUERY_INCLUDEOPTIMIZED
+    internal class QueryFutureValue<TResult> : BaseQueryFuture
+#else
     public class QueryFutureValue<TResult> : BaseQueryFuture
+#endif
     {
         /// <summary>The result of the query future.</summary>
         private TResult _result;

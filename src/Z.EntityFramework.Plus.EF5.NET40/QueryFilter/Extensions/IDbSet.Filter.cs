@@ -9,8 +9,8 @@ using System.Linq;
 #if EF5 || EF6
 using System.Data.Entity;
 
-#elif EF7
-using Microsoft.Data.Entity;
+#elif EFCORE
+using Microsoft.EntityFrameworkCore;
 
 #endif
 
@@ -30,7 +30,7 @@ namespace Z.EntityFramework.Plus
         /// <returns>The query filtered using context filters associated with specified keys.</returns>
 #if EF5 || EF6
         public static IQueryable<T> Filter<T>(this IDbSet<T> query, params object[] keys) where T : class
-#elif EF7
+#elif EFCORE
         public static IQueryable<T> Filter<T>(this DbSet<T> query, params object[] keys) where T : class
 #endif
         {

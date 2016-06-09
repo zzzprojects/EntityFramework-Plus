@@ -17,7 +17,7 @@ namespace Z.EntityFramework.Plus
 #if NET45
     public class QueryInterceptorProvider : IDbAsyncQueryProvider
 #else
-    public class QueryInterceptorProvider<T> : IQueryProvider
+    public class QueryInterceptorProvider : IQueryProvider
 #endif
     {
         /// <summary>Constructor.</summary>
@@ -82,6 +82,7 @@ namespace Z.EntityFramework.Plus
             return OriginalProvider.Execute<TResult>(expression);
         }
 
+#if NET45
         /// <summary>Executes the asynchronous operation.</summary>
         /// <param name="expression">The expression.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
@@ -102,5 +103,6 @@ namespace Z.EntityFramework.Plus
             expression = CurrentQueryable.Visit(expression);
             return OriginalProvider.ExecuteAsync<TResult>(expression, cancellationToken);
         }
+#endif
     }
 }

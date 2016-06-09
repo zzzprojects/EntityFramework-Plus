@@ -9,7 +9,11 @@ using System.Linq;
 
 namespace Z.EntityFramework.Plus
 {
+#if QUERY_INCLUDEOPTIMIZED
+    internal static partial class QueryFutureExtensions
+#else
     public static partial class QueryFutureExtensions
+#endif
     {
         /// <summary>
         ///     Defer the execution of the <paramref name="query" /> and batch the query command with other
@@ -29,7 +33,7 @@ namespace Z.EntityFramework.Plus
             var objectQuery = query.GetObjectQuery();
             var futureBatch = QueryFutureManager.AddOrGetBatch(objectQuery.Context);
             var futureQuery = new QueryFutureEnumerable<T>(futureBatch, objectQuery);
-#elif EF7
+#elif EFCORE
             var context = query.GetDbContext();
             var futureBatch = QueryFutureManager.AddOrGetBatch(context);
             var futureQuery = new QueryFutureEnumerable<T>(futureBatch, query);

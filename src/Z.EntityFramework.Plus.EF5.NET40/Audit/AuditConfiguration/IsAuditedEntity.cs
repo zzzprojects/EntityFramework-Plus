@@ -11,8 +11,8 @@ using System.Data.Objects;
 #elif EF6
 using System.Data.Entity.Core.Objects;
 
-#elif EF7
-using Microsoft.Data.Entity.ChangeTracking;
+#elif EFCORE
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 #endif
 
@@ -25,7 +25,7 @@ namespace Z.EntityFramework.Plus
         /// <returns>true if the entity is audited, false if not.</returns>
 #if EF5 || EF6
         public bool IsAuditedEntity(ObjectStateEntry entry)
-#elif EF7
+#elif EFCORE
         public bool IsAuditedEntity(EntityEntry entry)
 #endif
         {

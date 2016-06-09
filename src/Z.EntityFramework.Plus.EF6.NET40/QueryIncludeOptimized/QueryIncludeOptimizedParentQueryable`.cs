@@ -10,12 +10,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 #if EF5
 using System.Data.Metadata.Edm;
 
 #elif EF6
 using System.Data.Entity.Core.Metadata.Edm;
-
 #endif
 #if NET45
 using System.Data.Entity.Infrastructure;
@@ -109,7 +109,7 @@ namespace Z.EntityFramework.Plus
             var objectContext = OriginalQueryable.GetObjectQuery().Context;
             var keyMembers = ((dynamic) objectContext).CreateObjectSet<T>().EntitySet.ElementType.KeyMembers;
             var keyNames = ((IEnumerable<EdmMember>) keyMembers).Select(x => x.Name).ToArray();
-#elif EF7
+#elif EFCORE
 
                 var context = currentQuery.OriginalQueryable.GetDbContext();
 
@@ -148,9 +148,9 @@ namespace Z.EntityFramework.Plus
         }
 
 #if EF6 && NET45
-    /// <summary>Gets the asynchrounously enumerator.</summary>
-    /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
-    /// <returns>The asynchrounously enumerator.</returns>
+        /// <summary>Gets the asynchrounously enumerator.</summary>
+        /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
+        /// <returns>The asynchrounously enumerator.</returns>
         IDbAsyncEnumerator<T> IDbAsyncEnumerable<T>.GetAsyncEnumerator()
         {
             return new LazyAsyncEnumerator<T>(token => Task.Run(() => CreateEnumerable(), token));

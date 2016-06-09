@@ -7,6 +7,7 @@
 
 using System.Data.SqlClient;
 using System.Linq;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Z.EntityFramework.Plus;
 #if EF5 || EF6
 using System.Data.Entity;
@@ -14,7 +15,7 @@ using System.Data.Entity;
 #elif EFCORE
 using System.Configuration;
 using System.Data.SqlClient;
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 #endif
 
@@ -252,6 +253,14 @@ END
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            foreach (var entity in modelBuilder.Model.GetEntityTypes())
+            {
+                entity.Relational().TableName = entity.DisplayName();
+            }
+
+            AuditManager.DefaultConfiguration.AutoSavePreAction = (ApplicationDbContext, audit) =>
+(ApplicationDbContext as TestContext).AuditEntries.AddRange(audit.Entries);
+
             modelBuilder.Entity<Entity_ManyGuid>().HasKey(guid => new {guid.ID1, guid.ID2, guid.ID3});
 
             // Association

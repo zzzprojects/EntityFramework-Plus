@@ -11,8 +11,8 @@ using System.Data.Objects;
 #elif EF6
 using System.Data.Entity.Core.Objects;
 
-#elif EF7
-using Microsoft.Data.Entity.ChangeTracking;
+#elif EFCORE
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 #endif
 
@@ -25,7 +25,7 @@ namespace Z.EntityFramework.Plus
         /// <param name="objectStateEntry">The object state entry.</param>
 #if EF5 || EF6
         public static void AuditEntityAdded(Audit audit, ObjectStateEntry objectStateEntry)
-#elif EF7
+#elif EFCORE
         public static void AuditEntityAdded(Audit audit, EntityEntry objectStateEntry)
 #endif
         {
@@ -42,7 +42,7 @@ namespace Z.EntityFramework.Plus
                 entry.DelayedKey = objectStateEntry;
             }
             AuditEntityAdded(entry, objectStateEntry.CurrentValues);
-#elif EF7
+#elif EFCORE
     // TODO: We must check if the key IsTemporary! We can maybe use flag...
     //if (!objectStateEntry.IsKeySet)
     //{
@@ -78,7 +78,7 @@ namespace Z.EntityFramework.Plus
                 }
             }
         }
-#elif EF7
+#elif EFCORE
     /// <summary>Audit entity added.</summary>
     /// <param name="objectStateEntry">The object state entry.</param>
         public static void AuditEntityAdded(AuditEntry entry, EntityEntry objectStateEntry)

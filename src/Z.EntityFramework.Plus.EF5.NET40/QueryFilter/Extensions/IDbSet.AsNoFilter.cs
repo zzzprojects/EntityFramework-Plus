@@ -9,8 +9,8 @@ using System.Linq;
 #if EF5 || EF6
 using System.Data.Entity;
 
-#elif EF7
-using Microsoft.Data.Entity;
+#elif EFCORE
+using Microsoft.EntityFrameworkCore;
 
 #endif
 
@@ -24,12 +24,12 @@ namespace Z.EntityFramework.Plus
         /// <returns>The orginal query before the context was filtered.</returns>
 #if EF5 || EF6
         public static IQueryable<T> AsNoFilter<T>(this IDbSet<T> query) where T : class
-#elif EF7
+#elif EFCORE
         public static IQueryable<T> AsNoFilter<T>(this DbSet<T> query) where T : class
 #endif
         {
             var queryFilterQueryable = QueryFilterManager.GetFilterQueryable(query);
-            return queryFilterQueryable != null ? (IQueryable<T>) queryFilterQueryable.OriginalQuery : query;
+            return queryFilterQueryable != null ? (IQueryable<T>)queryFilterQueryable.OriginalQuery : query;
         }
     }
 }

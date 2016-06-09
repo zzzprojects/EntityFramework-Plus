@@ -11,8 +11,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 
 #elif EFCORE
-using Microsoft.Data.Entity;
-
+using Microsoft.EntityFrameworkCore;
 #endif
 
 namespace Z.EntityFramework.Plus

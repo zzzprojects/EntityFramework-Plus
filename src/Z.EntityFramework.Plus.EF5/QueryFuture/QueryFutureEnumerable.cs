@@ -14,7 +14,7 @@ using System.Data.Objects;
 #elif EF6
 using System.Data.Entity.Core.Objects;
 
-#elif EF7
+#elif EFCORE
 using System.Linq;
 
 #endif
@@ -23,7 +23,11 @@ namespace Z.EntityFramework.Plus
 {
     /// <summary>Class for query future value.</summary>
     /// <typeparam name="T">The type of elements of the query.</typeparam>
+#if QUERY_INCLUDEOPTIMIZED
+    internal class QueryFutureEnumerable<T> : BaseQueryFuture, IEnumerable<T>
+#else
     public class QueryFutureEnumerable<T> : BaseQueryFuture, IEnumerable<T>
+#endif
     {
         /// <summary>The result of the query future.</summary>
         private IEnumerable<T> _result;
@@ -36,7 +40,7 @@ namespace Z.EntityFramework.Plus
         /// </param>
 #if EF5 || EF6
         public QueryFutureEnumerable(QueryFutureBatch ownerBatch, ObjectQuery<T> query)
-#elif EF7
+#elif EFCORE
         public QueryFutureEnumerable(QueryFutureBatch ownerBatch, IQueryable query)
 #endif
         {
@@ -51,6 +55,11 @@ namespace Z.EntityFramework.Plus
             if (!HasValue)
             {
                 OwnerBatch.ExecuteQueries();
+            }
+
+            if (_result == null)
+            {
+                return new List<T>().GetEnumerator();
             }
 
             return _result.GetEnumerator();

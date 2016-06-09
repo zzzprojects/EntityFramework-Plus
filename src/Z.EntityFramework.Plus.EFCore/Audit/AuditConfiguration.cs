@@ -12,8 +12,8 @@ using System.Collections.Generic;
 using System.Data.Entity;
 
 #elif EFCORE
-using Microsoft.Data.Entity;
-using Microsoft.Data.Entity.ChangeTracking;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 #endif
 

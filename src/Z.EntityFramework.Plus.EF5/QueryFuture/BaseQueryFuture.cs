@@ -9,18 +9,23 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Reflection;
+
 #if EF5
 using System.Data.Objects;
 
 #elif EF6
 using System.Data.Entity.Core.Objects;
 
-#elif EF7
+#elif EFCORE
 using System.Linq;
-using Microsoft.Data.Entity.Query;
-using Microsoft.Data.Entity.Query.ExpressionVisitors.Internal;
-using Microsoft.Data.Entity.Query.Internal;
-using Microsoft.Data.Entity.Storage;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal;
+using Microsoft.EntityFrameworkCore.Query.Internal;
+using Microsoft.EntityFrameworkCore.Storage;
 using Remotion.Linq.Parsing.ExpressionVisitors.TreeEvaluation;
 using Remotion.Linq.Parsing.Structure;
 
@@ -29,7 +34,11 @@ using Remotion.Linq.Parsing.Structure;
 namespace Z.EntityFramework.Plus
 {
     /// <summary>Interace for QueryFuture class.</summary>
+#if QUERY_INCLUDEOPTIMIZED
+    internal abstract class BaseQueryFuture
+#else
     public abstract class BaseQueryFuture
+#endif
     {
         /// <summary>Gets the value indicating whether the query future has a value.</summary>
         /// <value>true if this query future has a value, false if not.</value>
@@ -43,7 +52,7 @@ namespace Z.EntityFramework.Plus
         /// <summary>Gets or sets the query deferred.</summary>
         /// <value>The query deferred.</value>
         public ObjectQuery Query { get; set; }
-#elif EF7
+#elif EFCORE
     /// <summary>Gets or sets the query deferred.</summary>
     /// <value>The query deferred.</value>
         public IQueryable Query { get; set; }
@@ -62,15 +71,29 @@ namespace Z.EntityFramework.Plus
 
         /// <summary>Creates executor and get command.</summary>
         /// <returns>The new executor and get command.</returns>
-        public virtual IRelationalCommand CreateExecutorAndGetCommand()
+        public virtual IRelationalCommand CreateExecutorAndGetCommand(out RelationalQueryContext queryContext)
         {
+            var context = Query.GetDbContext();
+
+            // REFLECTION: Query._context.StateManager
+            var stateManagerProperty = typeof(DbContext).GetProperty("StateManager", BindingFlags.NonPublic | BindingFlags.Instance);
+            var stateManager = (StateManager)stateManagerProperty.GetValue(context);
+
+            // REFLECTION: Query._context.StateManager._concurrencyDetector
+            var concurrencyDetectorField = typeof(StateManager).GetField("_concurrencyDetector", BindingFlags.NonPublic | BindingFlags.Instance);
+            var concurrencyDetector = (IConcurrencyDetector)concurrencyDetectorField.GetValue(stateManager);
+
             // REFLECTION: Query.Provider._queryCompiler
             var queryCompilerField = typeof (EntityQueryProvider).GetField("_queryCompiler", BindingFlags.NonPublic | BindingFlags.Instance);
             var queryCompiler = queryCompilerField.GetValue(Query.Provider);
 
+            // REFLECTION: Query.Provider.NodeTypeProvider (Use property for nullable logic)
+            var nodeTypeProviderField = queryCompiler.GetType().GetProperty("NodeTypeProvider", BindingFlags.NonPublic | BindingFlags.Instance);
+            var nodeTypeProvider = nodeTypeProviderField.GetValue(queryCompiler);
+
             // REFLECTION: Query.Provider._queryCompiler.CreateQueryParser();
             var createQueryParserMethod = queryCompiler.GetType().GetMethod("CreateQueryParser", BindingFlags.NonPublic | BindingFlags.Static);
-            var createQueryParser = (QueryParser) createQueryParserMethod.Invoke(null, new object[0]);
+            var createQueryParser = (QueryParser)createQueryParserMethod.Invoke(null, new[] { nodeTypeProvider });
 
             // REFLECTION: Query.Provider._queryCompiler._database
             var databaseField = queryCompiler.GetType().GetField("_database", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -100,13 +123,15 @@ namespace Z.EntityFramework.Plus
             QueryConnection = new CreateEntityRelationConnection(connection);
 
             // CREATE query context
-            var queryContext = new RelationalQueryContext(createQueryBufferDelegate, QueryConnection);
+            queryContext = new RelationalQueryContext(createQueryBufferDelegate, QueryConnection, stateManager, concurrencyDetector);
 
-            // CREATE a query visitor
-            var queryVisitor = new QueryAnnotatingExpressionVisitor().Visit(Query.Expression);
+
+            // REFLECTION: Query.Provider._queryCompiler._database._queryCompilationContextFactory.Logger
+            var loggerField = queryCompilationContextFactory.GetType().GetProperty("Logger", BindingFlags.NonPublic | BindingFlags.Instance);
+            var logger = (ISensitiveDataLogger)loggerField.GetValue(queryCompilationContextFactory);
 
             // CREATE new query from query visitor
-            var newQuery = ParameterExtractingExpressionVisitor.ExtractParameters(queryVisitor, queryContext, evaluatableExpressionFilter);
+            var newQuery = ParameterExtractingExpressionVisitor.ExtractParameters(Query.Expression, queryContext, evaluatableExpressionFilter, logger);
 
             // PARSE new query
             var queryModel = createQueryParser.GetParsedQuery(newQuery);
@@ -125,7 +150,7 @@ namespace Z.EntityFramework.Plus
 
             // RETURN the IRealationCommand
             var sqlQuery = queryModelVisitor.Queries.First();
-            var relationalCommand = sqlQuery.CreateGenerator().GenerateSql(queryContext.ParameterValues);
+            var relationalCommand = sqlQuery.CreateDefaultQuerySqlGenerator().GenerateSql(queryContext.ParameterValues);
             return relationalCommand;
         }
 #endif
@@ -147,7 +172,7 @@ namespace Z.EntityFramework.Plus
 
             // REFLECTION: Query.QueryState.GetExecutionPlan(null)
             var getExecutionPlanMethod = queryState.GetType().GetMethod("GetExecutionPlan", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            var getExecutionPlan = getExecutionPlanMethod.Invoke(queryState, new object[] {null});
+            var getExecutionPlan = getExecutionPlanMethod.Invoke(queryState, new object[] { null });
 
             // REFLECTION: Query.QueryState.GetExecutionPlan(null).ResultShaperFactory
             var resultShaperFactoryField = getExecutionPlan.GetType().GetField("ResultShaperFactory", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
@@ -163,16 +188,16 @@ namespace Z.EntityFramework.Plus
 #if EF5
             var create = createMethod.Invoke(resultShaperFactory, new object[] {reader, Query.Context, Query.Context.MetadataWorkspace, MergeOption.AppendOnly, false});
 #elif EF6
-            var create = createMethod.Invoke(resultShaperFactory, new object[] {reader, Query.Context, Query.Context.MetadataWorkspace, MergeOption.AppendOnly, false, true});
+            var create = createMethod.Invoke(resultShaperFactory, new object[] { reader, Query.Context, Query.Context.MetadataWorkspace, MergeOption.AppendOnly, false, true });
 #endif
 
             // REFLECTION: Query.QueryState.GetExecutionPlan(null).ResultShaperFactory.Create(parameters).GetEnumerator()
             var getEnumeratorMethod = create.GetType().GetMethod("GetEnumerator", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             var getEnumerator = getEnumeratorMethod.Invoke(create, new object[0]);
 
-            var enumerator = (IEnumerator<T>) getEnumerator;
+            var enumerator = (IEnumerator<T>)getEnumerator;
             return enumerator;
-#elif EF7
+#elif EFCORE
             QueryConnection.OriginalDataReader = reader;
             var queryExecutor = (Func<QueryContext, IEnumerable<T>>) QueryExecutor;
             var queryEnumerable = queryExecutor(QueryContext);

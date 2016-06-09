@@ -11,8 +11,8 @@ using System.Data.Objects;
 #elif EF6
 using System.Data.Entity.Core.Objects;
 
-#elif EF7
-using Microsoft.Data.Entity.ChangeTracking;
+#elif EFCORE
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 #endif
 
@@ -26,7 +26,7 @@ namespace Z.EntityFramework.Plus
         /// <returns>true if the property name is audited, false if not.</returns>
 #if EF5 || EF6
         public bool IsAuditedProperty(ObjectStateEntry entry, string propertyName)
-#elif EF7
+#elif EFCORE
         public bool IsAuditedProperty(EntityEntry entry, string propertyName)
 #endif
         {

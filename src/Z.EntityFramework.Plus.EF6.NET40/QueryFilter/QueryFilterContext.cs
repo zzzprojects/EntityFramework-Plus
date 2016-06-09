@@ -8,11 +8,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 #if EF5 || EF6
 using System.Data.Entity;
 
-#elif EF7
-using Microsoft.Data.Entity;
+#elif EFCORE
+using Microsoft.EntityFrameworkCore;
 
 #endif
 
@@ -93,11 +94,11 @@ namespace Z.EntityFramework.Plus
 
                 if (filter != null)
                 {
-                    newQuery = ((IQueryable) filter.ApplyFilter<T>(newQuery));
+                    newQuery = ((IQueryable)filter.ApplyFilter<T>(newQuery));
                 }
             }
 
-            return (IQueryable<T>) newQuery;
+            return (IQueryable<T>)newQuery;
         }
 
         /// <summary>Disable this filter on the specified types.</summary>
@@ -199,7 +200,7 @@ namespace Z.EntityFramework.Plus
             {
                 var baseType = filterDbSet.ElementType;
 
-                while (baseType != null && baseType != typeof (object))
+                while (baseType != null && baseType != typeof(object))
                 {
                     // LINK type
                     FilterSetByType.AddOrAppend(baseType, filterDbSet);
@@ -211,7 +212,12 @@ namespace Z.EntityFramework.Plus
                         FilterSetByType.AddOrAppend(@interface, filterDbSet);
                     }
 
+#if NETCORE50
+                    baseType = baseType.GetTypeInfo().BaseType;
+#else
                     baseType = baseType.BaseType;
+#endif
+
                 }
             }
         }

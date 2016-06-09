@@ -1,40 +1,35 @@
 {
-  "version": "1.0.7-*",
-  "description": "EF Bulk Operations & Utilities | Bulk Insert, Update, Delete, Merge from database.",
+  "version": "1.2.0-*",
+  "description": "Description: EF Bulk Operations & Utilities | Bulk Insert, Update, Delete, Merge from database.",
   "authors": [ "ZZZ Projects Inc." ],
-  "tags": [ "" ],
-  "projectUrl": "https://github.com/zzzprojects/EntityFramework-Plus",
-  "licenseUrl": "https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE",
+  "packOptions": {
+    "projectUrl": "https://github.com/zzzprojects/EntityFramework-Plus",
+    "licenseUrl": "https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE"
+  },
   "compilationOptions": {
-    "define": [ "EFCORE", "NET45" ]
+    "define": [ "EFCORE", "NET45", "FULL" ]
+  },
+  "dependencies": {
+    "Microsoft.EntityFrameworkCore.Relational": "1.0.0-rc2-final"
   },
   "frameworks": {
     "net451": {
-      "dependencies": {
-        "System.Linq.Expressions": "4.0.11-beta-23516"
-
-      },
       "frameworkAssemblies": {
-        "System.Data": "4.0.0.0",
-        "System.Linq.Expressions": "4.0.0.0",
-        "System.Runtime": "4.0.10.0",
-        "System.XML": "4.0.0.0",
-        "System.Xml.Linq": "4.0.0.0"
+        "System.ComponentModel.DataAnnotations": "",
+        "System.Runtime": {
+          "type": "build"
+        }
       }
     },
-    "dnxcore50": {
+    "netcore50": {
       "dependencies": {
-        "Microsoft.CSharp": "4.0.1-beta-23516",
-        "System.Collections": "4.0.11-beta-23516",
-        "System.Linq": "4.0.1-beta-23516",
-        "System.Threading": "4.0.11-beta-23516",
-        "System.Runtime": "4.0.21-beta-23516"
+        "Microsoft.NETCore.Platforms": {
+          "type": "build",
+          "version": "1.0.1-*"
+        },
+        "System.Dynamic.Runtime": "4.0.11-rc2-24027",
+        "System.Reflection.Emit": "4.0.1-rc2-24027"
       }
     }
-  },
-  "dependencies": {
-    "EntityFramework.Relational": "7.0.0-rc1-final",
-    "System.Dynamic.Runtime": "4.0.11-beta-23516",
-    "System.Reflection.Emit": "4.0.1-beta-23516"
   }
 }

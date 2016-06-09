@@ -10,9 +10,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
+#if NETCORE50
+using System.Reflection;
+#endif
+
 namespace Z.EntityFramework.Plus
 {
+#if !QUERY_INCLUDEOPTIMIZED
+    internal class QueryAddOrAppendOrderExpressionVisitor<TSource> : ExpressionVisitor
+#else
     public class QueryAddOrAppendOrderExpressionVisitor<TSource> : ExpressionVisitor
+#endif
     {
         private readonly List<string> ExistingKeyNames = new List<string>();
         private bool Ascending;

@@ -10,7 +10,7 @@ using System.Linq;
 using System.Data.Entity;
 
 #elif EFCORE
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 #endif
 
@@ -29,7 +29,7 @@ namespace Z.EntityFramework.Plus
 #endif
         {
             var queryFilterQueryable = QueryFilterManager.GetFilterQueryable(query);
-            return queryFilterQueryable != null ? (IQueryable<T>) queryFilterQueryable.OriginalQuery : query;
+            return queryFilterQueryable != null ? (IQueryable<T>)queryFilterQueryable.OriginalQuery : query;
         }
     }
 }
