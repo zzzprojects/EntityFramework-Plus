@@ -301,7 +301,7 @@ SELECT  @totalRowAffected
 #elif EFCORE
         public DbCommand CreateCommand(IQueryable query, IEntityType entity, List<Tuple<string, object>> values)
         {
-#if NETCORE50
+#if NETSTANDARD1_3
             var assembly = Assembly.Load(new AssemblyName("EntityFramework.MicrosoftSqlServer, Version = 7.0.0.0, Culture = neutral, PublicKeyToken = adb9793829ddae60"));
 
             if (assembly != null)
@@ -442,7 +442,7 @@ SELECT  @totalRowAffected
             var mapping = entity.Info.EntityTypeMapping.MappingFragment;
 #elif EFCORE
 
-#if NETCORE50
+#if NETSTANDARD1_3
             Assembly assembly;
 
             try
@@ -538,7 +538,7 @@ SELECT  @totalRowAffected
                     var command = ((IQueryable) result).CreateCommand(out queryContext);
                     var commandText = command.CommandText;
 
-#if NETCORE50
+#if NETSTANDARD1_3
                     // GET the 'value' part
                     var valueSql = commandText.IndexOf("AS [value]" + Environment.NewLine + "FROM", StringComparison.CurrentCultureIgnoreCase) != -1 ?
                         commandText.Substring(6, commandText.IndexOf("AS [value]" + Environment.NewLine + "FROM", StringComparison.CurrentCultureIgnoreCase) - 6) :

@@ -1,5 +1,5 @@
 {
-  "version": "1.2.0-*",
+  "version": "1.2.3-*",
   "description": "Description: EF Bulk Operations & Utilities | Bulk Insert, Update, Delete, Merge from database.",
   "authors": [ "ZZZ Projects Inc." ],
   "packOptions": {
@@ -21,7 +21,11 @@
         }
       }
     },
-    "netcore50": {
+    "netstandard1.3": {
+      "imports": [
+        "dnxcore50",
+        "portable-net45+win8"
+      ],
       "dependencies": {
         "Microsoft.NETCore.Platforms": {
           "type": "build",

@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-#if NETCORE50
+#if NETSTANDARD1_3
 using System.Reflection;
 #endif
 

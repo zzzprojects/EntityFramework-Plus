@@ -36,7 +36,7 @@ namespace Z.EntityFramework.Plus
 #if EF5 || EF6
                 var isDbSet = setType.IsGenericType && (typeof (IDbSet<>).IsAssignableFrom(setType.GetGenericTypeDefinition()) || setType.GetInterface(typeof (IDbSet<>).FullName) != null);
 #elif EFCORE
-#if NETCORE50
+#if NETSTANDARD1_3
                 var isDbSet = setType.GetType().IsConstructedGenericType && (typeof (DbSet<>).IsAssignableFrom(setType.GetGenericTypeDefinition()));
 #else
                 var isDbSet = setType.IsGenericType && (typeof(DbSet<>).IsAssignableFrom(setType.GetGenericTypeDefinition()));

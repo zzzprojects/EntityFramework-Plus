@@ -296,7 +296,7 @@ SELECT  @totalRowAffected
 #elif EFCORE
         public DbCommand CreateCommand(IQueryable query, IEntityType entity)
         {
-#if NETCORE50
+#if NETSTANDARD1_3
             try
             {
                 var assembly = Assembly.Load(new AssemblyName("EntityFramework.MicrosoftSqlServer, Version = 7.0.0.0, Culture = neutral, PublicKeyToken = adb9793829ddae60"));
