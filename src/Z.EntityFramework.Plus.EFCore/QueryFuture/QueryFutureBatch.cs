@@ -184,6 +184,7 @@ namespace Z.EntityFramework.Plus
 
                 sb.AppendLine(string.Concat("-- EF+ Query Future: ", queryCount, " of ", Queries.Count));
                 sb.AppendLine(sql);
+                sb.Append(";"); // SQL Server, SQL Azure, MySQL
                 sb.AppendLine();
                 sb.AppendLine();
 
