@@ -57,7 +57,7 @@ namespace Z.EntityFramework.Plus
             get { return OriginalDataReader.RecordsAffected; }
         }
 
-        //#if !NETCORE50
+        //#if !NETSTANDARD1_3
         //        public override void Close()
         //        {
         //            // DO NOT close reader

@@ -159,6 +159,7 @@
     <Compile Include="_Internal\EF5\DbContext.SaveChangesAsync.cs" />
     <Compile Include="_Internal\EF5\IDbSet`\DbContext.AddRange.cs" />
     <Compile Include="_Internal\EF5\IDbSet`\DbContext.RemoveRange.cs" />
+    <Compile Include="_Internal\EF5_EF6\Database\GetEntityConnection.cs" />
     <Compile Include="_Internal\EF5_EF6\DbContext\DbContext.GetObjectContext.cs" />
     <Compile Include="_Internal\EF5_EF6\EntityConnection\GetDbTransaction.cs" />
     <Compile Include="_Internal\EF5_EF6\EntityConnection\GetEntityTransaction.cs" />

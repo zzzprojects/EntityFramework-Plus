@@ -44,7 +44,7 @@ namespace Z.EntityFramework.Plus
             return null;
 #elif EFCORE
 
-#if NETCORE50
+#if NETSTANDARD1_3
             return type.GetTypeInfo().GenericTypeArguments[0];
 #else
             return type.GetGenericArguments()[0];
