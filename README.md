@@ -31,12 +31,14 @@ Stay updated with latest changes
 - [Audit](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Audit-%7C-Entity-Framework-Audit-Trail-Context-and-Track-Changes)
 
 ---
+
 **Bulk Operations only available with [Entity Framework Extensions](http://entityframework-extensions.net/)**
 - BulkSaveChanges
 - BulkInsert
 - BulkUpdate
 - BulkDelete
 - BulkMerge
+
 ---
 
 ## Batch Delete
