@@ -30,12 +30,14 @@ Stay updated with latest changes
     - [Query IncludeOptimized](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-IncludeOptimized-%7C-Entity-Framework-Filter-Child-Collections-and-Optimize-Include)
 - [Audit](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Audit-%7C-Entity-Framework-Audit-Trail-Context-and-Track-Changes)
 
+---
 **Bulk Operations only available with [Entity Framework Extensions](http://entityframework-extensions.net/)**
 - BulkSaveChanges
 - BulkInsert
 - BulkUpdate
 - BulkDelete
 - BulkMerge
+---
 
 ## Batch Delete
 Deletes multiples rows in a single database roundtrip and without loading entities in the context.
