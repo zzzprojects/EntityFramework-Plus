@@ -258,32 +258,6 @@ AuditManager.DefaultConfiguration.AutoSavePreAction = (context, audit) =>
 
 **[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Audit-%7C-Entity-Framework-Audit-Trail-Context-and-Track-Changes)**
 
-## FREE vs PRO
-Every month, a new monthly trial of the PRO Version is available to let you evaluate all its features without limitations.
-
-Features | FREE Version | [PRO Version](http://entityframework-plus.net/#pro)
------------- | :-------------: | :-------------:
-Bulk SaveChanges | **No** | Yes
-Bulk Insert | **No** | Yes
-Bulk Update | **No** | Yes
-Bulk Delete | **No** | Yes
-Bulk Merge | **No** | Yes
-Audit | Yes | Yes
-Batch Delete | Yes | Yes
-Batch Update | Yes | Yes
-Query Cache | Yes | Yes
-Query Deferred | Yes | Yes
-Query Filter | Yes | Yes
-Query Future | Yes | Yes
-Query IncludeFilter | Yes | Yes
-Query IncludeOptimized | Yes | Yes
-Commercial License | Yes | Yes
-Royalty-Free | Yes | Yes
-Support & Upgrades (1 year) | **No** | Yes
-Learn more about the **[PRO Version](http://entityframework-plus.net/#pro)**
-
-(Compatible with license from [.NET Entity Framework Extensions](http://www.zzzprojects.com/products/dotnet-development/entity-framework-extensions/))
-
 ## Contribute
 The best way to contribute is by **spreading the word** about the library:
 
