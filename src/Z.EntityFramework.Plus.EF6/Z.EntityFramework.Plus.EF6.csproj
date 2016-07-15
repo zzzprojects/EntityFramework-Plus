@@ -183,6 +183,7 @@
     <Compile Include="_Internal\EFCore\IQueryable`\CreateCommand.cs" />
     <Compile Include="_Internal\EFCore\IQueryable`\GetDbContext.cs" />
     <Compile Include="_Internal\EFCore\IQueryable`\IQueryable`.GetCommand.cs" />
+    <Compile Include="_Internal\EFCore\IQueryable`\IsInMemoryQueryContext.cs" />
     <Compile Include="_Internal\EF\DbContext\DbContext.GetDbSetProperties.cs" />
     <Compile Include="_Internal\EF\DbContext\DbContext.MapReader.cs" />
     <Compile Include="_Internal\EF\IQueryable`\IQueryable.Order.cs" />

@@ -187,6 +187,16 @@ SELECT  @totalRowAffected
                 }
             }
 #elif EFCORE
+            if (BatchDeleteManager.InMemoryDbContextFactory != null && query.IsInMemoryQueryContext())
+            {
+                var context = BatchDeleteManager.InMemoryDbContextFactory();
+
+                var list = query.ToList();
+                context.RemoveRange(list);
+                context.SaveChanges();
+                return list.Count;
+            }
+
             var dbContext = query.GetDbContext();
             var entity = dbContext.Model.FindEntityType(typeof(T));
             var keys = entity.GetKeys().ToList()[0].Properties;

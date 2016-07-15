@@ -5,6 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
+#if EFCORE
 using System.Data.SqlClient;
 using System.Linq;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -44,12 +45,12 @@ END
     }
 #endif
 
-    public partial class TestContext : DbContext
+    public partial class TestContextMemory : DbContext
     {
 #if EF5 || EF6
         public TestContext() : base(My.Config.ConnectionStrings.TestDatabase)
 #elif EFCORE
-        public TestContext()
+        public TestContextMemory()
 #endif
         {
 #if EF5 || EF6
@@ -60,7 +61,7 @@ END
         }
 
 #if EFCORE
-        public TestContext(DbContextOptions options) : base(options)
+        public TestContextMemory(DbContextOptions options) : base(options)
         {
             
         }
@@ -70,7 +71,7 @@ END
 #if EF5 || EF6
         public TestContext(bool isEnabled, string fixResharper = null, bool? enableFilter1 = null, bool? enableFilter2 = null, bool? enableFilter3 = null, bool? enableFilter4 = null, bool? excludeClass = null, bool? excludeInterface = null, bool? excludeBaseClass = null, bool? excludeBaseInterface = null, bool? includeClass = null, bool? includeInterface = null, bool? includeBaseClass = null, bool? includeBaseInterface = null) : base(My.Config.ConnectionStrings.TestDatabase)
 #elif EFCORE
-        public TestContext(bool isEnabled, string fixResharper = null, bool? enableFilter1 = null, bool? enableFilter2 = null, bool? enableFilter3 = null, bool? enableFilter4 = null, bool? excludeClass = null, bool? excludeInterface = null, bool? excludeBaseClass = null, bool? excludeBaseInterface = null, bool? includeClass = null, bool? includeInterface = null, bool? includeBaseClass = null, bool? includeBaseInterface = null)
+        public TestContextMemory(bool isEnabled, string fixResharper = null, bool? enableFilter1 = null, bool? enableFilter2 = null, bool? enableFilter3 = null, bool? enableFilter4 = null, bool? excludeClass = null, bool? excludeInterface = null, bool? excludeBaseClass = null, bool? excludeBaseInterface = null, bool? includeClass = null, bool? includeInterface = null, bool? includeBaseClass = null, bool? includeBaseInterface = null)
 #endif
         {
 #if EF5 || EF6
@@ -254,7 +255,7 @@ END
 #elif EFCORE
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(new SqlConnection(My.Config.ConnectionStrings.TestDatabase));
+            // optionsBuilder.UseSqlServer(new SqlConnection(My.Config.ConnectionStrings.TestDatabase));
         }
 
 
@@ -373,3 +374,4 @@ END
 #endregion
     }
 }
+#endif

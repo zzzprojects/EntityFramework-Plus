@@ -149,8 +149,12 @@
     <Compile Include="Audit\EntitySoftAdded\Inheritance_TPC.cs" />
     <Compile Include="Audit\EntitySoftAdded\Inheritance_TPH.cs" />
     <Compile Include="Audit\EntitySoftAdded\Inheritance_TPT.cs" />
+    <Compile Include="BatchDelete\BatchDelete_InMemory.cs" />
     <Compile Include="BatchDelete\BatchDelete_PrimaryKey.cs" />
     <Compile Include="BatchDelete\BatchDelete_WhereValue.cs" />
+    <Compile Include="BatchDelete\InMemory\Ten.cs" />
+    <Compile Include="BatchDelete\InMemory\Thirty.cs" />
+    <Compile Include="BatchDelete\InMemory\Twenty.cs" />
     <Compile Include="BatchDelete\PrimaryKey\Single.cs" />
     <Compile Include="BatchDelete\PrimaryKey\Many.cs" />
     <Compile Include="BatchDelete\WhereValue\Many_Constant.cs" />
@@ -463,6 +467,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="_Helper\QueryFilterHelper.cs" />
     <Compile Include="_Helper\QueryCacheHelper.cs" />
+    <Compile Include="_Model\_TestContextMemory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

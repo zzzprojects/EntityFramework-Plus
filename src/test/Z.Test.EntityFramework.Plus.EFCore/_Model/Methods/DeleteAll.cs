@@ -24,6 +24,15 @@ namespace Z.Test.EntityFramework.Plus
 {
     public partial class TestContext
     {
+        public static void DeleteAll<T>(TestContextMemory ctx, Func<TestContextMemory, DbSet<T>> func) where T : class
+        {
+            var sets = func(ctx);
+            sets.RemoveRange(sets);
+            ctx.SaveChanges();
+
+            Assert.AreEqual(0, sets.Count());
+        }
+
         public static void DeleteAll<T>(TestContext ctx, Func<TestContext, DbSet<T>> func) where T : class
         {
             var sets = func(ctx);

@@ -96,6 +96,28 @@ namespace Z.Test.EntityFramework.Plus
             return list;
         }
 
+        public static List<T> Insert<T>(TestContextMemory ctx, Func<TestContextMemory, DbSet<T>> func, int count) where T : class, new()
+        {
+            var sets = func(ctx);
+
+            var countBefore = sets.Count();
+
+            var list = new List<T>();
+            for (var i = 0; i < count; i++)
+            {
+                var item = new T();
+                InsertFactory(item, i);
+                list.Add(item);
+            }
+
+            sets.AddRange(list);
+            ctx.SaveChanges();
+
+            Assert.AreEqual(count + countBefore, sets.Count());
+
+            return list;
+        }
+
         public static List<T> Insert<T, T2>(TestContext ctx, Func<TestContext, DbSet<T>> func, Func<T2> factory, int count) where T : class where T2 : T
         {
             var sets = func(ctx);
