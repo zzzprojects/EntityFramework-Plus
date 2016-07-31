@@ -50,13 +50,27 @@ namespace Z.EntityFramework.Plus
                 throw new Exception(ExceptionMessage.GeneralException);
             }
 
-            if (Filter != null)
+            if (QueryIncludeOptimizedManager.AllowQueryBatch)
             {
-                queryable.Select(Filter).Future();
+                if (Filter != null)
+                {
+                    queryable.Select(Filter).Future();
+                }
+                else
+                {
+                    queryable.Select(FilterSingle).Future();
+                }
             }
             else
             {
-                queryable.Select(FilterSingle).Future();
+                if (Filter != null)
+                {
+                    var list = queryable.Select(Filter).ToList();
+                }
+                else
+                {
+                    var list = queryable.Select(FilterSingle).ToList();
+                }
             }
         }
     }

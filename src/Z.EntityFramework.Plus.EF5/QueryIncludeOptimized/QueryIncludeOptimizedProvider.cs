@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
@@ -191,10 +192,18 @@ namespace Z.EntityFramework.Plus
             expressionProperty.SetValue(immediateQuery, expression);
 #endif
 
-            // EXECUTE the new expression
-            var futureValue = immediateQuery.FutureValue();
+            object value = null;
 
-            var value = futureValue.Value;
+            if (QueryIncludeOptimizedManager.AllowQueryBatch)
+            {
+                value = immediateQuery.FutureValue().Value;
+            }
+            else
+            {
+                value = immediateQuery.Execute(objectQuery.MergeOption).FirstOrDefault();
+            }
+            // EXECUTE the new expression
+            //var value = QueryIncludeOptimizedManager.AllowQueryBatch ? immediateQuery.FutureValue().Value : immediateQuery.FirstOrDefault();
 
             // CHECK if a value has been returned
             if (value == null)

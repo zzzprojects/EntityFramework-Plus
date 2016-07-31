@@ -125,7 +125,7 @@ namespace Z.EntityFramework.Plus
             }
 
             // RESOLVE current and all future child queries
-            return newQuery.Future().ToList();
+            return QueryIncludeOptimizedManager.AllowQueryBatch ? newQuery.Future().ToList() : newQuery.ToList();
         }
 
         /// <summary>Creates the queryable.</summary>

@@ -340,6 +340,16 @@
     <Compile Include="QueryFuture\Future\Queryable_AsTracking.cs" />
     <Compile Include="QueryFuture\QueryFuture_Future.cs" />
     <Compile Include="QueryFuture\QueryFuture_FutureValue.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowQueryBatch\Many_Enumerator.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowQueryBatch\Many_Executor.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowQueryBatch\Many_Property.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowQueryBatch\Many_ThenQuery_Enumerator.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowQueryBatch\Many_ThenQuery_Executor.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowQueryBatch\Single_Enumerator.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowQueryBatch\Single_Executor.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowQueryBatch\Single_Property.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowQueryBatch\Single_ThenQuery_Enumerator.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowQueryBatch\Single_ThenQuery_Executor.cs" />
     <Compile Include="QueryIncludeOptimized\FirstWithPredicate\Many_Executor.cs" />
     <Compile Include="QueryIncludeOptimized\FirstWithPredicate\Many_ThenQuery_Executor.cs" />
     <Compile Include="QueryIncludeOptimized\FirstWithPredicate\Single_Executor.cs" />
@@ -348,6 +358,7 @@
     <Compile Include="QueryIncludeOptimized\FirstWithPredicate_Async\Many_ThenQuery_ExecutorAsync.cs" />
     <Compile Include="QueryIncludeOptimized\FirstWithPredicate_Async\Single_ExecutorAsync.cs" />
     <Compile Include="QueryIncludeOptimized\FirstWithPredicate_Async\Single_ThenQuery_ExecutorAsync.cs" />
+    <Compile Include="QueryIncludeOptimized\QueryIncludeOptimized_AllowQueryBatch.cs" />
     <Compile Include="QueryIncludeOptimized\QueryIncludeOptimized_FirstWithPredicate.cs" />
     <Compile Include="QueryIncludeOptimized\QueryIncludeOptimized_FirstWithPredicate_Async.cs" />
     <Compile Include="QueryIncludeOptimized\QueryIncludeOptimized_Where.cs" />

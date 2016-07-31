@@ -20,7 +20,7 @@ namespace Z.EntityFramework.Plus.Internal
         /// <returns>The model name.</returns>
         internal static string GetModelName(this DbContext @this)
         {
-            var connectionString = @this.Database.GetEntityConnection().ConnectionString;
+            var connectionString = @this.Database.Connection.ConnectionString;
             var end = connectionString.IndexOf(".msl") - 1;
 
             if (end <= -1)

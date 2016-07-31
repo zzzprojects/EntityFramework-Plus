@@ -37,7 +37,7 @@ namespace Z.EntityFramework.Plus
                 var isDbSet = setType.IsGenericType && (typeof (IDbSet<>).IsAssignableFrom(setType.GetGenericTypeDefinition()) || setType.GetInterface(typeof (IDbSet<>).FullName) != null);
 #elif EFCORE
 #if NETSTANDARD1_3
-                var isDbSet = setType.GetType().IsConstructedGenericType && (typeof (DbSet<>).IsAssignableFrom(setType.GetGenericTypeDefinition()));
+                var isDbSet = setType.GetTypeInfo().IsGenericType && (typeof (DbSet<>).IsAssignableFrom(setType.GetGenericTypeDefinition()));
 #else
                 var isDbSet = setType.IsGenericType && (typeof(DbSet<>).IsAssignableFrom(setType.GetGenericTypeDefinition()));
 #endif

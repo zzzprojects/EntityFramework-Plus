@@ -142,6 +142,7 @@
     <Compile Include="QueryIncludeOptimized\BaseQueryIncludeOptimizedChild.cs" />
     <Compile Include="QueryIncludeOptimized\Extensions\IQueryable`.IncludeOptimized.cs" />
     <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedChild`2.cs" />
+    <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedManager.cs" />
     <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedParentQueryable`.cs" />
     <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedProvider.cs" />
     <Compile Include="_Internal\Dictionary\Dictionary.AddOrAppend.cs" />
@@ -163,6 +164,7 @@
     <Compile Include="_Internal\EF5_EF6\Object\Object.GetObjectQuery.cs" />
     <Compile Include="_Internal\EF6\ObjectContext\GetDbContext.cs" />
     <Compile Include="_Internal\EF6\ObjectContext\GetInterceptionContext.cs" />
+    <Compile Include="_Internal\EF6\ObjectQuery\GetCommandTextAndParameters.cs" />
     <Compile Include="_Internal\EFCore\CreateEntity\CreateEntityCommand.cs" />
     <Compile Include="_Internal\EFCore\CreateEntity\CreateEntityConnection.cs" />
     <Compile Include="_Internal\EFCore\CreateEntity\CreateEntityDataReader.cs" />
@@ -173,6 +175,7 @@
     <Compile Include="_Internal\EFCore\IQueryable`\CreateCommand.cs" />
     <Compile Include="_Internal\EFCore\IQueryable`\GetDbContext.cs" />
     <Compile Include="_Internal\EFCore\IQueryable`\IQueryable`.GetCommand.cs" />
+    <Compile Include="_Internal\EFCore\IQueryable`\IsInMemoryQueryContext.cs" />
     <Compile Include="_Internal\EF\DbContext\DbContext.GetDbSetProperties.cs" />
     <Compile Include="_Internal\EF\DbContext\DbContext.MapReader.cs" />
     <Compile Include="_Internal\EF\IQueryable`\IQueryable.Order.cs" />
