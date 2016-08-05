@@ -1,5 +1,5 @@
 {
-  "version": "1.3.4",
+  "version": "1.3.5",
   "description": "Description: EF Bulk Operations & Utilities | Bulk Insert, Update, Delete, Merge from database.",
   "authors": [ "ZZZ Projects Inc." ],
   "packOptions": {

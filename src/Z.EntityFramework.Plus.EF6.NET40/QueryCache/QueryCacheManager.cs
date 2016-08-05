@@ -8,9 +8,16 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
-#if EF5 || EF6
+
+#if EF5
+using System.Runtime.Caching;
+using System.Data.EntityClient;
+
+#elif EF6
+using System.Data.Entity.Core.EntityClient;
 using System.Runtime.Caching;
 
 #elif EFCORE
@@ -37,6 +44,7 @@ namespace Z.EntityFramework.Plus
 #endif
             CachePrefix = "Z.EntityFramework.Plus.QueryCacheManager;";
             CacheTags = new ConcurrentDictionary<string, List<string>>();
+            IncludeConnectionInCacheKey = true;
         }
 
 #if EF5 || EF6
@@ -60,6 +68,12 @@ namespace Z.EntityFramework.Plus
         /// <summary>Gets or sets the cache prefix to use to create the cache key.</summary>
         /// <value>The cache prefix to use to create the cache key.</value>
         public static string CachePrefix { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether the connection in cache key should be included.
+        /// </summary>
+        /// <value>true if include connection in cache key, false if not.</value>
+        public static bool IncludeConnectionInCacheKey { get; set; }
 
         /// <summary>Gets the dictionary cache tags used to store tags and corresponding cached keys.</summary>
         /// <value>The cache tags used to store tags and corresponding cached keys.</value>
@@ -112,12 +126,25 @@ namespace Z.EntityFramework.Plus
         {
             var sb = new StringBuilder();
 
-#if EF5
+#if EF5 || EF6
             var objectQuery = query.GetObjectQuery();
 
             sb.AppendLine(CachePrefix);
-            sb.AppendLine(objectQuery.Context.Connection.ConnectionString);
+
+            if (IncludeConnectionInCacheKey)
+            {
+                var connection = ((EntityConnection)objectQuery.Context.Connection).GetStoreConnection();
+
+                // FORCE database name in case "ChangeDatabase()" method is used
+                sb.AppendLine(connection.DataSource ?? "");
+                sb.AppendLine(connection.Database ?? "");
+                sb.AppendLine(connection.ConnectionString);
+            }
+
             sb.AppendLine(string.Join(";", tags));
+#endif
+
+#if EF5
             sb.AppendLine(objectQuery.ToTraceString());
 
             foreach (var parameter in objectQuery.Parameters)
@@ -128,12 +155,6 @@ namespace Z.EntityFramework.Plus
                 sb.AppendLine(";");
             }
 #elif EF6
-            var objectQuery = query.GetObjectQuery();
-
-            sb.AppendLine(CachePrefix);
-            sb.AppendLine(objectQuery.Context.Connection.ConnectionString);
-            sb.AppendLine(string.Join(";", tags));
-
             var commandTextAndParameters = objectQuery.GetCommandTextAndParameters();
             sb.AppendLine(commandTextAndParameters.Item1);
 
@@ -149,7 +170,17 @@ namespace Z.EntityFramework.Plus
             var command = query.CreateCommand(out queryContext);
 
             sb.AppendLine(CachePrefix);
-            sb.AppendLine(queryContext.Connection.ConnectionString);
+
+            if (IncludeConnectionInCacheKey)
+            {
+                var connection = queryContext.Connection.DbConnection;
+
+                // FORCE database name in case "ChangeDatabase()" method is used
+                sb.AppendLine(connection.DataSource ?? "");
+                sb.AppendLine(connection.Database ?? "");
+                sb.AppendLine(connection.ConnectionString);
+            }
+
             sb.AppendLine(string.Join(";", tags));
             sb.AppendLine(command.CommandText);
 
@@ -174,12 +205,25 @@ namespace Z.EntityFramework.Plus
         {
             var sb = new StringBuilder();
 
-#if EF5
+#if EF5 || EF6
             var objectQuery = query.Query.GetObjectQuery();
 
             sb.AppendLine(CachePrefix);
-            sb.AppendLine(objectQuery.Context.Connection.ConnectionString);
+
+            if (IncludeConnectionInCacheKey)
+            {
+                var connection = ((EntityConnection)objectQuery.Context.Connection).GetStoreConnection();
+
+                // FORCE database name in case "ChangeDatabase()" method is used
+                sb.AppendLine(connection.DataSource ?? "");
+                sb.AppendLine(connection.Database ?? "");
+                sb.AppendLine(connection.ConnectionString);
+            }
+
             sb.AppendLine(string.Join(";", tags));
+#endif
+
+#if EF5
             sb.AppendLine(objectQuery.ToTraceString());
 
             foreach (var parameter in objectQuery.Parameters)
@@ -190,12 +234,6 @@ namespace Z.EntityFramework.Plus
                 sb.AppendLine(";");
             }
 #elif EF6
-            var objectQuery = query.Query.GetObjectQuery();
-
-            sb.AppendLine(CachePrefix);
-            sb.AppendLine(objectQuery.Context.Connection.ConnectionString);
-            sb.AppendLine(string.Join(";", tags));
-
             var commandTextAndParameters = objectQuery.GetCommandTextAndParameters();
             sb.AppendLine(commandTextAndParameters.Item1);
 
@@ -211,7 +249,17 @@ namespace Z.EntityFramework.Plus
             var command = query.Query.CreateCommand(out queryContext);
 
             sb.AppendLine(CachePrefix);
-            sb.AppendLine(queryContext.Connection.ConnectionString);
+
+            if (IncludeConnectionInCacheKey)
+            {
+                var connection = queryContext.Connection.DbConnection;
+
+                // FORCE database name in case "ChangeDatabase()" method is used
+                sb.AppendLine(connection.DataSource ?? "");
+                sb.AppendLine(connection.Database ?? "");
+                sb.AppendLine(connection.ConnectionString);
+            }
+
             sb.AppendLine(string.Join(";", tags));
             sb.AppendLine(command.CommandText);
 

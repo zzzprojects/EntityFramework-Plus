@@ -151,6 +151,7 @@
     <Compile Include="_Internal\EF5_EF6\DbContext\DbContext.GetObjectContext.cs" />
     <Compile Include="_Internal\EF5_EF6\EntityConnection\GetDbTransaction.cs" />
     <Compile Include="_Internal\EF5_EF6\EntityConnection\GetEntityTransaction.cs" />
+    <Compile Include="_Internal\EF5_EF6\EntityConnection\GetStoreConnection.cs" />
     <Compile Include="_Internal\EF5_EF6\EntityConnection\GetStoreTransaction.cs" />
     <Compile Include="_Internal\EF5_EF6\IDbSet`\GetDbContext.cs" />
     <Compile Include="_Internal\EF5_EF6\IQueryable\IQueryable.GetObjectQuery.cs" />
