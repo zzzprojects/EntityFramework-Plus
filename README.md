@@ -56,7 +56,7 @@ ctx.Users.Where(x => x.LastLoginDate < DateTime.Now.AddYears(-2))
          .Delete(x => x.BatchSize = 1000);
 ```
 
-**Support:** EF5, EF6
+**Support:** EF5, EF6, EF Core
 
 **[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Batch-Delete-%7C-Entity-Framework-Batch-Delete-Objects-Without-Loading-Them)**
 
@@ -70,6 +70,8 @@ Updates multiples rows using an expression in a single database roundtrip and wi
 ctx.Users.Where(x => x.LastLoginDate < DateTime.Now.AddYears(-2))
          .Update(x => new User() { IsSoftDeleted = 1 });
 ```
+
+**Support:** EF5, EF6, EF Core
 
 **[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Batch-Update-%7C-Entity-Framework-Batch-Update-Objects-Without-Loading-Them)**
 
@@ -106,6 +108,8 @@ var stateCount = db.States.Where(x => x.IsActive).DeferredCount().FromCache("cou
 QueryCacheManager.ExpireTag("countries");
 ```
 
+**Support:** EF5, EF6, EF Core
+
 **[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Cache-%7C-Entity-Framework-Second-Level-Caching)**
 
 ## Query Deferred
@@ -122,6 +126,8 @@ ctx.Customers.DeferredCount().FromCache();
 ctx.Customers.DeferredCount().FutureValue();
 ```
 > All LINQ extensions are supported: Count, First, FirstOrDefault, Sum, etc. 
+
+**Support:** EF5, EF6, EF Core
 
 **[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Deferred-%7C-Entity-Framework-deferring-immediate-LINQ-query-execution)**
 
@@ -166,6 +172,8 @@ ctx.Filter<Customer>(CustomEnum.EnumValue, x => x.Where(c => c.IsActive), false)
 var customer = ctx.Customers.Filter(CustomEnum.EnumValue).ToList();
 ```
 
+**Support:** EF5, EF6, EF Core
+
 **[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Filter-%7C-Entity-Framework-Dynamic-Instance-and-Global-Filters)**
 
 ## Query Future
@@ -197,6 +205,8 @@ var futureCustomerCount = db.Customers.Where(x => x.IsActive).DeferredCount().Fu
 Customer firstCustomer = futureFirstCustomer.Value;
 ```
 
+**Support:** EF5, EF6, EF Core
+
 **[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Future-%7C-Entity-Framework-Combine-and-Execute-Multiple-SQL-Command)**
 
 ## Query IncludeFilter
@@ -210,6 +220,8 @@ var ctx = new EntityContext();
 var posts = ctx.Post.IncludeFilter(x => x.Comments.Where(x => x.IsActive));
 ```
 
+**Support:** EF6
+
 **[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-IncludeFilter-%7C-Entity-Framework-Include-Related-Entities-using-Where-Filter)**
 
 ## Query IncludeOptimized
@@ -221,6 +233,8 @@ var ctx = new EntityContext();
 // Load only active comments using an optimized include
 var posts = ctx.Post.IncludeOptimized(x => x.Comments.Where(x => x.IsActive));
 ```
+
+**Support:** EF5, EF6
 
 **[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-IncludeFilter-%7C-Entity-Framework-Include-Related-Entities-using-Where-Filter)**
 
@@ -261,6 +275,8 @@ AutoSave audit in your database
 AuditManager.DefaultConfiguration.AutoSavePreAction = (context, audit) =>
     (context as EntityContext).AuditEntries.AddRange(audit.Entries);
 ```
+
+**Support:** EF5, EF6, EF Core
 
 **[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Audit-%7C-Entity-Framework-Audit-Trail-Context-and-Track-Changes)**
 
