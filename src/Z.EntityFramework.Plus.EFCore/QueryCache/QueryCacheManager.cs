@@ -181,6 +181,7 @@ namespace Z.EntityFramework.Plus
             }
 
             sb.AppendLine(string.Join(";", tags));
+            sb.AppendLine(query.Expression.ToString());
             sb.AppendLine(command.CommandText);
 
             foreach (var parameter in queryContext.ParameterValues)
@@ -260,6 +261,7 @@ namespace Z.EntityFramework.Plus
             }
 
             sb.AppendLine(string.Join(";", tags));
+            sb.AppendLine(query.Expression.ToString());
             sb.AppendLine(command.CommandText);
 
             foreach (var parameter in queryContext.ParameterValues)
