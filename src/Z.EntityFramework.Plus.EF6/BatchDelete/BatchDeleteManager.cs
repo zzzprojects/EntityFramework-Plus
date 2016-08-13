@@ -23,7 +23,7 @@ namespace Z.EntityFramework.Plus
 
         /// <summary>Gets or sets the factory to create an InMemory DbContext.</summary>
         /// <value>The factory to create an InMemory DbContext.</value>
-        public static Func<DbContext> InMemoryDbContextFactory { get; set; } 
+        public static Func<DbContext> InMemoryDbContextFactory { get; set; }
 #endif
     }
 }

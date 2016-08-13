@@ -302,11 +302,20 @@ SELECT  @totalRowAffected
         public DbCommand CreateCommand(IQueryable query, IEntityType entity, List<Tuple<string, object>> values)
         {
 #if NETSTANDARD1_3
-            var assembly = Assembly.Load(new AssemblyName("EntityFramework.MicrosoftSqlServer, Version = 7.0.0.0, Culture = neutral, PublicKeyToken = adb9793829ddae60"));
+            Assembly assembly;
+
+            try
+            {
+                assembly = Assembly.Load(new AssemblyName("Microsoft.EntityFrameworkCore.SqlServer"));
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ExceptionMessage.BatchOperations_AssemblyNotFound);
+            }
 
             if (assembly != null)
             {
-                var type = assembly.GetType("Microsoft.Data.Entity.SqlServerMetadataExtensions");
+                var type = assembly.GetType("Microsoft.EntityFrameworkCore.SqlServerMetadataExtensions");
                 var sqlServerEntityTypeMethod = type.GetMethod("SqlServer", new[] {typeof (IEntityType)});
                 var sqlServerPropertyMethod = type.GetMethod("SqlServer", new[] {typeof (IProperty)});
                 var sqlServer = (IRelationalEntityTypeAnnotations) sqlServerEntityTypeMethod.Invoke(null, new[] {entity});
@@ -447,26 +456,26 @@ SELECT  @totalRowAffected
 
             try
             {
-                assembly = Assembly.Load(new AssemblyName("EntityFramework.MicrosoftSqlServer, Version = 7.0.0.0, Culture = neutral, PublicKeyToken = adb9793829ddae60"));
+                assembly = Assembly.Load(new AssemblyName("Microsoft.EntityFrameworkCore.SqlServer"));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw new Exception("");
+                throw new Exception(ExceptionMessage.BatchOperations_AssemblyNotFound);
             }
 
             if (assembly == null)
             {
-                throw new Exception("");
+                throw new Exception(ExceptionMessage.BatchOperations_AssemblyNotFound);
             }
 
-            var type = assembly.GetType("Microsoft.Data.Entity.SqlServerMetadataExtensions");
+            var type = assembly.GetType("Microsoft.EntityFrameworkCore.SqlServerMetadataExtensions");
             var sqlServerPropertyMethod = type.GetMethod("SqlServer", new[] {typeof (IProperty)});
 #else
             var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName.StartsWith("Microsoft.EntityFrameworkCore.SqlServer"));
 
             if (assembly == null)
             {
-                throw new Exception("");
+                throw new Exception(ExceptionMessage.BatchOperations_AssemblyNotFound);
             }
 
             var type = assembly.GetType("Microsoft.EntityFrameworkCore.SqlServerMetadataExtensions");
