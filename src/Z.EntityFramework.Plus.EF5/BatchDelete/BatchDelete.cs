@@ -126,6 +126,11 @@ SELECT  @totalRowAffected
         /// <returns>The number of rows affected.</returns>
         public int Execute<T>(IQueryable<T> query) where T : class
         {
+            if (query.Expression.ToString().Contains(".Where(x => False)"))
+            {
+                return 0;
+            }
+         
             // GET model and info
 #if EF5 || EF6
             var model = query.GetDbContext().GetModel();
@@ -135,7 +140,7 @@ SELECT  @totalRowAffected
             // SELECT keys names
             var queryKeys = query.SelectByName(keys.Select(x => x.Name).ToList());
             var innerObjectQuery = queryKeys.GetObjectQuery();
-
+             
             // CREATE command
             var command = CreateCommand(innerObjectQuery, entity);
 
@@ -187,6 +192,16 @@ SELECT  @totalRowAffected
                 }
             }
 #elif EFCORE
+            if (BatchDeleteManager.InMemoryDbContextFactory != null && query.IsInMemoryQueryContext())
+            {
+                var context = BatchDeleteManager.InMemoryDbContextFactory();
+
+                var list = query.ToList();
+                context.RemoveRange(list);
+                context.SaveChanges();
+                return list.Count;
+            }
+
             var dbContext = query.GetDbContext();
             var entity = dbContext.Model.FindEntityType(typeof(T));
             var keys = entity.GetKeys().ToList()[0].Properties;
@@ -296,14 +311,23 @@ SELECT  @totalRowAffected
 #elif EFCORE
         public DbCommand CreateCommand(IQueryable query, IEntityType entity)
         {
-#if NETCORE50
+#if NETSTANDARD1_3
             try
             {
-                var assembly = Assembly.Load(new AssemblyName("EntityFramework.MicrosoftSqlServer, Version = 7.0.0.0, Culture = neutral, PublicKeyToken = adb9793829ddae60"));
+                Assembly assembly;
+
+                try
+                {
+                    assembly = Assembly.Load(new AssemblyName("Microsoft.EntityFrameworkCore.SqlServer"));
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(ExceptionMessage.BatchOperations_AssemblyNotFound);
+                }
 
                 if (assembly != null)
                 {
-                    var type = assembly.GetType("Microsoft.Data.Entity.SqlServerMetadataExtensions");
+                    var type = assembly.GetType("Microsoft.EntityFrameworkCore.SqlServerMetadataExtensions");
 
                     var sqlServerEntityTypeMethod = type.GetMethod("SqlServer", new[] {typeof (IEntityType)});
                     var sqlServerPropertyMethod = type.GetMethod("SqlServer", new[] {typeof (IProperty)});

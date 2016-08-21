@@ -126,6 +126,11 @@ SELECT  @totalRowAffected
         /// <returns>The number of rows affected.</returns>
         public int Execute<T>(IQueryable<T> query) where T : class
         {
+            if (query.Expression.ToString().Contains(".Where(x => False)"))
+            {
+                return 0;
+            }
+         
             // GET model and info
 #if EF5 || EF6
             var model = query.GetDbContext().GetModel();
@@ -135,7 +140,7 @@ SELECT  @totalRowAffected
             // SELECT keys names
             var queryKeys = query.SelectByName(keys.Select(x => x.Name).ToList());
             var innerObjectQuery = queryKeys.GetObjectQuery();
-
+             
             // CREATE command
             var command = CreateCommand(innerObjectQuery, entity);
 

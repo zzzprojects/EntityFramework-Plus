@@ -120,6 +120,11 @@ SELECT  @totalRowAffected
         /// <returns>The number of rows affected.</returns>
         public int Execute<T>(IQueryable<T> query, Expression<Func<T, T>> updateFactory) where T : class
         {
+            if (query.Expression.ToString().Contains(".Where(x => False)"))
+            {
+                return 0;
+            }
+
 #if EF5 || EF6
             var objectQuery = query.GetObjectQuery();
 

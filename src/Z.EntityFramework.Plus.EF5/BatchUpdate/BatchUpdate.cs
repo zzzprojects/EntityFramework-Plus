@@ -120,6 +120,11 @@ SELECT  @totalRowAffected
         /// <returns>The number of rows affected.</returns>
         public int Execute<T>(IQueryable<T> query, Expression<Func<T, T>> updateFactory) where T : class
         {
+            if (query.Expression.ToString().Contains(".Where(x => False)"))
+            {
+                return 0;
+            }
+
 #if EF5 || EF6
             var objectQuery = query.GetObjectQuery();
 
@@ -301,12 +306,21 @@ SELECT  @totalRowAffected
 #elif EFCORE
         public DbCommand CreateCommand(IQueryable query, IEntityType entity, List<Tuple<string, object>> values)
         {
-#if NETCORE50
-            var assembly = Assembly.Load(new AssemblyName("EntityFramework.MicrosoftSqlServer, Version = 7.0.0.0, Culture = neutral, PublicKeyToken = adb9793829ddae60"));
+#if NETSTANDARD1_3
+            Assembly assembly;
+
+            try
+            {
+                assembly = Assembly.Load(new AssemblyName("Microsoft.EntityFrameworkCore.SqlServer"));
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ExceptionMessage.BatchOperations_AssemblyNotFound);
+            }
 
             if (assembly != null)
             {
-                var type = assembly.GetType("Microsoft.Data.Entity.SqlServerMetadataExtensions");
+                var type = assembly.GetType("Microsoft.EntityFrameworkCore.SqlServerMetadataExtensions");
                 var sqlServerEntityTypeMethod = type.GetMethod("SqlServer", new[] {typeof (IEntityType)});
                 var sqlServerPropertyMethod = type.GetMethod("SqlServer", new[] {typeof (IProperty)});
                 var sqlServer = (IRelationalEntityTypeAnnotations) sqlServerEntityTypeMethod.Invoke(null, new[] {entity});
@@ -442,31 +456,31 @@ SELECT  @totalRowAffected
             var mapping = entity.Info.EntityTypeMapping.MappingFragment;
 #elif EFCORE
 
-#if NETCORE50
+#if NETSTANDARD1_3
             Assembly assembly;
 
             try
             {
-                assembly = Assembly.Load(new AssemblyName("EntityFramework.MicrosoftSqlServer, Version = 7.0.0.0, Culture = neutral, PublicKeyToken = adb9793829ddae60"));
+                assembly = Assembly.Load(new AssemblyName("Microsoft.EntityFrameworkCore.SqlServer"));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw new Exception("");
+                throw new Exception(ExceptionMessage.BatchOperations_AssemblyNotFound);
             }
 
             if (assembly == null)
             {
-                throw new Exception("");
+                throw new Exception(ExceptionMessage.BatchOperations_AssemblyNotFound);
             }
 
-            var type = assembly.GetType("Microsoft.Data.Entity.SqlServerMetadataExtensions");
+            var type = assembly.GetType("Microsoft.EntityFrameworkCore.SqlServerMetadataExtensions");
             var sqlServerPropertyMethod = type.GetMethod("SqlServer", new[] {typeof (IProperty)});
 #else
             var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName.StartsWith("Microsoft.EntityFrameworkCore.SqlServer"));
 
             if (assembly == null)
             {
-                throw new Exception("");
+                throw new Exception(ExceptionMessage.BatchOperations_AssemblyNotFound);
             }
 
             var type = assembly.GetType("Microsoft.EntityFrameworkCore.SqlServerMetadataExtensions");
@@ -538,7 +552,7 @@ SELECT  @totalRowAffected
                     var command = ((IQueryable) result).CreateCommand(out queryContext);
                     var commandText = command.CommandText;
 
-#if NETCORE50
+#if NETSTANDARD1_3
                     // GET the 'value' part
                     var valueSql = commandText.IndexOf("AS [value]" + Environment.NewLine + "FROM", StringComparison.CurrentCultureIgnoreCase) != -1 ?
                         commandText.Substring(6, commandText.IndexOf("AS [value]" + Environment.NewLine + "FROM", StringComparison.CurrentCultureIgnoreCase) - 6) :

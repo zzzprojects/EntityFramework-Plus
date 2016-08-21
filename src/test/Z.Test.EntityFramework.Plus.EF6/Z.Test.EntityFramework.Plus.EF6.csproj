@@ -157,7 +157,7 @@
     <Compile Include="BatchDelete\InMemory\Twenty.cs" />
     <Compile Include="BatchDelete\PrimaryKey\Single.cs" />
     <Compile Include="BatchDelete\PrimaryKey\Many.cs" />
-    <Compile Include="BatchDelete\WhereValue\False.cs" />
+    <Compile Include="BatchDelete\WhereValue\Single_False.cs" />
     <Compile Include="BatchDelete\WhereValue\Many_Constant.cs" />
     <Compile Include="BatchDelete\WhereValue\Many_Variable.cs" />
     <Compile Include="BatchDelete\WhereValue\Single_Constant.cs" />
@@ -235,6 +235,7 @@
     <Compile Include="BatchUpdate\Value\Single_Property_Type.cs" />
     <Compile Include="BatchUpdate\Value\Many_Variable.cs" />
     <Compile Include="BatchUpdate\Value\Single_Variable.cs" />
+    <Compile Include="BatchUpdate\WhereValue\Single_False.cs" />
     <Compile Include="BatchUpdate\WhereValue\Many_Constant.cs" />
     <Compile Include="BatchUpdate\WhereValue\Many_Variable.cs" />
     <Compile Include="BatchUpdate\WhereValue\Single_Constant.cs" />

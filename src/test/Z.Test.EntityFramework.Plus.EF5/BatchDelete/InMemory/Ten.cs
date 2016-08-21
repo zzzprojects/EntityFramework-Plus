@@ -5,32 +5,42 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
+#if EFCORE
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Z.EntityFramework.Plus;
 
 namespace Z.Test.EntityFramework.Plus
 {
-    public partial class BatchDelete_WhereValue
+    public partial class BatchDelete_InMemory
     {
         [TestMethod]
-        public void False()
+        public void Ten()
         {
-            TestContext.DeleteAll(x => x.Entity_Basics);
-            TestContext.Insert(x => x.Entity_Basics, 50);
+            var db = new DbContextOptionsBuilder();
+            db.UseInMemoryDatabase();
+            BatchDeleteManager.InMemoryDbContextFactory = () => new TestContextMemory(db.Options);
 
-            using (var ctx = new TestContext())
+            using (var ctx = new TestContextMemory(db.Options))
+            {
+                TestContext.DeleteAll(ctx, x => x.Entity_Basics);
+                TestContext.Insert(ctx, x => x.Entity_Basics, 50);
+            }
+
+            using (var ctx = new TestContextMemory(db.Options))
             {
                 // BEFORE
                 Assert.AreEqual(1225, ctx.Entity_Basics.Sum(x => x.ColumnInt));
 
                 // ACTION
-                var rowsAffected = ctx.Entity_Basics.Where(x => false).Delete();
+                var rowsAffected = ctx.Entity_Basics.Where(x => x.ColumnInt > 10 && x.ColumnInt <= 20).Delete();
 
                 // AFTER
-                Assert.AreEqual(1225, ctx.Entity_Basics.Sum(x => x.ColumnInt));
-                Assert.AreEqual(0, rowsAffected);
+                Assert.AreEqual(1070, ctx.Entity_Basics.Sum(x => x.ColumnInt));
+                Assert.AreEqual(10, rowsAffected);
             }
         }
     }
 }
+#endif

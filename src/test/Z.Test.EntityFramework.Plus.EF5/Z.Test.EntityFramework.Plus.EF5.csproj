@@ -159,6 +159,7 @@
     <Compile Include="BatchDelete\BatchDelete_BatchDelayInterval.cs" />
     <Compile Include="BatchDelete\BatchDelete_BatchSize.cs" />
     <Compile Include="BatchDelete\BatchDelete_Executing.cs" />
+    <Compile Include="BatchDelete\BatchDelete_InMemory.cs" />
     <Compile Include="BatchDelete\BatchDelete_PrimaryKey.cs" />
     <Compile Include="BatchDelete\BatchDelete_SqlSchema.cs" />
     <Compile Include="BatchDelete\BatchDelete_Transaction.cs" />
@@ -170,6 +171,9 @@
     <Compile Include="BatchDelete\Executing\Template.cs" />
     <Compile Include="BatchDelete\Executing\WhileDelayTemplate.cs" />
     <Compile Include="BatchDelete\Executing\WhileTemplate.cs" />
+    <Compile Include="BatchDelete\InMemory\Ten.cs" />
+    <Compile Include="BatchDelete\InMemory\Thirty.cs" />
+    <Compile Include="BatchDelete\InMemory\Twenty.cs" />
     <Compile Include="BatchDelete\PrimaryKey\Many.cs" />
     <Compile Include="BatchDelete\PrimaryKey\Single.cs" />
     <Compile Include="BatchDelete\SqlSchema\Default.cs" />
@@ -179,6 +183,7 @@
     <Compile Include="BatchDelete\WhereValue\Many_Constant.cs" />
     <Compile Include="BatchDelete\WhereValue\Many_Variable.cs" />
     <Compile Include="BatchDelete\WhereValue\Single_Constant.cs" />
+    <Compile Include="BatchDelete\WhereValue\Single_False.cs" />
     <Compile Include="BatchDelete\WhereValue\Single_Variable.cs" />
     <Compile Include="BatchUpdate\ActionAsync\TenAsync.cs" />
     <Compile Include="BatchUpdate\ActionAsync\ThirtyAsync.cs" />
@@ -230,6 +235,7 @@
     <Compile Include="BatchUpdate\WhereValue\Many_Constant.cs" />
     <Compile Include="BatchUpdate\WhereValue\Many_Variable.cs" />
     <Compile Include="BatchUpdate\WhereValue\Single_Constant.cs" />
+    <Compile Include="BatchUpdate\WhereValue\Single_False.cs" />
     <Compile Include="BatchUpdate\WhereValue\Single_Variable.cs" />
     <Compile Include="My.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
