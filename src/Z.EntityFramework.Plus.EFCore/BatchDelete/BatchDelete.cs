@@ -51,6 +51,13 @@ DELETE FROM {TableName} AS A
 USING ( {Select} ) AS B WHERE {PrimaryKeys}
 ";
 
+        /// <summary>The command text postgre SQL template.</summary>
+        internal const string CommandTextTemplate_MySql = @"
+DELETE A
+FROM {TableName} AS A
+INNER JOIN ( {Select} ) AS B ON {PrimaryKeys}
+";
+
         /// <summary>The command text template with WHILE loop.</summary>
         internal const string CommandTextWhileTemplate = @"
 DECLARE @rowAffected INT
@@ -172,6 +179,22 @@ SELECT  @totalRowAffected
 
                     return totalRowAffecteds;
                 }
+                else if (command.Connection.GetType().Name.Contains("MySql"))
+                {
+                    int totalRowAffecteds = 0;
+                    int rowAffecteds = 0;
+                    do
+                    {
+                        if (rowAffecteds > 0 && BatchDelayInterval != 0)
+                        {
+                            Thread.Sleep(BatchDelayInterval);
+                        }
+                        rowAffecteds = (int)command.ExecuteNonQuery();
+                        totalRowAffecteds += rowAffecteds;
+                    } while (rowAffecteds > 0);
+
+                    return totalRowAffecteds;
+                }
                 else
                 {
                     if (Executing != null)
@@ -247,15 +270,27 @@ SELECT  @totalRowAffected
         /// <returns>The new command to execute the batch operation.</returns>
         internal DbCommand CreateCommand<T>(ObjectQuery query, SchemaEntityType<T> entity)
         {
+            // GET command
+            var command = query.Context.CreateStoreCommand();
+
+            bool isMySql = command.GetType().FullName.Contains("MySql");
+
             // GET mapping
             var mapping = entity.Info.EntityTypeMapping.MappingFragment;
             var store = mapping.StoreEntitySet;
-            var tableName = string.IsNullOrEmpty(store.Schema) ?
-                string.Concat("[", store.Table, "]") :
-                string.Concat("[", store.Schema, "].[", store.Table, "]");
 
-            // GET command
-            var command = query.Context.CreateStoreCommand();
+            string tableName;
+
+            if (isMySql)
+            {
+                tableName = string.Concat("`", store.Table, "`");
+            }
+            else
+            {
+                tableName = string.IsNullOrEmpty(store.Schema) ?
+    string.Concat("[", store.Table, "]") :
+    string.Concat("[", store.Schema, "].[", store.Table, "]");
+            }
 
             // GET keys mappings
             var columnKeys = new List<string>();
@@ -273,7 +308,10 @@ SELECT  @totalRowAffected
 
             // GET command text template
             var commandTextTemplate = command.GetType().Name == "NpgsqlCommand" ?
-                CommandTextPostgreSQLTemplate : BatchSize > 0 ?
+                CommandTextPostgreSQLTemplate :
+                isMySql ?
+                CommandTextTemplate_MySql :
+                BatchSize > 0 ?
                 BatchDelayInterval > 0 ?
                     CommandTextWhileDelayTemplate :
                     CommandTextWhileTemplate :
@@ -283,7 +321,7 @@ SELECT  @totalRowAffected
             var querySelect = query.ToTraceString();
 
             // GET primary key join
-            var primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.[", x, "] = B.[", x, "]")));
+            var primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.", EscapeName(x, isMySql), " = B.", EscapeName(x, isMySql), "")));
 
             // REPLACE template
             commandTextTemplate = commandTextTemplate.Replace("{TableName}", tableName)
@@ -494,5 +532,9 @@ SELECT  @totalRowAffected
 #endif
         }
 #endif
+        public string EscapeName(string name, bool isMySql)
+        {
+            return isMySql ? string.Concat("`", name, "`") : string.Concat("[", name, "]");
+        }
     }
 }

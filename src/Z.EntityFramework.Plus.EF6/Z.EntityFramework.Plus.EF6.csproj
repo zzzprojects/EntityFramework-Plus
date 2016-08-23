@@ -77,6 +77,7 @@
     <Compile Include="Audit\Audit\AuditEntityAdded.cs" />
     <Compile Include="Audit\Audit\AuditRelationshipDeleted.cs" />
     <Compile Include="Audit\Audit\AuditRelationshipAdded.cs" />
+    <Compile Include="Audit\Extensions\DbContext\GetAudits.cs" />
     <Compile Include="Audit\Extensions\DbContext\SaveChanges.cs" />
     <Compile Include="Audit\Extensions\DbContext\SaveChangesAsync.cs" />
     <Compile Include="BatchDelete\BatchDelete.cs" />
@@ -161,6 +162,7 @@
     <Compile Include="_Internal\EF5\IDbSet`\DbContext.AddRange.cs" />
     <Compile Include="_Internal\EF5\IDbSet`\DbContext.RemoveRange.cs" />
     <Compile Include="_Internal\EF5_EF6\Database\GetEntityConnection.cs" />
+    <Compile Include="_Internal\EF5_EF6\DbContext\DbContext.GetKeyNames.cs" />
     <Compile Include="_Internal\EF5_EF6\DbContext\DbContext.GetObjectContext.cs" />
     <Compile Include="_Internal\EF5_EF6\EntityConnection\GetDbTransaction.cs" />
     <Compile Include="_Internal\EF5_EF6\EntityConnection\GetEntityTransaction.cs" />
@@ -235,6 +237,9 @@
   <ItemGroup>
     <Content Include="Audit\Extensions\DbContext\SaveChanges.cs.bak">
       <DependentUpon>SaveChanges.cs</DependentUpon>
+    </Content>
+    <Content Include="Audit\Extensions\DbContext\SaveChanges - Copy.cs.bak">
+      <DependentUpon>GetAudits.cs</DependentUpon>
     </Content>
     <None Include="packages.config" />
   </ItemGroup>

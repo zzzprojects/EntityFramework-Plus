@@ -42,6 +42,13 @@ INNER JOIN ( {Select}
            ) AS B ON {PrimaryKeys}
 ";
 
+        internal const string CommandTextTemplate_MySQL = @"
+UPDATE {TableName} AS A
+INNER JOIN ( {Select}
+           ) AS B ON {PrimaryKeys}
+SET {SetValue}
+";
+
 #if TODO
     /// <summary>The command text template with WHILE loop.</summary>
         internal const string CommandTextWhileTemplate = @"
@@ -222,12 +229,26 @@ SELECT  @totalRowAffected
         /// <returns>The new command to execute the batch operation.</returns>
         internal DbCommand CreateCommand<T>(ObjectQuery query, SchemaEntityType<T> entity, List<Tuple<string, object>> values)
         {
+            var command = query.Context.CreateStoreCommand();
+            bool isMySql = command.GetType().FullName.Contains("MySql");
+
             // GET mapping
             var mapping = entity.Info.EntityTypeMapping.MappingFragment;
             var store = mapping.StoreEntitySet;
-            var tableName = string.IsNullOrEmpty(store.Schema) ?
-                string.Concat("[", store.Table, "]") :
-                string.Concat("[", store.Schema, "].[", store.Table, "]");
+
+            string tableName;
+
+            if (isMySql)
+            {
+                tableName = string.Concat("`", store.Table, "`");
+            }
+            else
+            {
+                tableName = string.IsNullOrEmpty(store.Schema) ?
+    string.Concat("[", store.Table, "]") :
+    string.Concat("[", store.Schema, "].[", store.Table, "]");
+            }
+
 
             // GET keys mappings
             var columnKeys = new List<string>();
@@ -252,18 +273,18 @@ SELECT  @totalRowAffected
                     CommandTextWhileDelayTemplate :
                     CommandTextWhileTemplate :
 #endif
-                CommandTextTemplate;
+                isMySql ? CommandTextTemplate_MySQL : CommandTextTemplate;
 
             // GET inner query
             var querySelect = query.ToTraceString();
 
             // GET primary key join
-            var primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.[", x, "] = B.[", x, "]")));
+            var primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.", EscapeName(x, isMySql), " = B.", EscapeName(x, isMySql), "")));
 
             // GET updateSetValues
             var setValues = string.Join("," + Environment.NewLine, values.Select((x, i) => x.Item2 is ConstantExpression ?
-                string.Concat("A.[", x.Item1, "] = ", ((ConstantExpression) x.Item2).Value) :
-                string.Concat("A.[", x.Item1, "] = @zzz_BatchUpdate_", i)));
+                string.Concat("A.", EscapeName(x.Item1, isMySql), " = ", ((ConstantExpression) x.Item2).Value) :
+                string.Concat("A.", EscapeName(x.Item1, isMySql), " = @zzz_BatchUpdate_", i)));
 
             // REPLACE template
             commandTextTemplate = commandTextTemplate.Replace("{TableName}", tableName)
@@ -272,7 +293,6 @@ SELECT  @totalRowAffected
                 .Replace("{SetValue}", setValues);
 
             // CREATE command
-            var command = query.Context.CreateStoreCommand();
             command.CommandText = commandTextTemplate;
 
             // ADD Parameter
@@ -576,6 +596,11 @@ SELECT  @totalRowAffected
             }
 
             return destinationValues;
+        }
+
+        public string EscapeName(string name, bool isMySql)
+        {
+            return isMySql ? string.Concat("`", name, "`") : string.Concat("[", name, "]");
         }
 
         public Dictionary<string, object> ResolveUpdateFromQueryDictValues<T>(Expression<Func<T, T>> updateFactory)
