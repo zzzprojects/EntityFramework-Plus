@@ -12,7 +12,7 @@ using Z.EntityFramework.Plus;
 #if EF5 || EF6
 using System.Data.Entity;
 
-#elif EF7
+#elif EFCORE
 using Microsoft.Data.Entity;
 
 #endif
@@ -145,7 +145,7 @@ namespace Z.Test.EntityFramework.Plus
                         Assert.AreEqual(1, entries[0].Properties.Count);
                         Assert.AreEqual(3, entries[1].Properties.Count);
                         Assert.AreEqual(3, entries[2].Properties.Count);
-
+                        var s = (char) 13;
                         // ID
                         propertyIndex = 0;
                         Assert.AreEqual("ID", entries[0].Properties[propertyIndex].PropertyName);

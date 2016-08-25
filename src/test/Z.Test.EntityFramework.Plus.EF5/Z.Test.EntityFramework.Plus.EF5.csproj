@@ -27,7 +27,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;EF5</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;EF5 FULL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -36,7 +36,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;EF5</DefineConstants>
+    <DefineConstants>TRACE;EF5 FULL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -81,6 +81,8 @@
     <Compile Include="Audit\Audit_EntityModified.cs" />
     <Compile Include="Audit\Audit_EntitySoftAdded.cs" />
     <Compile Include="Audit\Audit_EntitySoftDeleted.cs" />
+    <Compile Include="Audit\Audit_GetAudits_ByItem.cs" />
+    <Compile Include="Audit\Audit_GetAudits_ByKey.cs" />
     <Compile Include="Audit\Audit_RelationshipAdded.cs" />
     <Compile Include="Audit\Audit_RelationshipDeleted.cs" />
     <Compile Include="Audit\Configuration_AutoSavePreAction\IsNotNull.cs" />
@@ -142,6 +144,24 @@
     <Compile Include="Audit\EntitySoftDeleted\Inheritance_TPC.cs" />
     <Compile Include="Audit\EntitySoftDeleted\Inheritance_TPH.cs" />
     <Compile Include="Audit\EntitySoftDeleted\Inheritance_TPT.cs" />
+    <Compile Include="Audit\GetAudits_ByItem\Key\Many.cs" />
+    <Compile Include="Audit\GetAudits_ByItem\Key\Single.cs" />
+    <Compile Include="Audit\GetAudits_ByItem\Return\Many.cs" />
+    <Compile Include="Audit\GetAudits_ByItem\Return\None.cs" />
+    <Compile Include="Audit\GetAudits_ByItem\Return\Single.cs" />
+    <Compile Include="Audit\GetAudits_ByItem\Value\New.cs" />
+    <Compile Include="Audit\GetAudits_ByItem\Value\Null.cs" />
+    <Compile Include="Audit\GetAudits_ByItem\Value\Valid.cs" />
+    <Compile Include="Audit\GetAudits_ByKey\Array\Empty.cs" />
+    <Compile Include="Audit\GetAudits_ByKey\Array\Equal.cs" />
+    <Compile Include="Audit\GetAudits_ByKey\Array\Less.cs" />
+    <Compile Include="Audit\GetAudits_ByKey\Array\More.cs" />
+    <Compile Include="Audit\GetAudits_ByKey\Array\Null.cs" />
+    <Compile Include="Audit\GetAudits_ByKey\Key\Many.cs" />
+    <Compile Include="Audit\GetAudits_ByKey\Key\Single.cs" />
+    <Compile Include="Audit\GetAudits_ByKey\Return\Many.cs" />
+    <Compile Include="Audit\GetAudits_ByKey\Return\None.cs" />
+    <Compile Include="Audit\GetAudits_ByKey\Return\Single.cs" />
     <Compile Include="Audit\RelationshipAdded\Association_ManyToMany.cs" />
     <Compile Include="Audit\RelationshipAdded\Association_OneToMany.cs" />
     <Compile Include="Audit\RelationshipDeleted\Association_ManyToMany.cs" />
@@ -237,6 +257,7 @@
     <Compile Include="BatchUpdate\WhereValue\Single_Constant.cs" />
     <Compile Include="BatchUpdate\WhereValue\Single_False.cs" />
     <Compile Include="BatchUpdate\WhereValue\Single_Variable.cs" />
+    <Compile Include="ExceptionMessage.cs" />
     <Compile Include="My.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryCache\FromCacheAsync\Queryable_WithDefault.cs" />

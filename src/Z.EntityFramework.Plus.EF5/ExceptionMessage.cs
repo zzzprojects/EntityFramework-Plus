@@ -14,8 +14,14 @@ namespace Z.EntityFramework.Plus
 #if FULL
         public static string BatchOperations_MaxKeyColumns = "Oops! Batch operation only support table with primary keys containing 5 columns or less. For more information, contact us: info@zzzprojects.com";
 #endif
+#if FULL || AUDIT
+        public static string Audit_DbSet_NotFound = "Oops! The audit DbSet cannot be found. Please refer to the documentation to learn how to add a custom audit DbSet. Please report the issue including the stack trace to our support team: info@zzzprojects.com";
+        public static string Audit_Key_Null = "Oops! A key must be specified. Please report the issue including the stack trace to our support team: info@zzzprojects.com";
+        public static string Audit_Key_OutOfBound = "Oops! The number of argument for the key specified doesn't match with the number of key members. Please report the issue including the stack trace to our support team: info@zzzprojects.com";
+#endif
 #if FULL || BATCH_DELETE || BATCH_UPDATE
         public static string BatchOperations_PropertyNotFound = "Oops! Mapping for the property '{0}' cannot be found, the current version don't support yet Complex Type, Enum, TPC, TPH and TPT. For more information, contact us: info@zzzprojects.com";
+        public static string BatchOperations_AssemblyNotFound = "Oops! The assembly 'Microsoft.EntityFrameworkCore.SqlServer' could not be found. This feature is only supported for SQL Server for .NET Core. For more information, contact us: info@zzzprojects.com";
 #endif
 #if FULL || QUERY_INCLUDEFILTER
         public static string QueryIncludeFilter_ArgumentExpression = "Oops! immediate method with expression argument are not supported in EF+ Query IncludeFilter. For more information, contact us: info@zzzprojects.com";

@@ -77,7 +77,7 @@
     <Compile Include="Audit\Audit\AuditEntityAdded.cs" />
     <Compile Include="Audit\Audit\AuditRelationshipDeleted.cs" />
     <Compile Include="Audit\Audit\AuditRelationshipAdded.cs" />
-    <Compile Include="Audit\Extensions\DbContext\GetAudits.cs" />
+    <Compile Include="Audit\Extensions\DbSet`AuditEntry\DbSet`AuditEntry.cs" />
     <Compile Include="Audit\Extensions\DbContext\SaveChanges.cs" />
     <Compile Include="Audit\Extensions\DbContext\SaveChangesAsync.cs" />
     <Compile Include="BatchDelete\BatchDelete.cs" />
@@ -183,6 +183,7 @@
     <Compile Include="_Internal\EFCore\CreateEntity\CreateEntityDataReader.cs" />
     <Compile Include="_Internal\EFCore\CreateEntity\CreateEntityRelationalConnection.cs" />
     <Compile Include="_Internal\EFCore\DbContext\CreateStoreCommand.cs" />
+    <Compile Include="_Internal\EFCore\DbContext\DbContext.GetKeyNames.cs" />
     <Compile Include="_Internal\EFCore\DbSet`\GetDbContext.cs" />
     <Compile Include="_Internal\EFCore\GetStateManager.cs" />
     <Compile Include="_Internal\EFCore\IQueryable`\CreateCommand.cs" />
@@ -238,8 +239,8 @@
     <Content Include="Audit\Extensions\DbContext\SaveChanges.cs.bak">
       <DependentUpon>SaveChanges.cs</DependentUpon>
     </Content>
-    <Content Include="Audit\Extensions\DbContext\SaveChanges - Copy.cs.bak">
-      <DependentUpon>GetAudits.cs</DependentUpon>
+    <Content Include="Audit\Extensions\DbSet`AuditEntry\SaveChanges - Copy %282%29.cs.bak">
+      <DependentUpon>DbSet`AuditEntry.cs</DependentUpon>
     </Content>
     <None Include="packages.config" />
   </ItemGroup>

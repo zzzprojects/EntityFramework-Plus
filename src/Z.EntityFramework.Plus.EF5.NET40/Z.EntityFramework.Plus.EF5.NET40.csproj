@@ -76,6 +76,7 @@
     <Compile Include="Audit\Audit\PreSaveChanges.cs" />
     <Compile Include="Audit\Extensions\DbContext\SaveChanges.cs" />
     <Compile Include="Audit\Extensions\DbContext\SaveChangesAsync.cs" />
+    <Compile Include="Audit\Extensions\DbSet`AuditEntry\DbSet`AuditEntry.cs" />
     <Compile Include="BatchDelete\BatchDelete.cs" />
     <Compile Include="BatchDelete\BatchDeleteManager.cs" />
     <Compile Include="BatchDelete\Extensions\Delete.cs" />
@@ -148,6 +149,7 @@
     <Compile Include="_Internal\EF5\IDbSet`\DbContext.AddRange.cs" />
     <Compile Include="_Internal\EF5\IDbSet`\DbContext.RemoveRange.cs" />
     <Compile Include="_Internal\EF5_EF6\Database\GetEntityConnection.cs" />
+    <Compile Include="_Internal\EF5_EF6\DbContext\DbContext.GetKeyNames.cs" />
     <Compile Include="_Internal\EF5_EF6\DbContext\DbContext.GetObjectContext.cs" />
     <Compile Include="_Internal\EF5_EF6\EntityConnection\GetDbTransaction.cs" />
     <Compile Include="_Internal\EF5_EF6\EntityConnection\GetEntityTransaction.cs" />
@@ -168,6 +170,7 @@
     <Compile Include="_Internal\EFCore\CreateEntity\CreateEntityDataReader.cs" />
     <Compile Include="_Internal\EFCore\CreateEntity\CreateEntityRelationalConnection.cs" />
     <Compile Include="_Internal\EFCore\DbContext\CreateStoreCommand.cs" />
+    <Compile Include="_Internal\EFCore\DbContext\DbContext.GetKeyNames.cs" />
     <Compile Include="_Internal\EFCore\DbSet`\GetDbContext.cs" />
     <Compile Include="_Internal\EFCore\GetStateManager.cs" />
     <Compile Include="_Internal\EFCore\IQueryable`\CreateCommand.cs" />
@@ -222,6 +225,9 @@
   <ItemGroup>
     <Content Include="Audit\Extensions\DbContext\SaveChanges.cs.bak">
       <DependentUpon>SaveChanges.cs</DependentUpon>
+    </Content>
+    <Content Include="Audit\Extensions\DbSet`AuditEntry\SaveChanges - Copy %282%29.cs.bak">
+      <DependentUpon>DbSet`AuditEntry.cs</DependentUpon>
     </Content>
     <None Include="packages.config" />
   </ItemGroup>

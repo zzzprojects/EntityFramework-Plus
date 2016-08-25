@@ -5,7 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
-#if FULL || BATCH_DELETE || BATCH_UPDATE || QUERY_DEFERRED || QUERY_FUTURE || QUERY_INCLUDEOPTIMIZED
+#if FULL || AUDIT || BATCH_DELETE || BATCH_UPDATE || QUERY_DEFERRED || QUERY_FUTURE || QUERY_INCLUDEOPTIMIZED
 #if EF5 || EF6
 using System;
 using System.Data.Entity.Infrastructure;
