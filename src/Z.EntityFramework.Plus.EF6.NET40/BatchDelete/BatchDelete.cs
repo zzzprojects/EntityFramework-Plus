@@ -133,11 +133,6 @@ SELECT  @totalRowAffected
         /// <returns>The number of rows affected.</returns>
         public int Execute<T>(IQueryable<T> query) where T : class
         {
-            if (query.Expression.ToString().Contains(".Where(x => False)"))
-            {
-                return 0;
-            }
-         
             // GET model and info
 #if EF5 || EF6
             var model = query.GetDbContext().GetModel();
@@ -150,6 +145,10 @@ SELECT  @totalRowAffected
              
             // CREATE command
             var command = CreateCommand(innerObjectQuery, entity);
+            if (command == null)
+            {
+                return 0;
+            }
 
             // EXECUTE
             var ownConnection = false;
@@ -319,6 +318,10 @@ SELECT  @totalRowAffected
 
             // GET inner query
             var querySelect = query.ToTraceString();
+            if (querySelect.EndsWith("WHERE 1 = 0"))
+            {
+                return null;
+            }
 
             // GET primary key join
             var primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.", EscapeName(x, isMySql), " = B.", EscapeName(x, isMySql), "")));
