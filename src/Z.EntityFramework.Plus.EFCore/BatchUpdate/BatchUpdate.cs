@@ -11,7 +11,7 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
-
+using System.Text.RegularExpressions;
 #if EF5
 using System.Data.Objects;
 using Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel;
@@ -127,7 +127,9 @@ SELECT  @totalRowAffected
         /// <returns>The number of rows affected.</returns>
         public int Execute<T>(IQueryable<T> query, Expression<Func<T, T>> updateFactory) where T : class
         {
-            if (query.Expression.ToString().Contains(".Where(x => False)"))
+            string expression = query.Expression.ToString();
+
+            if (Regex.IsMatch(expression, @"\.Where\(\w+ => False\)"))
             {
                 return 0;
             }

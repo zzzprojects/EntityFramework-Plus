@@ -11,6 +11,7 @@ using System.Data;
 using System.Data.Common;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 #if EF5
@@ -133,7 +134,9 @@ SELECT  @totalRowAffected
         /// <returns>The number of rows affected.</returns>
         public int Execute<T>(IQueryable<T> query) where T : class
         {
-            if (query.Expression.ToString().Contains(".Where(x => False)"))
+            string expression = query.Expression.ToString();
+
+            if (Regex.IsMatch(expression, @"\.Where\(\w+ => False\)"))
             {
                 return 0;
             }
