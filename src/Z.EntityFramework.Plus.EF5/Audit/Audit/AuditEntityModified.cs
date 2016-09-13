@@ -32,10 +32,12 @@ namespace Z.EntityFramework.Plus
         public static void AuditEntityModified(Audit audit, EntityEntry objectStateEntry, AuditEntryState state)
 #endif
         {
-            var entry = new AuditEntry(audit, objectStateEntry)
-            {
-                State = state
-            };
+            var entry = audit.Configuration.AuditEntryFactory != null ?
+audit.Configuration.AuditEntryFactory(new AuditEntryFactoryArgs(audit, objectStateEntry, state)) :
+new AuditEntry();
+
+            entry.Build(audit, objectStateEntry);
+            entry.State = state;
 
 #if EF5 || EF6
             AuditEntityModified(audit, entry, objectStateEntry, objectStateEntry.OriginalValues, objectStateEntry.CurrentValues);
@@ -68,13 +70,19 @@ namespace Z.EntityFramework.Plus
                     AuditEntityModified(audit, entry, objectStateEntry, valueRecord, currentValue as DbUpdatableDataRecord, string.Concat(prefix, name, "."));
                 }
 
-                else if (entry.Parent.CurrentOrDefaultConfiguration.IsAuditedProperty(entry.Entry, name))
+                else if (objectStateEntry.EntityKey.EntityKeyValues.Any(x => x.Key == name)
+                         || entry.Parent.CurrentOrDefaultConfiguration.IsAuditedProperty(entry.Entry, name))
                 {
                     if (!audit.Configuration.IgnorePropertyUnchanged
                         || objectStateEntry.EntityKey.EntityKeyValues.Any(x => x.Key == name)
                         || !Equals(currentValue, originalValue))
                     {
-                        entry.Properties.Add(new AuditEntryProperty(entry, string.Concat(prefix, name), originalValue, currentValue));
+                        var auditEntryProperty = entry.Parent.Configuration.AuditEntryPropertyFactory != null ?
+entry.Parent.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(entry, objectStateEntry, string.Concat(prefix, name), originalValue, currentValue)) :
+new AuditEntryProperty();
+
+                        auditEntryProperty.Build(entry, string.Concat(prefix, name), originalValue, currentValue);
+                        entry.Properties.Add(auditEntryProperty);
                     }
                 }
             }
@@ -88,11 +96,16 @@ namespace Z.EntityFramework.Plus
             {
                 var property = objectStateEntry.Property(propertyEntry.Name);
 
-                if (entry.Parent.CurrentOrDefaultConfiguration.IsAuditedProperty(entry.Entry, propertyEntry.Name))
+                if (property.Metadata.IsKey() || entry.Parent.CurrentOrDefaultConfiguration.IsAuditedProperty(entry.Entry, propertyEntry.Name))
                 {
                     if (!audit.Configuration.IgnorePropertyUnchanged || property.Metadata.IsKey() || property.IsModified)
                     {
-                        entry.Properties.Add(new AuditEntryProperty(entry, propertyEntry.Name, property.OriginalValue, property.CurrentValue));
+                        var auditEntryProperty = entry.Parent.Configuration.AuditEntryPropertyFactory != null ?
+                            entry.Parent.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(entry, objectStateEntry, propertyEntry.Name, property.OriginalValue, property.CurrentValue)) :
+                            new AuditEntryProperty();
+
+                        auditEntryProperty.Build(entry, propertyEntry.Name, property.OriginalValue, property.CurrentValue);
+                        entry.Properties.Add(auditEntryProperty);
                     }
                 }
             }

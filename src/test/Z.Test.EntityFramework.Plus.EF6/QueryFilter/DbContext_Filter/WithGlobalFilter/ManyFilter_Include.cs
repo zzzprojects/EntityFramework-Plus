@@ -15,6 +15,9 @@ namespace Z.Test.EntityFramework.Plus
         [TestMethod]
         public void WithGlobalFilter_ManyFilter_Include()
         {
+            TestContext.DeleteAll(x => x.Inheritance_Interface_Entities);
+            TestContext.Insert(x => x.Inheritance_Interface_Entities, 10);
+
             using (var ctx = new TestContext(true, enableFilter1: false, enableFilter2: false, enableFilter3: false, enableFilter4: false, includeInterface: true, includeBaseClass: true, includeBaseInterface: true))
             {
                 Assert.AreEqual(36, ctx.Inheritance_Interface_Entities.Sum(x => x.ColumnInt));

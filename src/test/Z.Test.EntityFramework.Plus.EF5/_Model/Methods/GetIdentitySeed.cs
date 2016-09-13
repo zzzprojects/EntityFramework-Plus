@@ -10,7 +10,7 @@ using System.Linq;
 #if EF5 || EF6
 using System.Data.Entity;
 
-#elif EF7
+#elif EFCORE
 using Microsoft.Data.Entity;
 
 #endif

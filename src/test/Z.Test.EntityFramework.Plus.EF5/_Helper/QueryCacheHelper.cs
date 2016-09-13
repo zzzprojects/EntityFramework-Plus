@@ -7,7 +7,7 @@
 
 using Z.EntityFramework.Plus;
 
-#if EF7
+#if EFCORE
 using Microsoft.Extensions.Caching.Memory;
 
 #endif
@@ -20,7 +20,7 @@ namespace Z.Test.EntityFramework.Plus
         {
 #if EF5 || EF6
             return QueryCacheManager.Cache.GetCount();
-#elif EF7
+#elif EFCORE
             return ((MemoryCache) QueryCacheManager.Cache).Count;
 #endif
         }

@@ -13,38 +13,40 @@ namespace Z.EntityFramework.Plus
     /// <summary>An audit entry property.</summary>
     public class AuditEntryProperty
     {
-        /// <summary>Default constructor.</summary>
-        /// <remarks>Required by Entity Framework.</remarks>
-        public AuditEntryProperty()
-        {
-        }
-
         /// <summary>Constructor.</summary>
         /// <param name="parent">The audit entry parent.</param>
         /// <param name="propertyName">Name of the property audited.</param>
         /// <param name="oldValue">The old value audited.</param>
         /// <param name="newValue">The new value audited.</param>
-        public AuditEntryProperty(AuditEntry parent, string propertyName, object oldValue, object newValue)
+        public void Build(AuditEntry parent, string propertyName, object oldValue, object newValue)
         {
-            NewValue = newValue;
-            OldValue = oldValue;
-            Parent = parent;
-            PropertyName = propertyName;
+            Build(parent, null, propertyName, oldValue, newValue);
         }
 
-        /// <summary>Constructor.</summary>
-        /// <param name="parent">The audit entry parent.</param>
-        /// <param name="relationName">The name of the relation audited.</param>
-        /// <param name="propertyName">Name of the property audited.</param>
-        /// <param name="oldValue">The old value audited.</param>
-        /// <param name="newValue">The new value audited.</param>
-        public AuditEntryProperty(AuditEntry parent, string relationName, string propertyName, object oldValue, object newValue)
+        public void Build(AuditEntry parent, string relationName, string propertyName, object oldValue, object newValue)
         {
-            NewValue = newValue;
-            OldValue = oldValue;
-            Parent = parent;
-            PropertyName = propertyName;
-            RelationName = relationName;
+            InternalPropertyName = propertyName;
+
+            if (!IsValueSet)
+            {
+                NewValue = newValue;
+                OldValue = oldValue;
+            }
+
+            if (Parent == null)
+            {
+                Parent = parent;
+            }
+
+            if (PropertyName == null)
+            {
+                PropertyName = propertyName;
+            }
+
+            if (RelationName == null)
+            {
+                RelationName = relationName;
+            }
         }
 
         /// <summary>Gets or sets the identifier of the audit entry property.</summary>
@@ -82,6 +84,15 @@ namespace Z.EntityFramework.Plus
     // EFCORE still have some issue with "NotMapped" attribute
         public object NewValue;
 #endif
+        /// <summary>Gets or sets a value indicating whether OldValue and NewValue is set.</summary>
+        /// <value>true if OldValue and NewValue is set, false if not.</value>
+        [NotMapped]
+        public bool IsValueSet { get; set; }
+
+        /// <summary>Gets or sets the name of the property internally.</summary>
+        /// <value>The name of the property internally.</value>
+        [NotMapped]
+        public string InternalPropertyName { get; set; }
 
         /// <summary>Gets or sets the new value audited formatted.</summary>
         /// <value>The new value audited formatted.</value>

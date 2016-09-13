@@ -16,6 +16,9 @@ namespace Z.Test.EntityFramework.Plus
         [TestMethod]
         public void WithGlobalFilter_WithInstanceFilter_SingleFilter_GlobalFilterEnabled_InstanceFilterEnabled()
         {
+            TestContext.DeleteAll(x => x.Inheritance_Interface_Entities);
+            TestContext.Insert(x => x.Inheritance_Interface_Entities, 10);
+
             using (var ctx = new TestContext(false, enableFilter1: true))
             {
                 ctx.Filter<Inheritance_Interface_Entity>(QueryFilterHelper.Filter.Filter5, entities => entities.Where(x => x.ColumnInt != 5), false);

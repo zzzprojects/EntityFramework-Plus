@@ -49,19 +49,29 @@ namespace Z.EntityFramework.Plus
 
                             foreach (var keyValue in leftKeys.EntityKeyValues)
                             {
-                                entry.Properties.Add(new AuditEntryProperty(entry, leftRelationName, keyValue.Key, null, keyValue.Value));
+                                var auditEntryProperty = audit.Configuration.AuditEntryPropertyFactory != null ?
+                                    audit.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(entry, objectStateEntry, leftRelationName, keyValue.Key, null, keyValue.Value)) :
+                                    new AuditEntryProperty();
+
+                                auditEntryProperty.Build(entry, leftRelationName, keyValue.Key, null, keyValue.Value);
+                                entry.Properties.Add(auditEntryProperty);
                             }
 
                             foreach (var keyValue in rightKeys.EntityKeyValues)
                             {
-                                entry.Properties.Add(new AuditEntryProperty(entry, rightRelationName, keyValue.Key, null, keyValue.Value));
+                                var auditEntryProperty = audit.Configuration.AuditEntryPropertyFactory != null ?
+                                    audit.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(entry, objectStateEntry, rightRelationName, keyValue.Key, null, keyValue.Value)) :
+                                    new AuditEntryProperty();
+
+                                auditEntryProperty.Build(entry, rightRelationName, keyValue.Key, null, keyValue.Value);
+                                entry.Properties.Add(auditEntryProperty);
                             }
                         }
                         else
                         {
                             foreach (var keyValue in objectStateEntry.EntityKey.EntityKeyValues)
                             {
-                                var property = entry.Properties.FirstOrDefault(x => x.PropertyName == keyValue.Key);
+                                var property = entry.Properties.FirstOrDefault(x => x.InternalPropertyName == keyValue.Key);
 
                                 // ENSURE the property is audited
                                 if (property != null)
@@ -75,7 +85,7 @@ namespace Z.EntityFramework.Plus
                         foreach (var keyValue in objectStateEntry.Metadata.GetKeys())
                         {
                             var key = objectStateEntry.Property(keyValue.Properties[0].Name);
-                            var property = entry.Properties.FirstOrDefault(x => x.PropertyName == keyValue.Properties[0].Name);
+                            var property = entry.Properties.FirstOrDefault(x => x.InternalPropertyName == keyValue.Properties[0].Name);
                            
                             // ENSURE the property is audited
                             if (property != null)

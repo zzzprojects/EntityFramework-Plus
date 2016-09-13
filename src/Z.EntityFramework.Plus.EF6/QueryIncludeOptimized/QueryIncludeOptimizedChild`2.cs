@@ -73,5 +73,10 @@ namespace Z.EntityFramework.Plus
                 }
             }
         }
+
+        public override Expression GetFilter()
+        {
+            return Filter != null ? (Expression)Filter : FilterSingle;
+        }
     }
 }

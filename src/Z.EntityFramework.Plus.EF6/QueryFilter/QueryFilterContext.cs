@@ -5,6 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
+#if !EF6
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -223,3 +224,4 @@ namespace Z.EntityFramework.Plus
         }
     }
 }
+#endif

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.EntityFramework.Plus.EF5", "Z.EntityFramework.Plus.EF5\Z.EntityFramework.Plus.EF5.csproj", "{1B28EFB7-E679-4275-ACA9-DA7CD589A56A}"
 EndProject
@@ -52,7 +52,6 @@ Global
 		{063FA382-DFDA-4BCB-BBB6-AAC04D0ED88E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{063FA382-DFDA-4BCB-BBB6-AAC04D0ED88E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C47F920B-8064-44B0-BF3F-CD29298597A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C47F920B-8064-44B0-BF3F-CD29298597A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C47F920B-8064-44B0-BF3F-CD29298597A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C47F920B-8064-44B0-BF3F-CD29298597A0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AE726FF5-89DE-42BE-B75D-834A7C1EB6E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

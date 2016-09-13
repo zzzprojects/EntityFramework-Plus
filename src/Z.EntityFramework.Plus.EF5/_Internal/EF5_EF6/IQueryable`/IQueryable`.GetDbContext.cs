@@ -5,7 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
-#if FULL || BATCH_DELETE || BATCH_UPDATE
+#if FULL || AUDIT || BATCH_DELETE || BATCH_UPDATE
 #if EF5 || EF6
 using System.Data.Entity;
 using System.Linq;

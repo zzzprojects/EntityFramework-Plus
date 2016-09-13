@@ -5,7 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
-#if FULL || BATCH_DELETE || BATCH_UPDATE || QUERY_DEFERRED || QUERY_FUTURE || QUERY_INCLUDEOPTIMIZED
+#if FULL || AUDIT || BATCH_DELETE || BATCH_UPDATE || QUERY_DEFERRED || QUERY_FILTER || QUERY_FUTURE || QUERY_INCLUDEOPTIMIZED
 #if EF5 || EF6
 using System;
 using System.Data.Entity.Infrastructure;
@@ -41,17 +41,33 @@ namespace Z.EntityFramework.Plus
 
             if (dbQuery == null)
             {
-                throw new Exception(ExceptionMessage.GeneralException);
+                var internalQueryProperty = query.GetType().GetProperty("InternalQuery", BindingFlags.NonPublic | BindingFlags.Instance);
+
+                if (internalQueryProperty == null)
+                {
+                    throw new Exception(ExceptionMessage.GeneralException);
+                }
+
+                var internalQuery = internalQueryProperty.GetValue(query, null);
+                var objectQueryContextProperty = internalQuery.GetType().GetProperty("ObjectQuery", BindingFlags.Public | BindingFlags.Instance);
+                var objectQueryContext = objectQueryContextProperty.GetValue(internalQuery, null);
+
+                objectQuery = objectQueryContext as ObjectQuery<T>;
+
+                return objectQuery;
             }
 
-            var internalQueryProperty = dbQuery.GetType().GetProperty("InternalQuery", BindingFlags.NonPublic | BindingFlags.Instance);
-            var internalQuery = internalQueryProperty.GetValue(dbQuery, null);
-            var objectQueryContextProperty = internalQuery.GetType().GetProperty("ObjectQuery", BindingFlags.Public | BindingFlags.Instance);
-            var objectQueryContext = objectQueryContextProperty.GetValue(internalQuery, null);
+            {
+                var internalQueryProperty = dbQuery.GetType().GetProperty("InternalQuery", BindingFlags.NonPublic | BindingFlags.Instance);
+                var internalQuery = internalQueryProperty.GetValue(dbQuery, null);
+                var objectQueryContextProperty = internalQuery.GetType().GetProperty("ObjectQuery", BindingFlags.Public | BindingFlags.Instance);
+                var objectQueryContext = objectQueryContextProperty.GetValue(internalQuery, null);
 
-            objectQuery = objectQueryContext as ObjectQuery<T>;
+                objectQuery = objectQueryContext as ObjectQuery<T>;
 
-            return objectQuery;
+                return objectQuery;
+            }
+
         }
     }
 }

@@ -69,6 +69,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Audit\Audit_Configuration_AuditEntryFactory.cs" />
+    <Compile Include="Audit\Audit_Configuration_AuditEntryPropertyFactory.cs" />
     <Compile Include="Audit\Audit_Configuration_AutoSavePreAction.cs" />
     <Compile Include="Audit\Audit_Configuration_Exclude.cs" />
     <Compile Include="Audit\Audit_Configuration_ExcludeProperty.cs" />
@@ -76,6 +78,7 @@
     <Compile Include="Audit\Audit_Configuration_Ignore.cs" />
     <Compile Include="Audit\Audit_Configuration_Include.cs" />
     <Compile Include="Audit\Audit_Configuration_IncludeProperty.cs" />
+    <Compile Include="Audit\Audit_CreatedBy.cs" />
     <Compile Include="Audit\Audit_EntityAdded.cs" />
     <Compile Include="Audit\Audit_EntityDeleted.cs" />
     <Compile Include="Audit\Audit_EntityModified.cs" />
@@ -85,6 +88,20 @@
     <Compile Include="Audit\Audit_GetAudits_ByKey.cs" />
     <Compile Include="Audit\Audit_RelationshipAdded.cs" />
     <Compile Include="Audit\Audit_RelationshipDeleted.cs" />
+    <Compile Include="Audit\Configuration_AuditEntryFactory\EntityAdded.cs" />
+    <Compile Include="Audit\Configuration_AuditEntryFactory\EntityDeleted.cs" />
+    <Compile Include="Audit\Configuration_AuditEntryFactory\EntityModified.cs" />
+    <Compile Include="Audit\Configuration_AuditEntryFactory\EntitySoftAdded.cs" />
+    <Compile Include="Audit\Configuration_AuditEntryFactory\EntitySoftDeleted.cs" />
+    <Compile Include="Audit\Configuration_AuditEntryFactory\RelationshipAdded.cs" />
+    <Compile Include="Audit\Configuration_AuditEntryFactory\RelationshipDeleted.cs" />
+    <Compile Include="Audit\Configuration_AuditEntryPropertyFactory\EntityAdded.cs" />
+    <Compile Include="Audit\Configuration_AuditEntryPropertyFactory\EntityDeleted.cs" />
+    <Compile Include="Audit\Configuration_AuditEntryPropertyFactory\EntityModified.cs" />
+    <Compile Include="Audit\Configuration_AuditEntryPropertyFactory\EntitySoftAdded.cs" />
+    <Compile Include="Audit\Configuration_AuditEntryPropertyFactory\EntitySoftDeleted.cs" />
+    <Compile Include="Audit\Configuration_AuditEntryPropertyFactory\RelationshipAdded.cs" />
+    <Compile Include="Audit\Configuration_AuditEntryPropertyFactory\RelationshipDeleted.cs" />
     <Compile Include="Audit\Configuration_AutoSavePreAction\IsNotNull.cs" />
     <Compile Include="Audit\Configuration_AutoSavePreAction\IsNotNull_Async.cs" />
     <Compile Include="Audit\Configuration_AutoSavePreAction\IsNull.cs" />
@@ -119,28 +136,34 @@
     <Compile Include="Audit\Configuration_IncludeProperty\Type.cs" />
     <Compile Include="Audit\Configuration_Include\All.cs" />
     <Compile Include="Audit\Configuration_Include\Type.cs" />
+    <Compile Include="Audit\CreatedBy\CurrentPrincipal.cs" />
     <Compile Include="Audit\EntityAdded\Entity_Basic.cs" />
     <Compile Include="Audit\EntityAdded\Entity_Complex.cs" />
+    <Compile Include="Audit\EntityAdded\Entity_Proxy.cs" />
     <Compile Include="Audit\EntityAdded\Inheritance_TPC.cs" />
     <Compile Include="Audit\EntityAdded\Inheritance_TPH.cs" />
     <Compile Include="Audit\EntityAdded\Inheritance_TPT.cs" />
     <Compile Include="Audit\EntityDeleted\Entity_Basic.cs" />
     <Compile Include="Audit\EntityDeleted\Entity_Complex.cs" />
+    <Compile Include="Audit\EntityDeleted\Entity_Proxy.cs" />
     <Compile Include="Audit\EntityDeleted\Inheritance_TPC.cs" />
     <Compile Include="Audit\EntityDeleted\Inheritance_TPH.cs" />
     <Compile Include="Audit\EntityDeleted\Inheritance_TPT.cs" />
     <Compile Include="Audit\EntityModified\Entity_Basic.cs" />
     <Compile Include="Audit\EntityModified\Entity_Complex.cs" />
+    <Compile Include="Audit\EntityModified\Entity_Proxy.cs" />
     <Compile Include="Audit\EntityModified\Inheritance_TPC.cs" />
     <Compile Include="Audit\EntityModified\Inheritance_TPH.cs" />
     <Compile Include="Audit\EntityModified\Inheritance_TPT.cs" />
     <Compile Include="Audit\EntitySoftAdded\Entity_Basic.cs" />
     <Compile Include="Audit\EntitySoftAdded\Entity_Complex.cs" />
+    <Compile Include="Audit\EntitySoftAdded\Entity_Proxy.cs" />
     <Compile Include="Audit\EntitySoftAdded\Inheritance_TPC.cs" />
     <Compile Include="Audit\EntitySoftAdded\Inheritance_TPH.cs" />
     <Compile Include="Audit\EntitySoftAdded\Inheritance_TPT.cs" />
     <Compile Include="Audit\EntitySoftDeleted\Entity_Basic.cs" />
     <Compile Include="Audit\EntitySoftDeleted\Entity_Complex.cs" />
+    <Compile Include="Audit\EntitySoftDeleted\Entity_Proxy.cs" />
     <Compile Include="Audit\EntitySoftDeleted\Inheritance_TPC.cs" />
     <Compile Include="Audit\EntitySoftDeleted\Inheritance_TPH.cs" />
     <Compile Include="Audit\EntitySoftDeleted\Inheritance_TPT.cs" />
@@ -399,6 +422,7 @@
     <Compile Include="QueryIncludeOptimized\Where_Async\Single_EnumeratorAsync.cs" />
     <Compile Include="QueryIncludeOptimized\Where_Async\Single_ThenQuery_EnumeratorAsync.cs" />
     <Compile Include="_Helper\AuditHelper.cs" />
+    <Compile Include="_Helper\Extensions\QueryCacheHelper.cs" />
     <Compile Include="_Helper\QueryCacheHelper.cs" />
     <Compile Include="_Helper\QueryFilterHelper.cs" />
     <Compile Include="_Model\Association_ManyToMany_Left.cs" />
@@ -411,13 +435,19 @@
     <Compile Include="_Model\Association_OneToManyToMany_RightRight.cs" />
     <Compile Include="_Model\Association_OneToMany_Left.cs" />
     <Compile Include="_Model\Association_OneToMany_Right.cs" />
+    <Compile Include="_Model\AuditEntryProperty_Extended.cs" />
+    <Compile Include="_Model\AuditEntry_Extended.cs" />
     <Compile Include="_Model\Entity_Basic.cs" />
     <Compile Include="_Model\Entity_Basic_Many.cs" />
     <Compile Include="_Model\Entity_Complex.cs" />
     <Compile Include="_Model\Entity_Complex_Info.cs" />
     <Compile Include="_Model\Entity_Complex_Info_Info.cs" />
+    <Compile Include="_Model\Entity_Enum.cs" />
     <Compile Include="_Model\Entity_Guid.cs" />
     <Compile Include="_Model\Entity_ManyGuid.cs" />
+    <Compile Include="_Model\Entity_Proxy.cs" />
+    <Compile Include="_Model\Entity_Proxy_Right.cs" />
+    <Compile Include="_Model\Inheritance_Interface_Entity_LazyLoading.cs" />
     <Compile Include="_Model\Internal_Entity_Basic.cs" />
     <Compile Include="_Model\Internal_Entity_Basic_Many.cs" />
     <Compile Include="_Model\Methods\DeleteAll.cs" />
@@ -440,6 +470,7 @@
     <Compile Include="_Model\Property_AllType.cs" />
     <Compile Include="_Model\ZZZ_Entity_Basic.cs" />
     <Compile Include="_Model\_TestContext.cs" />
+    <Compile Include="_Model\_TestContextMemory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

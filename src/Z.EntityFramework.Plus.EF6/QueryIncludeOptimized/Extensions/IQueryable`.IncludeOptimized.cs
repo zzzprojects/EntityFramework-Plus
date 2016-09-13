@@ -14,6 +14,18 @@ namespace Z.EntityFramework.Plus
 {
     public static class QueryIncludeOptimizedExtensions
     {
+        //public static IQueryable<T> InternalIncludeOptimized<T, TChild>(this IQueryable<T> query, Expression<Func<T, IEnumerable<TChild>>> queryIncludeFilter) where T : class where TChild : class
+        //{
+        //    // GET query root
+        //    var includeOrderedQueryable = query as QueryIncludeOptimizedParentQueryable<T> ?? new QueryIncludeOptimizedParentQueryable<T>(query);
+
+        //    // ADD sub query
+        //    includeOrderedQueryable.Childs.Add(new QueryIncludeOptimizedChild<T, TChild>(queryIncludeFilter));
+
+        //    // RETURN root
+        //    return includeOrderedQueryable;
+        //}
+
         /// <summary>
         ///     An IQueryable&lt;T&gt; extension method that include and filter related entities with a optimized SQL.
         /// </summary>

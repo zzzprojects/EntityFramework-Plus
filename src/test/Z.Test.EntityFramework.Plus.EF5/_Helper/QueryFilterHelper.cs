@@ -5,6 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
+using System;
 using System.Linq;
 using Z.EntityFramework.Plus;
 
@@ -24,14 +25,27 @@ namespace Z.Test.EntityFramework.Plus
             Filter8
         }
 
+        public static object SingleThreadLock = new Object();
         public static void ClearGlobalManagerFilter()
         {
+#if EF5
             QueryFilterManager.GlobalFilters.Clear();
             QueryFilterManager.GlobalInitializeFilterActions.Clear();
+#elif EF6
+            QueryFilterManager.GlobalFiltersByKey.Clear();
+            QueryFilterManager.GlobalFilterByType.Clear();
+#endif
+
         }
 
         public static void CreateGlobalManagerFilter(bool isEnabled, string fixResharper = null, bool? enableFilter1 = null, bool? enableFilter2 = null, bool? enableFilter3 = null, bool? enableFilter4 = null, bool? excludeClass = null, bool? excludeInterface = null, bool? excludeBaseClass = null, bool? excludeBaseInterface = null, bool? includeClass = null, bool? includeInterface = null, bool? includeBaseClass = null, bool? includeBaseInterface = null)
         {
+            ClearGlobalManagerFilter();
+#if EFCORE
+    // TODO: Remove this when cast issue will be fixed
+            QueryFilterManager.GlobalFilters.Clear();
+            QueryFilterManager.GlobalInitializeFilterActions.Clear();
+#endif
             if (enableFilter1 != null)
             {
                 QueryFilterManager.Filter<Inheritance_Interface_Entity>(Filter.Filter1, entities => entities.Where(x => x.ColumnInt != 1), isEnabled);

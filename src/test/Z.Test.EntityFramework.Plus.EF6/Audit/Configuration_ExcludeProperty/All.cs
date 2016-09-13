@@ -68,10 +68,24 @@ namespace Z.Test.EntityFramework.Plus
 
                 // Properties
                 {
+                    var propertyIndex = -1;
+
                     // Properties Count
-                    Assert.AreEqual(0, entries[0].Properties.Count);
-                    Assert.AreEqual(0, entries[1].Properties.Count);
-                    Assert.AreEqual(0, entries[2].Properties.Count);
+                    Assert.AreEqual(1, entries[0].Properties.Count);
+                    Assert.AreEqual(1, entries[1].Properties.Count);
+                    Assert.AreEqual(1, entries[2].Properties.Count);
+
+                    // ID
+                    propertyIndex = 0;
+                    Assert.AreEqual("ID", entries[0].Properties[propertyIndex].PropertyName);
+                    Assert.AreEqual("ID", entries[1].Properties[propertyIndex].PropertyName);
+                    Assert.AreEqual("ID", entries[2].Properties[propertyIndex].PropertyName);
+                    Assert.AreEqual(null, entries[0].Properties[propertyIndex].OldValue);
+                    Assert.AreEqual(null, entries[1].Properties[propertyIndex].OldValue);
+                    Assert.AreEqual(null, entries[2].Properties[propertyIndex].OldValue);
+                    Assert.AreEqual(identitySeedCat + 1, entries[0].Properties[propertyIndex].NewValue);
+                    Assert.AreEqual(identitySeedDog + 1, entries[1].Properties[propertyIndex].NewValue);
+                    Assert.AreEqual(identitySeedDog + 2, entries[2].Properties[propertyIndex].NewValue);
                 }
             }
 
@@ -106,10 +120,24 @@ namespace Z.Test.EntityFramework.Plus
 
                     // Properties
                     {
+                        var propertyIndex = -1;
+
                         // Properties Count
-                        Assert.AreEqual(0, entries[0].Properties.Count);
-                        Assert.AreEqual(0, entries[1].Properties.Count);
-                        Assert.AreEqual(0, entries[2].Properties.Count);
+                        Assert.AreEqual(1, entries[0].Properties.Count);
+                        Assert.AreEqual(1, entries[1].Properties.Count);
+                        Assert.AreEqual(1, entries[2].Properties.Count);
+
+                        // ID
+                        propertyIndex = 0;
+                        Assert.AreEqual("ID", entries[0].Properties[propertyIndex].PropertyName);
+                        Assert.AreEqual("ID", entries[1].Properties[propertyIndex].PropertyName);
+                        Assert.AreEqual("ID", entries[2].Properties[propertyIndex].PropertyName);
+                        Assert.AreEqual(null, entries[0].Properties[propertyIndex].OldValue);
+                        Assert.AreEqual(null, entries[1].Properties[propertyIndex].OldValue);
+                        Assert.AreEqual(null, entries[2].Properties[propertyIndex].OldValue);
+                        Assert.AreEqual((identitySeedCat + 1).ToString(), entries[0].Properties[propertyIndex].NewValue);
+                        Assert.AreEqual((identitySeedDog + 1).ToString(), entries[1].Properties[propertyIndex].NewValue);
+                        Assert.AreEqual((identitySeedDog + 2).ToString(), entries[2].Properties[propertyIndex].NewValue);
                     }
                 }
             }

@@ -5,6 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
+#if EF5 || EF6
 using System.Data.Entity.ModelConfiguration;
 
 namespace Z.Test.EntityFramework.Plus
@@ -24,3 +25,4 @@ namespace Z.Test.EntityFramework.Plus
         }
     }
 }
+#endif

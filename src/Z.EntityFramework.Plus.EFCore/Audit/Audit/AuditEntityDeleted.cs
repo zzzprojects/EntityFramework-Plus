@@ -6,6 +6,8 @@
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 using System.Data.Common;
+using System.Linq;
+
 #if EF5
 using System.Data.Objects;
 
@@ -13,6 +15,7 @@ using System.Data.Objects;
 using System.Data.Entity.Core.Objects;
 
 #elif EFCORE
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 #endif
@@ -30,14 +33,16 @@ namespace Z.EntityFramework.Plus
         public static void AuditEntityDeleted(Audit audit, EntityEntry objectStateEntry)
 #endif
         {
-            var entry = new AuditEntry(audit, objectStateEntry)
-            {
-                State = AuditEntryState.EntityDeleted
-            };
+            var entry = audit.Configuration.AuditEntryFactory != null ?
+    audit.Configuration.AuditEntryFactory(new AuditEntryFactoryArgs(audit, objectStateEntry, AuditEntryState.EntityDeleted)) :
+    new AuditEntry();
+
+            entry.Build(audit, objectStateEntry);
+            entry.State = AuditEntryState.EntityDeleted;
 
 
 #if EF5 || EF6
-            AuditEntityDeleted(entry, objectStateEntry.OriginalValues);
+            AuditEntityDeleted(entry, objectStateEntry, objectStateEntry.OriginalValues);
 #elif EFCORE
             AuditEntityDeleted(entry, objectStateEntry);
 #endif
@@ -49,7 +54,7 @@ namespace Z.EntityFramework.Plus
         /// <param name="entry">The entry.</param>
         /// <param name="record">The record.</param>
         /// <param name="prefix">The prefix.</param>
-        public static void AuditEntityDeleted(AuditEntry entry, DbDataRecord record, string prefix = "")
+        public static void AuditEntityDeleted(AuditEntry entry, ObjectStateEntry objectStateEntry, DbDataRecord record, string prefix = "")
         {
             for (var i = 0; i < record.FieldCount; i++)
             {
@@ -60,11 +65,16 @@ namespace Z.EntityFramework.Plus
                 if (valueRecord != null)
                 {
                     // Complex Type
-                    AuditEntityDeleted(entry, valueRecord, string.Concat(prefix, name, "."));
+                    AuditEntityDeleted(entry, objectStateEntry, valueRecord, string.Concat(prefix, name, "."));
                 }
-                else if (entry.Parent.CurrentOrDefaultConfiguration.IsAuditedProperty(entry.Entry, name))
+                else if (objectStateEntry.EntityKey.EntityKeyValues.Any(x => x.Key == name) || entry.Parent.CurrentOrDefaultConfiguration.IsAuditedProperty(entry.Entry, name))
                 {
-                    entry.Properties.Add(new AuditEntryProperty(entry, string.Concat(prefix, name), value, null));
+                    var auditEntryProperty = entry.Parent.Configuration.AuditEntryPropertyFactory != null ?
+entry.Parent.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(entry, objectStateEntry, string.Concat(prefix, name), value, null)) :
+new AuditEntryProperty();
+
+                    auditEntryProperty.Build(entry, string.Concat(prefix, name), value, null);
+                    entry.Properties.Add(auditEntryProperty);
                 }
             }
         }
@@ -77,9 +87,14 @@ namespace Z.EntityFramework.Plus
             {
                 var property = objectStateEntry.Property(propertyEntry.Name);
 
-                if (entry.Parent.CurrentOrDefaultConfiguration.IsAuditedProperty(entry.Entry, propertyEntry.Name))
+                if (property.Metadata.IsKey() || entry.Parent.CurrentOrDefaultConfiguration.IsAuditedProperty(entry.Entry, propertyEntry.Name))
                 {
-                    entry.Properties.Add(new AuditEntryProperty(entry, propertyEntry.Name, property.OriginalValue, null));
+                    var auditEntryProperty = entry.Parent.Configuration.AuditEntryPropertyFactory != null ?
+    entry.Parent.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(entry, objectStateEntry, propertyEntry.Name, property.OriginalValue, null)) :
+    new AuditEntryProperty();
+
+                    auditEntryProperty.Build(entry, propertyEntry.Name, property.OriginalValue, null);
+                    entry.Properties.Add(auditEntryProperty);
                 }
             }
         }

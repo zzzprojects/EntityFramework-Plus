@@ -67,7 +67,9 @@
     <Compile Include="Audit\AuditConfiguration\SoftAdded.cs" />
     <Compile Include="Audit\AuditConfiguration\SoftDeleted.cs" />
     <Compile Include="Audit\AuditEntry.cs" />
+    <Compile Include="Audit\AuditEntryFactoryArgs.cs" />
     <Compile Include="Audit\AuditEntryProperty.cs" />
+    <Compile Include="Audit\AuditEntryPropertyArgs.cs" />
     <Compile Include="Audit\AuditEntryState.cs" />
     <Compile Include="Audit\AuditManager.cs" />
     <Compile Include="Audit\Audit\AuditEntityAdded.cs" />

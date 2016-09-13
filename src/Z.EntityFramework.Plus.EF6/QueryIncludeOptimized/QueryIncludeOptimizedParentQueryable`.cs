@@ -8,8 +8,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading.Tasks;
 #if EF5
 using System.Data.Metadata.Edm;
@@ -125,8 +127,65 @@ namespace Z.EntityFramework.Plus
             }
 
             // RESOLVE current and all future child queries
-            return QueryIncludeOptimizedManager.AllowQueryBatch ? newQuery.Future().ToList() : newQuery.ToList();
+            var list = QueryIncludeOptimizedManager.AllowQueryBatch ? newQuery.Future().ToList() : newQuery.ToList();
+
+            //foreach (var child in Childs)
+            //{
+            //    // GET all paths
+            //    var visitor = new SelectPathVisitor();
+            //    visitor.Visit(child.GetFilter());
+
+            //    var paths = visitor.paths;
+
+            //    if (paths.Count > 0)
+            //    {
+
+            //        foreach (var item in list)
+            //        {
+            //            foreach (var path in paths)
+            //            {
+            //                var property = item.GetType().GetProperty(path, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+            //                if (property != null)
+            //                {
+            //                    var value = property.GetValue(path);
+            //                }
+            //            }
+            //        }
+
+            //    }
+            //}
+
+            return list;
         }
+
+        //public class SelectPathVisitor : ExpressionVisitor
+        //{
+        //    public List<string> paths = new List<string>();
+
+        //    public override Expression Visit(Expression node)
+        //    {
+        //        if (node != null && node.NodeType == ExpressionType.Call)
+        //        {
+        //            var methodCall = node as MethodCallExpression;
+
+        //            if (methodCall != null
+        //                && methodCall.Method.ReflectedType != null
+        //                && methodCall.Method.ReflectedType.FullName == "System.Linq.Enumerable"
+        //                && (methodCall.Method.Name == "Select"
+        //                || methodCall.Method.Name == "SelectMany"))
+        //            {
+        //                var argument = methodCall.Arguments[0];
+        //                var s = argument.ToString();
+
+        //                // x.Rights.Where(...)
+        //                var path = s.Split('.')[1];
+        //                paths.Add(path);
+        //            }
+        //        }
+        //        return base.Visit(node);
+        //    }
+        //}
 
         /// <summary>Creates the queryable.</summary>
         /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>

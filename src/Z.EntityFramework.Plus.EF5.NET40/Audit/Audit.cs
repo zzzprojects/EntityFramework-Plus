@@ -28,6 +28,23 @@ namespace Z.EntityFramework.Plus
         {
             _configuration = new Lazy<AuditConfiguration>(() => AuditManager.DefaultConfiguration.Clone());
             Entries = new List<AuditEntry>();
+
+            try
+            {
+#if !NETSTANDARD1_3
+                CreatedBy = System.Threading.Thread.CurrentPrincipal.Identity.Name;
+#endif
+
+                if (string.IsNullOrEmpty(CreatedBy))
+                {
+                    CreatedBy = "System";
+                }
+            }
+            catch (Exception)
+            {
+                // Oops! it's k, this is the responsability of the user to set the default CreatedBy field
+                CreatedBy = "System";
+            }
         }
 
         /// <summary>Gets or sets the entries.</summary>

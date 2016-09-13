@@ -25,35 +25,59 @@ namespace Z.EntityFramework.Plus
     /// <summary>An audit entry.</summary>
     public class AuditEntry
     {
-        /// <summary>Default constructor.</summary>
-        /// <remarks>Required by Entity Framework.</remarks>
-        public AuditEntry()
-        {
-        }
-
-        /// <summary>Constructor.</summary>
-        /// <param name="parent">The audit parent.</param>
-        /// <param name="entry">The object state entry.</param>
 #if EF5 || EF6
-        public AuditEntry(Audit parent, ObjectStateEntry entry)
-#elif EFCORE
-        public AuditEntry(Audit parent, EntityEntry entry)
+        public void Build(Audit parent, ObjectStateEntry entry)
+#else
+        public void Build(Audit parent, EntityEntry entry)
 #endif
         {
-            CreatedBy = parent.CreatedBy;
-            CreatedDate = DateTime.Now;
-            Entry = entry;
-            Parent = parent;
-            Properties = new List<AuditEntryProperty>();
+            if (CreatedBy == null)
+            {
+                CreatedBy = parent.CreatedBy;
+            }
+
+            if (CreatedDate == DateTime.MinValue)
+            {
+                CreatedDate = DateTime.Now;
+            }
+
+            if (Entry == null)
+            {
+                Entry = entry;
+            }
+
+            if (Parent == null)
+            {
+                Parent = parent;
+            }
+
+            if (Properties == null)
+            {
+                Properties = new List<AuditEntryProperty>();
+            }
 
 #if EF5 || EF6
-            EntitySetName = entry.EntitySet.Name;
-            if (!entry.IsRelationship)
+            if (EntitySetName == null)
             {
-                EntityTypeName = entry.Entity.GetType().Name;
+                EntitySetName = entry.EntitySet.Name;
             }
+#endif
+
+#if EF5 || EF6
+
+            if (EntityTypeName == null)
+            {
+                if (!entry.IsRelationship)
+                {
+                    EntityTypeName = ObjectContext.GetObjectType(entry.Entity.GetType()).Name;
+                }
+            }
+
 #elif EFCORE
-            EntityTypeName = Entry.Entity.GetType().Name;
+            if (EntityTypeName == null)
+            {
+                EntityTypeName = Entry.Entity.GetType().Name;
+            }
 #endif
         }
 

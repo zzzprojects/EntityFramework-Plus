@@ -7,11 +7,14 @@
 
 #if EF5
 using System.Data.Objects;
+using System.Linq;
 
 #elif EF6
 using System.Data.Entity.Core.Objects;
+using System.Linq;
 
 #elif EFCORE
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 #endif
@@ -29,11 +32,12 @@ namespace Z.EntityFramework.Plus
         public static void AuditEntityAdded(Audit audit, EntityEntry objectStateEntry)
 #endif
         {
-            var entry = new AuditEntry(audit, objectStateEntry)
-            {
-                State = AuditEntryState.EntityAdded
-            };
+            var entry = audit.Configuration.AuditEntryFactory != null ?
+                audit.Configuration.AuditEntryFactory(new AuditEntryFactoryArgs(audit, objectStateEntry, AuditEntryState.EntityAdded)) :
+                new AuditEntry();
 
+            entry.Build(audit, objectStateEntry);
+            entry.State = AuditEntryState.EntityAdded;
 
             // CHECK if the key should be resolved in POST Action
 #if EF5 || EF6
@@ -41,7 +45,7 @@ namespace Z.EntityFramework.Plus
             {
                 entry.DelayedKey = objectStateEntry;
             }
-            AuditEntityAdded(entry, objectStateEntry.CurrentValues);
+            AuditEntityAdded(entry, objectStateEntry, objectStateEntry.CurrentValues);
 #elif EFCORE
     // TODO: We must check if the key IsTemporary! We can maybe use flag...
     //if (!objectStateEntry.IsKeySet)
@@ -57,9 +61,10 @@ namespace Z.EntityFramework.Plus
 #if EF5 || EF6
         /// <summary>Audit entity added.</summary>
         /// <param name="auditEntry">The audit entry.</param>
+        /// <param name="objectStateEntry">The object state entry.</param>
         /// <param name="record">The record.</param>
         /// <param name="prefix">The prefix.</param>
-        public static void AuditEntityAdded(AuditEntry auditEntry, DbUpdatableDataRecord record, string prefix = "")
+        public static void AuditEntityAdded(AuditEntry auditEntry, ObjectStateEntry objectStateEntry, DbUpdatableDataRecord record, string prefix = "")
         {
             for (var i = 0; i < record.FieldCount; i++)
             {
@@ -70,11 +75,16 @@ namespace Z.EntityFramework.Plus
                 if (valueRecord != null)
                 {
                     // Complex Type
-                    AuditEntityAdded(auditEntry, valueRecord, string.Concat(prefix, name, "."));
+                    AuditEntityAdded(auditEntry, objectStateEntry, valueRecord, string.Concat(prefix, name, "."));
                 }
-                else if (auditEntry.Parent.CurrentOrDefaultConfiguration.IsAuditedProperty(auditEntry.Entry, name))
+                else if (objectStateEntry.EntitySet.ElementType.KeyMembers.Any(x => x.Name == name) || auditEntry.Parent.CurrentOrDefaultConfiguration.IsAuditedProperty(auditEntry.Entry, name))
                 {
-                    auditEntry.Properties.Add(new AuditEntryProperty(auditEntry, string.Concat(prefix, name), null, value));
+                    var auditEntryProperty = auditEntry.Parent.Configuration.AuditEntryPropertyFactory != null ?
+    auditEntry.Parent.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(auditEntry, objectStateEntry, string.Concat(prefix, name), null, value)) :
+    new AuditEntryProperty();
+
+                    auditEntryProperty.Build(auditEntry, string.Concat(prefix, name), null, value);
+                    auditEntry.Properties.Add(auditEntryProperty);
                 }
             }
         }
@@ -87,9 +97,14 @@ namespace Z.EntityFramework.Plus
             {
                 var property = objectStateEntry.Property(propertyEntry.Name);
 
-                if (entry.Parent.CurrentOrDefaultConfiguration.IsAuditedProperty(entry.Entry, propertyEntry.Name))
+                if (property.Metadata.IsKey() || entry.Parent.CurrentOrDefaultConfiguration.IsAuditedProperty(entry.Entry, propertyEntry.Name))
                 {
-                    entry.Properties.Add(new AuditEntryProperty(entry, propertyEntry.Name, null, property.CurrentValue));
+                    var auditEntryProperty = entry.Parent.Configuration.AuditEntryPropertyFactory != null ?
+                        entry.Parent.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(entry, objectStateEntry, propertyEntry.Name, null, property.CurrentValue)) :
+                        new AuditEntryProperty();
+
+                    auditEntryProperty.Build(entry, propertyEntry.Name, null, property.CurrentValue);
+                    entry.Properties.Add(auditEntryProperty);
                 }
             }
         }

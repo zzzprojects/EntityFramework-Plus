@@ -16,6 +16,9 @@ namespace Z.Test.EntityFramework.Plus
         [TestMethod]
         public void WithGlobalFilter_ManyFilter_Enabled()
         {
+            TestContext.DeleteAll(x => x.Inheritance_Interface_Entities);
+            TestContext.Insert(x => x.Inheritance_Interface_Entities, 10);
+
             using (var ctx = new TestContext(false, enableFilter1: true, enableFilter2: true, enableFilter3: true, enableFilter4: true))
             {
                 Assert.AreEqual(35, ctx.Inheritance_Interface_Entities.Filter(

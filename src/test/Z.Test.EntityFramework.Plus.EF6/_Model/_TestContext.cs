@@ -6,12 +6,15 @@
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 using System.Data.Common;
-using System.Data.Entity.Infrastructure.Interception;
 using System.Data.SqlClient;
 using System.Linq;
 using Z.EntityFramework.Plus;
-#if EF5 || EF6
+#if EF5 
 using System.Data.Entity;
+
+#elif EF6
+using System.Data.Entity;
+using System.Data.Entity.Infrastructure.Interception;
 
 #elif EFCORE
 using System.Configuration;
@@ -61,6 +64,10 @@ END
             Database.EnsureCreated();
 #endif
 
+#if EF6
+            // BE careful, this one also need to clear filter!
+            QueryFilterManager.ClearQueryCache(this);
+#endif
 
         }
 
@@ -81,6 +88,12 @@ END
             QueryFilterManager.GlobalFilters.Clear();
             QueryFilterManager.GlobalInitializeFilterActions.Clear();
 #endif
+
+#if EF6
+            // Clear query cache
+            QueryFilterManager.ClearQueryCache(this);
+#endif
+
 
             if (enableFilter1 != null)
             {
@@ -317,6 +330,11 @@ END
 
         public DbSet<AuditEntryProperty> AuditEntryProperties { get; set; }
 
+
+        public DbSet<AuditEntry_Extended> AuditEntry_Extendeds { get; set; }
+
+        public DbSet<AuditEntryProperty_Extended> AuditEntryProperty_Extendeds { get; set; }
+
         #endregion
 
         #region Entity
@@ -338,6 +356,10 @@ END
 
         public DbSet<Entity_ManyGuid> Entity_ManyGuids { get; set; }
 
+        public DbSet<Entity_Proxy> Entity_Proxies { get; set; }
+
+        public DbSet<Entity_Proxy_Right> Entity_Proxy_Rights { get; set; }
+
 #if EF5 || EF6
         public DbSet<Entity_Complex> Entity_Complexes { get; set; }
 
@@ -349,6 +371,8 @@ END
         #region Inheritance
 
         public DbSet<Inheritance_Interface_Entity> Inheritance_Interface_Entities { get; set; }
+
+        public DbSet<Inheritance_Interface_Entity_LazyLoading> Inheritance_Interface_Entities_LazyLoading { get; set; }
 
 #if EF5 || EF6
         public DbSet<Inheritance_TPC_Animal> Inheritance_TPC_Animals { get; set; }

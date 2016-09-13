@@ -8,8 +8,14 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-#if EF5 || EF6
+
+#if EF5 
 using System.Data.Entity;
+using System.Data.Objects;
+
+#elif EF6
+using System.Data.Entity;
+using System.Data.Entity.Core.Objects;
 
 #elif EFCORE
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +43,10 @@ namespace Z.EntityFramework.Plus
             IsAuditedDictionary = new ConcurrentDictionary<string, bool>();
             ValueFormatterDictionary = new ConcurrentDictionary<string, Func<object, object>>();
         }
+
+        public Func<AuditEntryFactoryArgs, AuditEntry> AuditEntryFactory { get; set; }
+        
+        public Func<AuditEntryPropertyArgs, AuditEntryProperty> AuditEntryPropertyFactory { get; set; }  
 
         /// <summary>Gets or sets the automatic audit save pre action.</summary>
         /// <value>The automatic audit save pre action.</value>

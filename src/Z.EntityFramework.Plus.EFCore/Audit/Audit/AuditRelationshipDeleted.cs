@@ -32,10 +32,12 @@ namespace Z.EntityFramework.Plus
         public static void AuditRelationDeleted(Audit audit, EntityEntry objectStateEntry)
 #endif
         {
-            var entry = new AuditEntry(audit, objectStateEntry)
-            {
-                State = AuditEntryState.RelationshipDeleted
-            };
+            var entry = audit.Configuration.AuditEntryFactory != null ?
+audit.Configuration.AuditEntryFactory(new AuditEntryFactoryArgs(audit, objectStateEntry, AuditEntryState.RelationshipDeleted)) :
+new AuditEntry();
+
+            entry.Build(audit, objectStateEntry);
+            entry.State = AuditEntryState.RelationshipDeleted;
 
             var values = objectStateEntry.OriginalValues;
             for (var i = 0; i < values.FieldCount; i++)
@@ -44,7 +46,12 @@ namespace Z.EntityFramework.Plus
                 var value = (EntityKey) values.GetValue(i);
                 foreach (var keyValue in value.EntityKeyValues)
                 {
-                    entry.Properties.Add(new AuditEntryProperty(entry, relationName, keyValue.Key, keyValue.Value, null));
+                    var auditEntryProperty = entry.Parent.Configuration.AuditEntryPropertyFactory != null ?
+entry.Parent.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(entry, objectStateEntry, relationName, keyValue.Key, keyValue.Value, null)) :
+new AuditEntryProperty();
+
+                    auditEntryProperty.Build(entry, relationName, keyValue.Key, keyValue.Value, null);
+                    entry.Properties.Add(auditEntryProperty);
                 }
             }
 

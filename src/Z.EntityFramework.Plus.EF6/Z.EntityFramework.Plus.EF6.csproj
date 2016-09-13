@@ -38,8 +38,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework">
-      <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\zEntityFramework\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\..\zEntityFramework\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -66,6 +68,8 @@
     <Compile Include="Audit\AuditConfiguration\IncludeProperty.cs" />
     <Compile Include="Audit\AuditConfiguration\IncludeEntity.cs" />
     <Compile Include="Audit\AuditConfiguration\IsAuditedEntity.cs" />
+    <Compile Include="Audit\AuditEntryFactoryArgs.cs" />
+    <Compile Include="Audit\AuditEntryPropertyArgs.cs" />
     <Compile Include="Audit\AuditEntryState.cs" />
     <Compile Include="Audit\AuditEntry.cs" />
     <Compile Include="Audit\AuditEntryProperty.cs" />
@@ -151,6 +155,18 @@
     <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedChild`2.cs" />
     <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedParentQueryable`.cs" />
     <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedProvider.cs" />
+    <Compile Include="QueryFilterInterceptor\BaseQueryFilterInterceptor.cs" />
+    <Compile Include="QueryFilterInterceptor\Extensions\DbContext.Filter.cs" />
+    <Compile Include="QueryFilterInterceptor\Extensions\IDbSet.AsNoFilter.cs" />
+    <Compile Include="QueryFilterInterceptor\Extensions\IDbSet.Filter.cs" />
+    <Compile Include="QueryFilterInterceptor\QueryFilterInterceptor.cs" />
+    <Compile Include="QueryFilterInterceptor\QueryFilterInterceptorContext.cs" />
+    <Compile Include="QueryFilterInterceptor\QueryFilterInterceptorDbCommandTree.cs" />
+    <Compile Include="QueryFilterInterceptor\QueryFilterInterceptorDbProjectExpression.cs" />
+    <Compile Include="QueryFilterInterceptor\QueryFilterInterceptorDbScanExpression.cs" />
+    <Compile Include="QueryFilterInterceptor\QueryFilterInterceptorDbFilterExpression.cs" />
+    <Compile Include="QueryFilterInterceptor\QueryFilterInterceptorManager.cs" />
+    <Compile Include="QueryFilterInterceptor\QueryFilterInterceptorApply.cs" />
     <Compile Include="QueryInterceptor\Extensions\IQueryable`\Intercept.cs" />
     <Compile Include="QueryInterceptor\QueryInterceptorProvider.cs" />
     <Compile Include="QueryInterceptor\QueryInterceptorProvider`.cs" />

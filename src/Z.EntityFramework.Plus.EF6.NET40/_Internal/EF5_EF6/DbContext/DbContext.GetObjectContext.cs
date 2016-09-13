@@ -5,7 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
-#if FULL
+#if FULL || QUERY_FILTER
 #if EF5 || EF6
 
 #if EF5
