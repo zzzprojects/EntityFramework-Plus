@@ -8,16 +8,17 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 
 #if EF5
 using System.Runtime.Caching;
 using System.Data.EntityClient;
+using System.Data.SqlClient;
 
 #elif EF6
 using System.Data.Entity.Core.EntityClient;
+using System.Data.SqlClient;
 using System.Runtime.Caching;
 
 #elif EFCORE
@@ -182,6 +183,7 @@ namespace Z.EntityFramework.Plus
             }
 
             sb.AppendLine(string.Join(";", tags));
+            sb.AppendLine(query.Expression.ToString());
             sb.AppendLine(command.CommandText);
 
             foreach (var parameter in queryContext.ParameterValues)
@@ -261,6 +263,7 @@ namespace Z.EntityFramework.Plus
             }
 
             sb.AppendLine(string.Join(";", tags));
+            sb.AppendLine(query.Expression.ToString());
             sb.AppendLine(command.CommandText);
 
             foreach (var parameter in queryContext.ParameterValues)

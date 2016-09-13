@@ -14,9 +14,11 @@ using System.Text;
 #if EF5
 using System.Runtime.Caching;
 using System.Data.EntityClient;
+using System.Data.SqlClient;
 
 #elif EF6
 using System.Data.Entity.Core.EntityClient;
+using System.Data.SqlClient;
 using System.Runtime.Caching;
 
 #elif EFCORE

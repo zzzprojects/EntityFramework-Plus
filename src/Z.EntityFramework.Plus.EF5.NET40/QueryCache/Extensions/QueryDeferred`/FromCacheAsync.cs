@@ -6,9 +6,10 @@
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 #if NET45
-using System.Threading.Tasks;
-#if EF5 || EF6
 using System;
+using System.Threading.Tasks;
+
+#if EF5 || EF6
 using System.Runtime.Caching;
 
 #elif EFCORE
@@ -44,8 +45,15 @@ namespace Z.EntityFramework.Plus
                 if (item == null)
                 {
                     item = query.Execute();
-                    item = QueryCacheManager.Cache.AddOrGetExisting(key, item, policy) ?? item;
+                    item = QueryCacheManager.Cache.AddOrGetExisting(key, item ?? DBNull.Value, policy) ?? item;
                     QueryCacheManager.AddCacheTag(key, tags);
+                }
+                else
+                {
+                    if (item == DBNull.Value)
+                    {
+                        item = null;
+                    }
                 }
 
                 return (T) item;
@@ -77,8 +85,15 @@ namespace Z.EntityFramework.Plus
                 if (item == null)
                 {
                     item = query.Execute();
-                    item = QueryCacheManager.Cache.AddOrGetExisting(key, item, absoluteExpiration) ?? item;
+                    item = QueryCacheManager.Cache.AddOrGetExisting(key, item ?? DBNull.Value, absoluteExpiration) ?? item;
                     QueryCacheManager.AddCacheTag(key, tags);
+                }
+                else
+                {
+                    if (item == DBNull.Value)
+                    {
+                        item = null;
+                    }
                 }
 
                 return (T) item;
@@ -125,8 +140,15 @@ namespace Z.EntityFramework.Plus
                 if (!QueryCacheManager.Cache.TryGetValue(key, out item))
                 {
                     item = query.Execute();
-                    item = QueryCacheManager.Cache.Set(key, item, options);
+                    item = QueryCacheManager.Cache.Set(key, item ?? DBNull.Value, options);
                     QueryCacheManager.AddCacheTag(key, tags);
+                }
+                else
+                {
+                    if (item == DBNull.Value)
+                    {
+                        item = null;
+                    }    
                 }
 
                 return (T)item;

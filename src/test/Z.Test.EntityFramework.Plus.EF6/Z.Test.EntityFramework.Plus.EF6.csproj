@@ -283,6 +283,8 @@
     <Compile Include="BatchUpdate\WhereValue\Many_Variable.cs" />
     <Compile Include="BatchUpdate\WhereValue\Single_Constant.cs" />
     <Compile Include="BatchUpdate\WhereValue\Single_Variable.cs" />
+    <Compile Include="QueryCache\FromCacheAsync\QueryDeferred_WithNull.cs" />
+    <Compile Include="QueryCache\FromCache\QueryDeferred_WithNull.cs" />
     <Compile Include="_Model\AuditEntryProperty_Extended.cs" />
     <Compile Include="_Model\AuditEntry_Extended.cs" />
     <Compile Include="_Model\Entity_Proxy_Right.cs" />
