@@ -5,6 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -87,17 +88,38 @@ namespace Z.EntityFramework.Plus
         {
             foreach (var tag in tags)
             {
-                CacheTags.AddOrUpdate(tag, x => new List<string> {cacheKey}, (x, list) =>
+                CacheTags.AddOrUpdate(CachePrefix + tag, x => new List<string> {cacheKey}, (x, list) =>
                 {
-                    if (!list.Contains(x))
+                    if (!list.Contains(cacheKey))
                     {
-                        list.Add(x);
+                        list.Add(cacheKey);
                     }
 
                     return list;
                 });
             }
         }
+
+#if !EFCORE
+        /// <summary>Expire all cached objects && tag.</summary>
+        public static void ExpireAll()
+        {
+            List<string> list = new List<string>();
+
+            foreach (var item in Cache)
+            {
+                if (item.Key.StartsWith(CachePrefix, StringComparison.InvariantCulture))
+                {
+                    list.Add(item.Key);
+                }    
+            }
+
+            foreach (var item in list)
+            {
+                Cache.Remove(item);
+            }
+        }
+#endif
 
         /// <summary>Expire all cached keys linked to specified tags.</summary>
         /// <param name="tags">
@@ -109,7 +131,7 @@ namespace Z.EntityFramework.Plus
             foreach (var tag in tags)
             {
                 List<string> list;
-                if (CacheTags.TryRemove(tag, out list))
+                if (CacheTags.TryRemove(CachePrefix + tag, out list))
                 {
                     foreach (var item in list)
                     {

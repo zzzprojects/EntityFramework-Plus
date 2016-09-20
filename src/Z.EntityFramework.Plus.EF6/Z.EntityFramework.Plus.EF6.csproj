@@ -150,10 +150,16 @@
     <Compile Include="QueryIncludeFilter\QueryIncludeFilterParentQueryable`.cs" />
     <Compile Include="QueryIncludeFilter\QueryIncludeFilterProvider.cs" />
     <Compile Include="QueryIncludeOptimized\BaseQueryIncludeOptimizedChild.cs" />
+    <Compile Include="QueryIncludeOptimized\Extensions\IQueryable`.IncludeOptimizedByPath.cs" />
     <Compile Include="QueryIncludeOptimized\Extensions\IQueryable`.IncludeOptimized.cs" />
+    <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedByPath.cs" />
+    <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedIncludeSubPath.cs" />
+    <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedNullCollection.cs" />
+    <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedExpressionReduceVisitor.cs" />
     <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedManager.cs" />
     <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedChild`2.cs" />
     <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedParentQueryable`.cs" />
+    <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedExpressionToReduceVisitor.cs" />
     <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedProvider.cs" />
     <Compile Include="QueryFilterInterceptor\BaseQueryFilterInterceptor.cs" />
     <Compile Include="QueryFilterInterceptor\Extensions\DbContext.Filter.cs" />
@@ -167,6 +173,7 @@
     <Compile Include="QueryFilterInterceptor\QueryFilterInterceptorDbFilterExpression.cs" />
     <Compile Include="QueryFilterInterceptor\QueryFilterInterceptorManager.cs" />
     <Compile Include="QueryFilterInterceptor\QueryFilterInterceptorApply.cs" />
+    <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedPathVisitor.cs" />
     <Compile Include="QueryInterceptor\Extensions\IQueryable`\Intercept.cs" />
     <Compile Include="QueryInterceptor\QueryInterceptorProvider.cs" />
     <Compile Include="QueryInterceptor\QueryInterceptorProvider`.cs" />

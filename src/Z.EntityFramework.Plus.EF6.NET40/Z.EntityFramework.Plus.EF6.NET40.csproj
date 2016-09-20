@@ -157,9 +157,16 @@
     <Compile Include="QueryIncludeFilter\QueryIncludeFilterProvider.cs" />
     <Compile Include="QueryIncludeOptimized\BaseQueryIncludeOptimizedChild.cs" />
     <Compile Include="QueryIncludeOptimized\Extensions\IQueryable`.IncludeOptimized.cs" />
+    <Compile Include="QueryIncludeOptimized\Extensions\IQueryable`.IncludeOptimizedByPath.cs" />
+    <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedByPath.cs" />
     <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedChild`2.cs" />
+    <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedExpressionReduceVisitor.cs" />
+    <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedExpressionToReduceVisitor.cs" />
+    <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedIncludeSubPath.cs" />
     <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedManager.cs" />
+    <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedNullCollection.cs" />
     <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedParentQueryable`.cs" />
+    <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedPathVisitor.cs" />
     <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedProvider.cs" />
     <Compile Include="_Internal\Dictionary\Dictionary.AddOrAppend.cs" />
     <Compile Include="_Internal\DynamicAnonymousType\DynamicAnonymousType.cs" />

@@ -33,8 +33,8 @@ namespace Z.Test.EntityFramework.Plus
             using (var ctx = new TestContext())
             {
                 var item = await ctx.Association_Multi_OneToMany_Lefts
-                    .IncludeOptimized(left => left.Right1s.Where(y => y.ColumnInt > 2))
-                    .IncludeOptimized(left => left.Right2s.Where(y => y.ColumnInt > 2))
+                    .IncludeFilter(left => left.Right1s.Where(y => y.ColumnInt > 2))
+                    .IncludeFilter(left => left.Right2s.Where(y => y.ColumnInt > 2))
                     .FirstAsync(x => x.ColumnInt < 10);
 
                 // TEST: context

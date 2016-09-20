@@ -59,7 +59,7 @@ END
 #endif
         {
 #if EF5 || EF6
-            Database.SetInitializer(new TestContextInitializer());
+            Database.SetInitializer(new CreateDatabaseIfNotExists<TestContext>());
 #elif EFCORE
             Database.EnsureCreated();
 #endif
@@ -323,6 +323,20 @@ END
         public DbSet<Association_OneToManyToMany_RightRight> Association_Multi_OneToManyToMany_RightRights { get; set; }
 
         #endregion
+
+        #region Association OneToSingleAndMany
+
+        #endregion
+
+        public DbSet<Association_OneToSingleAndMany_Left> Association_OneToSingleAndMany_Lefts { get; set; }
+
+        public DbSet<Association_OneToSingleAndMany_Right> Association_OneToSingleAndMany_Rights { get; set; }
+
+        public DbSet<Association_OneToSingleAndMany_RightRight> Association_OneToSingleAndMany_RightRights { get; set; }
+
+        public DbSet<Association_OneToSingleAndMany_RightRightRight> Association_OneToSingleAndMany_RightRightRights { get; set; }
+
+        public DbSet<Association_OneToSingleAndMany_RightRightRightRight> Association_OneToSingleAndMany_RightRightRightRights { get; set; }
 
         #region Audit
 

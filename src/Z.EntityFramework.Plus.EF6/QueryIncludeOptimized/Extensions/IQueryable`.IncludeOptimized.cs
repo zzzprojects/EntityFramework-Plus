@@ -12,19 +12,34 @@ using System.Linq.Expressions;
 
 namespace Z.EntityFramework.Plus
 {
-    public static class QueryIncludeOptimizedExtensions
+    public static partial class QueryIncludeOptimizedExtensions
     {
-        //public static IQueryable<T> InternalIncludeOptimized<T, TChild>(this IQueryable<T> query, Expression<Func<T, IEnumerable<TChild>>> queryIncludeFilter) where T : class where TChild : class
-        //{
-        //    // GET query root
-        //    var includeOrderedQueryable = query as QueryIncludeOptimizedParentQueryable<T> ?? new QueryIncludeOptimizedParentQueryable<T>(query);
+        private static IQueryable<T> IncludeOptimizedSingleLazy<T, TChild>(this IQueryable<T> query, Expression<Func<T, TChild>> queryIncludeFilter) where T : class where TChild : class
+        {
+            // GET query root
+            var includeOrderedQueryable = query as QueryIncludeOptimizedParentQueryable<T> ?? new QueryIncludeOptimizedParentQueryable<T>(query);
 
-        //    // ADD sub query
-        //    includeOrderedQueryable.Childs.Add(new QueryIncludeOptimizedChild<T, TChild>(queryIncludeFilter));
+            // ADD sub query
+            includeOrderedQueryable.Childs.Add(new QueryIncludeOptimizedChild<T, TChild>(queryIncludeFilter, true));
 
-        //    // RETURN root
-        //    return includeOrderedQueryable;
-        //}
+            // RETURN root
+            return includeOrderedQueryable;
+        }
+
+        private static IQueryable<T> IncludeOptimizedSingle<T, TChild>(this IQueryable<T> query, Expression<Func<T, TChild>> queryIncludeFilter) where T : class where TChild : class
+        {
+            // INCLUDE sub path
+            query = QueryIncludeOptimizedIncludeSubPath.IncludeSubPath(query, queryIncludeFilter);
+
+            // GET query root
+            var includeOrderedQueryable = query as QueryIncludeOptimizedParentQueryable<T> ?? new QueryIncludeOptimizedParentQueryable<T>(query);
+
+            // ADD sub query
+            includeOrderedQueryable.Childs.Add(new QueryIncludeOptimizedChild<T, TChild>(queryIncludeFilter));
+
+            // RETURN root
+            return includeOrderedQueryable;
+        }
 
         /// <summary>
         ///     An IQueryable&lt;T&gt; extension method that include and filter related entities with a optimized SQL.
@@ -36,14 +51,7 @@ namespace Z.EntityFramework.Plus
         /// <returns>An IQueryable&lt;T&gt; that include and filter related entities.</returns>
         public static IQueryable<T> IncludeOptimized<T, TChild>(this IQueryable<T> query, Expression<Func<T, IEnumerable<TChild>>> queryIncludeFilter) where T : class where TChild : class
         {
-            // GET query root
-            var includeOrderedQueryable = query as QueryIncludeOptimizedParentQueryable<T> ?? new QueryIncludeOptimizedParentQueryable<T>(query);
-
-            // ADD sub query
-            includeOrderedQueryable.Childs.Add(new QueryIncludeOptimizedChild<T, TChild>(queryIncludeFilter));
-
-            // RETURN root
-            return includeOrderedQueryable;
+            return query.IncludeOptimizedSingle(queryIncludeFilter);
         }
 
         /// <summary>
@@ -57,14 +65,7 @@ namespace Z.EntityFramework.Plus
         /// <returns>An IQueryable&lt;T&gt; that include and filter related entities.</returns>
         public static IQueryable<T> IncludeOptimized<T, TChild>(this IQueryable<T> query, Expression<Func<T, TChild>> queryIncludeFilter) where T : class where TChild : class
         {
-            // GET query root
-            var includeOrderedQueryable = query as QueryIncludeOptimizedParentQueryable<T> ?? new QueryIncludeOptimizedParentQueryable<T>(query);
-
-            // ADD sub query
-            includeOrderedQueryable.Childs.Add(new QueryIncludeOptimizedChild<T, TChild>(queryIncludeFilter));
-
-            // RETURN root
-            return includeOrderedQueryable;
+            return query.IncludeOptimizedSingle(queryIncludeFilter);
         }
     }
 }

@@ -287,6 +287,9 @@
     <Compile Include="QueryCache\CacheKey\Deferred_Variable.cs" />
     <Compile Include="QueryCache\CacheKey\Immediate_Constant.cs" />
     <Compile Include="QueryCache\CacheKey\Immediate_Variable.cs" />
+    <Compile Include="QueryCache\ExpireAll\Queryable_WithDefault.cs" />
+    <Compile Include="QueryCache\ExpireAll\Queryable_WithExpiration.cs" />
+    <Compile Include="QueryCache\ExpireAll\Queryable_WithTag.cs" />
     <Compile Include="QueryCache\FromCacheAsync\Queryable_WithDefault.cs" />
     <Compile Include="QueryCache\FromCacheAsync\Queryable_WithExpiration.cs" />
     <Compile Include="QueryCache\FromCacheAsync\QueryDeferred_WithDefault.cs" />
@@ -302,6 +305,7 @@
     <Compile Include="QueryCache\FromCache\QueryDelayed_WithDefault.cs" />
     <Compile Include="QueryCache\FromCache\QueryDelayed_WithExpiration.cs" />
     <Compile Include="QueryCache\QueryCache_CacheKey.cs" />
+    <Compile Include="QueryCache\QueryCache_ExpireAll.cs" />
     <Compile Include="QueryCache\QueryCache_FromCache.cs" />
     <Compile Include="QueryCache\QueryCache_FromCacheAsync.cs" />
     <Compile Include="QueryCache\QueryCache_Tag.cs" />

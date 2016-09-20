@@ -100,6 +100,8 @@ namespace Z.EntityFramework.Plus
         /// <returns>The object returned by the execution of the expression.</returns>
         public TResult Execute<TResult>(Expression expression)
         {
+            QueryIncludeOptimizedIncludeSubPath.RemoveLazyChild(CurrentQueryable);
+
             var methodCall = expression as MethodCallExpression;
 
             if (methodCall == null)
@@ -110,7 +112,7 @@ namespace Z.EntityFramework.Plus
             var currentQuery = CurrentQueryable;
             var currentMethod = methodCall.Method.GetGenericMethodDefinition();
 
-            // CHECK if the internal expression can be supported]
+            // CHECK if the internal expression can be supported
             var isExpressionSupported = false;
 
             var firstExpression = methodCall.Arguments.FirstOrDefault(x => x.Type.IsSubclassOf(typeof (Expression)));
@@ -210,6 +212,9 @@ namespace Z.EntityFramework.Plus
             {
                 return (TResult) (object) null;
             }
+
+            // FIX null collection
+            QueryIncludeOptimizedNullCollection.NullCollectionToEmpty(value, CurrentQueryable.Childs);
 
 #if EF5 || EF6
             return (TResult) (object) value;

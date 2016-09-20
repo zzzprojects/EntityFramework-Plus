@@ -12,8 +12,10 @@ namespace Z.EntityFramework.Plus
         static QueryIncludeOptimizedManager()
         {
             AllowQueryBatch = true;
+            AllowIncludeSubPath = false;
         }
 
         public static bool AllowQueryBatch { get; set; }
+        public static bool AllowIncludeSubPath { get; set; }
     }
 }

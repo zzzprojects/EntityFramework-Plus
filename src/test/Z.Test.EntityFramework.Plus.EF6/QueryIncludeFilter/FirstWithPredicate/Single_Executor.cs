@@ -29,7 +29,7 @@ namespace Z.Test.EntityFramework.Plus
             using (var ctx = new TestContext())
             {
                 var item = ctx.Association_OneToMany_Lefts
-                    .IncludeOptimized(left => left.Rights.Where(x => x.ColumnInt > 2))
+                    .IncludeFilter(left => left.Rights.Where(x => x.ColumnInt > 2))
                     .First(x => x.ColumnInt < 10);
 
                 // TEST: context

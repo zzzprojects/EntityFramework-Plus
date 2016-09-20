@@ -10,6 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading.Tasks;
 #if EF5
 using System.Data.Metadata.Edm;
@@ -104,6 +105,8 @@ namespace Z.EntityFramework.Plus
         /// </returns>
         public IEnumerable<T> CreateEnumerable()
         {
+            QueryIncludeOptimizedIncludeSubPath.RemoveLazyChild(this);
+
             // MODIFY query if necessary
 #if EF5 || EF6
             var objectContext = OriginalQueryable.GetObjectQuery().Context;
@@ -125,8 +128,14 @@ namespace Z.EntityFramework.Plus
             }
 
             // RESOLVE current and all future child queries
-            return QueryIncludeOptimizedManager.AllowQueryBatch ? newQuery.Future().ToList() : newQuery.ToList();
+            var list = QueryIncludeOptimizedManager.AllowQueryBatch ? newQuery.Future().ToList() : newQuery.ToList();
+
+            // FIX collection null
+            QueryIncludeOptimizedNullCollection.NullCollectionToEmpty(list, Childs);
+
+            return list;
         }
+
 
         /// <summary>Creates the queryable.</summary>
         /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>

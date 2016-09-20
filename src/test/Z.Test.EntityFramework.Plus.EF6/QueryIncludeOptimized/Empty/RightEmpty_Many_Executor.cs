@@ -39,8 +39,8 @@ namespace Z.Test.EntityFramework.Plus
                 Assert.AreEqual(1, ctx.ChangeTracker.Entries().Count());
 
                 // TEST: Right
-                Assert.AreEqual(null, item.Right1s);
-                Assert.AreEqual(null, item.Right2s);
+                Assert.AreEqual(0, item.Right1s.Count);
+                Assert.AreEqual(0, item.Right2s.Count);
             }
         }
     }

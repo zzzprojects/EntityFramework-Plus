@@ -7,6 +7,7 @@
 
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace Z.EntityFramework.Plus
 {
@@ -19,5 +20,11 @@ namespace Z.EntityFramework.Plus
         {
             throw new Exception(ExceptionMessage.GeneralException);
         }
+
+        /// <summary>Gets or sets a value indicating whether this object is lazy.</summary>
+        /// <value>true if this object is lazy, false if not.</value>
+        public bool IsLazy { get; set; }
+
+        public abstract Expression GetFilter();
     }
 }

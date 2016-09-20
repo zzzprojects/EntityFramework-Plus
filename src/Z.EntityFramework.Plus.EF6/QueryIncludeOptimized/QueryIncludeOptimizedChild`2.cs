@@ -6,7 +6,6 @@
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -19,25 +18,22 @@ namespace Z.EntityFramework.Plus
     {
         /// <summary>Constructor.</summary>
         /// <param name="filter">The query filter to apply on included related entities.</param>
-        public QueryIncludeOptimizedChild(Expression<Func<T, IEnumerable<TChild>>> filter)
+        public QueryIncludeOptimizedChild(Expression<Func<T, TChild>> filter)
         {
             Filter = filter;
         }
-
         /// <summary>Constructor.</summary>
         /// <param name="filter">The query filter to apply on included related entities.</param>
-        public QueryIncludeOptimizedChild(Expression<Func<T, TChild>> filter)
+        /// <param name="isLazy">true if this object is lazy, false if not.</param>
+        public QueryIncludeOptimizedChild(Expression<Func<T, TChild>> filter, bool isLazy)
         {
-            FilterSingle = filter;
+            Filter = filter;
+            IsLazy = isLazy;
         }
 
         /// <summary>Gets or sets the query filter to include related entities.</summary>
         /// <value>The query filter to include related entities.</value>
-        public Expression<Func<T, IEnumerable<TChild>>> Filter { get; set; }
-
-        /// <summary>Gets or sets the query filter to include related entities.</summary>
-        /// <value>The query filter to include related entities.</value>
-        public Expression<Func<T, TChild>> FilterSingle { get; set; }
+        public Expression<Func<T, TChild>> Filter { get; set; }
 
         /// <summary>Creates the query to use to load related entities.</summary>
         /// <param name="rootQuery">The root query.</param>
@@ -52,31 +48,17 @@ namespace Z.EntityFramework.Plus
 
             if (QueryIncludeOptimizedManager.AllowQueryBatch)
             {
-                if (Filter != null)
-                {
-                    queryable.Select(Filter).Future();
-                }
-                else
-                {
-                    queryable.Select(FilterSingle).Future();
-                }
+                queryable.Select(Filter).Future();
             }
             else
             {
-                if (Filter != null)
-                {
-                    var list = queryable.Select(Filter).ToList();
-                }
-                else
-                {
-                    var list = queryable.Select(FilterSingle).ToList();
-                }
+                var list = queryable.Select(Filter).ToList();
             }
         }
 
         public override Expression GetFilter()
         {
-            return Filter != null ? (Expression)Filter : FilterSingle;
+            return Filter;
         }
     }
 }
