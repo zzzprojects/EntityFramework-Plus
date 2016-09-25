@@ -9,8 +9,16 @@
 #if EF5 || EF6
 
 using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
+using System.Reflection;
+
+#if EF5
+using System.Data.Metadata.Edm;
+
+#elif EF6
+using System.Data.Entity.Core.Metadata.Edm;
+
+#endif
 
 namespace Z.EntityFramework.Plus
 {
@@ -18,10 +26,18 @@ namespace Z.EntityFramework.Plus
     {
         public static string[] GetKeyNames<T>(this DbContext context) where T : class
         {
-            var objectSet = ((IObjectContextAdapter)context).ObjectContext.CreateObjectSet<T>();
-            var keyNames = objectSet.EntitySet.ElementType.KeyMembers
+            var set = context.Set(typeof (T));
+
+            var internalSetField = set.GetType().GetField("_internalSet", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var internalSet = internalSetField.GetValue(set);
+
+            var entitySetField = internalSet.GetType().GetProperty("EntitySet", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var entitySet = (EntitySet) entitySetField.GetValue(internalSet, null);
+
+            var keyNames = entitySet.ElementType.KeyMembers
                 .Select(k => k.Name)
                 .ToArray();
+
             return keyNames;
         }
     }

@@ -29,6 +29,8 @@ namespace Z.EntityFramework.Plus
         public static string QueryIncludeFilter_Include = "Oops! 'Include' method from Entity Framework is not supported, use only IncludeFilter method. For more information, contact us: info@zzzprojects.com";
 #endif
 #if FULL || QUERY_INCLUDEOPTIMIZED
+        public static string QueryIncludeOptimized_NodeReduce = "Oops! A node has not been reduced using AllowIncludeSubPath feature. Please report the LINQ query to our support team: info@zzzprojects.com";
+        public static string QueryIncludeOptimized_ByPath_MissingPath = "Oops! the following type '{0}' doesn't contains the specified property '{1}'. For more information, contact us: info@zzzprojects.com";
         public static string QueryIncludeOptimized_ArgumentExpression = "Oops! immediate method with expression argument are not supported. For more information, contact us: info@zzzprojects.com";
         public static string QueryIncludeOptimized_CreateQueryElement = "Oops! Select projection are not supported in EF+ Query IncludeFilter For more information, contact us: info@zzzprojects.com";
         public static string QueryIncludeOptimized_Include = "Oops! 'Include' method from Entity Framework is not supported, use only IncludeOptimized method. For more information, contact us: info@zzzprojects.com";

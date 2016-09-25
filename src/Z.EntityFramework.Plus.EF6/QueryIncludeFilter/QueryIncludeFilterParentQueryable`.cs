@@ -178,6 +178,17 @@ namespace Z.EntityFramework.Plus
             return newQuery;
         }
 
+#if FULL
+        /// <summary>Gets query cache unique key.</summary>
+        /// <returns>The query cache unique key.</returns>
+        public string GetQueryCacheUniqueKey()
+        {
+            var query = CreateQueryable();
+
+            return QueryCacheManager.GetCacheKey(query, new string[0]);
+        }
+#endif
+
         /// <summary>
         ///     Create a new Queryable selecting parent and child query in an anonymous type.
         /// </summary>

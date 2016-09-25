@@ -10,8 +10,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
+using System.Reflection;
 using System.Text;
-
 #if EF5
 using System.Runtime.Caching;
 using System.Data.EntityClient;
@@ -19,7 +19,6 @@ using System.Data.SqlClient;
 
 #elif EF6
 using System.Data.Entity.Core.EntityClient;
-using System.Data.SqlClient;
 using System.Runtime.Caching;
 
 #elif EFCORE
@@ -54,17 +53,86 @@ namespace Z.EntityFramework.Plus
         /// <value>The cache to use for QueryCacheExtensions extension methods.</value>
         public static ObjectCache Cache { get; set; }
 
+        /// <summary>The default cache item policy.</summary>
+        private static CacheItemPolicy _defaultCacheItemPolicy;
+
+        /// <summary>The cache item policy factory.</summary>
+        private static Func<CacheItemPolicy> _cacheItemPolicyFactory;
+
         /// <summary>Gets or sets the default cache item policy to use when no policy is specified.</summary>
         /// <value>The default cache item policy to use when no policy is specified.</value>
-        public static CacheItemPolicy DefaultCacheItemPolicy { get; set; }
+        public static CacheItemPolicy DefaultCacheItemPolicy
+        {
+            get
+            {
+                if (_defaultCacheItemPolicy == null && CacheItemPolicyFactory != null)
+                {
+                    return CacheItemPolicyFactory();
+                }
+
+                return _defaultCacheItemPolicy;
+            }
+            set
+            {
+                _defaultCacheItemPolicy = value;
+                _cacheItemPolicyFactory = null;
+            }
+        }
+
+        /// <summary>Gets or sets the cache item policy factory.</summary>
+        /// <value>The cache item policy factory.</value>
+        public static Func<CacheItemPolicy> CacheItemPolicyFactory
+        {
+            get { return _cacheItemPolicyFactory; }
+            set
+            {
+                _cacheItemPolicyFactory = value;
+                _defaultCacheItemPolicy = null;
+            }
+        }
+
 #elif EFCORE
     /// <summary>Gets or sets the cache to use for the QueryCacheExtensions extension methods.</summary>
     /// <value>The cache to use for the QueryCacheExtensions extension methods.</value>
         public static IMemoryCache Cache { get; set; }
 
+        /// <summary>The default memory cache entry options.</summary>
+        private static MemoryCacheEntryOptions _defaultMemoryCacheEntryOptions;
+
+        /// <summary>The memory cache entry options factory.</summary>
+        private static Func<MemoryCacheEntryOptions> _memoryCacheEntryOptionsFactory;
+
         /// <summary>Gets or sets the default memory cache entry options to use when no policy is specified.</summary>
         /// <value>The default memory cache entry options to use when no policy is specified.</value>
-        public static MemoryCacheEntryOptions DefaultMemoryCacheEntryOptions { get; set; }
+        public static MemoryCacheEntryOptions DefaultMemoryCacheEntryOptions
+        {
+            get
+            {
+                if (_defaultMemoryCacheEntryOptions == null && MemoryCacheEntryOptionsFactory != null)
+                {
+                    return MemoryCacheEntryOptionsFactory();
+                }
+
+                return _defaultMemoryCacheEntryOptions;
+            }
+            set
+            {
+                _defaultMemoryCacheEntryOptions = value;
+                _memoryCacheEntryOptionsFactory = null;
+            }
+        }
+
+        /// <summary>Gets or sets the memory cache entry options factory.</summary>
+        /// <value>The memory cache entry options factory.</value>
+        public static Func<MemoryCacheEntryOptions> MemoryCacheEntryOptionsFactory
+        {
+            get { return _memoryCacheEntryOptionsFactory; }
+            set
+            {
+                _memoryCacheEntryOptionsFactory = value;
+                _defaultMemoryCacheEntryOptions = null;
+            }
+        }
 #endif
 
         /// <summary>Gets or sets the cache prefix to use to create the cache key.</summary>
@@ -104,14 +172,14 @@ namespace Z.EntityFramework.Plus
         /// <summary>Expire all cached objects && tag.</summary>
         public static void ExpireAll()
         {
-            List<string> list = new List<string>();
+            var list = new List<string>();
 
             foreach (var item in Cache)
             {
                 if (item.Key.StartsWith(CachePrefix, StringComparison.InvariantCulture))
                 {
                     list.Add(item.Key);
-                }    
+                }
             }
 
             foreach (var item in list)
@@ -150,13 +218,26 @@ namespace Z.EntityFramework.Plus
             var sb = new StringBuilder();
 
 #if EF5 || EF6
+
+            var queryCacheUniqueKeyMethod = query.GetType().GetMethod("GetQueryCacheUniqueKey", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+            if (queryCacheUniqueKeyMethod != null)
+            {
+                var queryCacheUniqueKey = (string) queryCacheUniqueKeyMethod.Invoke(query, null);
+
+                if (!string.IsNullOrEmpty(queryCacheUniqueKey))
+                {
+                    return queryCacheUniqueKey;
+                }
+            }
+
             var objectQuery = query.GetObjectQuery();
 
             sb.AppendLine(CachePrefix);
 
             if (IncludeConnectionInCacheKey)
             {
-                var connection = ((EntityConnection)objectQuery.Context.Connection).GetStoreConnection();
+                var connection = ((EntityConnection) objectQuery.Context.Connection).GetStoreConnection();
 
                 // FORCE database name in case "ChangeDatabase()" method is used
                 sb.AppendLine(connection.DataSource ?? "");
@@ -236,7 +317,7 @@ namespace Z.EntityFramework.Plus
 
             if (IncludeConnectionInCacheKey)
             {
-                var connection = ((EntityConnection)objectQuery.Context.Connection).GetStoreConnection();
+                var connection = ((EntityConnection) objectQuery.Context.Connection).GetStoreConnection();
 
                 // FORCE database name in case "ChangeDatabase()" method is used
                 sb.AppendLine(connection.DataSource ?? "");

@@ -14,7 +14,7 @@ using Z.EntityFramework.Plus;
 #if EF5 || EF6
 
 #elif EFCORE
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.Entity;
 
 #endif
 

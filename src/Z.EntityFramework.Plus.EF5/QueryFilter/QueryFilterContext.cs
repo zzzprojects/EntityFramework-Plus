@@ -5,6 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
+#if !EF6
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -212,7 +213,7 @@ namespace Z.EntityFramework.Plus
                         FilterSetByType.AddOrAppend(@interface, filterDbSet);
                     }
 
-#if NETCORE50
+#if NETSTANDARD1_3
                     baseType = baseType.GetTypeInfo().BaseType;
 #else
                     baseType = baseType.BaseType;
@@ -223,3 +224,4 @@ namespace Z.EntityFramework.Plus
         }
     }
 }
+#endif

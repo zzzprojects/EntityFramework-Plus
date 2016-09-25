@@ -13,7 +13,7 @@ using Z.EntityFramework.Plus;
 using System.Data.Entity;
 
 #elif EFCORE
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.Entity;
 
 #endif
 

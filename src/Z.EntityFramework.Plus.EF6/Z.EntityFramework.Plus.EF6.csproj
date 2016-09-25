@@ -86,8 +86,10 @@
     <Compile Include="Audit\Extensions\DbContext\SaveChangesAsync.cs" />
     <Compile Include="BatchDelete\BatchDelete.cs" />
     <Compile Include="BatchDelete\BatchDeleteManager.cs" />
+    <Compile Include="BatchDelete\BatchDeleteVisitor.cs" />
     <Compile Include="BatchDelete\Extensions\DeleteAsync.cs" />
     <Compile Include="BatchDelete\Extensions\Delete.cs" />
+    <Compile Include="BatchUpdate\BatchUpdateVisitor.cs" />
     <Compile Include="BatchUpdate\BatchUpdate.cs" />
     <Compile Include="BatchUpdate\BatchUpdateManager.cs" />
     <Compile Include="BatchUpdate\Extensions\Update.cs" />

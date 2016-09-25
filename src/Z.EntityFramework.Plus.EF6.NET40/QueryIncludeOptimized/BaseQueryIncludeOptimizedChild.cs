@@ -14,6 +14,10 @@ namespace Z.EntityFramework.Plus
     /// <summary>Base class for query include optimized child.</summary>
     public abstract class BaseQueryIncludeOptimizedChild
     {
+        /// <summary>Gets or sets a value indicating whether this object is lazy.</summary>
+        /// <value>true if this object is lazy, false if not.</value>
+        public bool IsLazy { get; set; }
+
         /// <summary>Creates the query to use to load related entities.</summary>
         /// <param name="rootQuery">The root query.</param>
         public virtual void CreateIncludeQuery(IQueryable rootQuery)
@@ -21,10 +25,13 @@ namespace Z.EntityFramework.Plus
             throw new Exception(ExceptionMessage.GeneralException);
         }
 
-        /// <summary>Gets or sets a value indicating whether this object is lazy.</summary>
-        /// <value>true if this object is lazy, false if not.</value>
-        public bool IsLazy { get; set; }
-
+        /// <summary>Gets the filter.</summary>
+        /// <returns>The filter.</returns>
         public abstract Expression GetFilter();
+
+        /// <summary>Gets filtered query.</summary>
+        /// <param name="query">The query.</param>
+        /// <returns>The filtered query.</returns>
+        public abstract IQueryable GetFilteredQuery(IQueryable query);
     }
 }

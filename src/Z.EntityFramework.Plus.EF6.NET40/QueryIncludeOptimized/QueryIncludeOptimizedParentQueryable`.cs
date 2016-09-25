@@ -10,7 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 #if EF5
 using System.Data.Metadata.Edm;
@@ -155,6 +155,37 @@ namespace Z.EntityFramework.Plus
         {
             throw new Exception(ExceptionMessage.QueryIncludeOptimized_Include);
         }
+
+#if FULL
+        /// <summary>Gets query cache unique key.</summary>
+        /// <returns>The query cache unique key.</returns>
+        public string GetQueryCacheUniqueKey()
+        {
+            var cacheKey = new StringBuilder();
+
+            var mainKey = QueryCacheManager.GetCacheKey(OriginalQueryable, new string[0]);
+
+            // ADD query main
+            cacheKey.AppendLine("Query Main");
+            cacheKey.AppendLine(mainKey);
+            cacheKey.AppendLine("---");
+            cacheKey.AppendLine();
+
+            for (var i = 0; i < Childs.Count; i++)
+            {
+                var child = Childs[i].GetFilteredQuery(OriginalQueryable);
+                var childKey = QueryCacheManager.GetCacheKey(child, new string[0]);
+
+                // ADD query child
+                cacheKey.AppendLine("Query Child: " + i);
+                cacheKey.AppendLine(childKey);
+                cacheKey.AppendLine("---");
+                cacheKey.AppendLine();
+            }
+
+            return cacheKey.ToString();
+        }
+#endif
 
 #if EF6 && NET45
         /// <summary>Gets the asynchrounously enumerator.</summary>

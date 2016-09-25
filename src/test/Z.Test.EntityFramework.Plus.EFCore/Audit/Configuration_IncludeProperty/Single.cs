@@ -13,7 +13,7 @@ using Z.EntityFramework.Plus;
 using System.Data.Entity;
 
 #elif EFCORE
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.Entity;
 
 #endif
 
@@ -146,6 +146,7 @@ namespace Z.Test.EntityFramework.Plus
                         Assert.AreEqual(3, entries[1].Properties.Count);
                         Assert.AreEqual(3, entries[2].Properties.Count);
                         var s = (char) 13;
+
                         // ID
                         propertyIndex = 0;
                         Assert.AreEqual("ID", entries[0].Properties[propertyIndex].PropertyName);

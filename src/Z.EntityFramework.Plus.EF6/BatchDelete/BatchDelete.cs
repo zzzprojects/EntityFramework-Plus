@@ -134,6 +134,22 @@ SELECT  @totalRowAffected
         /// <returns>The number of rows affected.</returns>
         public int Execute<T>(IQueryable<T> query) where T : class
         {
+            // FIX query with visitor
+            {
+                var visitor = new BatchDeleteVisitor();
+                visitor.Visit(query.Expression);
+
+                if (visitor.HasOrderBy)
+                {
+                    query = query.Take(int.MaxValue);
+                }
+
+                if (visitor.HasTake || visitor.HasSkip)
+                {
+                    BatchSize = 0;
+                }
+            }
+
             string expression = query.Expression.ToString();
 
             if (Regex.IsMatch(expression, @"\.Where\(\w+ => False\)"))
@@ -168,34 +184,12 @@ SELECT  @totalRowAffected
                 if (command.GetType().Name == "NpgsqlCommand")
                 {
                     command.CommandText = command.CommandText.Replace("[", "\"").Replace("]", "\"");
-                    int totalRowAffecteds = 0;
-                    int rowAffecteds = 0;
-                    do
-                    {
-                        if (rowAffecteds > 0 && BatchDelayInterval != 0)
-                        {
-                            Thread.Sleep(BatchDelayInterval);
-                        }
-                        rowAffecteds = (int)command.ExecuteNonQuery();
-                        totalRowAffecteds += rowAffecteds;
-                    } while (rowAffecteds > 0);
-
+                    int totalRowAffecteds = command.ExecuteNonQuery();
                     return totalRowAffecteds;
                 }
                 else if (command.Connection.GetType().Name.Contains("MySql"))
                 {
-                    int totalRowAffecteds = 0;
-                    int rowAffecteds = 0;
-                    do
-                    {
-                        if (rowAffecteds > 0 && BatchDelayInterval != 0)
-                        {
-                            Thread.Sleep(BatchDelayInterval);
-                        }
-                        rowAffecteds = (int)command.ExecuteNonQuery();
-                        totalRowAffecteds += rowAffecteds;
-                    } while (rowAffecteds > 0);
-
+                    int totalRowAffecteds = command.ExecuteNonQuery();
                     return totalRowAffecteds;
                 }
                 else
@@ -248,9 +242,23 @@ SELECT  @totalRowAffected
                     dbContext.Database.OpenConnection();
                 }
 
-                if (Executing != null)
+                if (command.GetType().Name == "NpgsqlCommand")
                 {
-                    Executing(command);
+                    command.CommandText = command.CommandText.Replace("[", "\"").Replace("]", "\"");
+                    int totalRowAffecteds = command.ExecuteNonQuery();
+                    return totalRowAffecteds;
+                }
+                else if (command.Connection.GetType().Name.Contains("MySql"))
+                {
+                    int totalRowAffecteds = command.ExecuteNonQuery();
+                    return totalRowAffecteds;
+                }
+                else
+                {
+                    if (Executing != null)
+                    {
+                        Executing(command);
+                    }
                 }
 
                 var rowAffecteds = (int)command.ExecuteScalar();
@@ -268,8 +276,11 @@ SELECT  @totalRowAffected
 
 #if EF5 || EF6
         /// <summary>Creates a command to execute the batch operation.</summary>
+        /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
+        /// <typeparam name="T">Generic type parameter.</typeparam>
         /// <param name="query">The query.</param>
         /// <param name="entity">The schema entity.</param>
+        /// <param name="visitor">The visitor.</param>
         /// <returns>The new command to execute the batch operation.</returns>
         internal DbCommand CreateCommand<T>(ObjectQuery query, SchemaEntityType<T> entity)
         {

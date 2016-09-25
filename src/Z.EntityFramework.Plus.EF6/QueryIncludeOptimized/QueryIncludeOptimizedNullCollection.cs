@@ -76,7 +76,21 @@ namespace Z.EntityFramework.Plus
                     {
                         if (property.PropertyType.GetGenericArguments().Length == 1)
                         {
-                            value = Activator.CreateInstance(property.PropertyType);
+                            var genericTypeDefinition = property.PropertyType.GetGenericTypeDefinition();
+
+                            if (genericTypeDefinition == typeof(ICollection<>))
+                            {
+                                value = Activator.CreateInstance(typeof(HashSet<>).MakeGenericType(property.PropertyType.GetGenericArguments()[0]));
+                            }
+                            else if(genericTypeDefinition == typeof(IList<>))
+                            {
+                                value = Activator.CreateInstance(typeof(List<>).MakeGenericType(property.PropertyType.GetGenericArguments()[0]));
+                            }
+                            else
+                            {
+                                value = Activator.CreateInstance(property.PropertyType);
+                            }
+                            
                             accessor.SetValue(currentItem, value);
                         }
 

@@ -6,7 +6,9 @@
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 #if !EFCORE
+using System;
 using System.Linq;
+using System.Runtime.Caching;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Z.EntityFramework.Plus;
 
@@ -17,7 +19,7 @@ namespace Z.Test.EntityFramework.Plus
         [TestMethod]
         public void Queryable_WithDefault()
         {
-            QueryCacheManager.ExpireAll();
+            QueryCacheManager.Cache = new MemoryCache(Guid.NewGuid().ToString());
 
             TestContext.DeleteAll(x => x.Entity_Basics);
             TestContext.Insert(x => x.Entity_Basics, 1);

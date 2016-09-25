@@ -127,6 +127,17 @@ SELECT  @totalRowAffected
         /// <returns>The number of rows affected.</returns>
         public int Execute<T>(IQueryable<T> query, Expression<Func<T, T>> updateFactory) where T : class
         {
+            // FIX query with visitor
+            {
+                var visitor = new BatchUpdateVisitor();
+                visitor.Visit(query.Expression);
+
+                if (visitor.HasOrderBy)
+                {
+                    query = query.Take(int.MaxValue);
+                }
+            }
+
             string expression = query.Expression.ToString();
 
             if (Regex.IsMatch(expression, @"\.Where\(\w+ => False\)"))
@@ -181,8 +192,8 @@ SELECT  @totalRowAffected
             }
 #elif EFCORE
             var dbContext = query.GetDbContext();
-            var entity = dbContext.Model.FindEntityType(typeof (T));
-           
+            var entity = dbContext.Model.FindEntityType(typeof(T));
+
             // TODO: Select only key + lambda columns
             //  var keys = entity.GetKeys().ToList()[0].Properties;
             //var queryKeys = query.SelectByName(keys.Select(x => x.Name).ToList());
@@ -285,7 +296,7 @@ SELECT  @totalRowAffected
 
             // GET updateSetValues
             var setValues = string.Join("," + Environment.NewLine, values.Select((x, i) => x.Item2 is ConstantExpression ?
-                string.Concat("A.", EscapeName(x.Item1, isMySql), " = ", ((ConstantExpression) x.Item2).Value) :
+                string.Concat("A.", EscapeName(x.Item1, isMySql), " = ", ((ConstantExpression)x.Item2).Value) :
                 string.Concat("A.", EscapeName(x.Item1, isMySql), " = @zzz_BatchUpdate_", i)));
 
             // REPLACE template
@@ -367,9 +378,9 @@ SELECT  @totalRowAffected
             if (assembly != null)
             {
                 var type = assembly.GetType("Microsoft.EntityFrameworkCore.SqlServerMetadataExtensions");
-                var sqlServerEntityTypeMethod = type.GetMethod("SqlServer", BindingFlags.Public | BindingFlags.Static, null, new[] {typeof (IEntityType)}, null);
-                var sqlServerPropertyMethod = type.GetMethod("SqlServer", BindingFlags.Public | BindingFlags.Static, null, new[] {typeof (IProperty)}, null);
-                var sqlServer = (IRelationalEntityTypeAnnotations) sqlServerEntityTypeMethod.Invoke(null, new[] {entity});
+                var sqlServerEntityTypeMethod = type.GetMethod("SqlServer", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(IEntityType) }, null);
+                var sqlServerPropertyMethod = type.GetMethod("SqlServer", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(IProperty) }, null);
+                var sqlServer = (IRelationalEntityTypeAnnotations)sqlServerEntityTypeMethod.Invoke(null, new[] { entity });
 
                 // GET mapping
                 var tableName = string.IsNullOrEmpty(sqlServer.Schema) ?
@@ -380,10 +391,10 @@ SELECT  @totalRowAffected
                 var columnKeys = new List<string>();
                 foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
                 {
-                    var mappingProperty = sqlServerPropertyMethod.Invoke(null, new[] {propertyKey});
+                    var mappingProperty = sqlServerPropertyMethod.Invoke(null, new[] { propertyKey });
 
                     var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
-                    columnKeys.Add((string) columnNameProperty.GetValue(mappingProperty));
+                    columnKeys.Add((string)columnNameProperty.GetValue(mappingProperty));
                 }
 #endif
                 // GET command text template
@@ -410,7 +421,7 @@ SELECT  @totalRowAffected
 
                 // GET updateSetValues
                 var setValues = string.Join("," + Environment.NewLine, values.Select((x, i) => x.Item2 is ConstantExpression ?
-                    string.Concat("A.[", x.Item1, "] = ", ((ConstantExpression) x.Item2).Value) :
+                    string.Concat("A.[", x.Item1, "] = ", ((ConstantExpression)x.Item2).Value) :
                     string.Concat("A.[", x.Item1, "] = @zzz_BatchUpdate_", i)));
 
                 // REPLACE template
@@ -506,7 +517,7 @@ SELECT  @totalRowAffected
             }
 
             var type = assembly.GetType("Microsoft.EntityFrameworkCore.SqlServerMetadataExtensions");
-            var sqlServerPropertyMethod = type.GetMethod("SqlServer", BindingFlags.Public | BindingFlags.Static, null, new[] {typeof (IProperty)}, null);
+            var sqlServerPropertyMethod = type.GetMethod("SqlServer", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(IProperty) }, null);
 
 #endif
 #endif
@@ -529,29 +540,29 @@ SELECT  @totalRowAffected
 #elif EFCORE
 
                 var property = entity.FindProperty(value.Key);
-                var mappingProperty = sqlServerPropertyMethod.Invoke(null, new[] {property});
+                var mappingProperty = sqlServerPropertyMethod.Invoke(null, new[] { property });
 
                 var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
-                var columnName = (string) columnNameProperty.GetValue(mappingProperty);
+                var columnName = (string)columnNameProperty.GetValue(mappingProperty);
 #endif
 
                 if (value.Value is Expression)
                 {
                     // Oops! the value is not resolved yet!
                     ParameterExpression parameterExpression = null;
-                    ((Expression) value.Value).Visit((ParameterExpression p) =>
+                    ((Expression)value.Value).Visit((ParameterExpression p) =>
                     {
-                        if (p.Type == typeof (T))
+                        if (p.Type == typeof(T))
                             parameterExpression = p;
 
                         return p;
                     });
 
                     // GET the update value by creating a new select command
-                    Type[] typeArguments = {typeof (T), ((Expression) value.Value).Type};
-                    var lambdaExpression = Expression.Lambda(((Expression) value.Value), parameterExpression);
+                    Type[] typeArguments = { typeof(T), ((Expression)value.Value).Type };
+                    var lambdaExpression = Expression.Lambda(((Expression)value.Value), parameterExpression);
                     var selectExpression = Expression.Call(
-                        typeof (Queryable),
+                        typeof(Queryable),
                         "Select",
                         typeArguments,
                         Expression.Constant(query),
@@ -559,31 +570,49 @@ SELECT  @totalRowAffected
                     var result = Expression.Lambda(selectExpression).Compile().DynamicInvoke();
 #if EF5 || EF6
                     // GET the select command text
-                    var commandText = ((IQueryable) result).ToString();
+                    var commandText = ((IQueryable)result).ToString();
 
                     // GET the 'value' part
-                    var valueSql = commandText.IndexOf("AS [value]" + Environment.NewLine + "FROM", StringComparison.InvariantCultureIgnoreCase) != -1 ?
-                        commandText.Substring(6, commandText.IndexOf("AS [value]" + Environment.NewLine + "FROM", StringComparison.InvariantCultureIgnoreCase) - 6) :
-                        commandText.Substring(6, commandText.IndexOf("FROM", StringComparison.InvariantCultureIgnoreCase) - 6);
+                    var pos = commandText.IndexOf("AS [value]" + Environment.NewLine + "FROM", StringComparison.InvariantCultureIgnoreCase) != -1 ?
+                        commandText.IndexOf("AS [value]" + Environment.NewLine + "FROM", StringComparison.InvariantCultureIgnoreCase) - 6 :
+                        commandText.IndexOf(Environment.NewLine + "    FROM", StringComparison.InvariantCultureIgnoreCase) != -1 ?
+                            commandText.IndexOf(Environment.NewLine + "    FROM", StringComparison.InvariantCultureIgnoreCase) - 6 :
+                            commandText.IndexOf(Environment.NewLine + "FROM", StringComparison.InvariantCultureIgnoreCase) != -1 ?
+                                commandText.IndexOf(Environment.NewLine + "FROM", StringComparison.InvariantCultureIgnoreCase) - 6 :
+                                commandText.IndexOf("FROM", StringComparison.InvariantCultureIgnoreCase) - 6;
+
+                    var valueSql = commandText.Substring(6, pos);
 
                     // Add the destination name
                     valueSql = valueSql.Replace("AS [C1]", "");
                     valueSql = valueSql.Replace("[Extent1]", "B");
 #elif EFCORE
                     RelationalQueryContext queryContext;
-                    var command = ((IQueryable) result).CreateCommand(out queryContext);
+                    var command = ((IQueryable)result).CreateCommand(out queryContext);
                     var commandText = command.CommandText;
 
 #if NETSTANDARD1_3
                     // GET the 'value' part
-                    var valueSql = commandText.IndexOf("AS [value]" + Environment.NewLine + "FROM", StringComparison.CurrentCultureIgnoreCase) != -1 ?
-                        commandText.Substring(6, commandText.IndexOf("AS [value]" + Environment.NewLine + "FROM", StringComparison.CurrentCultureIgnoreCase) - 6) :
-                        commandText.Substring(6, commandText.IndexOf("FROM", StringComparison.CurrentCultureIgnoreCase) - 6);
+                    var pos = commandText.IndexOf("AS [value]" + Environment.NewLine + "FROM", StringComparison.CurrentCultureIgnoreCase) != -1 ?
+                        commandText.IndexOf("AS [value]" + Environment.NewLine + "FROM", StringComparison.CurrentCultureIgnoreCase) - 6 :
+                        commandText.IndexOf(Environment.NewLine + "    FROM", StringComparison.CurrentCultureIgnoreCase) != -1 ?
+                            commandText.IndexOf(Environment.NewLine + "    FROM", StringComparison.CurrentCultureIgnoreCase) - 6 :
+                            commandText.IndexOf(Environment.NewLine + "FROM", StringComparison.CurrentCultureIgnoreCase) != -1 ?
+                                commandText.IndexOf(Environment.NewLine + "FROM", StringComparison.CurrentCultureIgnoreCase) - 6 :
+                                commandText.IndexOf("FROM", StringComparison.CurrentCultureIgnoreCase) - 6;
+
+                    var valueSql = commandText.Substring(6, pos);
 #else
-                                        // GET the 'value' part
-                    var valueSql = commandText.IndexOf("AS [value]" + Environment.NewLine + "FROM", StringComparison.InvariantCultureIgnoreCase) != -1 ?
-                        commandText.Substring(6, commandText.IndexOf("AS [value]" + Environment.NewLine + "FROM", StringComparison.InvariantCultureIgnoreCase) - 6) :
-                        commandText.Substring(6, commandText.IndexOf("FROM", StringComparison.InvariantCultureIgnoreCase) - 6);
+                    // GET the 'value' part
+                    var pos = commandText.IndexOf("AS [value]" + Environment.NewLine + "FROM", StringComparison.InvariantCultureIgnoreCase) != -1 ?
+                        commandText.IndexOf("AS [value]" + Environment.NewLine + "FROM", StringComparison.InvariantCultureIgnoreCase) - 6 :
+                        commandText.IndexOf(Environment.NewLine + "    FROM", StringComparison.InvariantCultureIgnoreCase) != -1 ?
+                            commandText.IndexOf(Environment.NewLine + "    FROM", StringComparison.InvariantCultureIgnoreCase) - 6 :
+                            commandText.IndexOf(Environment.NewLine + "FROM", StringComparison.InvariantCultureIgnoreCase) != -1 ?
+                                commandText.IndexOf(Environment.NewLine + "FROM", StringComparison.InvariantCultureIgnoreCase) - 6 :
+                                commandText.IndexOf("FROM", StringComparison.InvariantCultureIgnoreCase) - 6;
+
+                    var valueSql = commandText.Substring(6, pos);
 #endif                
 
                     // Add the destination name
@@ -609,7 +638,7 @@ SELECT  @totalRowAffected
         {
             var dictValues = new Dictionary<string, object>();
             var updateExpressionBody = updateFactory.Body;
-            var entityType = typeof (T);
+            var entityType = typeof(T);
 
             // ENSURE: new T() { MemberInitExpression }
             var memberInitExpression = updateExpressionBody as MemberInitExpression;

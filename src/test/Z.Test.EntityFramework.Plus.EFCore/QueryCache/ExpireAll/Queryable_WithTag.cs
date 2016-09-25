@@ -8,6 +8,7 @@
 #if !EFCORE
 using System;
 using System.Linq;
+using System.Runtime.Caching;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Z.EntityFramework.Plus;
 
@@ -18,7 +19,7 @@ namespace Z.Test.EntityFramework.Plus
         [TestMethod]
         public void Queryable_WithTag()
         {
-            QueryCacheManager.ExpireAll();
+            QueryCacheManager.Cache = new MemoryCache(Guid.NewGuid().ToString());
 
             var testCacheKey = Guid.NewGuid().ToString();
 

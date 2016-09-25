@@ -6,13 +6,14 @@
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Z.EntityFramework.Plus;
 #if EF5 || EF6
 using System.Data.Entity;
 
 #elif EFCORE
-using Microsoft.EntityFrameworkCore;
+
 
 #endif
 

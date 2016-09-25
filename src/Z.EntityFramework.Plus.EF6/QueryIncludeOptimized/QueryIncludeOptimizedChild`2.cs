@@ -60,5 +60,17 @@ namespace Z.EntityFramework.Plus
         {
             return Filter;
         }
+
+        public override IQueryable GetFilteredQuery(IQueryable rootQuery)
+        {
+            var queryable = rootQuery as IQueryable<T>;
+
+            if (queryable == null)
+            {
+                throw new Exception(ExceptionMessage.GeneralException);
+            }
+
+            return queryable.Select(Filter);
+        }
     }
 }
