@@ -14,7 +14,7 @@ namespace Z.Test.EntityFramework.Plus
     public partial class BatchUpdate_WhereValue
     {
         [TestMethod]
-        public void False()
+        public void Single_False()
         {
             TestContext.DeleteAll(x => x.Entity_Basics);
             TestContext.Insert(x => x.Entity_Basics, 50);

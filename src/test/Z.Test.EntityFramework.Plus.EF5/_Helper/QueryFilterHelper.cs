@@ -28,6 +28,7 @@ namespace Z.Test.EntityFramework.Plus
         public static object SingleThreadLock = new Object();
         public static void ClearGlobalManagerFilter()
         {
+
 #if EF5
             QueryFilterManager.GlobalFilters.Clear();
             QueryFilterManager.GlobalInitializeFilterActions.Clear();

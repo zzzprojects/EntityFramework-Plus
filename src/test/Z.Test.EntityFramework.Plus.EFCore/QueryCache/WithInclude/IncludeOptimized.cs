@@ -4,7 +4,8 @@
 // License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
-#if !EFCORE
+
+#if EF5 || EF6
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

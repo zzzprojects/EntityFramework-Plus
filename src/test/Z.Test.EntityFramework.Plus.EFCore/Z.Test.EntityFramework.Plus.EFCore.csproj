@@ -27,7 +27,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;EFCORE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;EFCORE FULL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -35,7 +35,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;EFCORE</DefineConstants>
+    <DefineConstants>TRACE;EFCORE FULL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -350,7 +350,9 @@
     <Compile Include="BatchUpdate\WhereValue\Single_Constant.cs" />
     <Compile Include="BatchUpdate\WhereValue\Single_False.cs" />
     <Compile Include="BatchUpdate\WhereValue\Single_Variable.cs" />
+    <Compile Include="ExceptionMessage.cs" />
     <Compile Include="My.cs" />
+    <Compile Include="QueryCache\CacheKeyFactory\NotNull.cs" />
     <Compile Include="QueryCache\CacheKey\Deferred_Constant.cs" />
     <Compile Include="QueryCache\CacheKey\Deferred_Variable.cs" />
     <Compile Include="QueryCache\CacheKey\Immediate_Constant.cs" />
@@ -358,6 +360,9 @@
     <Compile Include="QueryCache\ExpireAll\Queryable_WithDefault.cs" />
     <Compile Include="QueryCache\ExpireAll\Queryable_WithExpiration.cs" />
     <Compile Include="QueryCache\ExpireAll\Queryable_WithTag.cs" />
+    <Compile Include="QueryCache\ForceFirstTagAsCacheKey\Many.cs" />
+    <Compile Include="QueryCache\ForceFirstTagAsCacheKey\None.cs" />
+    <Compile Include="QueryCache\ForceFirstTagAsCacheKey\Single.cs" />
     <Compile Include="QueryCache\FromCacheAsync\Queryable_WithDefault.cs" />
     <Compile Include="QueryCache\FromCacheAsync\Queryable_WithExpiration.cs" />
     <Compile Include="QueryCache\FromCacheAsync\QueryDeferred_WithDefault.cs" />
@@ -369,7 +374,9 @@
     <Compile Include="QueryCache\FromCache\QueryDeferred_WithExpiration.cs" />
     <Compile Include="QueryCache\FromCache\QueryDeferred_WithNull.cs" />
     <Compile Include="QueryCache\QueryCache_CacheKey.cs" />
+    <Compile Include="QueryCache\QueryCache_CacheKeyFactory.cs" />
     <Compile Include="QueryCache\QueryCache_ExpireAll.cs" />
+    <Compile Include="QueryCache\QueryCache_ForceFirstTagAsCacheKey.cs" />
     <Compile Include="QueryCache\QueryCache_FromCache.cs" />
     <Compile Include="QueryCache\QueryCache_FromCacheAsync.cs" />
     <Compile Include="QueryCache\QueryCache_Tag.cs" />

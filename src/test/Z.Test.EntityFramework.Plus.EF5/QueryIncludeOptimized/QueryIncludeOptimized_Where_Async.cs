@@ -5,7 +5,6 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
-
 #if EF6
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -16,4 +15,5 @@ namespace Z.Test.EntityFramework.Plus
     {
     }
 }
+
 #endif

@@ -23,12 +23,17 @@ namespace Z.EntityFramework.Plus
         public static string BatchOperations_PropertyNotFound = "Oops! Mapping for the property '{0}' cannot be found, the current version don't support yet Complex Type, Enum, TPC, TPH and TPT. For more information, contact us: info@zzzprojects.com";
         public static string BatchOperations_AssemblyNotFound = "Oops! The assembly 'Microsoft.EntityFrameworkCore.SqlServer' could not be found. This feature is only supported for SQL Server for .NET Core. For more information, contact us: info@zzzprojects.com";
 #endif
+#if FULL || QUERY_CACHE
+        public static string QueryCache_FirstTagNullOrEmpty = "Oops! The option 'ForceFirstTagAsCacheKey' is enabled but we found no tag, an empty string, or a null string instead. Make sure a tag is provided, and it's not null or empty. For more information, contact us: info@zzzprojects.com";
+#endif
 #if FULL || QUERY_INCLUDEFILTER
         public static string QueryIncludeFilter_ArgumentExpression = "Oops! immediate method with expression argument are not supported in EF+ Query IncludeFilter. For more information, contact us: info@zzzprojects.com";
         public static string QueryIncludeFilter_CreateQueryElement = "Oops! Select projection are not supported in EF+ Query IncludeFilter. For more information, contact us: info@zzzprojects.com";
         public static string QueryIncludeFilter_Include = "Oops! 'Include' method from Entity Framework is not supported, use only IncludeFilter method. For more information, contact us: info@zzzprojects.com";
 #endif
 #if FULL || QUERY_INCLUDEOPTIMIZED
+        public static string QueryIncludeOptimized_NodeReduce = "Oops! A node has not been reduced using AllowIncludeSubPath feature. Please report the LINQ query to our support team: info@zzzprojects.com";
+        public static string QueryIncludeOptimized_ByPath_MissingPath = "Oops! the following type '{0}' doesn't contains the specified property '{1}'. For more information, contact us: info@zzzprojects.com";
         public static string QueryIncludeOptimized_ArgumentExpression = "Oops! immediate method with expression argument are not supported. For more information, contact us: info@zzzprojects.com";
         public static string QueryIncludeOptimized_CreateQueryElement = "Oops! Select projection are not supported in EF+ Query IncludeFilter For more information, contact us: info@zzzprojects.com";
         public static string QueryIncludeOptimized_Include = "Oops! 'Include' method from Entity Framework is not supported, use only IncludeOptimized method. For more information, contact us: info@zzzprojects.com";

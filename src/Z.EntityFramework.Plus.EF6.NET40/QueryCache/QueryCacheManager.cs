@@ -139,6 +139,10 @@ namespace Z.EntityFramework.Plus
         /// <value>The cache prefix to use to create the cache key.</value>
         public static string CachePrefix { get; set; }
 
+        /// <summary>Gets or sets the cache key factory.</summary>
+        /// <value>The cache key factory.</value>
+        public static Func<IQueryable, string[], string> CacheKeyFactory { get; set; }
+
         /// <summary>
         ///     Gets or sets a value indicating whether the connection in cache key should be included.
         /// </summary>
@@ -148,6 +152,12 @@ namespace Z.EntityFramework.Plus
         /// <summary>Gets the dictionary cache tags used to store tags and corresponding cached keys.</summary>
         /// <value>The cache tags used to store tags and corresponding cached keys.</value>
         public static ConcurrentDictionary<string, List<string>> CacheTags { get; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether the first tag as cache key should be forced.
+        /// </summary>
+        /// <value>true if force first tag as cache key, false if not.</value>
+        public static bool ForceFirstTagAsCacheKey { get; set; }
 
         /// <summary>Adds cache tags corresponding to a cached key in the CacheTags dictionary.</summary>
         /// <param name="cacheKey">The cache key.</param>
@@ -215,6 +225,26 @@ namespace Z.EntityFramework.Plus
         /// <returns>The cache key used to cache or retrieve a query from the QueryCacheManager.</returns>
         public static string GetCacheKey(IQueryable query, string[] tags)
         {
+            if (CacheKeyFactory != null)
+            {
+                var cacheKey = CacheKeyFactory(query, tags);
+
+                if (!string.IsNullOrEmpty(cacheKey))
+                {
+                    return cacheKey;
+                }
+            }
+
+            if (ForceFirstTagAsCacheKey)
+            {
+                if (tags.Length == 0 || string.IsNullOrEmpty(tags[0]))
+                {
+                    throw new Exception(ExceptionMessage.QueryCache_FirstTagNullOrEmpty);
+                }
+
+                return tags[0];
+            }
+
             var sb = new StringBuilder();
 
 #if EF5 || EF6

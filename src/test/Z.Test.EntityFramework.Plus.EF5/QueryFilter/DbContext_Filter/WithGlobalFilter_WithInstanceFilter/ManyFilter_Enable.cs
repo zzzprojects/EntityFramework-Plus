@@ -16,6 +16,9 @@ namespace Z.Test.EntityFramework.Plus
         [TestMethod]
         public void WithGlobalFilter_WithInstanceFilter_ManyFilte_Enable()
         {
+            TestContext.DeleteAll(x => x.Inheritance_Interface_Entities);
+            TestContext.Insert(x => x.Inheritance_Interface_Entities, 10);
+
             using (var ctx = new TestContext(false, enableFilter1: true, enableFilter2: true, enableFilter3: true, enableFilter4: true))
             {
                 ctx.Filter<Inheritance_Interface_Entity>(QueryFilterHelper.Filter.Filter5, entities => entities.Where(x => x.ColumnInt != 5), false);
@@ -27,7 +30,7 @@ namespace Z.Test.EntityFramework.Plus
                 ctx.Filter(QueryFilterHelper.Filter.Filter6).Enable();
                 ctx.Filter(QueryFilterHelper.Filter.Filter7).Enable();
                 ctx.Filter(QueryFilterHelper.Filter.Filter8).Enable();
-
+           
                 Assert.AreEqual(9, ctx.Inheritance_Interface_Entities.Sum(x => x.ColumnInt));
             }
         }

@@ -5,10 +5,16 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
-using System.Data.Entity;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Z.EntityFramework.Plus;
+#if EF5 || EF6
+using System.Data.Entity;
+
+#elif EFCORE
+using Microsoft.Data.Entity;
+
+#endif
 
 namespace Z.Test.EntityFramework.Plus
 {

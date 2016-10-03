@@ -23,6 +23,9 @@ namespace Z.EntityFramework.Plus
         public static string BatchOperations_PropertyNotFound = "Oops! Mapping for the property '{0}' cannot be found, the current version don't support yet Complex Type, Enum, TPC, TPH and TPT. For more information, contact us: info@zzzprojects.com";
         public static string BatchOperations_AssemblyNotFound = "Oops! The assembly 'Microsoft.EntityFrameworkCore.SqlServer' could not be found. This feature is only supported for SQL Server for .NET Core. For more information, contact us: info@zzzprojects.com";
 #endif
+#if FULL || QUERY_CACHE
+        public static string QueryCache_FirstTagNullOrEmpty = "Oops! The option 'ForceFirstTagAsCacheKey' is enabled but we found no tag, an empty string, or a null string instead. Make sure a tag is provided, and it's not null or empty. For more information, contact us: info@zzzprojects.com";
+#endif
 #if FULL || QUERY_INCLUDEFILTER
         public static string QueryIncludeFilter_ArgumentExpression = "Oops! immediate method with expression argument are not supported in EF+ Query IncludeFilter. For more information, contact us: info@zzzprojects.com";
         public static string QueryIncludeFilter_CreateQueryElement = "Oops! Select projection are not supported in EF+ Query IncludeFilter. For more information, contact us: info@zzzprojects.com";

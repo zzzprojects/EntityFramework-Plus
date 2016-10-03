@@ -9,10 +9,6 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Z.EntityFramework.Plus;
-#if EFCORE
-using Microsoft.Data.Entity;
-
-#endif
 
 namespace Z.Test.EntityFramework.Plus
 {
