@@ -181,11 +181,11 @@ namespace Z.EntityFramework.Plus
 #if FULL
         /// <summary>Gets query cache unique key.</summary>
         /// <returns>The query cache unique key.</returns>
-        public string GetQueryCacheUniqueKey()
+        public string GetQueryCacheUniqueKey(string[] tags)
         {
             var query = CreateQueryable();
 
-            return QueryCacheManager.GetCacheKey(query, new string[0]);
+            return QueryCacheManager.GetCacheKey(query, tags);
         }
 #endif
 

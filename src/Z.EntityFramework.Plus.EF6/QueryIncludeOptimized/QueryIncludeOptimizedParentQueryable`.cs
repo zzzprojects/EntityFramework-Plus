@@ -159,11 +159,17 @@ namespace Z.EntityFramework.Plus
 #if FULL
         /// <summary>Gets query cache unique key.</summary>
         /// <returns>The query cache unique key.</returns>
-        public string GetQueryCacheUniqueKey()
+        public string GetQueryCacheUniqueKey(string[] tags)
         {
             var cacheKey = new StringBuilder();
 
-            var mainKey = QueryCacheManager.GetCacheKey(OriginalQueryable, new string[0]);
+            var mainKey = QueryCacheManager.GetCacheKey(OriginalQueryable, tags);
+
+            if (QueryCacheManager.UseFirstTagAsCacheKey || QueryCacheManager.UseTagsAsCacheKey)
+            {
+                // ONLY need to resolve once
+                return mainKey;
+            }
 
             // ADD query main
             cacheKey.AppendLine("Query Main");
@@ -174,7 +180,7 @@ namespace Z.EntityFramework.Plus
             for (var i = 0; i < Childs.Count; i++)
             {
                 var child = Childs[i].GetFilteredQuery(OriginalQueryable);
-                var childKey = QueryCacheManager.GetCacheKey(child, new string[0]);
+                var childKey = QueryCacheManager.GetCacheKey(child, tags);
 
                 // ADD query child
                 cacheKey.AppendLine("Query Child: " + i);
