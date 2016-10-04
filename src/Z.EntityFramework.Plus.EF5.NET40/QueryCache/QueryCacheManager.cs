@@ -154,10 +154,16 @@ namespace Z.EntityFramework.Plus
         public static ConcurrentDictionary<string, List<string>> CacheTags { get; }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether the first tag as cache key should be forced.
+        ///     Gets or sets a value indicating whether this object use first tag as cache key.
         /// </summary>
-        /// <value>true if force first tag as cache key, false if not.</value>
-        public static bool ForceFirstTagAsCacheKey { get; set; }
+        /// <value>true if use first tag as cache key, false if not.</value>
+        public static bool UseFirstTagAsCacheKey { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this object use tag as cache key.
+        /// </summary>
+        /// <value>true if use tag as cache key, false if not.</value>
+        public static bool UseTagsAsCacheKey { get; set; }
 
         /// <summary>Adds cache tags corresponding to a cached key in the CacheTags dictionary.</summary>
         /// <param name="cacheKey">The cache key.</param>
@@ -235,16 +241,6 @@ namespace Z.EntityFramework.Plus
                 }
             }
 
-            if (ForceFirstTagAsCacheKey)
-            {
-                if (tags.Length == 0 || string.IsNullOrEmpty(tags[0]))
-                {
-                    throw new Exception(ExceptionMessage.QueryCache_FirstTagNullOrEmpty);
-                }
-
-                return tags[0];
-            }
-
             var sb = new StringBuilder();
 
 #if EF5 || EF6
@@ -253,7 +249,7 @@ namespace Z.EntityFramework.Plus
 
             if (queryCacheUniqueKeyMethod != null)
             {
-                var queryCacheUniqueKey = (string) queryCacheUniqueKeyMethod.Invoke(query, null);
+                var queryCacheUniqueKey = (string)queryCacheUniqueKeyMethod.Invoke(query, null);
 
                 if (!string.IsNullOrEmpty(queryCacheUniqueKey))
                 {
@@ -267,16 +263,43 @@ namespace Z.EntityFramework.Plus
 
             if (IncludeConnectionInCacheKey)
             {
-                var connection = ((EntityConnection) objectQuery.Context.Connection).GetStoreConnection();
+                sb.AppendLine(GetConnectionStringForCacheKey(query));
+            }
+#elif EFCORE
+            RelationalQueryContext queryContext;
+            var command = query.CreateCommand(out queryContext);
 
-                // FORCE database name in case "ChangeDatabase()" method is used
-                sb.AppendLine(connection.DataSource ?? "");
-                sb.AppendLine(connection.Database ?? "");
-                sb.AppendLine(connection.ConnectionString);
+            sb.AppendLine(CachePrefix);
+
+            if (IncludeConnectionInCacheKey)
+            {
+                sb.AppendLine(GetConnectionStringForCacheKey(queryContext));
+            }
+#endif
+
+            if (UseFirstTagAsCacheKey)
+            {
+                if (tags == null || tags.Length == 0 || string.IsNullOrEmpty(tags[0]))
+                {
+                    throw new Exception(ExceptionMessage.QueryCache_FirstTagNullOrEmpty);
+                }
+
+                sb.AppendLine(tags[0]);
+                return sb.ToString();
+            }
+
+            if (UseTagsAsCacheKey)
+            {
+                if (tags == null || tags.Length == 0 || tags.Any(string.IsNullOrEmpty))
+                {
+                    throw new Exception(ExceptionMessage.QueryCache_UseTagsNullOrEmpty);
+                }
+
+                sb.AppendLine(string.Join(";", tags));
+                return sb.ToString();
             }
 
             sb.AppendLine(string.Join(";", tags));
-#endif
 
 #if EF5
             sb.AppendLine(objectQuery.ToTraceString());
@@ -300,22 +323,6 @@ namespace Z.EntityFramework.Plus
                 sb.AppendLine(";");
             }
 #elif EFCORE
-            RelationalQueryContext queryContext;
-            var command = query.CreateCommand(out queryContext);
-
-            sb.AppendLine(CachePrefix);
-
-            if (IncludeConnectionInCacheKey)
-            {
-                var connection = queryContext.Connection.DbConnection;
-
-                // FORCE database name in case "ChangeDatabase()" method is used
-                sb.AppendLine(connection.DataSource ?? "");
-                sb.AppendLine(connection.Database ?? "");
-                sb.AppendLine(connection.ConnectionString);
-            }
-
-            sb.AppendLine(string.Join(";", tags));
             sb.AppendLine(query.Expression.ToString());
             sb.AppendLine(command.CommandText);
 
@@ -331,6 +338,41 @@ namespace Z.EntityFramework.Plus
             return sb.ToString();
         }
 
+        public static string GetConnectionStringForCacheKey(IQueryable query)
+        {
+#if EF5 || EF6
+            var connection = ((EntityConnection) query.GetObjectQuery().Context.Connection).GetStoreConnection();
+
+            // FORCE database name in case "ChangeDatabase()" method is used
+            var connectionString = string.Concat(connection.DataSource ?? "", 
+                Environment.NewLine, 
+                connection.Database ?? "",
+                Environment.NewLine,
+                connection.ConnectionString ?? "");
+            return connectionString;
+#elif EFCORE
+            RelationalQueryContext queryContext;
+            var command = query.CreateCommand(out queryContext);
+            return GetConnectionStringForCacheKey(queryContext);
+#endif
+        }
+
+#if EFCORE
+        public static string GetConnectionStringForCacheKey(RelationalQueryContext queryContext)
+        {
+            var connection = queryContext.Connection.DbConnection;
+
+            // FORCE database name in case "ChangeDatabase()" method is used
+            var connectionString = string.Concat(connection.DataSource ?? "", 
+                Environment.NewLine, 
+                connection.Database ?? "",
+                Environment.NewLine,
+                connection.ConnectionString ?? "");
+            return connectionString;
+        }
+#endif
+
+
         /// <summary>Gets cached keys used to cache or retrieve a query from the QueryCacheManager.</summary>
         /// <typeparam name="T">Generic type parameter.</typeparam>
         /// <param name="query">The query to cache or retrieve from the QueryCacheManager.</param>
@@ -338,77 +380,7 @@ namespace Z.EntityFramework.Plus
         /// <returns>The cache key used to cache or retrieve a query from the QueryCacheManager.</returns>
         public static string GetCacheKey<T>(QueryDeferred<T> query, string[] tags)
         {
-            var sb = new StringBuilder();
-
-#if EF5 || EF6
-            var objectQuery = query.Query.GetObjectQuery();
-
-            sb.AppendLine(CachePrefix);
-
-            if (IncludeConnectionInCacheKey)
-            {
-                var connection = ((EntityConnection) objectQuery.Context.Connection).GetStoreConnection();
-
-                // FORCE database name in case "ChangeDatabase()" method is used
-                sb.AppendLine(connection.DataSource ?? "");
-                sb.AppendLine(connection.Database ?? "");
-                sb.AppendLine(connection.ConnectionString);
-            }
-
-            sb.AppendLine(string.Join(";", tags));
-#endif
-
-#if EF5
-            sb.AppendLine(objectQuery.ToTraceString());
-
-            foreach (var parameter in objectQuery.Parameters)
-            {
-                sb.Append(parameter.Name);
-                sb.Append(";");
-                sb.Append(parameter.Value);
-                sb.AppendLine(";");
-            }
-#elif EF6
-            var commandTextAndParameters = objectQuery.GetCommandTextAndParameters();
-            sb.AppendLine(commandTextAndParameters.Item1);
-
-            foreach (DbParameter parameter in commandTextAndParameters.Item2)
-            {
-                sb.Append(parameter.ParameterName);
-                sb.Append(";");
-                sb.Append(parameter.Value);
-                sb.AppendLine(";");
-            }
-#elif EFCORE
-            RelationalQueryContext queryContext;
-            var command = query.Query.CreateCommand(out queryContext);
-
-            sb.AppendLine(CachePrefix);
-
-            if (IncludeConnectionInCacheKey)
-            {
-                var connection = queryContext.Connection.DbConnection;
-
-                // FORCE database name in case "ChangeDatabase()" method is used
-                sb.AppendLine(connection.DataSource ?? "");
-                sb.AppendLine(connection.Database ?? "");
-                sb.AppendLine(connection.ConnectionString);
-            }
-
-            sb.AppendLine(string.Join(";", tags));
-            sb.AppendLine(query.Expression.ToString());
-            sb.AppendLine(command.CommandText);
-
-            foreach (var parameter in queryContext.ParameterValues)
-            {
-                sb.Append(parameter.Key);
-                sb.Append(";");
-                sb.Append(parameter.Value);
-                sb.AppendLine(";");
-            }
-#endif
-
-            return sb.ToString();
+            return GetCacheKey(query.Query, tags);
         }
     }
 }

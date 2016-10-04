@@ -24,7 +24,8 @@ namespace Z.EntityFramework.Plus
         public static string BatchOperations_AssemblyNotFound = "Oops! The assembly 'Microsoft.EntityFrameworkCore.SqlServer' could not be found. This feature is only supported for SQL Server for .NET Core. For more information, contact us: info@zzzprojects.com";
 #endif
 #if FULL || QUERY_CACHE
-        public static string QueryCache_FirstTagNullOrEmpty = "Oops! The option 'ForceFirstTagAsCacheKey' is enabled but we found no tag, an empty string, or a null string instead. Make sure a tag is provided, and it's not null or empty. For more information, contact us: info@zzzprojects.com";
+        public static string QueryCache_FirstTagNullOrEmpty = "Oops! The option 'UseFirstTagAsCacheKey' is enabled but we found no tag, an empty tag string, or a null tag string instead. Make sure a tag is provided, and it's not null or empty. For more information, contact us: info@zzzprojects.com";
+        public static string QueryCache_UseTagsNullOrEmpty = "Oops! The option 'UseTagsAsCacheKey' is enabled but we found no tag, an empty tag string, or a null tag string instead. Make sure a tag is provided, and it's not null or empty. For more information, contact us: info@zzzprojects.com";    
 #endif
 #if FULL || QUERY_INCLUDEFILTER
         public static string QueryIncludeFilter_ArgumentExpression = "Oops! immediate method with expression argument are not supported in EF+ Query IncludeFilter. For more information, contact us: info@zzzprojects.com";
