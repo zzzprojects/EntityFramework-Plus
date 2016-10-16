@@ -50,9 +50,12 @@ namespace Z.EntityFramework.Plus
                 // APPLY hook
                 dbSet = QueryFilterManager.HookFilter(dbSet, hookId);
 
-                // Hook the filter
+                // HOOK the filter
                 var objectQuery = dbSet.GetObjectQuery();
-                objectQuery.ToTraceString();
+                var commandTextAndParameters = objectQuery.GetCommandTextAndParameters();
+
+                // ADD parameter
+                QueryFilterManager.DbExpressionParameterByHook.AddOrUpdate(QueryFilterManager.DbExpressionByHook[hookId], commandTextAndParameters.Item2, (s, list) => list);
             }
 
             // TODO: WeakTable ?

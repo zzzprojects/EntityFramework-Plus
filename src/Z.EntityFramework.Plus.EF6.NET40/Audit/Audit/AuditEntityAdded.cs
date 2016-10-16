@@ -10,6 +10,7 @@ using System.Data.Objects;
 using System.Linq;
 
 #elif EF6
+using System;
 using System.Data.Entity.Core.Objects;
 using System.Linq;
 
@@ -71,6 +72,11 @@ namespace Z.EntityFramework.Plus
                 var name = record.GetName(i);
                 var value = record.GetValue(i);
 
+                if (auditEntry.Parent.Configuration.UseNullForDBNullValue && value == DBNull.Value)
+                {
+                    value = null;
+                }
+
                 var valueRecord = value as DbUpdatableDataRecord;
                 if (valueRecord != null)
                 {
@@ -80,8 +86,8 @@ namespace Z.EntityFramework.Plus
                 else if (objectStateEntry.EntitySet.ElementType.KeyMembers.Any(x => x.Name == name) || auditEntry.Parent.CurrentOrDefaultConfiguration.IsAuditedProperty(auditEntry.Entry, name))
                 {
                     var auditEntryProperty = auditEntry.Parent.Configuration.AuditEntryPropertyFactory != null ?
-    auditEntry.Parent.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(auditEntry, objectStateEntry, string.Concat(prefix, name), null, value)) :
-    new AuditEntryProperty();
+                        auditEntry.Parent.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(auditEntry, objectStateEntry, string.Concat(prefix, name), null, value)) :
+                        new AuditEntryProperty();
 
                     auditEntryProperty.Build(auditEntry, string.Concat(prefix, name), null, value);
                     auditEntry.Properties.Add(auditEntryProperty);

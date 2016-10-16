@@ -1,4 +1,6 @@
-﻿using System.Data.Entity.Core.Common.CommandTrees;
+﻿using System.Data.Common;
+using System.Data.Entity.Core.Common.CommandTrees;
+using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
 
 namespace Z.EntityFramework.Plus.QueryInterceptorFilter
 {
@@ -7,6 +9,9 @@ namespace Z.EntityFramework.Plus.QueryInterceptorFilter
     {
         /// <summary>The database scan expression.</summary>
         public DbExpression DbScanExpression;
+
+        /// <summary>Collection of parameters.</summary>
+        public DbParameterCollection ParameterCollection;
 
         /// <summary>
         ///     Implements the visitor pattern for the projection of a given input set over the specified
@@ -39,6 +44,22 @@ namespace Z.EntityFramework.Plus.QueryInterceptorFilter
         public override DbExpression Visit(DbScanExpression expression)
         {
             return DbScanExpression;
+        }
+
+        /// <summary>
+        ///     Implements the visitor pattern for a reference to a parameter declared on the command tree
+        ///     that contains this expression.
+        /// </summary>
+        /// <param name="expression">The expression.</param>
+        /// <returns>The implemented visitor.</returns>
+        public override DbExpression Visit(DbParameterReferenceExpression expression)
+        {
+            if (ParameterCollection.Contains(expression.ParameterName))
+            {
+                return DbExpressionBuilder.Constant(ParameterCollection[expression.ParameterName].Value);
+            }
+
+            return base.Visit(expression);
         }
     }
 }

@@ -69,7 +69,7 @@ namespace Z.EntityFramework.Plus
                 }
             }
 
-            return currentValue != null ? currentValue.ToString() : null;
+            return currentValue != null && currentValue != DBNull.Value ? currentValue.ToString() : null;
         }
     }
 }

@@ -5,6 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -108,7 +109,7 @@ namespace Z.EntityFramework.Plus
                     return Parent.Parent.CurrentOrDefaultConfiguration.FormatValue(Parent.Entry, PropertyName, currentValue);
                 }
 
-                return currentValue != null ? currentValue.ToString() : null;
+                return currentValue != null && currentValue != DBNull.Value ? currentValue.ToString() : null;
             }
             set { NewValue = value; }
         }
@@ -137,7 +138,7 @@ namespace Z.EntityFramework.Plus
                     return Parent.Parent.CurrentOrDefaultConfiguration.FormatValue(Parent.Entry, PropertyName, currentValue);
                 }
 
-                return currentValue != null ? currentValue.ToString() : null;
+                return currentValue != null && currentValue != DBNull.Value ? currentValue.ToString() : null;
             }
             set { OldValue = value; }
         }

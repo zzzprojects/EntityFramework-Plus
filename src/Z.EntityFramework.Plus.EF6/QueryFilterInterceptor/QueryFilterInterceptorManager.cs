@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.Entity;
 using System.Data.Entity.Core.Common.CommandTrees;
 using System.Data.Entity.Infrastructure.Interception;
@@ -35,11 +36,16 @@ namespace Z.EntityFramework.Plus
             GlobalFiltersByKey = new ConcurrentDictionary<object, BaseQueryFilterInterceptor>();
             GlobalFilterByType = new ConcurrentDictionary<Type, List<BaseQueryFilterInterceptor>>();
             DbExpressionByHook = new ConcurrentDictionary<string, DbExpression>();
+            DbExpressionParameterByHook = new ConcurrentDictionary<DbExpression, DbParameterCollection>();
         }
 
         /// <summary>Gets the database expression by hook.</summary>
         /// <value>The database expression by hook.</value>
         public static ConcurrentDictionary<string, DbExpression> DbExpressionByHook { get; }
+
+        /// <summary>Gets the database expression parameter by hook.</summary>
+        /// <value>The database expression parameter by hook.</value>
+        public static ConcurrentDictionary<DbExpression, DbParameterCollection> DbExpressionParameterByHook { get; }
 
         /// <summary>Gets the global filters.</summary>
         /// <value>The global filters.</value>
