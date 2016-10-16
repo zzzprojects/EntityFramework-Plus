@@ -355,6 +355,8 @@ END
 
         public DbSet<Entity_Basic> Entity_Basics { get; set; }
 
+        public DbSet<Entity_Basic_WithString> Entity_Basic_WithStrings { get; set; }
+
         public DbSet<ZZZ_Entity_Basic> ZZZ_Entity_Basics { get; set; }
 
         public DbSet<Entity_Basic_Many> Entity_Basic_Manies { get; set; }

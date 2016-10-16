@@ -72,6 +72,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Audit\Audit_Configuration_UseNullForDBNullValue.cs" />
     <Compile Include="Audit\Audit_Configuration_AuditEntryPropertyFactory.cs" />
     <Compile Include="Audit\Audit_Configuration_AutoSavePreAction.cs" />
     <Compile Include="Audit\Audit_Configuration_Format.cs" />
@@ -135,7 +136,11 @@
     <Compile Include="Audit\Configuration_IncludeProperty\All.cs" />
     <Compile Include="Audit\Configuration_IncludeProperty\Single.cs" />
     <Compile Include="Audit\Configuration_IncludeProperty\Many.cs" />
+    <Compile Include="Audit\Configuration_UseNullForDBNullValue\EntityAdded_IsFalse.cs" />
+    <Compile Include="Audit\Configuration_UseNullForDBNullValue\EntityModified_IsFalse.cs" />
+    <Compile Include="Audit\Configuration_UseNullForDBNullValue\EntityModified_IsTrue.cs" />
     <Compile Include="Audit\CreatedBy\CurrentPrincipal.cs" />
+    <Compile Include="Audit\Configuration_UseNullForDBNullValue\EntityAdded_IsTrue.cs" />
     <Compile Include="Audit\EntityAdded\Entity_Proxy.cs" />
     <Compile Include="Audit\EntityDeleted\Entity_Proxy.cs" />
     <Compile Include="Audit\EntityModified\Entity_Proxy.cs" />
@@ -316,6 +321,12 @@
     <Compile Include="QueryCache\QueryCache_ExpireAll.cs" />
     <Compile Include="QueryCache\WithInclude\IncludeFilter.cs" />
     <Compile Include="QueryCache\WithInclude\IncludeOptimized.cs" />
+    <Compile Include="QueryFilter\DbContext_Filter\WithParameter\ManyFilter_ManyParameter.cs" />
+    <Compile Include="QueryFilter\DbContext_Filter\WithParameter\ManyFilter_NoParameter.cs" />
+    <Compile Include="QueryFilter\DbContext_Filter\WithParameter\ManyFilter_SingleParameter.cs" />
+    <Compile Include="QueryFilter\DbContext_Filter\WithParameter\SingleFilter_SingleParameter.cs" />
+    <Compile Include="QueryFilter\DbContext_Filter\WithParameter\SingleFilter_ManyParameter.cs" />
+    <Compile Include="QueryFilter\DbContext_Filter\WithParameter\SingleFilter_NoParameter.cs" />
     <Compile Include="QueryIncludeOptimized\ByPath\Many_Many_Many_Many.cs" />
     <Compile Include="QueryIncludeOptimized\ByPath\Many_Many_Many_Single.cs" />
     <Compile Include="QueryIncludeOptimized\ByPath\Many_Many_Single_Many.cs" />
@@ -431,6 +442,7 @@
     <Compile Include="_Model\Association_OneToSingleAndMany_Left.cs" />
     <Compile Include="_Model\AuditEntryProperty_Extended.cs" />
     <Compile Include="_Model\AuditEntry_Extended.cs" />
+    <Compile Include="_Model\Entity_Basic_WithString.cs" />
     <Compile Include="_Model\Entity_Proxy_Right.cs" />
     <Compile Include="ExceptionMessage.cs" />
     <Compile Include="My.cs" />
