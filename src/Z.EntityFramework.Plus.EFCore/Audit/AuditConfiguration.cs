@@ -8,14 +8,12 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-
 #if EF5 
 using System.Data.Entity;
 using System.Data.Objects;
 
 #elif EF6
 using System.Data.Entity;
-using System.Data.Entity.Core.Objects;
 
 #elif EFCORE
 using Microsoft.EntityFrameworkCore;
@@ -42,11 +40,20 @@ namespace Z.EntityFramework.Plus
 
             IsAuditedDictionary = new ConcurrentDictionary<string, bool>();
             ValueFormatterDictionary = new ConcurrentDictionary<string, Func<object, object>>();
+
+
+#if EF5 || EF6
+            UseNullForDBNullValue = true;
+#endif
         }
 
+        /// <summary>Gets or sets the audit entry factory.</summary>
+        /// <value>The audit entry factory.</value>
         public Func<AuditEntryFactoryArgs, AuditEntry> AuditEntryFactory { get; set; }
-        
-        public Func<AuditEntryPropertyArgs, AuditEntryProperty> AuditEntryPropertyFactory { get; set; }  
+
+        /// <summary>Gets or sets the audit entry property factory.</summary>
+        /// <value>The audit entry property factory.</value>
+        public Func<AuditEntryPropertyArgs, AuditEntryProperty> AuditEntryPropertyFactory { get; set; }
 
         /// <summary>Gets or sets the automatic audit save pre action.</summary>
         /// <value>The automatic audit save pre action.</value>
@@ -112,12 +119,22 @@ namespace Z.EntityFramework.Plus
         /// <value>A dictionary of value formatter for a property name.</value>
         public ConcurrentDictionary<string, Func<object, object>> ValueFormatterDictionary { get; set; }
 
+#if EF5 || EF6
+        /// <summary>
+        ///     Gets or sets a value indicating whether null value should be used in the Audit instead of DBNull.Value
+        /// </summary>
+        /// <value>The value indicating whether null value should be used in the Audit instead of DBNull.Value</value>
+        public bool UseNullForDBNullValue { get; set; }
+#endif
+
         /// <summary>Makes a deep copy of this object.</summary>
         /// <returns>A copy of this object.</returns>
         public AuditConfiguration Clone()
         {
             var audit = new AuditConfiguration
             {
+                AuditEntryFactory = AuditEntryFactory,
+                AuditEntryPropertyFactory = AuditEntryPropertyFactory,
                 AutoSavePreAction = AutoSavePreAction,
                 IgnoreEntityAdded = IgnoreEntityAdded,
                 IgnoreEntityModified = IgnoreEntityModified,
@@ -131,7 +148,10 @@ namespace Z.EntityFramework.Plus
                 ExcludeIncludeEntityPredicates = new List<Func<object, bool?>>(ExcludeIncludeEntityPredicates),
                 ExcludeIncludePropertyPredicates = new List<Func<object, string, bool?>>(ExcludeIncludePropertyPredicates),
                 SoftAddedPredicates = new List<Func<object, bool>>(SoftAddedPredicates),
-                SoftDeletedPredicates = new List<Func<object, bool>>(SoftDeletedPredicates)
+                SoftDeletedPredicates = new List<Func<object, bool>>(SoftDeletedPredicates),
+#if EF5 || EF6
+                UseNullForDBNullValue = UseNullForDBNullValue
+#endif
             };
 
             return audit;

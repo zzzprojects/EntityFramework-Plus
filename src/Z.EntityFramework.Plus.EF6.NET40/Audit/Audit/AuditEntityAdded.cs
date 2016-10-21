@@ -6,6 +6,7 @@
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 #if EF5
+using System;
 using System.Data.Objects;
 using System.Linq;
 

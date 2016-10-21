@@ -8,6 +8,7 @@
 #if EF5 || EF6
 
 #if EF5
+using System;
 using System.Data;
 using System.Data.Objects;
 

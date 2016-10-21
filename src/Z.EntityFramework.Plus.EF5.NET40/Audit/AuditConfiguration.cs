@@ -47,8 +47,12 @@ namespace Z.EntityFramework.Plus
 #endif
         }
 
+        /// <summary>Gets or sets the audit entry factory.</summary>
+        /// <value>The audit entry factory.</value>
         public Func<AuditEntryFactoryArgs, AuditEntry> AuditEntryFactory { get; set; }
 
+        /// <summary>Gets or sets the audit entry property factory.</summary>
+        /// <value>The audit entry property factory.</value>
         public Func<AuditEntryPropertyArgs, AuditEntryProperty> AuditEntryPropertyFactory { get; set; }
 
         /// <summary>Gets or sets the automatic audit save pre action.</summary>
@@ -129,6 +133,8 @@ namespace Z.EntityFramework.Plus
         {
             var audit = new AuditConfiguration
             {
+                AuditEntryFactory = AuditEntryFactory,
+                AuditEntryPropertyFactory = AuditEntryPropertyFactory,
                 AutoSavePreAction = AutoSavePreAction,
                 IgnoreEntityAdded = IgnoreEntityAdded,
                 IgnoreEntityModified = IgnoreEntityModified,
@@ -142,7 +148,10 @@ namespace Z.EntityFramework.Plus
                 ExcludeIncludeEntityPredicates = new List<Func<object, bool?>>(ExcludeIncludeEntityPredicates),
                 ExcludeIncludePropertyPredicates = new List<Func<object, string, bool?>>(ExcludeIncludePropertyPredicates),
                 SoftAddedPredicates = new List<Func<object, bool>>(SoftAddedPredicates),
-                SoftDeletedPredicates = new List<Func<object, bool>>(SoftDeletedPredicates)
+                SoftDeletedPredicates = new List<Func<object, bool>>(SoftDeletedPredicates),
+#if EF5 || EF6
+                UseNullForDBNullValue = UseNullForDBNullValue
+#endif
             };
 
             return audit;
