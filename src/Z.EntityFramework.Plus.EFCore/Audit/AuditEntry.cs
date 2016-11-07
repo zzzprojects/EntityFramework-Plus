@@ -69,7 +69,9 @@ namespace Z.EntityFramework.Plus
             {
                 if (!entry.IsRelationship)
                 {
-                    EntityTypeName = ObjectContext.GetObjectType(entry.Entity.GetType()).Name;
+                    EntityTypeName = parent.CurrentOrDefaultConfiguration.EntityNameFactory != null ?
+                        parent.CurrentOrDefaultConfiguration.EntityNameFactory(ObjectContext.GetObjectType(entry.Entity.GetType())) :
+                        ObjectContext.GetObjectType(entry.Entity.GetType()).Name;
                 }
             }
 

@@ -249,7 +249,7 @@ namespace Z.EntityFramework.Plus
 
             if (queryCacheUniqueKeyMethod != null)
             {
-                var queryCacheUniqueKey = (string)queryCacheUniqueKeyMethod.Invoke(query, null);
+                var queryCacheUniqueKey = (string)queryCacheUniqueKeyMethod.Invoke(query, new object[] { tags });
 
                 if (!string.IsNullOrEmpty(queryCacheUniqueKey))
                 {
