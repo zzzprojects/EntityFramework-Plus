@@ -38,7 +38,11 @@ namespace Z.EntityFramework.Plus
             return Filter((IQueryable<T>)query).Cast<TEntity>();
 #elif EFCORE
             // TODO: Use the same code as (EF5 || EF6) once EF team fix the cast issue: https://github.com/aspnet/EntityFramework/issues/3736
-            //return Filter((IQueryable<T>) query).Cast<TEntity>();
+            if(QueryFilterManager.ForceCast)
+            {
+                return Filter((IQueryable<T>) query).Cast<TEntity>();
+            }
+
             return Filter((IQueryable<T>) query);
 #endif
         }

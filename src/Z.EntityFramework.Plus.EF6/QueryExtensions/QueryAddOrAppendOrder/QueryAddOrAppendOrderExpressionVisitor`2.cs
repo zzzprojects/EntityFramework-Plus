@@ -64,7 +64,8 @@ namespace Z.EntityFramework.Plus
             // VISIT expression to append "ThenBy" to the last "OrderBy", "OrderByDescending", "ThenBy", "ThenByDescending" method
             var expression = Visit(query.Expression);
 
-            if (expression == query.Expression)
+            if (expression == query.Expression
+                || expression.ToString() == query.Expression.ToString())
             {
                 // ADD "OrderBy" to the query
                 query = Comparer == null ?

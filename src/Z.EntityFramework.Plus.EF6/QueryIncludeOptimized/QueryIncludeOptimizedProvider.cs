@@ -213,6 +213,11 @@ namespace Z.EntityFramework.Plus
                 return (TResult) (object) null;
             }
 
+#if EF6
+            // FIX lazy loading
+            QueryIncludeOptimizedLazyLoading.SetLazyLoaded(value, CurrentQueryable.Childs);
+#endif
+
             // FIX null collection
             QueryIncludeOptimizedNullCollection.NullCollectionToEmpty(value, CurrentQueryable.Childs);
 

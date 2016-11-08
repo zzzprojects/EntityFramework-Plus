@@ -97,7 +97,7 @@ namespace Z.EntityFramework.Plus
             }
             else
             {
-                if (node.Method.Name == "MergeAs")
+                if (node.Method.Name == "MergeAs" || node.Method.Name == "Select" || node.Method.Name == "SelectMany")
                 {
                     // ADD "OrderBy" | "ThenBy" to the query
                     for (var i = 0; i < KeyNames.Length; i++)

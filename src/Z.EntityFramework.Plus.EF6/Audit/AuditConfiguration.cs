@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+
 #if EF5 
 using System.Data.Entity;
 using System.Data.Objects;
@@ -46,6 +47,9 @@ namespace Z.EntityFramework.Plus
             UseNullForDBNullValue = true;
 #endif
         }
+
+        internal Func<Type, string> EntityNameFactory { get; set; } 
+        internal Func<Type, string, string> PropertyNameFactory { get; set; } 
 
         /// <summary>Gets or sets the audit entry factory.</summary>
         /// <value>The audit entry factory.</value>
@@ -133,6 +137,9 @@ namespace Z.EntityFramework.Plus
         {
             var audit = new AuditConfiguration
             {
+                EntityNameFactory = EntityNameFactory,
+                PropertyNameFactory =  PropertyNameFactory,
+
                 AuditEntryFactory = AuditEntryFactory,
                 AuditEntryPropertyFactory = AuditEntryPropertyFactory,
                 AutoSavePreAction = AutoSavePreAction,

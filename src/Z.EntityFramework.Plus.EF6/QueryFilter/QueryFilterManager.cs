@@ -37,6 +37,12 @@ namespace Z.EntityFramework.Plus
             GlobalInitializeFilterActions = new List<Tuple<BaseQueryFilter, Action<BaseQueryFilter>>>();
         }
 
+#if EFCORE
+        /// <summary>Gets or sets if the method cast should be forced.</summary>
+        /// <value>True if the method cast should be forced, otherwise false.</value>
+        public static bool ForceCast { get; set; }
+#endif
+
         /// <summary>Gets the global filters.</summary>
         /// <value>The global filters.</value>
         public static Dictionary<object, BaseQueryFilter> GlobalFilters { get; }

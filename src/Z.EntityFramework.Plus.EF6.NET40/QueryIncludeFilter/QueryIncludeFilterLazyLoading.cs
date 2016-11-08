@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if EF6
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -79,7 +80,7 @@ namespace Z.EntityFramework.Plus
 
                     var navigationProperty = (System.Data.Entity.Core.Metadata.Edm.NavigationProperty)navigationPropertyProperty.GetValue(related, null);
 
-                    if (navigationProperty.Name == path)
+                    if (navigationProperty != null && navigationProperty.Name == path)
                     {
                         related.IsLoaded = true;
 
@@ -107,3 +108,4 @@ namespace Z.EntityFramework.Plus
         }
     }
 }
+#endif

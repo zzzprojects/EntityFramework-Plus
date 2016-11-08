@@ -9,6 +9,14 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+#if EF5
+using System.Data.Objects;
+
+#elif EF6
+using System.Data.Entity.Core.Objects;
+
+#endif
+
 namespace Z.EntityFramework.Plus
 {
     /// <summary>An audit entry property.</summary>
@@ -41,7 +49,15 @@ namespace Z.EntityFramework.Plus
 
             if (PropertyName == null)
             {
-                PropertyName = propertyName;
+#if EF5 || EF6
+                PropertyName = parent.Parent.CurrentOrDefaultConfiguration.PropertyNameFactory != null ?
+                    parent.Parent.CurrentOrDefaultConfiguration.PropertyNameFactory(ObjectContext.GetObjectType(parent.Entry.Entity.GetType()), propertyName) :
+                    propertyName;
+#elif EFCORE
+                PropertyName = parent.Parent.CurrentOrDefaultConfiguration.PropertyNameFactory != null ?
+                    parent.Parent.CurrentOrDefaultConfiguration.PropertyNameFactory(parent.Entry.Entity.GetType(), propertyName) :
+                    propertyName;
+#endif
             }
 
             if (RelationName == null)

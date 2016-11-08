@@ -101,7 +101,27 @@ namespace Z.EntityFramework.Plus
             var queryConnection = new CreateEntityRelationConnection(connection);
 
             // CREATE query context
-            var queryContext = new RelationalQueryContext(createQueryBufferDelegate, connection, stateManager, concurrencyDetector);
+            RelationalQueryContext queryContext;
+            {
+                var relationalQueryContextType = typeof(RelationalQueryContext);
+                var relationalQueryContextConstructor = relationalQueryContextType.GetConstructors()[0];
+
+                // EF Core 1.1 preview
+                if (relationalQueryContextConstructor.GetParameters().Length == 5)
+                {
+                    // REFLECTION: Query.Provider._queryCompiler._queryContextFactory.ExecutionStrategyFactory
+                    var executionStrategyFactoryField = queryContextFactory.GetType().GetProperty("ExecutionStrategyFactory", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+                    var executionStrategyFactory = executionStrategyFactoryField.GetValue(queryContextFactory);
+
+                    var lazyRefStateManager = new LazyRef<IStateManager>(() => stateManager);
+
+                    queryContext = (RelationalQueryContext)relationalQueryContextConstructor.Invoke(new object[] { createQueryBufferDelegate, connection, lazyRefStateManager, concurrencyDetector, executionStrategyFactory });
+                }
+                else
+                {
+                    queryContext = (RelationalQueryContext) relationalQueryContextConstructor.Invoke(new object[] {createQueryBufferDelegate, connection, stateManager, concurrencyDetector});
+                }
+            }
 
             // CREATE new query from query visitor
             var newQuery = ParameterExtractingExpressionVisitor.ExtractParameters(query.Expression, queryContext, evaluatableExpressionFilter, logger);

@@ -130,6 +130,11 @@ namespace Z.EntityFramework.Plus
             // RESOLVE current and all future child queries
             var list = QueryIncludeOptimizedManager.AllowQueryBatch ? newQuery.Future().ToList() : newQuery.ToList();
 
+#if EF6
+            // FIX lazy loading
+            QueryIncludeOptimizedLazyLoading.SetLazyLoaded(list, Childs);
+#endif
+
             // FIX collection null
             QueryIncludeOptimizedNullCollection.NullCollectionToEmpty(list, Childs);
 

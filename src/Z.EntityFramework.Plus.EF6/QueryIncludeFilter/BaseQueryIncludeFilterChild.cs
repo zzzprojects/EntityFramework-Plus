@@ -7,6 +7,7 @@
 
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace Z.EntityFramework.Plus
 {
@@ -20,5 +21,9 @@ namespace Z.EntityFramework.Plus
         {
             throw new Exception(ExceptionMessage.GeneralException);
         }
+
+        /// <summary>Gets the filter.</summary>
+        /// <returns>The filter.</returns>
+        public abstract Expression GetFilter();
     }
 }

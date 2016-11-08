@@ -143,7 +143,18 @@ namespace Z.EntityFramework.Plus
             {
             }
 
-            return toList.Cast<T>();
+            var list = toList.Cast<T>().ToList();
+
+#if EF6
+            // FIX lazy loading
+            QueryIncludeFilterLazyLoading.SetLazyLoaded(list, Childs);
+#endif
+
+            // FIX null collection
+            QueryIncludeFilterNullCollection.NullCollectionToEmpty(list, Childs);
+
+
+            return list;
         }
 
         /// <summary>Creates the queryable.</summary>

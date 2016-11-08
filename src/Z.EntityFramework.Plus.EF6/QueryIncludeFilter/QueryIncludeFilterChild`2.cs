@@ -39,6 +39,11 @@ namespace Z.EntityFramework.Plus
         /// <value>The query filter to include related entities.</value>
         public Expression<Func<T, TChild>> FilterSingle { get; set; }
 
+        public override Expression GetFilter()
+        {
+            return (Expression)Filter ?? FilterSingle;
+        }
+
         /// <summary>Creates the query to use to load related entities.</summary>
         /// <param name="rootQuery">The root query.</param>
         /// <returns>The query to use to load related entities.</returns>

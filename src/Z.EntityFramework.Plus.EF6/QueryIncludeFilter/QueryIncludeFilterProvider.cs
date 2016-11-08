@@ -157,6 +157,14 @@ namespace Z.EntityFramework.Plus
                 result = property.GetValue(result, null);
             }
 
+#if EF6
+            // FIX lazy loading
+            QueryIncludeFilterLazyLoading.SetLazyLoaded(result, currentQuery.Childs);
+#endif
+
+            // FIX null collection
+            QueryIncludeFilterNullCollection.NullCollectionToEmpty(result, currentQuery.Childs);
+
             return (TResult) result;
         }
 

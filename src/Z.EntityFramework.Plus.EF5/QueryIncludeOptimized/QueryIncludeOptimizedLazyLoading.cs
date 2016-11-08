@@ -79,7 +79,7 @@ namespace Z.EntityFramework.Plus
 
                     var navigationProperty = (System.Data.Entity.Core.Metadata.Edm.NavigationProperty)navigationPropertyProperty.GetValue(related, null);
 
-                    if (navigationProperty.Name == path)
+                    if (navigationProperty != null && navigationProperty.Name == path)
                     {
                         related.IsLoaded = true;
 

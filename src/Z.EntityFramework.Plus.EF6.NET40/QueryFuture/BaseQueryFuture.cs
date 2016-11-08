@@ -123,8 +123,26 @@ namespace Z.EntityFramework.Plus
             QueryConnection = new CreateEntityRelationConnection(connection);
 
             // CREATE query context
-            queryContext = new RelationalQueryContext(createQueryBufferDelegate, QueryConnection, stateManager, concurrencyDetector);
+            {
+                var relationalQueryContextType = typeof(RelationalQueryContext);
+                var relationalQueryContextConstructor = relationalQueryContextType.GetConstructors()[0];
 
+                // EF Core 1.1 preview
+                if (relationalQueryContextConstructor.GetParameters().Length == 5)
+                {
+                    // REFLECTION: Query.Provider._queryCompiler._queryContextFactory.ExecutionStrategyFactory
+                    var executionStrategyFactoryField = queryContextFactory.GetType().GetProperty("ExecutionStrategyFactory", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+                    var executionStrategyFactory = executionStrategyFactoryField.GetValue(queryContextFactory);
+
+                    var lazyRefStateManager = new LazyRef<IStateManager>(() => stateManager);
+
+                    queryContext = (RelationalQueryContext)relationalQueryContextConstructor.Invoke(new object[] { createQueryBufferDelegate, QueryConnection, lazyRefStateManager, concurrencyDetector, executionStrategyFactory });
+                }
+                else
+                {
+                    queryContext = (RelationalQueryContext) relationalQueryContextConstructor.Invoke(new object[] {createQueryBufferDelegate, QueryConnection, stateManager, concurrencyDetector});
+                }
+            }
 
             // REFLECTION: Query.Provider._queryCompiler._database._queryCompilationContextFactory.Logger
             var loggerField = queryCompilationContextFactory.GetType().GetProperty("Logger", BindingFlags.NonPublic | BindingFlags.Instance);

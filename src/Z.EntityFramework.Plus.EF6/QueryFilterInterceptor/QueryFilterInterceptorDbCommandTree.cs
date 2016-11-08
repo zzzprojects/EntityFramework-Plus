@@ -79,9 +79,10 @@ namespace Z.EntityFramework.Plus
                     };
 
                     var newQuery = queryFiltered.Accept(visitor);
-
+               
                     // CREATE a new Query
-                    interceptionContext.Result = new DbQueryCommandTree(dbQueryCommandTree.MetadataWorkspace, dbQueryCommandTree.DataSpace, newQuery, true);
+                    var commandTree = new DbQueryCommandTree(dbQueryCommandTree.MetadataWorkspace, dbQueryCommandTree.DataSpace, newQuery, true);
+                    interceptionContext.Result = commandTree;
                 }
             }
         }

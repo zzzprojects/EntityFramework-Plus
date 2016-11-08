@@ -27,12 +27,12 @@ namespace Z.EntityFramework.Plus
 
         public static IQueryable<TSource> AddOrAppendOrderByDescending<TSource, TKey>(this IQueryable<TSource> query, Expression<Func<TSource, TKey>> keySelector)
         {
-            return new QueryAddOrAppendOrderExpressionVisitor<TSource, TKey>().OrderBy(query, keySelector);
+            return new QueryAddOrAppendOrderExpressionVisitor<TSource, TKey>().OrderByDescending(query, keySelector);
         }
 
         public static IQueryable<TSource> AddOrAppendOrderByDescending<TSource, TKey>(this IQueryable<TSource> query, Expression<Func<TSource, TKey>> keySelector, IComparer<TKey> comparer)
         {
-            return new QueryAddOrAppendOrderExpressionVisitor<TSource, TKey>().OrderBy(query, keySelector, comparer);
+            return new QueryAddOrAppendOrderExpressionVisitor<TSource, TKey>().OrderByDescending(query, keySelector, comparer);
         }
     }
 }

@@ -127,6 +127,8 @@ namespace Z.EntityFramework.Plus
 
             if (!CacheWeakFilterContext.TryGetValue(context, out filterContext))
             {
+                EnsureAlwaysEmptyDictionary(context);
+
                 filterContext = new QueryFilterContextInterceptor(context)
                 {
                     GlobalFilterByKey = GlobalFiltersByKey,
@@ -162,7 +164,8 @@ namespace Z.EntityFramework.Plus
         /// <param name="context">The context to initialize global filter on.</param>
         public static void InitilizeGlobalFilter(DbContext context)
         {
-            // NOT anymore required! Remove this on v2?
+            EnsureAlwaysEmptyDictionary(context);
+            ClearQueryCache(context);
         }
 
         /// <summary>Clears the query cache described by context.</summary>
@@ -171,15 +174,6 @@ namespace Z.EntityFramework.Plus
         {
             try
             {
-                var objectContext = context.GetObjectContext();
-                var metaWorkspace = objectContext.MetadataWorkspace;
-
-                var getQueryCacheManagerMethod = metaWorkspace.GetType().GetMethod("GetQueryCacheManager", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                var getQueryCacheManager = getQueryCacheManagerMethod.Invoke(metaWorkspace, null);
-
-                var clearMethod = getQueryCacheManager.GetType().GetMethod("Clear", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                clearMethod.Invoke(getQueryCacheManager, null);
-
                 // GET DbSet<> properties
                 var setProperties = context.GetDbSetProperties();
 
@@ -199,9 +193,39 @@ namespace Z.EntityFramework.Plus
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 // TODO: Find a better way to handle this!
+            }
+        }
+
+        /// <summary>Ensures that always empty dictionary.</summary>
+        /// <param name="context">The context to initialize global filter on.</param>
+        public static void EnsureAlwaysEmptyDictionary(DbContext context)
+        {
+            var objectContext = context.GetObjectContext();
+            var metaWorkspace = objectContext.MetadataWorkspace;
+
+            var getQueryCacheManagerMethod = metaWorkspace.GetType().GetMethod("GetQueryCacheManager", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var getQueryCacheManager = getQueryCacheManagerMethod.Invoke(metaWorkspace, null);
+
+            var cacheDataField = getQueryCacheManager.GetType().GetField("_cacheData", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var cacheData = cacheDataField.GetValue(getQueryCacheManager);
+
+            var alwaysEmptyDictionaryType = typeof(QueryFilterAlwaysEmptyDictionary<,>);
+            var alwaysEmptyDictionaryGenericType = alwaysEmptyDictionaryType.MakeGenericType(cacheData.GetType().GetGenericArguments());
+
+            if (cacheData.GetType() != alwaysEmptyDictionaryGenericType)
+            {
+                var comparerType = typeof(QueryFilterAlwaysEmptyDictionaryComparer<,>);
+                var comparerGenericType = comparerType.MakeGenericType(cacheData.GetType().GetGenericArguments());
+                var comparer = Activator.CreateInstance(comparerGenericType);
+
+                var constructor = alwaysEmptyDictionaryGenericType.GetConstructor(new Type[] { comparerGenericType });
+
+                var alwaysEmptyDictionary = constructor.Invoke(new object[] { comparer });
+
+                cacheDataField.SetValue(getQueryCacheManager, alwaysEmptyDictionary);
             }
         }
 

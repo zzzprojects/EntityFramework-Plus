@@ -57,6 +57,9 @@
   <ItemGroup>
     <Compile Include="Audit\AuditConfiguration.cs" />
     <Compile Include="Audit\Audit.cs" />
+    <Compile Include="Audit\AuditConfiguration\DisplayNameDataAnnotation.cs" />
+    <Compile Include="Audit\AuditConfiguration\ExcludeDataAnnotation.cs" />
+    <Compile Include="Audit\AuditConfiguration\IncludeDataAnnotation.cs" />
     <Compile Include="Audit\AuditConfiguration\Format.cs" />
     <Compile Include="Audit\AuditConfiguration\FormatValue.cs" />
     <Compile Include="Audit\AuditConfiguration\GetEntityModifiedState.cs" />
@@ -81,6 +84,9 @@
     <Compile Include="Audit\Audit\AuditEntityAdded.cs" />
     <Compile Include="Audit\Audit\AuditRelationshipDeleted.cs" />
     <Compile Include="Audit\Audit\AuditRelationshipAdded.cs" />
+    <Compile Include="Audit\DataAnnotations\AuditDisplayAttribute.cs" />
+    <Compile Include="Audit\DataAnnotations\AuditIncludeAttribute.cs" />
+    <Compile Include="Audit\DataAnnotations\AuditExcludeAttribute.cs" />
     <Compile Include="Audit\Extensions\DbSet`AuditEntry\DbSet`AuditEntry.cs" />
     <Compile Include="Audit\Extensions\DbContext\SaveChanges.cs" />
     <Compile Include="Audit\Extensions\DbContext\SaveChangesAsync.cs" />
@@ -128,6 +134,7 @@
     <Compile Include="QueryCache\Extensions\QueryDeferred`\FromCacheAsync.cs" />
     <Compile Include="QueryCache\Extensions\IQueryable`\FromCacheAsync.cs" />
     <Compile Include="QueryCache\QueryCacheManager.cs" />
+    <Compile Include="QueryFilterInterceptor\QueryFilterAlwaysEmptyDictionary`2.cs" />
     <Compile Include="QueryFilter\Extensions\DbContext.Filter.cs" />
     <Compile Include="QueryFilter\Extensions\IDbSet.AsNoFilter.cs" />
     <Compile Include="QueryFilter\Extensions\IDbSet.Filter.cs" />
@@ -151,11 +158,15 @@
     <Compile Include="QueryIncludeFilter\QueryIncludeFilterChild`2.cs" />
     <Compile Include="QueryIncludeFilter\QueryIncludeFilterParentQueryable`.cs" />
     <Compile Include="QueryIncludeFilter\QueryIncludeFilterProvider.cs" />
+    <Compile Include="QueryIncludeFilter\QueryIncludeFilterLazyLoading.cs" />
+    <Compile Include="QueryIncludeFilter\QueryIncludeFilterNullCollection.cs" />
+    <Compile Include="QueryIncludeFilter\QueryIncludeFilterPathVisitor.cs" />
     <Compile Include="QueryIncludeOptimized\BaseQueryIncludeOptimizedChild.cs" />
     <Compile Include="QueryIncludeOptimized\Extensions\IQueryable`.IncludeOptimizedByPath.cs" />
     <Compile Include="QueryIncludeOptimized\Extensions\IQueryable`.IncludeOptimized.cs" />
     <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedByPath.cs" />
     <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedIncludeSubPath.cs" />
+    <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedLazyLoading.cs" />
     <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedNullCollection.cs" />
     <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedExpressionReduceVisitor.cs" />
     <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedManager.cs" />
