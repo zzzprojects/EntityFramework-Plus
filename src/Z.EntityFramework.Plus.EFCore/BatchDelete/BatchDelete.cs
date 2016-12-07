@@ -433,14 +433,16 @@ SELECT  @totalRowAffected
 
 #if EFCORE
                     // ADD Parameter
-                    foreach (var parameter in queryContext.ParameterValues)
-                    {
-                        var param = command.CreateParameter();
-                        param.ParameterName = parameter.Key;
-                        param.Value = parameter.Value;
+                foreach (var relationalParameter in relationalCommand.Parameters)
+                {
+                    var parameter = queryContext.ParameterValues[relationalParameter.InvariantName];
 
-                        command.Parameters.Add(param);
-                    }
+                    var param = command.CreateParameter();
+                    param.ParameterName = relationalParameter.InvariantName;
+                    param.Value = parameter;
+
+                    command.Parameters.Add(param);
+                }
 #else
                 // ADD Parameter
                 var parameterCollection = relationalCommand.Parameters;
@@ -519,11 +521,13 @@ SELECT  @totalRowAffected
 
 #if EFCORE
                 // ADD Parameter
-                foreach (var parameter in queryContext.ParameterValues)
+                foreach (var relationalParameter in relationalCommand.Parameters)
                 {
+                    var parameter = queryContext.ParameterValues[relationalParameter.InvariantName];
+
                     var param = command.CreateParameter();
-                    param.ParameterName = parameter.Key;
-                    param.Value = parameter.Value;
+                    param.ParameterName = relationalParameter.InvariantName;
+                    param.Value = parameter;
 
                     command.Parameters.Add(param);
                 }

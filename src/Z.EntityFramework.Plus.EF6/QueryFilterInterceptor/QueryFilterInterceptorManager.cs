@@ -27,6 +27,8 @@ namespace Z.EntityFramework.Plus
         /// <summary>Identifier for the enable filter by.</summary>
         internal static string EnableFilterById = PrefixFilter + "EnableById;";
 
+        internal static List<Type> Types = new List<Type>(); 
+
         /// <summary>Static constructor.</summary>
         static QueryFilterManager()
         {
@@ -38,6 +40,18 @@ namespace Z.EntityFramework.Plus
             DbExpressionByHook = new ConcurrentDictionary<string, DbExpression>();
             DbExpressionParameterByHook = new ConcurrentDictionary<DbExpression, DbParameterCollection>();
         }
+
+        public static void RegisterType(params Type[] types)
+        {
+            Types = Types.Union(types).ToList();
+        }
+
+        public static void RegisterType(Assembly assembly)
+        {
+            var types = assembly.GetTypes();
+            RegisterType(types);
+        }
+
 
         /// <summary>Gets the database expression by hook.</summary>
         /// <value>The database expression by hook.</value>
@@ -127,7 +141,7 @@ namespace Z.EntityFramework.Plus
 
             if (!CacheWeakFilterContext.TryGetValue(context, out filterContext))
             {
-                EnsureAlwaysEmptyDictionary(context);
+                // EnsureAlwaysEmptyDictionary(context);
 
                 filterContext = new QueryFilterContextInterceptor(context)
                 {
@@ -164,8 +178,8 @@ namespace Z.EntityFramework.Plus
         /// <param name="context">The context to initialize global filter on.</param>
         public static void InitilizeGlobalFilter(DbContext context)
         {
-            EnsureAlwaysEmptyDictionary(context);
-            ClearQueryCache(context);
+            // EnsureAlwaysEmptyDictionary(context);
+            // ClearQueryCache(context);
         }
 
         /// <summary>Clears the query cache described by context.</summary>
@@ -174,6 +188,15 @@ namespace Z.EntityFramework.Plus
         {
             try
             {
+                var objectContext = context.GetObjectContext();
+                var metaWorkspace = objectContext.MetadataWorkspace;
+
+                var getQueryCacheManagerMethod = metaWorkspace.GetType().GetMethod("GetQueryCacheManager", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                var getQueryCacheManager = getQueryCacheManagerMethod.Invoke(metaWorkspace, null);
+
+                var clearMethod = getQueryCacheManager.GetType().GetMethod("Clear", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                clearMethod.Invoke(getQueryCacheManager, null);
+
                 // GET DbSet<> properties
                 var setProperties = context.GetDbSetProperties();
 
@@ -201,7 +224,7 @@ namespace Z.EntityFramework.Plus
 
         /// <summary>Ensures that always empty dictionary.</summary>
         /// <param name="context">The context to initialize global filter on.</param>
-        public static void EnsureAlwaysEmptyDictionary(DbContext context)
+        public static void ForceAlwaysEmptyQueryCacheManager(DbContext context)
         {
             var objectContext = context.GetObjectContext();
             var metaWorkspace = objectContext.MetadataWorkspace;

@@ -122,13 +122,28 @@ namespace Z.EntityFramework.Plus
 #endif
             var newQuery = OriginalQueryable.AddToRootOrAppendOrderBy(keyNames).Select(x => x);
 
-            foreach (var child in Childs)
-            {
-                child.CreateIncludeQuery(newQuery);
-            }
+            List<T> list;
 
-            // RESOLVE current and all future child queries
-            var list = QueryIncludeOptimizedManager.AllowQueryBatch ? newQuery.Future().ToList() : newQuery.ToList();
+            if (QueryIncludeOptimizedManager.AllowQueryBatch)
+            {
+                var future = newQuery.Future();
+
+                foreach (var child in Childs)
+                {
+                    child.CreateIncludeQuery(newQuery);
+                }
+
+                list = future.ToList();
+            }
+            else
+            {
+                list = newQuery.ToList();
+
+                foreach (var child in Childs)
+                {
+                    child.CreateIncludeQuery(newQuery);
+                }
+            }
 
 #if EF6
             // FIX lazy loading

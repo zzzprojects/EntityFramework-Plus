@@ -206,15 +206,17 @@ namespace Z.EntityFramework.Plus
                 var parameters = queryCommand.Parameters;
 
                 // UPDATE parameter name
-                foreach (var parameter in queryContext.ParameterValues)
+                foreach (var relationalParameter in queryCommand.Parameters)
                 {
-                    var oldValue = parameter.Key;
+                    var parameter = queryContext.ParameterValues[relationalParameter.InvariantName];
+
+                    var oldValue = relationalParameter.InvariantName;
                     var newValue = string.Concat("Z_", queryCount, "_", oldValue);
 
                     // CREATE parameter
                     var dbParameter = command.CreateParameter();
                     dbParameter.ParameterName = newValue;
-                    dbParameter.Value = parameter.Value;
+                    dbParameter.Value = parameter;
                     command.Parameters.Add(dbParameter);
 
                     // REPLACE parameter with new value

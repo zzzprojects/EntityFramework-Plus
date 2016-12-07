@@ -151,37 +151,12 @@ namespace Z.EntityFramework.Plus
                 arguments.RemoveAt(1);
             }
 
-            // RESOLVE child queries using .Future()
-            {
-                // MODIFY query if necessary
-#if EF5 || EF6
-                var objectContext = CurrentQueryable.OriginalQueryable.GetObjectQuery().Context;
-                var keyMembers = ((dynamic) objectContext).CreateObjectSet<T>().EntitySet.ElementType.KeyMembers;
-                var keyNames = ((IEnumerable<EdmMember>) keyMembers).Select(x => x.Name).ToArray();
-#elif EFCORE
-
-                var context = currentQuery.OriginalQueryable.GetDbContext();
-
-                var keyNames = context.Model.FindEntityType(typeof (TResult).DisplayName(true))
-                    .GetKeys().ToList()[0]
-                    .Properties.Select(x => x.Name).ToArray();
-#endif
-
-                var currentNewQuery = methodCall.Method.Name == "First" || methodCall.Method.Name == "FirstOrDefault" ?
-                    currentQuery.AddToRootOrAppendOrderBy(keyNames).Take(1) :
-                    methodCall.Method.Name == "Last" || methodCall.Method.Name == "LastOrDefault" ?
-                        currentQuery.AddToRootOrAppendOrderBy(keyNames).Reverse().Take(1) :
-                        currentQuery;
-
-                currentQuery.CreateQueryable(currentNewQuery);
-            }
-
             // RESOLE parent queries using .FutureValue();
 #if EF5 || EF6
             var objectQuery = CurrentQueryable.OriginalQueryable.GetObjectQuery();
-
+         
             // GET provider
-            var objectQueryProviderField = typeof (ObjectQuery).GetField("_provider", BindingFlags.NonPublic | BindingFlags.Instance);
+            var objectQueryProviderField = typeof (ObjectQuery).GetProperty("ObjectQueryProvider", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             var provider = (IQueryProvider) objectQueryProviderField.GetValue(objectQuery);
 
             // CREATE query from the expression
@@ -198,12 +173,67 @@ namespace Z.EntityFramework.Plus
 
             if (QueryIncludeOptimizedManager.AllowQueryBatch)
             {
-                value = immediateQuery.FutureValue().Value;
+                var futureValue = immediateQuery.FutureValue();
+
+                // RESOLVE child queries using .Future()
+                {
+                    // MODIFY query if necessary
+#if EF5 || EF6
+                    var objectContext = CurrentQueryable.OriginalQueryable.GetObjectQuery().Context;
+                    var keyMembers = ((dynamic)objectContext).CreateObjectSet<T>().EntitySet.ElementType.KeyMembers;
+                    var keyNames = ((IEnumerable<EdmMember>)keyMembers).Select(x => x.Name).ToArray();
+#elif EFCORE
+
+                var context = currentQuery.OriginalQueryable.GetDbContext();
+
+                var keyNames = context.Model.FindEntityType(typeof (TResult).DisplayName(true))
+                    .GetKeys().ToList()[0]
+                    .Properties.Select(x => x.Name).ToArray();
+#endif
+
+                    var currentNewQuery = methodCall.Method.Name == "First" || methodCall.Method.Name == "FirstOrDefault" ?
+                        currentQuery.AddToRootOrAppendOrderBy(keyNames).Take(1) :
+                        methodCall.Method.Name == "Last" || methodCall.Method.Name == "LastOrDefault" ?
+                            currentQuery.AddToRootOrAppendOrderBy(keyNames).Reverse().Take(1) :
+                            currentQuery;
+
+                    currentQuery.CreateQueryable(currentNewQuery);
+                }
+
+                value = futureValue.Value;
             }
             else
             {
                 value = immediateQuery.Execute(objectQuery.MergeOption).FirstOrDefault();
+
+                // RESOLVE child queries using .Future()
+                {
+                    // MODIFY query if necessary
+#if EF5 || EF6
+                    var objectContext = CurrentQueryable.OriginalQueryable.GetObjectQuery().Context;
+                    var keyMembers = ((dynamic)objectContext).CreateObjectSet<T>().EntitySet.ElementType.KeyMembers;
+                    var keyNames = ((IEnumerable<EdmMember>)keyMembers).Select(x => x.Name).ToArray();
+#elif EFCORE
+
+                var context = currentQuery.OriginalQueryable.GetDbContext();
+
+                var keyNames = context.Model.FindEntityType(typeof (TResult).DisplayName(true))
+                    .GetKeys().ToList()[0]
+                    .Properties.Select(x => x.Name).ToArray();
+#endif
+
+                    var currentNewQuery = methodCall.Method.Name == "First" || methodCall.Method.Name == "FirstOrDefault" ?
+                        currentQuery.AddToRootOrAppendOrderBy(keyNames).Take(1) :
+                        methodCall.Method.Name == "Last" || methodCall.Method.Name == "LastOrDefault" ?
+                            currentQuery.AddToRootOrAppendOrderBy(keyNames).Reverse().Take(1) :
+                            currentQuery;
+
+                    currentQuery.CreateQueryable(currentNewQuery);
+                }
+
             }
+
+
             // EXECUTE the new expression
             //var value = QueryIncludeOptimizedManager.AllowQueryBatch ? immediateQuery.FutureValue().Value : immediateQuery.FirstOrDefault();
 

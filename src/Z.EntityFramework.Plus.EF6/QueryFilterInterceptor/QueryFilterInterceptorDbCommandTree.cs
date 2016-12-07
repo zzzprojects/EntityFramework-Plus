@@ -18,6 +18,7 @@ namespace Z.EntityFramework.Plus
         /// <param name="interceptionContext">Contextual information associated with the call.</param>
         public void TreeCreated(DbCommandTreeInterceptionContext interceptionContext)
         {
+      
             var dbQueryCommandTree = interceptionContext.Result as DbQueryCommandTree;
             if (dbQueryCommandTree != null && interceptionContext.DbContexts.Count() == 1)
             {
