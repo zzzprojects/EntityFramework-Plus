@@ -212,11 +212,23 @@ namespace Z.EntityFramework.Plus
                 var internalQueryProperty = typeof(DbQuery<>).MakeGenericType(elementType).GetProperty("InternalQuery", BindingFlags.NonPublic | BindingFlags.Instance);
                 var internalQuery = internalQueryProperty.GetValue(dbSet, null);
 
-                // DbSet<>.InternalQuery.EntitySet
-                var entitySetProperty = internalQuery.GetType().GetProperty("EntitySet", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                var entitySet = (EntitySet)entitySetProperty.GetValue(internalQuery, null);
+              
 
-                var entityTypebase = entitySet.ElementType.FullName;
+                var entityTypebase = type.FullName;
+
+                try
+                {
+                    // DbSet<>.InternalQuery.EntitySet
+                    var entitySetProperty = internalQuery.GetType().GetProperty("EntitySet", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                    var entitySet = (EntitySet)entitySetProperty.GetValue(internalQuery, null);
+
+                    entityTypebase = entitySet.ElementType.FullName;
+                }
+                catch
+                {
+                    // Silence catch, it's k... it doesn't always exist!
+                   
+                }
 
                 // TypeByEntitySetBase
                 {
