@@ -40,7 +40,7 @@ namespace Z.EntityFramework.Plus
             // TODO: Use the same code as (EF5 || EF6) once EF team fix the cast issue: https://github.com/aspnet/EntityFramework/issues/3736
             if(QueryFilterManager.ForceCast)
             {
-                return return Filter((IQueryable<T>) query).Cast<TEntity>();
+                return Filter((IQueryable<T>) query).Cast<TEntity>();
             }
 
             return Filter((IQueryable<T>) query);

@@ -36,9 +36,12 @@ namespace Z.EntityFramework.Plus
 #endif
         {
             var queryFilterQueryable = QueryFilterManager.GetFilterQueryable(query);
+            var nonQueryFilter = queryFilterQueryable != null ? (IQueryable<T>)queryFilterQueryable.OriginalQuery : query;
+
             var context = queryFilterQueryable != null ? queryFilterQueryable.Context : query.GetDbContext();
             var filterContext = QueryFilterManager.AddOrGetFilterContext(context);
-            return filterContext.ApplyFilter(query, keys);
+
+            return filterContext.ApplyFilter(nonQueryFilter, keys);
         }
     }
 }
