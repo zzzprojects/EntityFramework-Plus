@@ -158,45 +158,30 @@ namespace Z.EntityFramework.Plus
                     sql = sql.Replace("@" + oldValue, "@" + newValue);
                 }
 #elif EF6
+                var commandTextAndParameter = query.Query.GetCommandTextAndParameters();
 
-                var objectQuery = query.Query;
-                var stateField = objectQuery.GetType().BaseType.GetField("_state", BindingFlags.NonPublic | BindingFlags.Instance);
-                var state = stateField.GetValue(objectQuery);
-                var getExecutionPlanMethod = state.GetType().GetMethod("GetExecutionPlan", BindingFlags.NonPublic | BindingFlags.Instance);
-                var getExecutionPlan = getExecutionPlanMethod.Invoke(state, new object[] { null });
-                var prepareEntityCommandMethod = getExecutionPlan.GetType().GetMethod("PrepareEntityCommand", BindingFlags.NonPublic | BindingFlags.Instance);
 
-                string sql = "";
-                using (EntityCommand entityCommand = (EntityCommand) prepareEntityCommandMethod.Invoke(getExecutionPlan, new object[] {objectQuery.Context, objectQuery.Parameters}))
+                var sql = commandTextAndParameter.Item1;
+                var parameters = commandTextAndParameter.Item2;
+
+                // UPDATE parameter name
+                foreach (DbParameter parameter in parameters)
                 {
-                    var getCommandDefinitionMethod = entityCommand.GetType().GetMethod("GetCommandDefinition", BindingFlags.NonPublic | BindingFlags.Instance);
-                    var getCommandDefinition = getCommandDefinitionMethod.Invoke(entityCommand, new object[0]);
-
-                    var prepareEntityCommandBeforeExecutionMethod = getCommandDefinition.GetType().GetMethod("PrepareEntityCommandBeforeExecution", BindingFlags.NonPublic | BindingFlags.Instance);
-                    var prepareEntityCommandBeforeExecution = (DbCommand)prepareEntityCommandBeforeExecutionMethod.Invoke(getCommandDefinition, new object[] {entityCommand});
-
-                    sql = prepareEntityCommandBeforeExecution.CommandText;
-                    var parameters = prepareEntityCommandBeforeExecution.Parameters;
-
-                    // UPDATE parameter name
-                    foreach (DbParameter parameter in parameters)
+                    var oldValue = parameter.ParameterName;
+                    if (oldValue.StartsWith("@"))
                     {
-                        var oldValue = parameter.ParameterName;
-                        if (oldValue.StartsWith("@"))
-                        {
-                            oldValue = oldValue.Substring(1);
-                        }
-                        var newValue = string.Concat("Z_", queryCount, "_", oldValue);
-
-                        // CREATE parameter
-                        var dbParameter = command.CreateParameter();
-                        dbParameter.ParameterName = newValue;
-                        dbParameter.Value = parameter.Value;
-                        command.Parameters.Add(dbParameter);
-
-                        // REPLACE parameter with new value
-                        sql = sql.Replace("@" + oldValue, "@" + newValue);
+                        oldValue = oldValue.Substring(1);
                     }
+                    var newValue = string.Concat("Z_", queryCount, "_", oldValue);
+
+                    // CREATE parameter
+                    var dbParameter = command.CreateParameter();
+                    dbParameter.ParameterName = newValue;
+                    dbParameter.Value = parameter.Value;
+                    command.Parameters.Add(dbParameter);
+
+                    // REPLACE parameter with new value
+                    sql = sql.Replace("@" + oldValue, "@" + newValue);
                 }
 #elif EFCORE
 

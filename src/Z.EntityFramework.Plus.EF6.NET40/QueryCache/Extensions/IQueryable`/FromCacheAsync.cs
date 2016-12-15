@@ -58,6 +58,23 @@ namespace Z.EntityFramework.Plus
             return result;
         }
 
+        //public static async Task<IEnumerable<T>> FromCacheAsync2<T>(this IQueryable<T> query, CacheItemPolicy policy, params string[] tags) where T : class
+        //{
+        //    var key = QueryCacheManager.GetCacheKey(query, tags);
+
+        //    var item = QueryCacheManager.Cache.Get(key);
+
+        //    if (item == null)
+        //    {
+        //        item = await query.AsNoTracking().ToListAsync().ConfigureAwait(false);
+        //        item = QueryCacheManager.Cache.AddOrGetExisting(key, item, policy) ?? item;
+        //        QueryCacheManager.AddCacheTag(key, tags);
+        //    }
+
+        //    var result = (IEnumerable<T>)item;
+        //    return result;
+        //}
+
         /// <summary>
         ///     Return the result of the <paramref name="query" /> from the cache. If the query is not cached
         ///     yet, the query is materialized asynchronously and cached before being returned.

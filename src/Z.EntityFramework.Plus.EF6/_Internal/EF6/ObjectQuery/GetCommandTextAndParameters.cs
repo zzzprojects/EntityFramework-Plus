@@ -5,7 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
-#if FULL || QUERY_CACHE || QUERY_FILTER
+#if FULL || QUERY_CACHE || QUERY_FILTER || QUERY_FUTURE
 #if EF6
 using System;
 using System.Collections.Generic;
