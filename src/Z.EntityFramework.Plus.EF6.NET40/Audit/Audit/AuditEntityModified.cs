@@ -92,7 +92,7 @@ new AuditEntry();
 entry.Parent.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(entry, objectStateEntry, string.Concat(prefix, name), originalValue, currentValue)) :
 new AuditEntryProperty();
 
-                        auditEntryProperty.Build(entry, string.Concat(prefix, name), originalValue, currentValue);
+                        auditEntryProperty.Build(entry, string.Concat(prefix, name), originalValue, currentRecord, i);
                         entry.Properties.Add(auditEntryProperty);
                     }
                 }
@@ -115,7 +115,7 @@ new AuditEntryProperty();
                             entry.Parent.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(entry, objectStateEntry, propertyEntry.Name, property.OriginalValue, property.CurrentValue)) :
                             new AuditEntryProperty();
 
-                        auditEntryProperty.Build(entry, propertyEntry.Name, property.OriginalValue, property.CurrentValue);
+                        auditEntryProperty.Build(entry, propertyEntry.Name, property.OriginalValue, propertyEntry);
                         entry.Properties.Add(auditEntryProperty);
                     }
                 }

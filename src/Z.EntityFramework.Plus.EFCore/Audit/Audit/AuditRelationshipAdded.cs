@@ -36,63 +36,62 @@ namespace Z.EntityFramework.Plus
 #endif
         {
             var entry = audit.Configuration.AuditEntryFactory != null ?
-    audit.Configuration.AuditEntryFactory(new AuditEntryFactoryArgs(audit, objectStateEntry, AuditEntryState.RelationshipAdded)) :
-    new AuditEntry();
+                audit.Configuration.AuditEntryFactory(new AuditEntryFactoryArgs(audit, objectStateEntry, AuditEntryState.RelationshipAdded)) :
+                new AuditEntry();
 
             entry.Build(audit, objectStateEntry);
             entry.State = AuditEntryState.RelationshipAdded;
 
-            var values = objectStateEntry.CurrentValues;
+            audit.Entries.Add(entry);
+        }
 
+#if EF5 || EF6
+        public static void AuditRelationAdded(Audit audit, AuditEntry entry, ObjectStateEntry objectStateEntry)
+#elif EFCORE
+        public static void AuditRelationAdded(Audit audit, EntityEntry objectStateEntry)
+#endif
+        {
+            var values = objectStateEntry.CurrentValues;
 
             var leftKeys = (EntityKey) values.GetValue(0);
             var rightKeys = (EntityKey) values.GetValue(1);
 
-            if (leftKeys.IsTemporary || rightKeys.IsTemporary)
-            {
-                entry.DelayedKey = objectStateEntry;
-            }
-            else
-            {
-                var leftRelationName = values.GetName(0);
-                var rightRelationName = values.GetName(1);
+            var leftRelationName = values.GetName(0);
+            var rightRelationName = values.GetName(1);
 
-                foreach (var keyValue in leftKeys.EntityKeyValues)
+            foreach (var keyValue in leftKeys.EntityKeyValues)
+            {
+                var value = keyValue.Value;
+
+                if (audit.Configuration.UseNullForDBNullValue && value == DBNull.Value)
                 {
-                    var value = keyValue.Value;
-
-                    if (audit.Configuration.UseNullForDBNullValue && value == DBNull.Value)
-                    {
-                        value = null;
-                    }
-
-                    var auditEntryProperty = entry.Parent.Configuration.AuditEntryPropertyFactory != null ?
-entry.Parent.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(entry, objectStateEntry, leftRelationName, keyValue.Key, null, value)) :
-new AuditEntryProperty();
-
-                    auditEntryProperty.Build(entry, leftRelationName, keyValue.Key, null, value);
-                    entry.Properties.Add(auditEntryProperty);
+                    value = null;
                 }
 
-                foreach (var keyValue in rightKeys.EntityKeyValues)
-                {
-                    var value = keyValue.Value;
+                var auditEntryProperty = entry.Parent.Configuration.AuditEntryPropertyFactory != null ?
+                    entry.Parent.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(entry, objectStateEntry, leftRelationName, keyValue.Key, null, value)) :
+                    new AuditEntryProperty();
 
-                    if (audit.Configuration.UseNullForDBNullValue && value == DBNull.Value)
-                    {
-                        value = null;
-                    }
-
-                    var auditEntryProperty = entry.Parent.Configuration.AuditEntryPropertyFactory != null ?
-entry.Parent.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(entry, objectStateEntry, rightRelationName, keyValue.Key, null, value)) :
-new AuditEntryProperty();
-
-                    auditEntryProperty.Build(entry, rightRelationName, keyValue.Key, null, value);
-                    entry.Properties.Add(auditEntryProperty);
-                }
+                auditEntryProperty.Build(entry, leftRelationName, keyValue.Key, null, value);
+                entry.Properties.Add(auditEntryProperty);
             }
 
-            audit.Entries.Add(entry);
+            foreach (var keyValue in rightKeys.EntityKeyValues)
+            {
+                var value = keyValue.Value;
+
+                if (audit.Configuration.UseNullForDBNullValue && value == DBNull.Value)
+                {
+                    value = null;
+                }
+
+                var auditEntryProperty = entry.Parent.Configuration.AuditEntryPropertyFactory != null ?
+                    entry.Parent.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(entry, objectStateEntry, rightRelationName, keyValue.Key, null, value)) :
+                    new AuditEntryProperty();
+
+                auditEntryProperty.Build(entry, rightRelationName, keyValue.Key, null, value);
+                entry.Properties.Add(auditEntryProperty);
+            }
         }
     }
 }

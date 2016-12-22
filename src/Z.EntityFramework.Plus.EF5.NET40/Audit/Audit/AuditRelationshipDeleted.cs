@@ -41,11 +41,22 @@ namespace Z.EntityFramework.Plus
             entry.Build(audit, objectStateEntry);
             entry.State = AuditEntryState.RelationshipDeleted;
 
+            audit.Entries.Add(entry);
+
+            AuditRelationDeleted(audit, entry, objectStateEntry);
+        }
+
+#if EF5 || EF6
+        public static void AuditRelationDeleted(Audit audit, AuditEntry entry, ObjectStateEntry objectStateEntry)
+#elif EFCORE
+        public static void AuditRelationDeleted(Audit audit, EntityEntry objectStateEntry)
+#endif
+        {
             var values = objectStateEntry.OriginalValues;
             for (var i = 0; i < values.FieldCount; i++)
             {
                 var relationName = values.GetName(i);
-                var entityKey = (EntityKey) values.GetValue(i);
+                var entityKey = (EntityKey)values.GetValue(i);
                 foreach (var keyValue in entityKey.EntityKeyValues)
                 {
                     var value = keyValue.Value;
@@ -63,8 +74,6 @@ namespace Z.EntityFramework.Plus
                     entry.Properties.Add(auditEntryProperty);
                 }
             }
-
-            audit.Entries.Add(entry);
         }
     }
 }

@@ -9,11 +9,15 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+
 #if EF5
 using System.Data.Objects;
 
 #elif EF6
 using System.Data.Entity.Core.Objects;
+
+#elif EFCORE
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 #endif
 
@@ -22,11 +26,84 @@ namespace Z.EntityFramework.Plus
     /// <summary>An audit entry property.</summary>
     public class AuditEntryProperty
     {
-        /// <summary>Constructor.</summary>
-        /// <param name="parent">The audit entry parent.</param>
-        /// <param name="propertyName">Name of the property audited.</param>
-        /// <param name="oldValue">The old value audited.</param>
-        /// <param name="newValue">The new value audited.</param>
+#if EF5 || EF6
+        public void Build(AuditEntry parent, string propertyName, object oldValue, DbUpdatableDataRecord dbUpdatableDataRecord, int dbUpdatableDataRecordPosition)
+        {
+            Build(parent, null, propertyName, oldValue, dbUpdatableDataRecord, dbUpdatableDataRecordPosition);
+        }
+
+        public void Build(AuditEntry parent, string relationName, string propertyName, object oldValue, DbUpdatableDataRecord dbUpdatableDataRecord, int dbUpdatableDataRecordPosition)
+        {
+            InternalPropertyName = propertyName;
+
+            if (!IsValueSet)
+            {
+                DbUpdatableDataRecord = dbUpdatableDataRecord;
+                DbUpdatableDataRecordPosition = dbUpdatableDataRecordPosition;
+                OldValue = oldValue;
+            }
+
+            if (Parent == null)
+            {
+                Parent = parent;
+            }
+
+            if (PropertyName == null)
+            {
+                PropertyName = parent.Parent.CurrentOrDefaultConfiguration.PropertyNameFactory != null ?
+                    parent.Parent.CurrentOrDefaultConfiguration.PropertyNameFactory(ObjectContext.GetObjectType(parent.Entry.Entity.GetType()), propertyName) :
+                    propertyName;
+            }
+
+            if (RelationName == null)
+            {
+                RelationName = relationName;
+            }
+        }
+#elif EFCORE
+        public void Build(AuditEntry parent, string propertyName, object oldValue, PropertyEntry propertyEntry)
+        {
+            Build(parent, null, propertyName, oldValue, propertyEntry);
+        }
+
+        public void Build(AuditEntry parent, string relationName, string propertyName, object oldValue, PropertyEntry propertyEntry)
+        {
+            InternalPropertyName = propertyName;
+
+            if (!IsValueSet)
+            {
+                PropertyEntry = propertyEntry;
+                OldValue = oldValue;
+            }
+
+            if (Parent == null)
+            {
+                Parent = parent;
+            }
+
+            if (PropertyName == null)
+            {
+#if EF5 || EF6
+                PropertyName = parent.Parent.CurrentOrDefaultConfiguration.PropertyNameFactory != null ?
+                    parent.Parent.CurrentOrDefaultConfiguration.PropertyNameFactory(ObjectContext.GetObjectType(parent.Entry.Entity.GetType()), propertyName) :
+                    propertyName;
+#elif EFCORE
+                PropertyName = parent.Parent.CurrentOrDefaultConfiguration.PropertyNameFactory != null ?
+                    parent.Parent.CurrentOrDefaultConfiguration.PropertyNameFactory(parent.Entry.Entity.GetType(), propertyName) :
+                    propertyName;
+#endif
+            }
+
+            if (RelationName == null)
+            {
+                RelationName = relationName;
+            }
+        }
+#endif
+
+
+
+
         public void Build(AuditEntry parent, string propertyName, object oldValue, object newValue)
         {
             Build(parent, null, propertyName, oldValue, newValue);
@@ -98,9 +175,12 @@ namespace Z.EntityFramework.Plus
         [NotMapped]
         public object NewValue { get; set; }
 #elif EFCORE
+        [NotMapped]
+        public PropertyEntry PropertyEntry { get; set; }
     // EFCORE still have some issue with "NotMapped" attribute
         public object NewValue;
 #endif
+
         /// <summary>Gets or sets a value indicating whether OldValue and NewValue is set.</summary>
         /// <value>true if OldValue and NewValue is set, false if not.</value>
         [NotMapped]
@@ -135,6 +215,12 @@ namespace Z.EntityFramework.Plus
         /// <value>The old value audited.</value>
         [NotMapped]
         public object OldValue { get; set; }
+
+        [NotMapped]
+        internal DbUpdatableDataRecord DbUpdatableDataRecord { get; set; }
+
+        [NotMapped]
+        internal int DbUpdatableDataRecordPosition { get; set; }
 #elif EFCORE
     // EFCORE still have some issue with "NotMapped" attribute
         public object OldValue;

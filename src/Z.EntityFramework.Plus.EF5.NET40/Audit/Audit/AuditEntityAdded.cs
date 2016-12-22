@@ -41,22 +41,6 @@ namespace Z.EntityFramework.Plus
             entry.Build(audit, objectStateEntry);
             entry.State = AuditEntryState.EntityAdded;
 
-            // CHECK if the key should be resolved in POST Action
-#if EF5 || EF6
-            if (objectStateEntry.EntityKey.IsTemporary)
-            {
-                entry.DelayedKey = objectStateEntry;
-            }
-            AuditEntityAdded(entry, objectStateEntry, objectStateEntry.CurrentValues);
-#elif EFCORE
-    // TODO: We must check if the key IsTemporary! We can maybe use flag...
-    //if (!objectStateEntry.IsKeySet)
-    //{
-                entry.DelayedKey = objectStateEntry;
-            //}
-            AuditEntityAdded(entry, objectStateEntry);
-#endif
-
             audit.Entries.Add(entry);
         }
 

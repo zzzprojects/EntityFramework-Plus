@@ -8,7 +8,6 @@
 using System;
 using System.Data.Common;
 using System.Linq;
-
 #if EF5
 using System.Data.Objects;
 
@@ -35,19 +34,19 @@ namespace Z.EntityFramework.Plus
 #endif
         {
             var entry = audit.Configuration.AuditEntryFactory != null ?
-    audit.Configuration.AuditEntryFactory(new AuditEntryFactoryArgs(audit, objectStateEntry, AuditEntryState.EntityDeleted)) :
-    new AuditEntry();
+                audit.Configuration.AuditEntryFactory(new AuditEntryFactoryArgs(audit, objectStateEntry, AuditEntryState.EntityDeleted)) :
+                new AuditEntry();
 
             entry.Build(audit, objectStateEntry);
             entry.State = AuditEntryState.EntityDeleted;
 
+            audit.Entries.Add(entry);
 
 #if EF5 || EF6
             AuditEntityDeleted(entry, objectStateEntry, objectStateEntry.OriginalValues);
 #elif EFCORE
             AuditEntityDeleted(entry, objectStateEntry);
 #endif
-            audit.Entries.Add(entry);
         }
 
 #if EF5 || EF6
@@ -76,8 +75,8 @@ namespace Z.EntityFramework.Plus
                 else if (objectStateEntry.EntityKey.EntityKeyValues.Any(x => x.Key == name) || entry.Parent.CurrentOrDefaultConfiguration.IsAuditedProperty(entry.Entry, name))
                 {
                     var auditEntryProperty = entry.Parent.Configuration.AuditEntryPropertyFactory != null ?
-entry.Parent.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(entry, objectStateEntry, string.Concat(prefix, name), value, null)) :
-new AuditEntryProperty();
+                        entry.Parent.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(entry, objectStateEntry, string.Concat(prefix, name), value, null)) :
+                        new AuditEntryProperty();
 
                     auditEntryProperty.Build(entry, string.Concat(prefix, name), value, null);
                     entry.Properties.Add(auditEntryProperty);
