@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 
@@ -65,7 +66,7 @@ namespace Z.EntityFramework.Plus
         public void ExecuteQueries()
         {
 #if EF5 || EF6
-            var connection = (EntityConnection)Context.Connection;
+            var connection = (EntityConnection) Context.Connection;
 #elif EFCORE
             var connection = Context.Database.GetDbConnection();
 #endif
@@ -135,6 +136,10 @@ namespace Z.EntityFramework.Plus
             var sb = new StringBuilder();
             var queryCount = 1;
 
+            var isOracle = command.GetType().FullName.Contains("Oracle.DataAccess");
+            var isOracleManaged = command.GetType().FullName.Contains("Oracle.ManagedDataAccess");
+            var isOracleDevArt = command.GetType().FullName.Contains("Devart");
+
             foreach (var query in Queries)
             {
                 // GENERATE SQL
@@ -181,7 +186,14 @@ namespace Z.EntityFramework.Plus
                     command.Parameters.Add(dbParameter);
 
                     // REPLACE parameter with new value
-                    sql = sql.Replace("@" + oldValue, "@" + newValue);
+                    if (isOracle || isOracleManaged || isOracleDevArt)
+                    {
+                        sql = sql.Replace(":" + oldValue, ":" + newValue);
+                    }
+                    else
+                    {
+                        sql = sql.Replace("@" + oldValue, "@" + newValue);
+                    }
                 }
 #elif EFCORE
 
@@ -205,14 +217,64 @@ namespace Z.EntityFramework.Plus
                     command.Parameters.Add(dbParameter);
 
                     // REPLACE parameter with new value
-                    sql = sql.Replace("@" + oldValue, "@" + newValue);
+                    if (isOracle || isOracleManaged || isOracleDevArt)
+                    {
+                        sql = sql.Replace(":" + oldValue, ":" + newValue);
+                    }
+                    else
+                    {
+                        sql = sql.Replace("@" + oldValue, "@" + newValue);
+                    }
                 }
 #endif
 
 
 
                 sb.AppendLine(string.Concat("-- EF+ Query Future: ", queryCount, " of ", Queries.Count));
-                sb.AppendLine(sql);
+
+                if (isOracle || isOracleManaged || isOracleDevArt)
+                {
+                    var parameterName = "zzz_cursor_" + queryCount;
+                    sb.AppendLine("open :" + parameterName + " for " + sql);
+                    var param = command.CreateParameter();
+                    param.ParameterName = parameterName;
+                    param.Direction = ParameterDirection.Output;
+                    param.Value = DBNull.Value;
+
+                    if (isOracle)
+                    {
+#if NETSTANDARD1_3
+                        SetOracleDbType(command.GetType().GetTypeInfo().Assembly, param, 121);
+#else
+                        SetOracleDbType(command.GetType().Assembly, param, 121);
+#endif
+                    }
+                    else if (isOracleManaged)
+                    {
+#if NETSTANDARD1_3
+                        SetOracleManagedDbType(command.GetType().GetTypeInfo().Assembly, param, 121);
+#else
+                        SetOracleManagedDbType(command.GetType().Assembly, param, 121);
+#endif
+                    }
+                    else if (isOracleDevArt)
+                    {
+#if NETSTANDARD1_3
+                        SetOracleDevArtDbType(command.GetType().GetTypeInfo().Assembly, param, 7);
+#else
+                        SetOracleDevArtDbType(command.GetType().Assembly, param, 7);
+#endif
+                    }
+
+
+                    command.Parameters.Add(param);
+                }
+                else
+                {
+                    sb.AppendLine(sql);
+                }
+
+
                 sb.Append(";"); // SQL Server, SQL Azure, MySQL
                 sb.AppendLine();
                 sb.AppendLine();
@@ -222,7 +284,85 @@ namespace Z.EntityFramework.Plus
 
             command.CommandText = sb.ToString();
 
+            if (isOracle || isOracleManaged || isOracleDevArt)
+            {
+                var bindByNameProperty = command.GetType().GetProperty("BindByName") ?? command.GetType().GetProperty("PassParametersByName");
+                bindByNameProperty.SetValue(command, true, null);
+
+                command.CommandText = "BEGIN" + Environment.NewLine + command.CommandText + Environment.NewLine + "END;";
+            }
+
             return command;
+        }
+
+        private static Action<DbParameter, object> _SetOracleDbType;
+        private static Action<DbParameter, object> _SetOracleManagedDbType;
+        private static Action<DbParameter, object> _SetOracleDevArtDbType;
+
+        public static void SetOracleManagedDbType(Assembly assembly, DbParameter dbParameter, object type)
+        {
+            if (_SetOracleManagedDbType == null)
+            {
+                var dbtype = assembly.GetType("Oracle.ManagedDataAccess.Client.OracleDbType");
+                var dbParameterType = assembly.GetType("Oracle.ManagedDataAccess.Client.OracleParameter");
+                var propertyInfo = dbParameter.GetType().GetProperty("OracleDbType");
+
+                var parameter = Expression.Parameter(typeof(DbParameter));
+                var parameterConvert = Expression.Convert(parameter, dbParameterType);
+                var parameterValue = Expression.Parameter(typeof(object));
+                var parameterValueConvert = Expression.Convert(parameterValue, dbtype);
+
+                var property = Expression.Property(parameterConvert, propertyInfo);
+                var expression = Expression.Assign(property, parameterValueConvert);
+
+                _SetOracleManagedDbType = Expression.Lambda<Action<DbParameter, object>>(expression, parameter, parameterValue).Compile();
+            }
+
+            _SetOracleManagedDbType(dbParameter, type);
+        }
+
+        public static void SetOracleDbType(Assembly assembly, DbParameter dbParameter, object type)
+        {
+            if (_SetOracleDbType == null)
+            {
+                var dbtype = assembly.GetType("Oracle.DataAccess.Client.OracleDbType");
+                var dbParameterType = assembly.GetType("Oracle.DataAccess.Client.OracleParameter");
+                var propertyInfo = dbParameter.GetType().GetProperty("OracleDbType");
+
+                var parameter = Expression.Parameter(typeof(DbParameter));
+                var parameterConvert = Expression.Convert(parameter, dbParameterType);
+                var parameterValue = Expression.Parameter(typeof(object));
+                var parameterValueConvert = Expression.Convert(parameterValue, dbtype);
+
+                var property = Expression.Property(parameterConvert, propertyInfo);
+                var expression = Expression.Assign(property, parameterValueConvert);
+
+                _SetOracleDbType = Expression.Lambda<Action<DbParameter, object>>(expression, parameter, parameterValue).Compile();
+            }
+
+            _SetOracleDbType(dbParameter, type);
+        }
+
+        public static void SetOracleDevArtDbType(Assembly assembly, DbParameter dbParameter, object type)
+        {
+            if (_SetOracleDevArtDbType == null)
+            {
+                var dbtype = assembly.GetType("Devart.Data.Oracle.OracleDbType");
+                var dbParameterType = assembly.GetType("Devart.Data.Oracle.OracleParameter");
+                var propertyInfo = dbParameter.GetType().GetProperty("OracleDbType");
+
+                var parameter = Expression.Parameter(typeof(DbParameter));
+                var parameterConvert = Expression.Convert(parameter, dbParameterType);
+                var parameterValue = Expression.Parameter(typeof(object));
+                var parameterValueConvert = Expression.Convert(parameterValue, dbtype);
+
+                var property = Expression.Property(parameterConvert, propertyInfo);
+                var expression = Expression.Assign(property, parameterValueConvert);
+
+                _SetOracleDevArtDbType = Expression.Lambda<Action<DbParameter, object>>(expression, parameter, parameterValue).Compile();
+            }
+
+            _SetOracleDevArtDbType(dbParameter, type);
         }
     }
 }
