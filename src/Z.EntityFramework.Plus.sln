@@ -25,6 +25,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.EntityFramework.Plus.EF6.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.Test.EntityFramework.Plus.EF6.Cache.Redis", "Z.Test.EntityFramework.Plus.EF6.Cache.Redis\Z.Test.EntityFramework.Plus.EF6.Cache.Redis.csproj", "{8526E15C-76F4-43AC-B5DE-2E213C8E2FD8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.EntityFramework.Plus.EF5.Cache.Redis", "Z.EntityFramework.Plus.EF5.Cache.Redis\Z.EntityFramework.Plus.EF5.Cache.Redis.csproj", "{F7F750BB-B9F8-409B-90A3-F2DFD3C64B80}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.Test.EntityFramework.Plus.EF5.Cache.Redis", "Z.Test.EntityFramework.Plus.EF5.Cache.Redis\Z.Test.EntityFramework.Plus.EF5.Cache.Redis.csproj", "{908ECF88-A65A-457C-AF85-812BBE111D65}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,6 +74,14 @@ Global
 		{8526E15C-76F4-43AC-B5DE-2E213C8E2FD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8526E15C-76F4-43AC-B5DE-2E213C8E2FD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8526E15C-76F4-43AC-B5DE-2E213C8E2FD8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7F750BB-B9F8-409B-90A3-F2DFD3C64B80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7F750BB-B9F8-409B-90A3-F2DFD3C64B80}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7F750BB-B9F8-409B-90A3-F2DFD3C64B80}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7F750BB-B9F8-409B-90A3-F2DFD3C64B80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{908ECF88-A65A-457C-AF85-812BBE111D65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{908ECF88-A65A-457C-AF85-812BBE111D65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{908ECF88-A65A-457C-AF85-812BBE111D65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{908ECF88-A65A-457C-AF85-812BBE111D65}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -79,5 +91,6 @@ Global
 		{063FA382-DFDA-4BCB-BBB6-AAC04D0ED88E} = {14D8985E-0AA8-444A-A32E-D766ABA114D6}
 		{C47F920B-8064-44B0-BF3F-CD29298597A0} = {14D8985E-0AA8-444A-A32E-D766ABA114D6}
 		{8526E15C-76F4-43AC-B5DE-2E213C8E2FD8} = {14D8985E-0AA8-444A-A32E-D766ABA114D6}
+		{908ECF88-A65A-457C-AF85-812BBE111D65} = {14D8985E-0AA8-444A-A32E-D766ABA114D6}
 	EndGlobalSection
 EndGlobal
