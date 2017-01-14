@@ -11,6 +11,7 @@ using System.Linq;
 using System.Runtime.Caching;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Z.EntityFramework.Plus;
+using Z.EntityFramework.Plus.QueryCache;
 
 namespace Z.Test.EntityFramework.Plus
 {
@@ -19,7 +20,7 @@ namespace Z.Test.EntityFramework.Plus
         [TestMethod]
         public void Queryable_WithTag()
         {
-            QueryCacheManager.Cache = new MemoryCache(Guid.NewGuid().ToString());
+            QueryCacheManager.Cache = new MemoryCacheProvider(new MemoryCache(Guid.NewGuid().ToString()));
 
             var testCacheKey = Guid.NewGuid().ToString();
 

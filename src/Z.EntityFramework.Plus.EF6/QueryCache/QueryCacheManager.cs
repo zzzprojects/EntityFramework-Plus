@@ -12,6 +12,7 @@ using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Z.EntityFramework.Plus.QueryCache;
 #if EF5
 using System.Runtime.Caching;
 using System.Data.EntityClient;
@@ -37,7 +38,7 @@ namespace Z.EntityFramework.Plus
         static QueryCacheManager()
         {
 #if EF5 || EF6
-            Cache = MemoryCache.Default;
+            Cache = new MemoryCacheProvider();
             DefaultCacheItemPolicy = new CacheItemPolicy();
 #elif EFCORE
             Cache = new MemoryCache(new MemoryCacheOptions());
@@ -51,7 +52,7 @@ namespace Z.EntityFramework.Plus
 #if EF5 || EF6
         /// <summary>Gets or sets the cache to use for QueryCacheExtensions extension methods.</summary>
         /// <value>The cache to use for QueryCacheExtensions extension methods.</value>
-        public static ObjectCache Cache { get; set; }
+        public static ICacheProvider Cache { get; set; }
 
         /// <summary>The default cache item policy.</summary>
         private static CacheItemPolicy _defaultCacheItemPolicy;
@@ -190,7 +191,7 @@ namespace Z.EntityFramework.Plus
         {
             var list = new List<string>();
 
-            foreach (var item in Cache)
+            foreach (var item in Cache.GetAll())
             {
                 if (item.Key.StartsWith(CachePrefix, StringComparison.InvariantCulture))
                 {

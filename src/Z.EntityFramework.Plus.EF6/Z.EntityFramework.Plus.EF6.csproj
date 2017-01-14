@@ -101,6 +101,7 @@
     <Compile Include="BatchUpdate\Extensions\Update.cs" />
     <Compile Include="BatchUpdate\Extensions\UpdateAsync.cs" />
     <Compile Include="ExceptionMessage.cs" />
+    <Compile Include="QueryCache\ICacheProvider.cs" />
     <Compile Include="QueryExtensions\QueryAddOrAppendOrder\Extensions\IQueryable`.AddToRootOrAppendOrderBy.cs" />
     <Compile Include="QueryExtensions\QueryAddOrAppendOrder\Extensions\IQueryable`.AddOrAppendOrderByDescending.cs" />
     <Compile Include="QueryExtensions\QueryAddOrAppendOrder\Extensions\IQueryable`.AddOrAppendOrderBy.cs" />
