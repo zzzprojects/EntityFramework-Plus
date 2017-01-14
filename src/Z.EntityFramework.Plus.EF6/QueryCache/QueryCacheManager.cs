@@ -45,7 +45,7 @@ namespace Z.EntityFramework.Plus
             DefaultMemoryCacheEntryOptions = new MemoryCacheEntryOptions();
 #endif
             CachePrefix = "Z.EntityFramework.Plus.QueryCacheManager;";
-            CacheTags = new ConcurrentDictionary<string, List<string>>();
+            CacheTagProvider = new InMemoryCacheTagProvider();
             IncludeConnectionInCacheKey = true;
         }
 
@@ -152,7 +152,7 @@ namespace Z.EntityFramework.Plus
 
         /// <summary>Gets the dictionary cache tags used to store tags and corresponding cached keys.</summary>
         /// <value>The cache tags used to store tags and corresponding cached keys.</value>
-        public static ConcurrentDictionary<string, List<string>> CacheTags { get; }
+        public static ICacheTagProvider CacheTagProvider { get; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this object use first tag as cache key.
@@ -173,15 +173,7 @@ namespace Z.EntityFramework.Plus
         {
             foreach (var tag in tags)
             {
-                CacheTags.AddOrUpdate(CachePrefix + tag, x => new List<string> {cacheKey}, (x, list) =>
-                {
-                    if (!list.Contains(cacheKey))
-                    {
-                        list.Add(cacheKey);
-                    }
-
-                    return list;
-                });
+                CacheTagProvider.AddOrUpdate(cacheKey, CachePrefix + tag);
             }
         }
 
@@ -215,10 +207,11 @@ namespace Z.EntityFramework.Plus
         {
             foreach (var tag in tags)
             {
-                List<string> list;
-                if (CacheTags.TryRemove(CachePrefix + tag, out list))
+                var result = CacheTagProvider.Remove(CachePrefix + tag);
+
+                if (result.Success)
                 {
-                    foreach (var item in list)
+                    foreach (var item in result.Items)
                     {
                         Cache.Remove(item);
                     }
@@ -342,11 +335,11 @@ namespace Z.EntityFramework.Plus
         public static string GetConnectionStringForCacheKey(IQueryable query)
         {
 #if EF5 || EF6
-            var connection = ((EntityConnection) query.GetObjectQuery().Context.Connection).GetStoreConnection();
+            var connection = ((EntityConnection)query.GetObjectQuery().Context.Connection).GetStoreConnection();
 
             // FORCE database name in case "ChangeDatabase()" method is used
-            var connectionString = string.Concat(connection.DataSource ?? "", 
-                Environment.NewLine, 
+            var connectionString = string.Concat(connection.DataSource ?? "",
+                Environment.NewLine,
                 connection.Database ?? "",
                 Environment.NewLine,
                 connection.ConnectionString ?? "");

@@ -102,6 +102,10 @@
     <Compile Include="BatchUpdate\Extensions\UpdateAsync.cs" />
     <Compile Include="ExceptionMessage.cs" />
     <Compile Include="QueryCache\ICacheProvider.cs" />
+    <Compile Include="QueryCache\ICacheTagProvider.cs" />
+    <Compile Include="QueryCache\InMemoryCacheTagProvider.cs" />
+    <Compile Include="QueryCache\IRemoveTagResult.cs" />
+    <Compile Include="QueryCache\RemoveTagResult.cs" />
     <Compile Include="QueryExtensions\QueryAddOrAppendOrder\Extensions\IQueryable`.AddToRootOrAppendOrderBy.cs" />
     <Compile Include="QueryExtensions\QueryAddOrAppendOrder\Extensions\IQueryable`.AddOrAppendOrderByDescending.cs" />
     <Compile Include="QueryExtensions\QueryAddOrAppendOrder\Extensions\IQueryable`.AddOrAppendOrderBy.cs" />
