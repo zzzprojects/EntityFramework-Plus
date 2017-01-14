@@ -12,6 +12,7 @@ using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Z.EntityFramework.Plus.QueryCache;
 #if EF5
 using System.Runtime.Caching;
 using System.Data.EntityClient;
@@ -37,21 +38,21 @@ namespace Z.EntityFramework.Plus
         static QueryCacheManager()
         {
 #if EF5 || EF6
-            Cache = MemoryCache.Default;
+            Cache = new MemoryCacheProvider();
             DefaultCacheItemPolicy = new CacheItemPolicy();
 #elif EFCORE
             Cache = new MemoryCache(new MemoryCacheOptions());
             DefaultMemoryCacheEntryOptions = new MemoryCacheEntryOptions();
 #endif
             CachePrefix = "Z.EntityFramework.Plus.QueryCacheManager;";
-            CacheTags = new ConcurrentDictionary<string, List<string>>();
+            CacheTagProvider = new InMemoryCacheTagProvider();
             IncludeConnectionInCacheKey = true;
         }
 
 #if EF5 || EF6
         /// <summary>Gets or sets the cache to use for QueryCacheExtensions extension methods.</summary>
         /// <value>The cache to use for QueryCacheExtensions extension methods.</value>
-        public static ObjectCache Cache { get; set; }
+        public static ICacheProvider Cache { get; set; }
 
         /// <summary>The default cache item policy.</summary>
         private static CacheItemPolicy _defaultCacheItemPolicy;
@@ -151,7 +152,7 @@ namespace Z.EntityFramework.Plus
 
         /// <summary>Gets the dictionary cache tags used to store tags and corresponding cached keys.</summary>
         /// <value>The cache tags used to store tags and corresponding cached keys.</value>
-        public static ConcurrentDictionary<string, List<string>> CacheTags { get; }
+        public static ICacheTagProvider CacheTagProvider { get; set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this object use first tag as cache key.
@@ -172,15 +173,7 @@ namespace Z.EntityFramework.Plus
         {
             foreach (var tag in tags)
             {
-                CacheTags.AddOrUpdate(CachePrefix + tag, x => new List<string> {cacheKey}, (x, list) =>
-                {
-                    if (!list.Contains(cacheKey))
-                    {
-                        list.Add(cacheKey);
-                    }
-
-                    return list;
-                });
+                CacheTagProvider.AddOrUpdate(cacheKey, CachePrefix + tag);
             }
         }
 
@@ -190,7 +183,7 @@ namespace Z.EntityFramework.Plus
         {
             var list = new List<string>();
 
-            foreach (var item in Cache)
+            foreach (var item in Cache.GetAll())
             {
                 if (item.Key.StartsWith(CachePrefix, StringComparison.InvariantCulture))
                 {
@@ -214,10 +207,11 @@ namespace Z.EntityFramework.Plus
         {
             foreach (var tag in tags)
             {
-                List<string> list;
-                if (CacheTags.TryRemove(CachePrefix + tag, out list))
+                var result = CacheTagProvider.Remove(CachePrefix + tag);
+
+                if (result.Success)
                 {
-                    foreach (var item in list)
+                    foreach (var item in result.Items)
                     {
                         Cache.Remove(item);
                     }
