@@ -152,7 +152,7 @@ namespace Z.EntityFramework.Plus
 
         /// <summary>Gets the dictionary cache tags used to store tags and corresponding cached keys.</summary>
         /// <value>The cache tags used to store tags and corresponding cached keys.</value>
-        public static ICacheTagProvider CacheTagProvider { get; }
+        public static ICacheTagProvider CacheTagProvider { get; set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this object use first tag as cache key.
