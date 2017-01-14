@@ -105,6 +105,7 @@
     <Compile Include="QueryCache\ICacheTagProvider.cs" />
     <Compile Include="QueryCache\InMemoryCacheTagProvider.cs" />
     <Compile Include="QueryCache\IRemoveTagResult.cs" />
+    <Compile Include="QueryCache\MemoryCacheProvider.cs" />
     <Compile Include="QueryCache\RemoveTagResult.cs" />
     <Compile Include="QueryExtensions\QueryAddOrAppendOrder\Extensions\IQueryable`.AddToRootOrAppendOrderBy.cs" />
     <Compile Include="QueryExtensions\QueryAddOrAppendOrder\Extensions\IQueryable`.AddOrAppendOrderByDescending.cs" />
