@@ -100,7 +100,13 @@
     <Compile Include="QueryCache\Extensions\IQueryable`\FromCacheAsync.cs" />
     <Compile Include="QueryCache\Extensions\QueryDeferred`\FromCache.cs" />
     <Compile Include="QueryCache\Extensions\QueryDeferred`\FromCacheAsync.cs" />
+    <Compile Include="QueryCache\ICacheProvider.cs" />
+    <Compile Include="QueryCache\ICacheTagProvider.cs" />
+    <Compile Include="QueryCache\InMemoryCacheTagProvider.cs" />
+    <Compile Include="QueryCache\IRemoveTagResult.cs" />
+    <Compile Include="QueryCache\MemoryCacheProvider.cs" />
     <Compile Include="QueryCache\QueryCacheManager.cs" />
+    <Compile Include="QueryCache\RemoveTagResult.cs" />
     <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredAggregate.cs" />
     <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredAll.cs" />
     <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredAny.cs" />
