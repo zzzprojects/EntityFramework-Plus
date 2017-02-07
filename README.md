@@ -1,5 +1,13 @@
 # Improve Entity Framework performance and overcome limitations with MUST-HAVE features
 
+## Library Powered By
+
+This library is powered by [Entity Framework Extensions](http://entityframework-extensions.net/)
+
+<a href="http://entityframework-extensions.net/">
+<img src="https://zzzprojects.github.io/images/logo/entityframework-extensions-pub.jpg" alt="Entity Framework Extensions" />
+</a>
+
 ## Download
 
 Full Version | NuGet | NuGet Install
