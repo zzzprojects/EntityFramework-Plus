@@ -22,15 +22,15 @@ using System.Linq;
 namespace Z.EntityFramework.Plus
 {
     /// <summary>Class for query future value.</summary>
-    /// <typeparam name="T">The type of elements of the query.</typeparam>
+    /// <typeparam name="TResult">The type of elements of the query.</typeparam>
 #if QUERY_INCLUDEOPTIMIZED
     internal class QueryFutureEnumerable<T> : BaseQueryFuture, IEnumerable<T>
 #else
-    public class QueryFutureEnumerable<T> : BaseQueryFuture, IEnumerable<T>
+    public class QueryFutureEnumerable<TResult> : BaseQueryFuture<TResult>, IEnumerable<TResult>
 #endif
     {
         /// <summary>The result of the query future.</summary>
-        private IEnumerable<T> _result;
+        private IEnumerable<TResult> _result;
 
         /// <summary>Constructor.</summary>
         /// <param name="ownerBatch">The batch that owns this item.</param>
@@ -41,7 +41,7 @@ namespace Z.EntityFramework.Plus
 #if EF5 || EF6
         public QueryFutureEnumerable(QueryFutureBatch ownerBatch, ObjectQuery<T> query)
 #elif EFCORE
-        public QueryFutureEnumerable(QueryFutureBatch ownerBatch, IQueryable query)
+        public QueryFutureEnumerable(QueryFutureBatch ownerBatch, IQueryable<TResult> query)
 #endif
         {
             OwnerBatch = ownerBatch;
@@ -50,7 +50,7 @@ namespace Z.EntityFramework.Plus
 
         /// <summary>Gets the enumerator of the query future.</summary>
         /// <returns>The enumerator of the query future.</returns>
-        public IEnumerator<T> GetEnumerator()
+        public IEnumerator<TResult> GetEnumerator()
         {
             if (!HasValue)
             {
@@ -59,7 +59,7 @@ namespace Z.EntityFramework.Plus
 
             if (_result == null)
             {
-                return new List<T>().GetEnumerator();
+                return new List<TResult>().GetEnumerator();
             }
 
             return _result.GetEnumerator();
@@ -78,10 +78,15 @@ namespace Z.EntityFramework.Plus
         /// <param name="reader">The reader returned from the query execution.</param>
         public override void SetResult(DbDataReader reader)
         {
-            var enumerator = GetQueryEnumerator<T>(reader);
+            var enumerator = GetQueryEnumerator<TResult>(reader);
 
+            SetResult(enumerator);
+        }
+
+        private void SetResult(IEnumerator<TResult> enumerator)
+        {
             // Enumerate on all items
-            var list = new List<T>();
+            var list = new List<TResult>();
             while (enumerator.MoveNext())
             {
                 list.Add(enumerator.Current);
@@ -89,6 +94,13 @@ namespace Z.EntityFramework.Plus
             _result = list;
 
             HasValue = true;
+        }
+
+        public override void GetResultDirectly()
+        {
+            var enumerator = Query.GetEnumerator();
+
+            SetResult(enumerator);
         }
     }
 }

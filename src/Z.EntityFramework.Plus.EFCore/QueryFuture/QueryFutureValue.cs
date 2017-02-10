@@ -24,7 +24,7 @@ namespace Z.EntityFramework.Plus
 #if QUERY_INCLUDEOPTIMIZED
     internal class QueryFutureValue<TResult> : BaseQueryFuture
 #else
-    public class QueryFutureValue<TResult> : BaseQueryFuture
+    public class QueryFutureValue<TResult> : BaseQueryFuture<TResult>
 #endif
     {
         /// <summary>The result of the query future.</summary>
@@ -39,7 +39,7 @@ namespace Z.EntityFramework.Plus
 #if EF5 || EF6
         public QueryFutureValue(QueryFutureBatch ownerBatch, ObjectQuery query)
 #elif EFCORE
-        public QueryFutureValue(QueryFutureBatch ownerBatch, IQueryable query)
+        public QueryFutureValue(QueryFutureBatch ownerBatch, IQueryable<TResult> query)
 #endif
         {
             OwnerBatch = ownerBatch;
@@ -70,6 +70,15 @@ namespace Z.EntityFramework.Plus
             // Enumerate on first item only
             enumerator.MoveNext();
             _result = enumerator.Current;
+
+            HasValue = true;
+        }
+
+        public override void GetResultDirectly()
+        {
+            var value = Query.Provider.Execute<TResult>(Query.Expression);
+
+            _result = value;
 
             HasValue = true;
         }
