@@ -37,7 +37,7 @@ namespace Z.EntityFramework.Plus
 #if QUERY_INCLUDEOPTIMIZED
     internal abstract class BaseQueryFuture
 #else
-    public abstract class BaseQueryFuture
+    public abstract class BaseQueryFuture<TResult> : IBaseQueryFuture
 #endif
     {
         /// <summary>Gets the value indicating whether the query future has a value.</summary>
@@ -55,7 +55,7 @@ namespace Z.EntityFramework.Plus
 #elif EFCORE
     /// <summary>Gets or sets the query deferred.</summary>
     /// <value>The query deferred.</value>
-        public IQueryable Query { get; set; }
+        public IQueryable<TResult> Query { get; set; }
 
         /// <summary>Gets or sets the query deferred executor.</summary>
         /// <value>The query deferred executor.</value>
@@ -115,10 +115,6 @@ namespace Z.EntityFramework.Plus
             var connectionField = queryContextFactory.GetType().GetField("_connection", BindingFlags.NonPublic | BindingFlags.Instance);
             var connection = (IRelationalConnection) connectionField.GetValue(queryContextFactory);
 
-            // REFLECTION: Query.Provider._queryCompiler._database._queryCompilationContextFactory
-            var queryCompilationContextFactoryField = typeof (Database).GetField("_queryCompilationContextFactory", BindingFlags.NonPublic | BindingFlags.Instance);
-            var queryCompilationContextFactory = (IQueryCompilationContextFactory) queryCompilationContextFactoryField.GetValue(database);
-
             // CREATE connection
             QueryConnection = new CreateEntityRelationConnection(connection);
 
@@ -143,6 +139,10 @@ namespace Z.EntityFramework.Plus
                     queryContext = (RelationalQueryContext) relationalQueryContextConstructor.Invoke(new object[] {createQueryBufferDelegate, QueryConnection, stateManager, concurrencyDetector});
                 }
             }
+
+            // REFLECTION: Query.Provider._queryCompiler._database._queryCompilationContextFactory
+            var queryCompilationContextFactoryField = typeof(Database).GetField("_queryCompilationContextFactory", BindingFlags.NonPublic | BindingFlags.Instance);
+            var queryCompilationContextFactory = (IQueryCompilationContextFactory)queryCompilationContextFactoryField.GetValue(database);
 
             // REFLECTION: Query.Provider._queryCompiler._database._queryCompilationContextFactory.Logger
             var loggerField = queryCompilationContextFactory.GetType().GetProperty("Logger", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -177,6 +177,11 @@ namespace Z.EntityFramework.Plus
         /// <param name="reader">The reader returned from the query execution.</param>
         public virtual void SetResult(DbDataReader reader)
         {
+        }
+
+        public virtual void GetResultDirectly()
+        {
+
         }
 
         /// <summary>Sets the result of the query deferred.</summary>

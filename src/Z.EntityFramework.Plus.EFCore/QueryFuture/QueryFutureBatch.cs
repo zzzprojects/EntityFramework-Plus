@@ -47,7 +47,7 @@ namespace Z.EntityFramework.Plus
 #endif
         {
             Context = context;
-            Queries = new List<BaseQueryFuture>();
+            Queries = new List<IBaseQueryFuture>();
         }
 
         /// <summary>Gets or sets the context related to the query future batched.</summary>
@@ -60,11 +60,18 @@ namespace Z.EntityFramework.Plus
 
         /// <summary>Gets or sets deferred query lists waiting to be executed.</summary>
         /// <value>The deferred queries list waiting to be executed.</value>
-        public List<BaseQueryFuture> Queries { get; set; }
+        public List<IBaseQueryFuture> Queries { get; set; }
 
         /// <summary>Executes deferred query lists.</summary>
         public void ExecuteQueries()
         {
+            if (Queries.Count == 1)
+            {
+                Queries[0].GetResultDirectly();
+                Queries.Clear();
+                return;
+            }
+
 #if EF5 || EF6
             var connection = (EntityConnection) Context.Connection;
 #elif EFCORE
