@@ -33,6 +33,12 @@ namespace Z.EntityFramework.Plus
             IStateManager stateManager = stateManagerDynamic as IStateManager;
             if (stateManager == null)
             {
+                Microsoft.EntityFrameworkCore.Internal.LazyRef<IStateManager> lazy = 
+                    stateManagerDynamic as Microsoft.EntityFrameworkCore.Internal.LazyRef<IStateManager>;
+                if(lazy != null) stateManager = lazy.Value;
+            }
+            if (stateManager == null)
+            {
                 stateManager = ((dynamic) stateManagerDynamic).Value;
             }
 #else
