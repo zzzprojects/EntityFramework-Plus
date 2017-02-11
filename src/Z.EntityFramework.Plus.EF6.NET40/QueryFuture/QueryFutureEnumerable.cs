@@ -8,6 +8,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 #if EF5
 using System.Data.Objects;
 
@@ -78,8 +79,19 @@ namespace Z.EntityFramework.Plus
         /// <param name="reader">The reader returned from the query execution.</param>
         public override void SetResult(DbDataReader reader)
         {
+            if (reader.GetType().FullName.Contains("Oracle"))
+            {
+                var reader2 = new QueryFutureOracleDbReader(reader);
+                reader = reader2;
+            }
+            
             var enumerator = GetQueryEnumerator<T>(reader);
 
+            SetResult(enumerator);
+        }
+
+        public void SetResult(IEnumerator<T> enumerator)
+        {
             // Enumerate on all items
             var list = new List<T>();
             while (enumerator.MoveNext())
@@ -89,6 +101,21 @@ namespace Z.EntityFramework.Plus
             _result = list;
 
             HasValue = true;
+        }
+
+#if EFCORE
+        public override void ExecuteInMemory()
+        {
+            HasValue = true;
+            _result = ((IQueryable<T>) Query).ToList();
+        }
+#endif
+        public override void GetResultDirectly()
+        {
+            var query = ((IQueryable<T>)Query);
+            var enumerator = query.GetEnumerator();
+
+            SetResult(enumerator);
         }
     }
 }

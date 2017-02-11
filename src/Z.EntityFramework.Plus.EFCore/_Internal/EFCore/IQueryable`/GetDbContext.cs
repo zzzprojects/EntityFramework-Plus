@@ -31,12 +31,16 @@ namespace Z.EntityFramework.Plus
             var stateManagerDynamic = stateManagerField.GetValue(queryContextFactory);
 
             IStateManager stateManager = stateManagerDynamic as IStateManager;
+
             if (stateManager == null)
             {
-                Microsoft.EntityFrameworkCore.Internal.LazyRef<IStateManager> lazy = 
-                    stateManagerDynamic as Microsoft.EntityFrameworkCore.Internal.LazyRef<IStateManager>;
-                if(lazy != null) stateManager = lazy.Value;
+                Microsoft.EntityFrameworkCore.Internal.LazyRef<IStateManager> lazyStateManager = stateManagerDynamic as Microsoft.EntityFrameworkCore.Internal.LazyRef<IStateManager>;
+                if(lazyStateManager != null)
+                {
+                    stateManager = lazyStateManager.Value;
+                }
             }
+
             if (stateManager == null)
             {
                 stateManager = ((dynamic) stateManagerDynamic).Value;
@@ -65,6 +69,16 @@ namespace Z.EntityFramework.Plus
             var stateManagerDynamic = stateManagerField.GetValue(queryContextFactory);
 
             IStateManager stateManager = stateManagerDynamic as IStateManager;
+
+            if (stateManager == null)
+            {
+                Microsoft.EntityFrameworkCore.Internal.LazyRef<IStateManager> lazyStateManager = stateManagerDynamic as Microsoft.EntityFrameworkCore.Internal.LazyRef<IStateManager>;
+                if(lazyStateManager != null)
+                {
+                    stateManager = lazyStateManager.Value;
+                }
+            }
+
             if (stateManager == null)
             {
                 stateManager = ((dynamic) stateManagerDynamic).Value;

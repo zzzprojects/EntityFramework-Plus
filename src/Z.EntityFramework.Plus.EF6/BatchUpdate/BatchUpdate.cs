@@ -619,6 +619,7 @@ SELECT  @totalRowAffected
 
                     // Add the destination name
                     valueSql = valueSql.Replace("[x]", "B");
+                    valueSql = valueSql.Replace("[c]", "B");
 #endif
                     destinationValues.Add(new Tuple<string, object>(columnName, Expression.Constant(valueSql)));
                 }
@@ -694,6 +695,20 @@ SELECT  @totalRowAffected
                 }
                 else
                 {
+                    // FIX all member access to remove variable
+                    memberExpression = memberExpression.Visit((MemberExpression m) =>
+                    {
+                        if (m.Expression.NodeType == ExpressionType.Constant)
+                        {
+                            var lambda = Expression.Lambda(m, null);
+                            var value = lambda.Compile().DynamicInvoke();
+                            var c =  Expression.Constant(value);
+                            return c;
+                        }
+
+                        return m;
+                    });
+
                     // ADD expression, the expression will be resolved later
                     dictValues.Add(propertyName, memberExpression);
                 }

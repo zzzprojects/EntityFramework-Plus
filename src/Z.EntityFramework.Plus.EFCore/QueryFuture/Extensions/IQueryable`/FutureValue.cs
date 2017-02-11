@@ -34,9 +34,21 @@ namespace Z.EntityFramework.Plus
             var futureBatch = QueryFutureManager.AddOrGetBatch(objectQuery.Context);
             var futureQuery = new QueryFutureValue<TResult>(futureBatch, objectQuery);
 #elif EFCORE
-            var context = query.GetDbContext();
-            var futureBatch = QueryFutureManager.AddOrGetBatch(context);
-            var futureQuery = new QueryFutureValue<TResult>(futureBatch, query);
+            QueryFutureBatch futureBatch;
+            QueryFutureValue<TResult> futureQuery;
+            if (query.IsInMemoryQueryContext())
+            {
+                var context = query.GetInMemoryContext();
+                futureBatch = QueryFutureManager.AddOrGetBatch(context);
+                futureBatch.IsInMemory = true;
+                futureQuery = new QueryFutureValue<TResult>(futureBatch, query);
+            }
+            else
+            {
+                var context = query.GetDbContext();
+                futureBatch = QueryFutureManager.AddOrGetBatch(context);
+                futureQuery = new QueryFutureValue<TResult>(futureBatch, query);
+            }
 #endif
             futureBatch.Queries.Add(futureQuery);
 

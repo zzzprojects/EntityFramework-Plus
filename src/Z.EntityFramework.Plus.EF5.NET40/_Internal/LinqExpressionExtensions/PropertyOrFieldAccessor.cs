@@ -5,7 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
-#if FULL || AUDIT || QUERY_INCLUDEOPTIMIZED
+#if FULL || AUDIT || QUERY_INCLUDEFILTER || QUERY_INCLUDEOPTIMIZED
 
 using System.Collections.ObjectModel;
 using System.Linq;

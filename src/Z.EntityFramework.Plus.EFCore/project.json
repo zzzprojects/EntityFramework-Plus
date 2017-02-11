@@ -1,5 +1,5 @@
 {
-  "version": "1.4.19",
+  "version": "1.4.26",
   "description": "EF Bulk Operations & Utilities | Bulk Insert, Update, Delete, Merge from database.",
   "authors": [ "ZZZ Projects Inc." ],
   "packOptions": {

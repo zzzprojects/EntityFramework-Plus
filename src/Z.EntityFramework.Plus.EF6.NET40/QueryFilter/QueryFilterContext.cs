@@ -79,6 +79,25 @@ namespace Z.EntityFramework.Plus
         }
 
         /// <summary>Filter the query using context filters associated with specified keys.</summary>
+        /// <typeparam name="T">Generic type parameter.</typeparam>
+        /// <param name="query">The query to filter using context filters associated with specified keys.</param>
+        /// <returns>The query filtered using context filters associated with specified keys.</returns>
+        public IQueryable<T> ApplyFilter<T>(IQueryable<T> query)
+        {
+            object newQuery = query;
+
+            foreach (var filter in Filters)
+            {
+                if (filter.Value.IsDefaultEnabled)
+                {
+                    newQuery = (IQueryable) filter.Value.ApplyFilter<T>(newQuery);
+                }
+            }
+
+            return (IQueryable<T>) newQuery;
+        }
+
+        /// <summary>Filter the query using context filters associated with specified keys.</summary>
         /// <typeparam name="T">The type of elements of the query.</typeparam>
         /// <param name="query">The query to filter using context filters associated with specified keys.</param>
         /// <param name="keys">

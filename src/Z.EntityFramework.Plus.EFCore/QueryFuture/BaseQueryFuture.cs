@@ -37,7 +37,7 @@ namespace Z.EntityFramework.Plus
 #if QUERY_INCLUDEOPTIMIZED
     internal abstract class BaseQueryFuture
 #else
-    public abstract class BaseQueryFuture<TResult> : IBaseQueryFuture
+    public abstract class BaseQueryFuture
 #endif
     {
         /// <summary>Gets the value indicating whether the query future has a value.</summary>
@@ -55,7 +55,7 @@ namespace Z.EntityFramework.Plus
 #elif EFCORE
     /// <summary>Gets or sets the query deferred.</summary>
     /// <value>The query deferred.</value>
-        public IQueryable<TResult> Query { get; set; }
+        public IQueryable Query { get; set; }
 
         /// <summary>Gets or sets the query deferred executor.</summary>
         /// <value>The query deferred executor.</value>
@@ -68,6 +68,11 @@ namespace Z.EntityFramework.Plus
         /// <summary>Gets or sets the query connection.</summary>
         /// <value>The query connection.</value>
         internal CreateEntityRelationConnection QueryConnection { get; set; }
+
+        public virtual void ExecuteInMemory()
+        {
+            
+        }
 
         /// <summary>Creates executor and get command.</summary>
         /// <returns>The new executor and get command.</returns>
@@ -115,6 +120,10 @@ namespace Z.EntityFramework.Plus
             var connectionField = queryContextFactory.GetType().GetField("_connection", BindingFlags.NonPublic | BindingFlags.Instance);
             var connection = (IRelationalConnection) connectionField.GetValue(queryContextFactory);
 
+            // REFLECTION: Query.Provider._queryCompiler._database._queryCompilationContextFactory
+            var queryCompilationContextFactoryField = typeof (Database).GetField("_queryCompilationContextFactory", BindingFlags.NonPublic | BindingFlags.Instance);
+            var queryCompilationContextFactory = (IQueryCompilationContextFactory) queryCompilationContextFactoryField.GetValue(database);
+
             // CREATE connection
             QueryConnection = new CreateEntityRelationConnection(connection);
 
@@ -139,10 +148,6 @@ namespace Z.EntityFramework.Plus
                     queryContext = (RelationalQueryContext) relationalQueryContextConstructor.Invoke(new object[] {createQueryBufferDelegate, QueryConnection, stateManager, concurrencyDetector});
                 }
             }
-
-            // REFLECTION: Query.Provider._queryCompiler._database._queryCompilationContextFactory
-            var queryCompilationContextFactoryField = typeof(Database).GetField("_queryCompilationContextFactory", BindingFlags.NonPublic | BindingFlags.Instance);
-            var queryCompilationContextFactory = (IQueryCompilationContextFactory)queryCompilationContextFactoryField.GetValue(database);
 
             // REFLECTION: Query.Provider._queryCompiler._database._queryCompilationContextFactory.Logger
             var loggerField = queryCompilationContextFactory.GetType().GetProperty("Logger", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -179,11 +184,6 @@ namespace Z.EntityFramework.Plus
         {
         }
 
-        public virtual void GetResultDirectly()
-        {
-
-        }
-
         /// <summary>Sets the result of the query deferred.</summary>
         /// <param name="reader">The reader returned from the query execution.</param>
         public IEnumerator<T> GetQueryEnumerator<T>(DbDataReader reader)
@@ -209,9 +209,9 @@ namespace Z.EntityFramework.Plus
             var createMethod = resultShaperFactory.GetType().GetMethod("Create", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 
 #if EF5
-            var create = createMethod.Invoke(resultShaperFactory, new object[] {reader, Query.Context, Query.Context.MetadataWorkspace, MergeOption.AppendOnly, false});
+            var create = createMethod.Invoke(resultShaperFactory, new object[] {reader, Query.Context, Query.Context.MetadataWorkspace, Query.MergeOption, false});
 #elif EF6
-            var create = createMethod.Invoke(resultShaperFactory, new object[] { reader, Query.Context, Query.Context.MetadataWorkspace, MergeOption.AppendOnly, false, true });
+            var create = createMethod.Invoke(resultShaperFactory, new object[] { reader, Query.Context, Query.Context.MetadataWorkspace, Query.MergeOption, false, true });
 #endif
 
             // REFLECTION: Query.QueryState.GetExecutionPlan(null).ResultShaperFactory.Create(parameters).GetEnumerator()
@@ -226,6 +226,11 @@ namespace Z.EntityFramework.Plus
             var queryEnumerable = queryExecutor(QueryContext);
             return queryEnumerable.GetEnumerator();
 #endif
+        }
+
+        public virtual void GetResultDirectly()
+        {
+
         }
     }
 }

@@ -69,6 +69,11 @@ namespace Z.EntityFramework.Plus
         /// <value>The query connection.</value>
         internal CreateEntityRelationConnection QueryConnection { get; set; }
 
+        public virtual void ExecuteInMemory()
+        {
+            
+        }
+
         /// <summary>Creates executor and get command.</summary>
         /// <returns>The new executor and get command.</returns>
         public virtual IRelationalCommand CreateExecutorAndGetCommand(out RelationalQueryContext queryContext)
@@ -204,9 +209,9 @@ namespace Z.EntityFramework.Plus
             var createMethod = resultShaperFactory.GetType().GetMethod("Create", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 
 #if EF5
-            var create = createMethod.Invoke(resultShaperFactory, new object[] {reader, Query.Context, Query.Context.MetadataWorkspace, MergeOption.AppendOnly, false});
+            var create = createMethod.Invoke(resultShaperFactory, new object[] {reader, Query.Context, Query.Context.MetadataWorkspace, Query.MergeOption, false});
 #elif EF6
-            var create = createMethod.Invoke(resultShaperFactory, new object[] { reader, Query.Context, Query.Context.MetadataWorkspace, MergeOption.AppendOnly, false, true });
+            var create = createMethod.Invoke(resultShaperFactory, new object[] { reader, Query.Context, Query.Context.MetadataWorkspace, Query.MergeOption, false, true });
 #endif
 
             // REFLECTION: Query.QueryState.GetExecutionPlan(null).ResultShaperFactory.Create(parameters).GetEnumerator()
@@ -221,6 +226,11 @@ namespace Z.EntityFramework.Plus
             var queryEnumerable = queryExecutor(QueryContext);
             return queryEnumerable.GetEnumerator();
 #endif
+        }
+
+        public virtual void GetResultDirectly()
+        {
+
         }
     }
 }

@@ -5,7 +5,11 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
+using System;
+using System.Collections;
+using System.Data;
 using System.Data.Common;
+using System.Linq;
 #if EF5
 using System.Data.Objects;
 
@@ -65,12 +69,50 @@ namespace Z.EntityFramework.Plus
         /// <param name="reader">The reader returned from the query execution.</param>
         public override void SetResult(DbDataReader reader)
         {
+            if (reader.GetType().FullName.Contains("Oracle"))
+            {
+                var reader2 = new QueryFutureOracleDbReader(reader);
+                reader = reader2;
+            }
+  
             var enumerator = GetQueryEnumerator<TResult>(reader);
 
             // Enumerate on first item only
             enumerator.MoveNext();
             _result = enumerator.Current;
 
+            HasValue = true;
+        }
+
+
+#if EFCORE
+        public QueryDeferred<TResult> InMemoryDeferredQuery;
+
+        public override void ExecuteInMemory()
+        {
+            if (InMemoryDeferredQuery != null)
+            {
+                _result = InMemoryDeferredQuery.Execute();
+                HasValue = true;
+            }
+            else
+            {
+                var enumerator = Query.GetEnumerator();
+
+                // Enumerate on first item only
+                enumerator.MoveNext();
+                _result = (TResult)enumerator.Current;
+
+                HasValue = true;
+            }
+        }
+#endif
+        public override void GetResultDirectly()
+        {
+            var query = (IQueryable<TResult>) Query;
+            var value = query.Provider.Execute<TResult>(query.Expression);
+
+            _result = value;
             HasValue = true;
         }
     }

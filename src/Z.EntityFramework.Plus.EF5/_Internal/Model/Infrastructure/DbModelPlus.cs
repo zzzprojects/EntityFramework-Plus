@@ -33,12 +33,12 @@ namespace Z.EntityFramework.Plus.Internal.Core.Infrastructure
         /// <returns>A T.</returns>
         public SchemaEntityType<T> Entity<T>() where T : class
         {
-            var type = typeof (T).Name;
+var type = typeof (T).Name;
 
-            if (!ConceptualModel.Index_EntityTypes_Name.ContainsKey(type))
-            {
-                throw new InvalidOperationException(ExceptionMessage.GeneralException);
-            }
+if (!ConceptualModel.Index_EntityTypes_Name.ContainsKey(type))
+{
+	throw new InvalidOperationException(ExceptionMessage.GeneralException);
+}
 
             var conceptual = ConceptualModel.Index_EntityTypes_Name[type];
             var entityContainer = new SchemaEntityType<T> {Info = conceptual};

@@ -56,6 +56,8 @@ namespace Z.EntityFramework.Plus
         public ObjectContext Context { get; set; }
 #elif EFCORE
         public DbContext Context { get; set; }
+
+        public bool IsInMemory { get; set; }
 #endif
 
         /// <summary>Gets or sets deferred query lists waiting to be executed.</summary>
@@ -65,9 +67,31 @@ namespace Z.EntityFramework.Plus
         /// <summary>Executes deferred query lists.</summary>
         public void ExecuteQueries()
         {
+            if (Queries.Count == 0)
+            {
+                // Already all executed
+                return;
+            }
+
+            if (Queries.Count == 1)
+            {
+                Queries[0].GetResultDirectly();
+                Queries.Clear();
+                return;
+            }
+
 #if EF5 || EF6
             var connection = (EntityConnection) Context.Connection;
 #elif EFCORE
+            if (IsInMemory)
+            {
+                foreach (var query in Queries)
+                {
+                    query.ExecuteInMemory();
+                }
+                return;
+            }
+
             var connection = Context.Database.GetDbConnection();
 #endif
             var command = CreateCommandCombined();

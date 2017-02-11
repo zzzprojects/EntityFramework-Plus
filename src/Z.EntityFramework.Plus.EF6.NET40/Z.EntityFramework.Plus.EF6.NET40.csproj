@@ -144,6 +144,7 @@
     <Compile Include="QueryFilter\BaseQueryFilter.cs" />
     <Compile Include="QueryFilter\BaseQueryFilterQueryable.cs" />
     <Compile Include="QueryFilter\Extensions\DbContext.Filter.cs" />
+    <Compile Include="QueryFilter\Extensions\DbContext.SetFiltered.cs" />
     <Compile Include="QueryFilter\Extensions\IDbSet.AsNoFilter.cs" />
     <Compile Include="QueryFilter\Extensions\IDbSet.Filter.cs" />
     <Compile Include="QueryFilter\QueryFilter.cs" />
@@ -158,6 +159,7 @@
     <Compile Include="QueryFuture\QueryFutureBatch.cs" />
     <Compile Include="QueryFuture\QueryFutureEnumerable.cs" />
     <Compile Include="QueryFuture\QueryFutureManager.cs" />
+    <Compile Include="QueryFuture\QueryFutureOracleDbReader.cs" />
     <Compile Include="QueryFuture\QueryFutureValue.cs" />
     <Compile Include="QueryIncludeFilter\BaseQueryIncludeFilterChild.cs" />
     <Compile Include="QueryIncludeFilter\Extensions\IQueryable`.IncludeFilter.cs" />
@@ -213,6 +215,7 @@
     <Compile Include="_Internal\EFCore\GetStateManager.cs" />
     <Compile Include="_Internal\EFCore\IQueryable`\CreateCommand.cs" />
     <Compile Include="_Internal\EFCore\IQueryable`\GetDbContext.cs" />
+    <Compile Include="_Internal\EFCore\IQueryable`\GetInMemoryContext.cs" />
     <Compile Include="_Internal\EFCore\IQueryable`\IQueryable`.GetCommand.cs" />
     <Compile Include="_Internal\EFCore\IQueryable`\IsInMemoryQueryContext.cs" />
     <Compile Include="_Internal\EF\DbContext\DbContext.GetDbSetProperties.cs" />

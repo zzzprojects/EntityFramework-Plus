@@ -5,12 +5,14 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
-#if FULL || QUERY_CACHE || QUERY_FILTER
+#if FULL || QUERY_CACHE || QUERY_FILTER || QUERY_FUTURE || QUERY_INCLUDEOPTIMIZED
 #if EF6
 using System;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.Entity.Core.EntityClient;
 using System.Data.Entity.Core.Objects;
+using System.Data.Entity.Infrastructure.Interception;
 using System.Reflection;
 
 namespace Z.EntityFramework.Plus
@@ -33,6 +35,14 @@ namespace Z.EntityFramework.Plus
 
                 var prepareEntityCommandBeforeExecutionMethod = getCommandDefinition.GetType().GetMethod("PrepareEntityCommandBeforeExecution", BindingFlags.NonPublic | BindingFlags.Instance);
                 var prepareEntityCommandBeforeExecution = (DbCommand) prepareEntityCommandBeforeExecutionMethod.Invoke(getCommandDefinition, new object[] {entityCommand});
+
+                var commandDispatcherField = DbInterception.Dispatch.Command.GetType().GetField("_internalDispatcher", BindingFlags.Instance | BindingFlags.NonPublic);
+                var commandDispatcher = commandDispatcherField.GetValue(DbInterception.Dispatch.Command);
+
+                var interceptorsField = commandDispatcher.GetType().GetField("_interceptors", BindingFlags.Instance | BindingFlags.NonPublic);
+                var interceptors = (List<IDbCommandInterceptor>) interceptorsField.GetValue(commandDispatcher);
+
+                interceptors.ForEach(i => i.ReaderExecuting(prepareEntityCommandBeforeExecution, new DbCommandInterceptionContext<DbDataReader>(objectQuery.Context.GetInterceptionContext())));
 
                 sql = prepareEntityCommandBeforeExecution.CommandText;
                 var parameters = prepareEntityCommandBeforeExecution.Parameters;

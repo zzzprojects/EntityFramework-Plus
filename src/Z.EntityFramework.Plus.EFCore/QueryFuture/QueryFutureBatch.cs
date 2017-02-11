@@ -47,7 +47,7 @@ namespace Z.EntityFramework.Plus
 #endif
         {
             Context = context;
-            Queries = new List<IBaseQueryFuture>();
+            Queries = new List<BaseQueryFuture>();
         }
 
         /// <summary>Gets or sets the context related to the query future batched.</summary>
@@ -56,15 +56,23 @@ namespace Z.EntityFramework.Plus
         public ObjectContext Context { get; set; }
 #elif EFCORE
         public DbContext Context { get; set; }
+
+        public bool IsInMemory { get; set; }
 #endif
 
         /// <summary>Gets or sets deferred query lists waiting to be executed.</summary>
         /// <value>The deferred queries list waiting to be executed.</value>
-        public List<IBaseQueryFuture> Queries { get; set; }
+        public List<BaseQueryFuture> Queries { get; set; }
 
         /// <summary>Executes deferred query lists.</summary>
         public void ExecuteQueries()
         {
+            if (Queries.Count == 0)
+            {
+                // Already all executed
+                return;
+            }
+
             if (Queries.Count == 1)
             {
                 Queries[0].GetResultDirectly();
@@ -75,6 +83,15 @@ namespace Z.EntityFramework.Plus
 #if EF5 || EF6
             var connection = (EntityConnection) Context.Connection;
 #elif EFCORE
+            if (IsInMemory)
+            {
+                foreach (var query in Queries)
+                {
+                    query.ExecuteInMemory();
+                }
+                return;
+            }
+
             var connection = Context.Database.GetDbConnection();
 #endif
             var command = CreateCommandCombined();
