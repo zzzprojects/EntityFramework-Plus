@@ -7,6 +7,7 @@
 
 #if FULL || BATCH_DELETE || BATCH_UPDATE
 #if EF5 || EF6
+using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace Z.EntityFramework.Plus.Internal.Core.Mapping
@@ -21,7 +22,10 @@ namespace Z.EntityFramework.Plus.Internal.Core.Mapping
     [XmlRoot("Mapping")]
     public class SchemaMapping
     {
-#region
+        [XmlIgnore]
+        public EntityContainerMapping EntityContainerMapping { get; set; }
+
+        #region
 
         /// <summary>
         ///     Please visit the
@@ -32,7 +36,7 @@ namespace Z.EntityFramework.Plus.Internal.Core.Mapping
         /// </summary>
         /// <value>The entity container mapping.</value>
         [XmlElement("EntityContainerMapping")]
-        public EntityContainerMapping EntityContainerMapping { get; set; }
+        public List<EntityContainerMapping> EntityContainerMappings { get; set; }
 
 #endregion
     }

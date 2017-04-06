@@ -8,23 +8,44 @@
 #if FULL || BATCH_DELETE || BATCH_UPDATE
 #if EF5 || EF6
 using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.IO;
+using System.Text;
 
 namespace Z.EntityFramework.Plus.Internal
 {
     internal static partial class Model
     {
+        internal static string GetMappingModelString(this DbContext @this, List<string> models, string modelSplit)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            bool isFirst = true;
+            foreach (var model in models)
+            {
+                string s = GetMappingModelString(@this, model + ".msl");
+
+                if (!isFirst)
+                {
+                    sb.AppendLine(modelSplit);
+                }
+                isFirst = false;
+                sb.Append(s);
+
+            }
+
+            return sb.ToString();
+        }
+
         /// <summary>
         ///     A DbContext extension method that gets mapping model string.
         /// </summary>
         /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
         /// <param name="this">The @this to act on.</param>
         /// <returns>The mapping model string.</returns>
-        internal static string GetMappingModelString(this DbContext @this)
+        internal static string GetMappingModelString(this DbContext @this, string model)
         {
-            string model = string.Concat(@this.GetModelName(), ".msl");
-
             try
             {
                 using (var stream = @this.GetType().Assembly.GetManifestResourceStream(model))

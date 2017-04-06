@@ -115,7 +115,7 @@ new AuditEntryProperty();
                             entry.Parent.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(entry, objectStateEntry, propertyEntry.Name, property.OriginalValue, property.CurrentValue)) :
                             new AuditEntryProperty();
 
-                        auditEntryProperty.Build(entry, propertyEntry.Name, property.OriginalValue, propertyEntry);
+                        auditEntryProperty.Build(entry, propertyEntry.Name, property.OriginalValue, property);
                         entry.Properties.Add(auditEntryProperty);
                     }
                 }

@@ -6,6 +6,7 @@ using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 
 namespace Z.EntityFramework.Plus
 {
@@ -13,6 +14,11 @@ namespace Z.EntityFramework.Plus
     {
         /// <summary>true if clear cache required.</summary>
         public bool ClearCacheRequired;
+
+        /// <summary>Gets or sets filter set by type.</summary>
+        /// <value>The filter set by type.</value>
+        public Dictionary<Type, List<QueryFilterSet>> FilterSetByType { get; set; }
+
 
         /// <summary>The filter by entity set base.</summary>
         public Dictionary<string, List<BaseQueryFilterInterceptor>> FilterByEntitySetBase = new Dictionary<string, List<BaseQueryFilterInterceptor>>();
@@ -36,6 +42,10 @@ namespace Z.EntityFramework.Plus
 
         /// <summary>The type by entity set base.</summary>
         public Dictionary<string, Type> TypeByEntitySetBase = new Dictionary<string, Type>();
+
+        /// <summary>Gets or sets filter sets.</summary>
+        /// <value>The filter sets.</value>
+        public List<QueryFilterSet> FilterSets { get; set; }
 
         public QueryFilterContextInterceptor(DbContext context)
         {
@@ -89,6 +99,26 @@ namespace Z.EntityFramework.Plus
             return list;
         }
 
+        public string GetFilterUniqueID()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var filter in GlobalFilterByKey.Values)
+            {
+                sb.Append(filter.UniqueKey);
+                sb.Append(filter.IsDefaultEnabled);
+            }
+
+            foreach (var filter in FilterByKey.Values)
+            {
+                sb.Append(filter.UniqueKey);
+                sb.Append(filter.IsDefaultEnabled);
+            }
+
+            return sb.ToString();
+        }
+        
+
         /// <summary>Adds a query filter to the filter context associated with the specified key.</summary>
         /// <typeparam name="T">The type of elements of the query.</typeparam>
         /// <param name="key">The filter key.</param>
@@ -115,6 +145,7 @@ namespace Z.EntityFramework.Plus
             }
 
             ClearCache();
+
             return queryFilter;
         }
 
@@ -123,9 +154,14 @@ namespace Z.EntityFramework.Plus
         {
             if (ClearCacheRequired)
             {
-                QueryFilterManager.ClearQueryCache(Context);
-                ClearCacheRequired = false;
+                UpdateHook(Context);
             }
+
+            //if (ClearCacheRequired)
+            //{
+            //    QueryFilterManager.ClearQueryCache(Context);
+            //    ClearCacheRequired = false;
+            //}
         }
 
         /// <summary>Gets the filter associated to the specified key.</summary>
@@ -139,6 +175,21 @@ namespace Z.EntityFramework.Plus
                 GlobalFilterByKey.TryGetValue(key, out filter);
             }
             return filter;
+        }
+     
+        public void UpdateHook(DbContext context)
+        {
+            var filterID = QueryFilterManager.PrefixFilterID + GetFilterUniqueID();
+
+            // Hook on every set
+            foreach (var set in FilterSets)
+            {
+                var currentQuery = set.OriginalQuery;
+
+                var newQuery = QueryFilterManager.HookFilter2((IQueryable)currentQuery, set.ElementType, filterID);
+
+                set.UpdateInternalQueryCompiled.Value(Context, newQuery.GetObjectQuery());
+            }
         }
 
         /// <summary>Initializes this object.</summary>
@@ -201,6 +252,42 @@ namespace Z.EntityFramework.Plus
                 }
             }
 
+            {
+                FilterSets = new List<QueryFilterSet>();
+
+                // ADD DbSet
+                foreach (var dbSetProperty in setProperties)
+                {
+                    FilterSets.Add(new QueryFilterSet(context, dbSetProperty));
+                }
+
+            }
+
+            {
+                FilterSetByType = new Dictionary<Type, List<QueryFilterSet>>();
+
+                // LINK DbSet to Type
+                foreach (var filterDbSet in FilterSets)
+                {
+                    var baseType = filterDbSet.ElementType;
+
+                    while (baseType != null && baseType != typeof(object))
+                    {
+                        // LINK type
+                        FilterSetByType.AddOrAppend(baseType, filterDbSet);
+
+                        // LINK interface
+                        var interfaces = baseType.GetInterfaces();
+                        foreach (var @interface in interfaces)
+                        {
+                            FilterSetByType.AddOrAppend(@interface, filterDbSet);
+                        }
+
+                        baseType = baseType.BaseType;
+                    }
+                }
+            }
+           
             foreach (var type in QueryFilterManager.Types)
             {
                 var setMethod = context.GetType().GetMethod("Set", new Type[0]);
@@ -211,8 +298,6 @@ namespace Z.EntityFramework.Plus
                 // DbSet<>.InternalQuery
                 var internalQueryProperty = typeof(DbQuery<>).MakeGenericType(elementType).GetProperty("InternalQuery", BindingFlags.NonPublic | BindingFlags.Instance);
                 var internalQuery = internalQueryProperty.GetValue(dbSet, null);
-
-              
 
                 var entityTypebase = type.FullName;
 

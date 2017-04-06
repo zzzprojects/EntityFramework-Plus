@@ -42,6 +42,10 @@ namespace Z.EntityFramework.Plus.Internal
             model.StoreModel = storageString.DeserializeXml<Schema>();
             model.MappingModel = mappingString.DeserializeXml<SchemaMapping>();
 
+            model.ConceptualModel.EntityContainer = model.ConceptualModel.EntityContainers[0];
+            model.StoreModel.EntityContainer = model.StoreModel.EntityContainers[0];
+            model.MappingModel.EntityContainerMapping = model.MappingModel.EntityContainerMappings[0];
+
             BuildSchema(model.ConceptualModel);
             BuildSchema(model.StoreModel, true);
             BuildMapping(model.MappingModel, model.ConceptualModel, model.StoreModel);

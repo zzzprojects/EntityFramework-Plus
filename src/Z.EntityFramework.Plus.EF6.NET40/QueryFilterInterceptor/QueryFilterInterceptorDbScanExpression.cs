@@ -1,6 +1,8 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
 using System.Data.Entity.Core.Common.CommandTrees;
 using System.Data.Entity.Core.Metadata.Edm;
+using System.Data.Entity.Infrastructure.Interception;
 using Z.EntityFramework.Plus.QueryInterceptorFilter;
 
 namespace Z.EntityFramework.Plus

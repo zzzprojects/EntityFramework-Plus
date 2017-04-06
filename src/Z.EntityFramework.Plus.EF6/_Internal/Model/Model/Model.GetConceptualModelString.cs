@@ -8,23 +8,44 @@
 #if FULL || BATCH_DELETE || BATCH_UPDATE
 #if EF5 || EF6
 using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.IO;
+using System.Text;
 
 namespace Z.EntityFramework.Plus.Internal
 {
     internal static partial class Model
     {
+        internal static string GetConceptualModelString(this DbContext @this, List<string> models, string modelSplit)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            bool isFirst = true;
+            foreach (var model in models)
+            {
+                string s = GetConceptualModelString(@this, model + ".csdl");
+
+                if (!isFirst)
+                {
+                    sb.AppendLine(modelSplit);
+                }
+                isFirst = false;
+                sb.Append(s);
+
+            }
+
+            return sb.ToString();
+        }
+
         /// <summary>
         ///     A DbContext extension method that gets conceptual model string.
         /// </summary>
         /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
         /// <param name="this">The @this to act on.</param>
         /// <returns>The conceptual model string.</returns>
-        internal static string GetConceptualModelString(this DbContext @this)
+        internal static string GetConceptualModelString(this DbContext @this, string model)
         {
-            var model = string.Concat(@this.GetModelName(), ".csdl");
-
             try
             {
                 using (var stream = @this.GetType().Assembly.GetManifestResourceStream(model))

@@ -42,6 +42,14 @@ INNER JOIN ( {Select}
            ) AS B ON {PrimaryKeys}
 ";
 
+        internal const string CommandTextTemplateSqlCe = @"
+UPDATE {TableName}
+SET {SetValue}
+WHERE EXISTS ( SELECT 1 FROM ({Select}) AS B
+               WHERE {PrimaryKeys}
+           )  
+";
+
         internal const string CommandTextTemplate_MySQL = @"
 UPDATE {TableName} AS A
 INNER JOIN ( {Select}
@@ -244,6 +252,7 @@ SELECT  @totalRowAffected
         {
             var command = query.Context.CreateStoreCommand();
             bool isMySql = command.GetType().FullName.Contains("MySql");
+            var isSqlCe = command.GetType().Name == "SqlCeCommand";
 
             // GET mapping
             var mapping = entity.Info.EntityTypeMapping.MappingFragment;
@@ -254,6 +263,10 @@ SELECT  @totalRowAffected
             if (isMySql)
             {
                 tableName = string.Concat("`", store.Table, "`");
+            }
+            else if (isSqlCe)
+            {
+                tableName = string.Concat("[", store.Table, "]");
             }
             else
             {
@@ -286,18 +299,35 @@ SELECT  @totalRowAffected
                     CommandTextWhileDelayTemplate :
                     CommandTextWhileTemplate :
 #endif
-                isMySql ? CommandTextTemplate_MySQL : CommandTextTemplate;
+                isMySql ? CommandTextTemplate_MySQL : 
+                isSqlCe ? CommandTextTemplateSqlCe :
+                CommandTextTemplate;
 
             // GET inner query
-            var querySelect = query.ToTraceString();
+            var customQuery = query.GetCommandTextAndParameters();
+            var querySelect = customQuery.Item1;
 
             // GET primary key join
-            var primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.", EscapeName(x, isMySql), " = B.", EscapeName(x, isMySql), "")));
+            string primaryKeys;
+            string setValues;
 
-            // GET updateSetValues
-            var setValues = string.Join("," + Environment.NewLine, values.Select((x, i) => x.Item2 is ConstantExpression ?
-                string.Concat("A.", EscapeName(x.Item1, isMySql), " = ", ((ConstantExpression)x.Item2).Value) :
-                string.Concat("A.", EscapeName(x.Item1, isMySql), " = @zzz_BatchUpdate_", i)));
+            if (isSqlCe)
+            {
+                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".", EscapeName(x, isMySql), " = B.", EscapeName(x, isMySql), "")));
+
+                setValues = string.Join("," + Environment.NewLine, values.Select((x, i) => x.Item2 is ConstantExpression ?
+                    string.Concat(EscapeName(x.Item1, isMySql), " = ", ((ConstantExpression) x.Item2).Value.ToString().Replace("B.[", "[")) :
+                    string.Concat(EscapeName(x.Item1, isMySql), " = @zzz_BatchUpdate_", i)));
+            }
+            else
+            {
+                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.", EscapeName(x, isMySql), " = B.", EscapeName(x, isMySql), "")));
+
+                // GET updateSetValues
+                setValues = string.Join("," + Environment.NewLine, values.Select((x, i) => x.Item2 is ConstantExpression ?
+                    string.Concat("A.", EscapeName(x.Item1, isMySql), " = ", ((ConstantExpression) x.Item2).Value) :
+                    string.Concat("A.", EscapeName(x.Item1, isMySql), " = @zzz_BatchUpdate_", i)));
+            }
 
             // REPLACE template
             commandTextTemplate = commandTextTemplate.Replace("{TableName}", tableName)
@@ -309,15 +339,26 @@ SELECT  @totalRowAffected
             command.CommandText = commandTextTemplate;
 
             // ADD Parameter
-            var parameterCollection = query.Parameters;
-            foreach (var parameter in parameterCollection)
+            var parameterCollection = customQuery.Item2;
+#if EF5
+            foreach (ObjectParameter parameter in parameterCollection)
             {
                 var param = command.CreateParameter();
                 param.ParameterName = parameter.Name;
-                param.Value = parameter.Value;
+                param.Value = parameter.Value ?? DBNull.Value;
 
                 command.Parameters.Add(param);
             }
+#elif EF6
+            foreach (DbParameter parameter in parameterCollection)
+            {
+                var param = command.CreateParameter();
+                param.ParameterName = parameter.ParameterName;
+                param.Value = parameter.Value ?? DBNull.Value;
+
+                command.Parameters.Add(param);
+            }
+#endif
 
             for (var i = 0; i < values.Count; i++)
             {
@@ -442,7 +483,7 @@ SELECT  @totalRowAffected
 
                     var param = command.CreateParameter();
                     param.ParameterName = relationalParameter.InvariantName;
-                    param.Value = parameter;
+                    param.Value = parameter ?? DBNull.Value;
 
                     command.Parameters.Add(param);
                 }
@@ -453,7 +494,7 @@ SELECT  @totalRowAffected
                 {
                     var param = command.CreateParameter();
                     param.ParameterName = parameter.Name;
-                    param.Value = parameter.Value;
+                    param.Value = parameter.Value ?? DBNull.Value;
 
                     command.Parameters.Add(param);
                 }
@@ -587,7 +628,20 @@ SELECT  @totalRowAffected
 
                     // Add the destination name
                     valueSql = valueSql.Replace("AS [C1]", "");
-                    valueSql = valueSql.Replace("[Extent1]", "B");
+
+                    valueSql = valueSql.Replace("[Extent1]", "B")
+                            .Replace("[Extent2]", "B")
+                            .Replace("[Extent3]", "B")
+                            .Replace("[Extent4]", "B")
+                            .Replace("[Extent5]", "B")
+                            .Replace("[Extent6]", "B")
+                            .Replace("[Extent7]", "B")
+                            .Replace("[Extent8]", "B")
+                            .Replace("[Extent9]", "B")
+                            .Replace("[Filter1]", "B")
+                            .Replace("[Filter2]", "B")
+                            .Replace("[Filter3]", "B")
+                            .Replace("[Filter4]", "B");
 #elif EFCORE
                     RelationalQueryContext queryContext;
                     var command = ((IQueryable)result).CreateCommand(out queryContext);

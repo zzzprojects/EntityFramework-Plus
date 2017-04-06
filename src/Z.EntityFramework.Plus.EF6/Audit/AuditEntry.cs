@@ -46,6 +46,11 @@ namespace Z.EntityFramework.Plus
                 Entry = entry;
             }
 
+            if (Entity == null)
+            {
+                Entity = Entry.Entity;
+            }
+
             if (Parent == null)
             {
                 Parent = parent;
@@ -112,10 +117,20 @@ namespace Z.EntityFramework.Plus
         /// <value>The object state entry.</value>
         [NotMapped]
 #if EF5 || EF6
+        public object Entity { get; set; }
+#elif EFCORE
+    // EFCORE still have some issue with "NotMapped" attribute
+        public object Entity;
+#endif
+
+        /// <summary>Gets or sets the object state entry.</summary>
+        /// <value>The object state entry.</value>
+        [NotMapped]
+#if EF5 || EF6
             public ObjectStateEntry Entry { get; set; }
 #elif EFCORE
     // EFCORE still have some issue with "NotMapped" attribute
-        public EntityEntry Entry { get; set; }
+        public EntityEntry Entry;
 #endif
 
         /// <summary>Gets or sets the name of the entity set.</summary>

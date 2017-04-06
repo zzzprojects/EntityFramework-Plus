@@ -45,6 +45,13 @@ FROM    {TableName} AS A
 
 SELECT @@ROWCOUNT
 ";
+        internal const string CommandTextSqlCeTemplate = @"
+DELETE
+FROM    {TableName}
+WHERE EXISTS ( SELECT 1 FROM ({Select}) AS B
+               WHERE {PrimaryKeys}
+           )
+";
 
         /// <summary>The command text postgre SQL template.</summary>
         internal const string CommandTextPostgreSQLTemplate = @"
@@ -192,6 +199,11 @@ SELECT  @totalRowAffected
                     int totalRowAffecteds = command.ExecuteNonQuery();
                     return totalRowAffecteds;
                 }
+                else if (command.GetType().Name == "SqlCeCommand")
+                {
+                    int totalRowAffecteds = command.ExecuteNonQuery();
+                    return totalRowAffecteds;
+                }
                 else
                 {
                     if (Executing != null)
@@ -288,6 +300,7 @@ SELECT  @totalRowAffected
             var command = query.Context.CreateStoreCommand();
 
             bool isMySql = command.GetType().FullName.Contains("MySql");
+            var isSqlCe = command.GetType().Name == "SqlCeCommand";
 
             // GET mapping
             var mapping = entity.Info.EntityTypeMapping.MappingFragment;
@@ -298,6 +311,10 @@ SELECT  @totalRowAffected
             if (isMySql)
             {
                 tableName = string.Concat("`", store.Table, "`");
+            }
+            else if (isSqlCe)
+            {
+                tableName = string.Concat("[", store.Table, "]");
             }
             else
             {
@@ -324,18 +341,29 @@ SELECT  @totalRowAffected
             var commandTextTemplate = command.GetType().Name == "NpgsqlCommand" ?
                 CommandTextPostgreSQLTemplate :
                 isMySql ?
-                CommandTextTemplate_MySql :
-                BatchSize > 0 ?
-                BatchDelayInterval > 0 ?
-                    CommandTextWhileDelayTemplate :
-                    CommandTextWhileTemplate :
-                CommandTextTemplate;
+                    CommandTextTemplate_MySql :
+                    isSqlCe ?
+                        CommandTextSqlCeTemplate :
+                        BatchSize > 0 ?
+                            BatchDelayInterval > 0 ?
+                                CommandTextWhileDelayTemplate :
+                                CommandTextWhileTemplate :
+                            CommandTextTemplate;
 
             // GET inner query
-            var querySelect = query.ToTraceString();
+            var customQuery = query.GetCommandTextAndParameters();
+            var querySelect = customQuery.Item1;
 
             // GET primary key join
-            var primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.", EscapeName(x, isMySql), " = B.", EscapeName(x, isMySql), "")));
+            string primaryKeys;
+            if (isSqlCe)
+            {
+                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".", EscapeName(x, isMySql), " = B.", EscapeName(x, isMySql), "")));
+            }
+            else
+            {
+                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.", EscapeName(x, isMySql), " = B.", EscapeName(x, isMySql), "")));
+            }
 
             // REPLACE template
             commandTextTemplate = commandTextTemplate.Replace("{TableName}", tableName)
@@ -348,15 +376,26 @@ SELECT  @totalRowAffected
             command.CommandText = commandTextTemplate;
 
             // ADD Parameter
-            var parameterCollection = query.Parameters;
-            foreach (var parameter in parameterCollection)
+            var parameterCollection = customQuery.Item2;
+#if EF5
+            foreach (ObjectParameter parameter in parameterCollection)
             {
                 var param = command.CreateParameter();
                 param.ParameterName = parameter.Name;
-                param.Value = parameter.Value;
+                param.Value = parameter.Value ?? DBNull.Value;
 
                 command.Parameters.Add(param);
             }
+#elif EF6
+            foreach (DbParameter parameter in parameterCollection)
+            {
+                var param = command.CreateParameter();
+                param.ParameterName = parameter.ParameterName;
+                param.Value = parameter.Value ?? DBNull.Value;
+
+                command.Parameters.Add(param);
+            }
+#endif
 
             return command;
         }
@@ -433,14 +472,16 @@ SELECT  @totalRowAffected
 
 #if EFCORE
                     // ADD Parameter
-                    foreach (var parameter in queryContext.ParameterValues)
-                    {
-                        var param = command.CreateParameter();
-                        param.ParameterName = parameter.Key;
-                        param.Value = parameter.Value;
+                foreach (var relationalParameter in relationalCommand.Parameters)
+                {
+                    var parameter = queryContext.ParameterValues[relationalParameter.InvariantName];
 
-                        command.Parameters.Add(param);
-                    }
+                    var param = command.CreateParameter();
+                    param.ParameterName = relationalParameter.InvariantName;
+                    param.Value = parameter ?? DBNull.Value;
+
+                    command.Parameters.Add(param);
+                }
 #else
                 // ADD Parameter
                 var parameterCollection = relationalCommand.Parameters;
@@ -448,7 +489,7 @@ SELECT  @totalRowAffected
                 {
                     var param = command.CreateParameter();
                     param.ParameterName = parameter.Name;
-                    param.Value = parameter.Value;
+                    param.Value = parameter.Value ?? DBNull.Value;
 
                     command.Parameters.Add(param);
                 }
@@ -519,11 +560,13 @@ SELECT  @totalRowAffected
 
 #if EFCORE
                 // ADD Parameter
-                foreach (var parameter in queryContext.ParameterValues)
+                foreach (var relationalParameter in relationalCommand.Parameters)
                 {
+                    var parameter = queryContext.ParameterValues[relationalParameter.InvariantName];
+
                     var param = command.CreateParameter();
-                    param.ParameterName = parameter.Key;
-                    param.Value = parameter.Value;
+                    param.ParameterName = relationalParameter.InvariantName;
+                    param.Value = parameter ?? DBNull.Value;
 
                     command.Parameters.Add(param);
                 }
@@ -534,7 +577,7 @@ SELECT  @totalRowAffected
                 {
                     var param = command.CreateParameter();
                     param.ParameterName = parameter.Name;
-                    param.Value = parameter.Value;
+                    param.Value = parameter.Value ?? DBNull.Value;
 
                     command.Parameters.Add(param);
                 }

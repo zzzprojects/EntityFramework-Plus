@@ -5,6 +5,9 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
+using System;
+using System.Data.Entity;
+
 namespace Z.EntityFramework.Plus
 {
     public class QueryIncludeOptimizedManager
@@ -17,5 +20,6 @@ namespace Z.EntityFramework.Plus
 
         public static bool AllowQueryBatch { get; set; }
         public static bool AllowIncludeSubPath { get; set; }
+        // public static Func<DbContext, DbContext> DbContextFactory { get; set; }
     }
 }

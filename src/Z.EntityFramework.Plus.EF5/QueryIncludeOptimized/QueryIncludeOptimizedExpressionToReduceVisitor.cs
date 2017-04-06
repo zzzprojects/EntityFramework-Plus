@@ -63,8 +63,9 @@ namespace Z.EntityFramework.Plus
                         if (memberExpression != null)
                         {
                             AddMemberExpression(memberExpression);
-                            break;
                         }
+
+                        break;
                     }
                 }
             }

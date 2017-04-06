@@ -135,7 +135,9 @@
     <Compile Include="QueryCache\Extensions\IQueryable`\FromCacheAsync.cs" />
     <Compile Include="QueryCache\QueryCacheManager.cs" />
     <Compile Include="QueryFilterContext.cs" />
+    <Compile Include="QueryFilterInterceptor\Extensions\DbContext.SetFiltered.cs" />
     <Compile Include="QueryFilterInterceptor\QueryFilterAlwaysEmptyDictionary`2.cs" />
+    <Compile Include="QueryFilterInterceptor\QueryFilterInterceptorSet.cs" />
     <Compile Include="QueryFilter\Extensions\DbContext.Filter.cs" />
     <Compile Include="QueryFilter\Extensions\DbContext.SetFiltered.cs" />
     <Compile Include="QueryFilter\Extensions\IDbSet.AsNoFilter.cs" />
@@ -200,6 +202,7 @@
     <Compile Include="_Internal\EF5\DbContext.SaveChangesAsync.cs" />
     <Compile Include="_Internal\EF5\IDbSet`\DbContext.AddRange.cs" />
     <Compile Include="_Internal\EF5\IDbSet`\DbContext.RemoveRange.cs" />
+    <Compile Include="_Internal\EF5\ObjectQuery\GetCommandTextAndParameters.cs" />
     <Compile Include="_Internal\EF5_EF6\Database\GetEntityConnection.cs" />
     <Compile Include="_Internal\EF5_EF6\DbContext\DbContext.GetKeyNames.cs" />
     <Compile Include="_Internal\EF5_EF6\DbContext\DbContext.GetObjectContext.cs" />
@@ -212,6 +215,7 @@
     <Compile Include="_Internal\EF5_EF6\IQueryable\IQueryable.SelectByName.cs" />
     <Compile Include="_Internal\EF5_EF6\IQueryable`\IQueryable`.GetDbContext.cs" />
     <Compile Include="_Internal\EF5_EF6\IQueryable`\IQueryable`.GetObjectQuery.cs" />
+    <Compile Include="_Internal\EF5_EF6\ObjectContext\GetEntitySet.cs" />
     <Compile Include="_Internal\EF5_EF6\ObjectContext\CreateStoreCommand.cs" />
     <Compile Include="_Internal\EF5_EF6\Object\Object.GetObjectQuery.cs" />
     <Compile Include="_Internal\EF6\ObjectContext\GetDbContext.cs" />
@@ -261,6 +265,7 @@
     <Compile Include="_Internal\Model\Model\Model.GetConceptualModelString.cs" />
     <Compile Include="_Internal\Model\Model\Model.GetDatabaseFirst.cs" />
     <Compile Include="_Internal\Model\Model\Model.GetMappingModelString.cs" />
+    <Compile Include="_Internal\Model\Model\Model.GetModelNames.cs" />
     <Compile Include="_Internal\Model\Model\Model.GetModelName.cs" />
     <Compile Include="_Internal\Model\Model\Model.GetModelXDocument.cs" />
     <Compile Include="_Internal\Model\Model\Model.GetStorageModelString.cs" />

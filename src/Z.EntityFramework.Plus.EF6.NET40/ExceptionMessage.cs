@@ -25,7 +25,11 @@ namespace Z.EntityFramework.Plus
 #endif
 #if FULL || QUERY_CACHE
         public static string QueryCache_FirstTagNullOrEmpty = "Oops! The option 'UseFirstTagAsCacheKey' is enabled but we found no tag, an empty tag string, or a null tag string instead. Make sure a tag is provided, and it's not null or empty. For more information, contact us: info@zzzprojects.com";
-        public static string QueryCache_UseTagsNullOrEmpty = "Oops! The option 'UseTagsAsCacheKey' is enabled but we found no tag, an empty tag string, or a null tag string instead. Make sure a tag is provided, and it's not null or empty. For more information, contact us: info@zzzprojects.com";    
+        public static string QueryCache_UseTagsNullOrEmpty = "Oops! The option 'UseTagsAsCacheKey' is enabled but we found no tag, an empty tag string, or a null tag string instead. Make sure a tag is provided, and it's not null or empty. For more information, contact us: info@zzzprojects.com";
+#endif
+#if FULL || QUERY_FILTER
+        public static string QueryFilter_SetFilteredNotFound = "Oops! No set for the specified type has been found. Please report the issue to our support team: info@zzzprojects.com";
+        public static string QueryFilter_SetFilteredManyFound = "Oops! Many set for the specified type has been found. Please report the issue to our support team: info@zzzprojects.com";
 #endif
 #if FULL || QUERY_INCLUDEFILTER
         public static string QueryIncludeFilter_ArgumentExpression = "Oops! immediate method with expression argument are not supported in EF+ Query IncludeFilter. For more information, contact us: info@zzzprojects.com";

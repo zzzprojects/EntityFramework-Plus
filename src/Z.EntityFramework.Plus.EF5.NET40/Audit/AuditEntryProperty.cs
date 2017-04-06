@@ -176,7 +176,8 @@ namespace Z.EntityFramework.Plus
         public object NewValue { get; set; }
 #elif EFCORE
         [NotMapped]
-        public PropertyEntry PropertyEntry { get; set; }
+        public PropertyEntry PropertyEntry;
+
     // EFCORE still have some issue with "NotMapped" attribute
         public object NewValue;
 #endif
@@ -202,7 +203,7 @@ namespace Z.EntityFramework.Plus
 
                 if (Parent != null && Parent.Parent != null && Parent.State != AuditEntryState.EntityDeleted)
                 {
-                    return Parent.Parent.CurrentOrDefaultConfiguration.FormatValue(Parent.Entry, PropertyName, currentValue);
+                    return Parent.Parent.CurrentOrDefaultConfiguration.FormatValue(Parent.Entity, PropertyName, currentValue);
                 }
 
                 return currentValue != null && currentValue != DBNull.Value ? currentValue.ToString() : null;
@@ -237,7 +238,7 @@ namespace Z.EntityFramework.Plus
 
                 if (Parent != null && Parent.Parent != null && Parent.State != AuditEntryState.EntityAdded)
                 {
-                    return Parent.Parent.CurrentOrDefaultConfiguration.FormatValue(Parent.Entry, PropertyName, currentValue);
+                    return Parent.Parent.CurrentOrDefaultConfiguration.FormatValue(Parent.Entity, PropertyName, currentValue);
                 }
 
                 return currentValue != null && currentValue != DBNull.Value ? currentValue.ToString() : null;

@@ -157,7 +157,7 @@ namespace Z.EntityFramework.Plus
          
             // GET provider
             var objectQueryProviderField = typeof (ObjectQuery).GetProperty("ObjectQueryProvider", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            var provider = (IQueryProvider) objectQueryProviderField.GetValue(objectQuery);
+            var provider = (IQueryProvider) objectQueryProviderField.GetValue(objectQuery, null);
 
             // CREATE query from the expression
             var createQueryMethod = provider.GetType().GetMethod("CreateQuery", BindingFlags.NonPublic | BindingFlags.Instance, null, new[] {typeof (Expression)}, null);

@@ -40,16 +40,28 @@ namespace Z.EntityFramework.Plus
                                 {
                                     FilterID = new List<string>();
                                 }
+
+                                var baseInnerExpression = (DbFilterExpression)base.Visit(expression);
+
+                                // Add after visiting
                                 FilterID.Add(valueString);
 
                                 // It's a fake filter! Do nothing
-                                return expression.Input.Expression;
+                                return baseInnerExpression.Input.Expression;
                             }
                             if (valueString.StartsWith(QueryFilterManager.PrefixHook, StringComparison.InvariantCulture))
                             {
                                 HookID = valueString;
+
                                 // It's a fake filter! Do nothing
-                                return expression.Input.Expression;
+                                var baseInnerExpression = (DbFilterExpression)base.Visit(expression);
+                                return baseInnerExpression.Input.Expression;
+                            }
+                            if (valueString.StartsWith(QueryFilterManager.PrefixFilterID, StringComparison.InvariantCulture))
+                            {
+                                // It's a fake filter! Do nothing
+                                var baseInnerExpression = (DbFilterExpression)base.Visit(expression);
+                                return baseInnerExpression.Input.Expression;
                             }
                         }
                     }
@@ -70,17 +82,28 @@ namespace Z.EntityFramework.Plus
                                 {
                                     FilterID = new List<string>();
                                 }
+
+                                var baseInnerExpression = (DbFilterExpression)base.Visit(expression);
+
+                                // Add after visiting
                                 FilterID.Add(valueString);
 
                                 // It's a fake filter! Do nothing
-                                return expression.Input.Expression;
+                                return baseInnerExpression.Input.Expression;
                             }
                             if (valueString.StartsWith(QueryFilterManager.PrefixHook, StringComparison.InvariantCulture))
                             {
                                 HookID = valueString;
 
                                 // It's a fake filter! Do nothing
-                                return expression.Input.Expression;
+                                var baseInnerExpression = (DbFilterExpression)base.Visit(expression);
+                                return baseInnerExpression.Input.Expression;
+                            }
+                            if (valueString.StartsWith(QueryFilterManager.PrefixFilterID, StringComparison.InvariantCulture))
+                            {
+                                // It's a fake filter! Do nothing
+                                var baseInnerExpression = (DbFilterExpression)base.Visit(expression);
+                                return baseInnerExpression.Input.Expression;
                             }
                         }
                     }

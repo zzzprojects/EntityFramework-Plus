@@ -58,6 +58,15 @@ namespace Z.EntityFramework.Plus
                                 property.NewValue = currentValue;
                             }
                         }
+#elif EFCORE
+                        foreach (var property in entry.Properties)
+                        {
+                            if (!property.IsValueSet)
+                            {
+                                var currentValue = property.PropertyEntry.CurrentValue;
+                                property.NewValue = currentValue;
+                            }
+                        }
 #endif
                         break;
                     case AuditEntryState.RelationshipAdded:
@@ -67,75 +76,75 @@ namespace Z.EntityFramework.Plus
                         break;
                 }
             }
-//            foreach (var entry in audit.Entries)
-//            {
-//                if (entry.DelayedKey != null)
-//                {
-//#if EF5 || EF6
-//                    var objectStateEntry = entry.DelayedKey as ObjectStateEntry;
-//#elif EFCORE
-//                    var objectStateEntry = entry.DelayedKey as EntityEntry;
-//#endif
-//                    if (objectStateEntry != null)
-//                    {
-//#if EF5 || EF6
-//                        if (objectStateEntry.IsRelationship)
-//                        {
-//                            var values = objectStateEntry.CurrentValues;
-//                            var leftKeys = (EntityKey) values.GetValue(0);
-//                            var rightKeys = (EntityKey) values.GetValue(1);
-//                            var leftRelationName = values.GetName(0);
-//                            var rightRelationName = values.GetName(1);
+            //            foreach (var entry in audit.Entries)
+            //            {
+            //                if (entry.DelayedKey != null)
+            //                {
+            //#if EF5 || EF6
+            //                    var objectStateEntry = entry.DelayedKey as ObjectStateEntry;
+            //#elif EFCORE
+            //                    var objectStateEntry = entry.DelayedKey as EntityEntry;
+            //#endif
+            //                    if (objectStateEntry != null)
+            //                    {
+            //#if EF5 || EF6
+            //                        if (objectStateEntry.IsRelationship)
+            //                        {
+            //                            var values = objectStateEntry.CurrentValues;
+            //                            var leftKeys = (EntityKey) values.GetValue(0);
+            //                            var rightKeys = (EntityKey) values.GetValue(1);
+            //                            var leftRelationName = values.GetName(0);
+            //                            var rightRelationName = values.GetName(1);
 
-//                            foreach (var keyValue in leftKeys.EntityKeyValues)
-//                            {
-//                                var auditEntryProperty = audit.Configuration.AuditEntryPropertyFactory != null ?
-//                                    audit.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(entry, objectStateEntry, leftRelationName, keyValue.Key, null, keyValue.Value)) :
-//                                    new AuditEntryProperty();
+            //                            foreach (var keyValue in leftKeys.EntityKeyValues)
+            //                            {
+            //                                var auditEntryProperty = audit.Configuration.AuditEntryPropertyFactory != null ?
+            //                                    audit.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(entry, objectStateEntry, leftRelationName, keyValue.Key, null, keyValue.Value)) :
+            //                                    new AuditEntryProperty();
 
-//                                auditEntryProperty.Build(entry, leftRelationName, keyValue.Key, null, keyValue.Value);
-//                                entry.Properties.Add(auditEntryProperty);
-//                            }
+            //                                auditEntryProperty.Build(entry, leftRelationName, keyValue.Key, null, keyValue.Value);
+            //                                entry.Properties.Add(auditEntryProperty);
+            //                            }
 
-//                            foreach (var keyValue in rightKeys.EntityKeyValues)
-//                            {
-//                                var auditEntryProperty = audit.Configuration.AuditEntryPropertyFactory != null ?
-//                                    audit.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(entry, objectStateEntry, rightRelationName, keyValue.Key, null, keyValue.Value)) :
-//                                    new AuditEntryProperty();
+            //                            foreach (var keyValue in rightKeys.EntityKeyValues)
+            //                            {
+            //                                var auditEntryProperty = audit.Configuration.AuditEntryPropertyFactory != null ?
+            //                                    audit.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(entry, objectStateEntry, rightRelationName, keyValue.Key, null, keyValue.Value)) :
+            //                                    new AuditEntryProperty();
 
-//                                auditEntryProperty.Build(entry, rightRelationName, keyValue.Key, null, keyValue.Value);
-//                                entry.Properties.Add(auditEntryProperty);
-//                            }
-//                        }
-//                        else
-//                        {
-//                            foreach (var keyValue in objectStateEntry.EntityKey.EntityKeyValues)
-//                            {
-//                                var property = entry.Properties.FirstOrDefault(x => x.InternalPropertyName == keyValue.Key);
+            //                                auditEntryProperty.Build(entry, rightRelationName, keyValue.Key, null, keyValue.Value);
+            //                                entry.Properties.Add(auditEntryProperty);
+            //                            }
+            //                        }
+            //                        else
+            //                        {
+            //                            foreach (var keyValue in objectStateEntry.EntityKey.EntityKeyValues)
+            //                            {
+            //                                var property = entry.Properties.FirstOrDefault(x => x.InternalPropertyName == keyValue.Key);
 
-//                                // ENSURE the property is audited
-//                                if (property != null)
-//                                {
-//                                    property.NewValue = keyValue.Value;
-//                                }
-//                            }
-//                        }
-//                    }
-//#elif EFCORE
-//                        foreach (var keyValue in objectStateEntry.Metadata.GetKeys())
-//                        {
-//                            var key = objectStateEntry.Property(keyValue.Properties[0].Name);
-//                            var property = entry.Properties.FirstOrDefault(x => x.InternalPropertyName == keyValue.Properties[0].Name);
+            //                                // ENSURE the property is audited
+            //                                if (property != null)
+            //                                {
+            //                                    property.NewValue = keyValue.Value;
+            //                                }
+            //                            }
+            //                        }
+            //                    }
+            //#elif EFCORE
+            //                        foreach (var keyValue in objectStateEntry.Metadata.GetKeys())
+            //                        {
+            //                            var key = objectStateEntry.Property(keyValue.Properties[0].Name);
+            //                            var property = entry.Properties.FirstOrDefault(x => x.InternalPropertyName == keyValue.Properties[0].Name);
 
-//                            // ENSURE the property is audited
-//                            if (property != null)
-//                            {
-//                                property.NewValue = key.CurrentValue;
-//                            }
-//                        }
-//                    }
-//#endif
-//                }
+            //                            // ENSURE the property is audited
+            //                            if (property != null)
+            //                            {
+            //                                property.NewValue = key.CurrentValue;
+            //                            }
+            //                        }
+            //                    }
+            //#endif
+            //                }
             //}
         }
     }

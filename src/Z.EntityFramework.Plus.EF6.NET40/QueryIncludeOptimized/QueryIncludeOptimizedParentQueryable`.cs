@@ -105,13 +105,47 @@ namespace Z.EntityFramework.Plus
         /// </returns>
         public IEnumerable<T> CreateEnumerable()
         {
+            //var objectQuery = OriginalQueryable.GetObjectQuery();
+
+
+            //if (objectQuery.MergeOption == MergeOption.NoTracking)
+            //{
+            //    objectQuery.MergeOption = MergeOption.AppendOnly;
+
+            //    var newContext = QueryIncludeOptimizedManager.DbContextFactory(objectQuery.Context.GetDbContext()).GetObjectContext();
+
+            //    // CHANGE the context under the objectQuery
+            //    {
+            //        var internalQueryProperty = OriginalQueryable.GetType().GetProperty("InternalQuery", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            //        var internalQuery = internalQueryProperty.GetValue(OriginalQueryable);
+            //        //var internalQueryProperty = typeof(DbQuery).GetProperty("InternalQuery", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            //        //var internalQuery = internalQueryProperty.GetValue(OriginalQueryable, null);
+
+            //        var stateField = typeof(ObjectQuery).GetField("_state", BindingFlags.NonPublic | BindingFlags.Instance);
+            //        var state = stateField.GetValue(objectQuery);
+
+            //        var assembly = typeof(ObjectQuery).Assembly;
+            //        var objectQueryState = assembly.GetType("System.Data.Entity.Core.Objects.Internal.ObjectQueryState");
+            //        var contextField = objectQueryState.GetField("_context", BindingFlags.NonPublic | BindingFlags.Instance);
+            //        contextField.SetValue(state, newContext);
+
+            //        var expressionField = state.GetType().GetField("_expression", BindingFlags.NonPublic | BindingFlags.Instance);
+            //        var expression = (Expression)expressionField.GetValue(state);
+
+            //        var visitor = new QueryIncludeOptimizedExpressionReduceVisitor2();
+            //        expression = visitor.Visit(expression);
+            //    }
+            //}
+
+
             QueryIncludeOptimizedIncludeSubPath.RemoveLazyChild(this);
 
             // MODIFY query if necessary
 #if EF5 || EF6
             var objectContext = OriginalQueryable.GetObjectQuery().Context;
-            var keyMembers = ((dynamic) objectContext).CreateObjectSet<T>().EntitySet.ElementType.KeyMembers;
-            var keyNames = ((IEnumerable<EdmMember>) keyMembers).Select(x => x.Name).ToArray();
+
+            var keyMembers = objectContext.GetEntitySet<T>().ElementType.KeyMembers;
+            var keyNames = keyMembers.Select(x => x.Name).ToArray();
 #elif EFCORE
 
                 var context = currentQuery.OriginalQueryable.GetDbContext();

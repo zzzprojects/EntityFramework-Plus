@@ -73,6 +73,18 @@ namespace Z.EntityFramework.Plus
                 return;
             }
 
+#if EFCORE
+            if (IsInMemory)
+            {
+                foreach (var query in Queries)
+                {
+                    query.ExecuteInMemory();
+                }
+                Queries.Clear();
+                return;
+            }
+#endif
+
             if (Queries.Count == 1)
             {
                 Queries[0].GetResultDirectly();

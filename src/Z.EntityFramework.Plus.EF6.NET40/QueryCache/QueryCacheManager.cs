@@ -343,12 +343,38 @@ namespace Z.EntityFramework.Plus
 #if EF5 || EF6
             var connection = ((EntityConnection) query.GetObjectQuery().Context.Connection).GetStoreConnection();
 
+            string connectionStringWithoutPassword = "";
+            // Remove the password from the connection string
+            {
+                if (connection.ConnectionString != null)
+                {
+                    var list = new List<string>();
+
+                    var keyValues = connection.ConnectionString.Split(';');
+
+                    foreach (var keyValue in keyValues)
+                    {
+                        if (!string.IsNullOrEmpty(keyValue))
+                        {
+                            var key = keyValue.Split('=')[0].Trim().ToLowerInvariant();
+
+                            if (key != "password" && key != "pwd")
+                            {
+                                list.Add(keyValue);
+                            }
+                        }
+                    }
+
+                    connectionStringWithoutPassword = string.Join(",", list);
+                }
+            }
+
             // FORCE database name in case "ChangeDatabase()" method is used
             var connectionString = string.Concat(connection.DataSource ?? "", 
                 Environment.NewLine, 
                 connection.Database ?? "",
                 Environment.NewLine,
-                connection.ConnectionString ?? "");
+                connectionStringWithoutPassword ?? "");
             return connectionString;
 #elif EFCORE
             RelationalQueryContext queryContext;
@@ -362,12 +388,38 @@ namespace Z.EntityFramework.Plus
         {
             var connection = queryContext.Connection.DbConnection;
 
+            string connectionStringWithoutPassword = "";
+            // Remove the password from the connection string
+            {
+                if (connection.ConnectionString != null)
+                {
+                    var list = new List<string>();
+
+                    var keyValues = connection.ConnectionString.Split(';');
+
+                    foreach (var keyValue in keyValues)
+                    {
+                        if (!string.IsNullOrEmpty(keyValue))
+                        {
+                            var key = keyValue.Split('=')[0].Trim().ToLowerInvariant();
+
+                            if (key != "password" && key != "pwd")
+                            {
+                                list.Add(keyValue);
+                            }
+                        }
+                    }
+
+                    connectionStringWithoutPassword = string.Join(",", list);
+                }
+            }
+
             // FORCE database name in case "ChangeDatabase()" method is used
             var connectionString = string.Concat(connection.DataSource ?? "", 
                 Environment.NewLine, 
                 connection.Database ?? "",
                 Environment.NewLine,
-                connection.ConnectionString ?? "");
+                connectionStringWithoutPassword ?? "");
             return connectionString;
         }
 #endif

@@ -26,6 +26,7 @@ namespace Z.EntityFramework.Plus
 
         /// <summary>Identifier for the enable filter by.</summary>
         internal static string EnableFilterById = PrefixFilter + "EnableById;";
+        internal static string PrefixFilterID = "Z.EntityFramework.Plus.QueryFilterInterceptor.FilterID;";
 
         internal static List<Type> Types = new List<Type>(); 
 
@@ -174,12 +175,21 @@ namespace Z.EntityFramework.Plus
             return query;
         }
 
+        public static IQueryable HookFilter2(IQueryable query, Type type, string value)
+        {
+            var method = typeof(QueryFilterManager).GetMethod("HookFilter").MakeGenericMethod(type);
+            var result = method.Invoke(null, new object[] {query, value});
+
+            return (IQueryable)result;
+        }
+
         /// <summary>Initilize global filter in the context.</summary>
         /// <param name="context">The context to initialize global filter on.</param>
         public static void InitilizeGlobalFilter(DbContext context)
         {
-            // EnsureAlwaysEmptyDictionary(context);
-            // ClearQueryCache(context);
+            // Initialize global filter
+            var filterContext = AddOrGetFilterContext(context);
+            filterContext.UpdateHook(context);
         }
 
         /// <summary>Clears the query cache described by context.</summary>
@@ -202,7 +212,7 @@ namespace Z.EntityFramework.Plus
 
                 foreach (var setProperty in setProperties)
                 {
-                    var dbSet = (IQueryable) setProperty.GetValue(context, null);
+                    var dbSet = (IQueryable)setProperty.GetValue(context, null);
 
                     // Disable Set Caching
                     {

@@ -31,41 +31,38 @@ namespace Z.EntityFramework.Plus
         /// <param name="propertyName">The property name.</param>
         /// <returns>The formatted value.</returns>
 #if EF5 || EF6
-        public string FormatValue(ObjectStateEntry entry, string propertyName, object currentValue)
+        public string FormatValue(object entity, string propertyName, object currentValue)
 #elif EFCORE
         public string FormatValue(EntityEntry entry, string propertyName, object currentValue)
 #endif
         {
             if (EntityValueFormatters.Count > 0)
             {
-                if (entry.State != EntityState.Detached && entry.Entity != null)
+                var type = entity.GetType();
+                var key = string.Concat(type.FullName, ";", propertyName);
+                Func<object, object> formatter;
+
+                if (!ValueFormatterDictionary.TryGetValue(key, out formatter))
                 {
-                    var type = entry.Entity.GetType();
-                    var key = string.Concat(type.FullName, ";", propertyName);
-                    Func<object, object> formatter;
-
-                    if (!ValueFormatterDictionary.TryGetValue(key, out formatter))
+                    if (EntityValueFormatters.Count > 0)
                     {
-                        if (EntityValueFormatters.Count > 0)
+                        foreach (var formatProperty in EntityValueFormatters)
                         {
-                            foreach (var formatProperty in EntityValueFormatters)
-                            {
-                                formatter = formatProperty(entry.Entity, propertyName);
+                            formatter = formatProperty(entity, propertyName);
 
-                                if (formatter != null)
-                                {
-                                    break;
-                                }
+                            if (formatter != null)
+                            {
+                                break;
                             }
                         }
-
-                        ValueFormatterDictionary.TryAdd(key, formatter);
                     }
 
-                    if (formatter != null)
-                    {
-                        currentValue = formatter(currentValue);
-                    }
+                    ValueFormatterDictionary.TryAdd(key, formatter);
+                }
+
+                if (formatter != null)
+                {
+                    currentValue = formatter(currentValue);
                 }
             }
 

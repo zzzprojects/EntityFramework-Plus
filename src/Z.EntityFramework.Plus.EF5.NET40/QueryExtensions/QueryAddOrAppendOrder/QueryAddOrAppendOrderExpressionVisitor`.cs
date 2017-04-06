@@ -97,7 +97,8 @@ namespace Z.EntityFramework.Plus
             }
             else
             {
-                if (node.Method.Name == "MergeAs" || node.Method.Name == "Select" || node.Method.Name == "SelectMany")
+                if ((node.Method.Name == "MergeAs" || node.Method.Name == "Select" || node.Method.Name == "SelectMany")
+                    && KeyNames.All(x => expression.Type.GetGenericArguments()[0].GetProperty(x) != null))
                 {
                     // ADD "OrderBy" | "ThenBy" to the query
                     for (var i = 0; i < KeyNames.Length; i++)
@@ -171,7 +172,8 @@ namespace Z.EntityFramework.Plus
             MethodCallExpression newExpression;
 
             // LAMBDA: x => x.[PropertyName]
-            var parameter = Expression.Parameter(typeof (TSource), "x");
+            var elementType = expression.Type.GetGenericArguments()[0];
+            var parameter = Expression.Parameter(elementType, "x");
             Expression property = Expression.Property(parameter, propertyName);
             var lambda = Expression.Lambda(property, parameter);
 
@@ -186,7 +188,7 @@ namespace Z.EntityFramework.Plus
                         typeof (Queryable).GetMethods().First(x => x.Name == "ThenBy" && x.GetParameters().Length == 2) :
                         typeof (Queryable).GetMethods().First(x => x.Name == "ThenByDescending" && x.GetParameters().Length == 2);
 
-                var orderByMethodGeneric = orderByMethod.MakeGenericMethod(typeof (TSource), property.Type);
+                var orderByMethodGeneric = orderByMethod.MakeGenericMethod(elementType, property.Type);
 
                 newExpression = Expression.Call(null, orderByMethodGeneric, new[] {expression, Expression.Quote(lambda)});
             }
@@ -202,7 +204,7 @@ namespace Z.EntityFramework.Plus
                         typeof (Queryable).GetMethods().First(x => x.Name == "ThenByDescending" && x.GetParameters().Length == 3);
 
                 var comparerGeneric = typeof (IComparer<>).MakeGenericType(Comparer.GetType().GetElementType());
-                var orderByMethodGeneric = orderByMethod.MakeGenericMethod(typeof (TSource), property.Type);
+                var orderByMethodGeneric = orderByMethod.MakeGenericMethod(elementType, property.Type);
 
                 newExpression = Expression.Call(null, orderByMethodGeneric, new[] {expression, Expression.Quote(lambda), Expression.Constant(Comparer, comparerGeneric)});
             }
