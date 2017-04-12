@@ -5,7 +5,9 @@
 This library is powered by [Entity Framework Extensions](http://entityframework-extensions.net/?z=github&y=entityframework-plus)
 
 <a href="http://entityframework-extensions.net/?z=github&y=entityframework-plus">
-<img src="https://zzzprojects.github.io/images/logo/entityframework-extensions-pub.jpg" alt="Entity Framework Extensions" style="border: 1px solid #000" />
+<kbd>
+<img src="https://zzzprojects.github.io/images/logo/entityframework-extensions-pub.jpg" alt="Entity Framework Extensions" />
+</kbd>
 </a>
 
 ## Download
