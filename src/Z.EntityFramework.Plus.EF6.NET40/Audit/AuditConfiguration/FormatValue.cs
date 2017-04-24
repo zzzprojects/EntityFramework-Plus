@@ -33,7 +33,7 @@ namespace Z.EntityFramework.Plus
 #if EF5 || EF6
         public string FormatValue(object entity, string propertyName, object currentValue)
 #elif EFCORE
-        public string FormatValue(EntityEntry entry, string propertyName, object currentValue)
+        public string FormatValue(object entity, string propertyName, object currentValue)
 #endif
         {
             if (EntityValueFormatters.Count > 0)
@@ -48,7 +48,7 @@ namespace Z.EntityFramework.Plus
                     {
                         foreach (var formatProperty in EntityValueFormatters)
                         {
-                            formatter = formatProperty(entity, propertyName);
+                            formatter = formatProperty(entity, propertyName, currentValue);
 
                             if (formatter != null)
                             {

@@ -52,6 +52,13 @@ WHERE EXISTS ( SELECT 1 FROM ({Select}) AS B
                WHERE {PrimaryKeys}
            )
 ";
+        internal const string CommandTextOracleTemplate = @"
+DELETE
+FROM    {TableName}
+WHERE EXISTS ( SELECT 1 FROM ({Select}) B
+               WHERE {PrimaryKeys}
+           )
+";
 
         /// <summary>The command text postgre SQL template.</summary>
         internal const string CommandTextPostgreSQLTemplate = @"
@@ -199,6 +206,11 @@ SELECT  @totalRowAffected
                     int totalRowAffecteds = command.ExecuteNonQuery();
                     return totalRowAffecteds;
                 }
+                else if (command.Connection.GetType().Name.Contains("Oracle"))
+                {
+                    int totalRowAffecteds = command.ExecuteNonQuery();
+                    return totalRowAffecteds;
+                }
                 else if (command.GetType().Name == "SqlCeCommand")
                 {
                     int totalRowAffecteds = command.ExecuteNonQuery();
@@ -301,6 +313,7 @@ SELECT  @totalRowAffected
 
             bool isMySql = command.GetType().FullName.Contains("MySql");
             var isSqlCe = command.GetType().Name == "SqlCeCommand";
+            var isOracle = command.GetType().Namespace.Contains("Oracle");
 
             // GET mapping
             var mapping = entity.Info.EntityTypeMapping.MappingFragment;
@@ -315,6 +328,12 @@ SELECT  @totalRowAffected
             else if (isSqlCe)
             {
                 tableName = string.Concat("[", store.Table, "]");
+            }
+            else if (isOracle)
+            {
+                tableName = string.IsNullOrEmpty(store.Schema) || store.Schema == "dbo" ?
+string.Concat("\"", store.Table, "\"") :
+string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
             }
             else
             {
@@ -340,15 +359,17 @@ SELECT  @totalRowAffected
             // GET command text template
             var commandTextTemplate = command.GetType().Name == "NpgsqlCommand" ?
                 CommandTextPostgreSQLTemplate :
-                isMySql ?
-                    CommandTextTemplate_MySql :
-                    isSqlCe ?
-                        CommandTextSqlCeTemplate :
-                        BatchSize > 0 ?
-                            BatchDelayInterval > 0 ?
-                                CommandTextWhileDelayTemplate :
-                                CommandTextWhileTemplate :
-                            CommandTextTemplate;
+                isOracle ?
+                    CommandTextOracleTemplate :
+                    isMySql ?
+                        CommandTextTemplate_MySql :
+                        isSqlCe ?
+                            CommandTextSqlCeTemplate :
+                            BatchSize > 0 ?
+                                BatchDelayInterval > 0 ?
+                                    CommandTextWhileDelayTemplate :
+                                    CommandTextWhileTemplate :
+                                CommandTextTemplate;
 
             // GET inner query
             var customQuery = query.GetCommandTextAndParameters();
@@ -356,13 +377,13 @@ SELECT  @totalRowAffected
 
             // GET primary key join
             string primaryKeys;
-            if (isSqlCe)
+            if (isSqlCe || isOracle)
             {
-                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".", EscapeName(x, isMySql), " = B.", EscapeName(x, isMySql), "")));
+                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".", EscapeName(x, isMySql, isOracle), " = B.", EscapeName(x, isMySql, isOracle), "")));
             }
             else
             {
-                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.", EscapeName(x, isMySql), " = B.", EscapeName(x, isMySql), "")));
+                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.", EscapeName(x, isMySql, isOracle), " = B.", EscapeName(x, isMySql, isOracle), "")));
             }
 
             // REPLACE template
@@ -382,7 +403,7 @@ SELECT  @totalRowAffected
             {
                 var param = command.CreateParameter();
                 param.ParameterName = parameter.Name;
-                param.Value = parameter.Value;
+                param.Value = parameter.Value ?? DBNull.Value;
 
                 command.Parameters.Add(param);
             }
@@ -391,7 +412,7 @@ SELECT  @totalRowAffected
             {
                 var param = command.CreateParameter();
                 param.ParameterName = parameter.ParameterName;
-                param.Value = parameter.Value;
+                param.Value = parameter.Value ?? DBNull.Value;
 
                 command.Parameters.Add(param);
             }
@@ -478,7 +499,7 @@ SELECT  @totalRowAffected
 
                     var param = command.CreateParameter();
                     param.ParameterName = relationalParameter.InvariantName;
-                    param.Value = parameter;
+                    param.Value = parameter ?? DBNull.Value;
 
                     command.Parameters.Add(param);
                 }
@@ -489,7 +510,7 @@ SELECT  @totalRowAffected
                 {
                     var param = command.CreateParameter();
                     param.ParameterName = parameter.Name;
-                    param.Value = parameter.Value;
+                    param.Value = parameter.Value ?? DBNull.Value;
 
                     command.Parameters.Add(param);
                 }
@@ -566,7 +587,7 @@ SELECT  @totalRowAffected
 
                     var param = command.CreateParameter();
                     param.ParameterName = relationalParameter.InvariantName;
-                    param.Value = parameter;
+                    param.Value = parameter ?? DBNull.Value;
 
                     command.Parameters.Add(param);
                 }
@@ -577,7 +598,7 @@ SELECT  @totalRowAffected
                 {
                     var param = command.CreateParameter();
                     param.ParameterName = parameter.Name;
-                    param.Value = parameter.Value;
+                    param.Value = parameter.Value ?? DBNull.Value;
 
                     command.Parameters.Add(param);
                 }
@@ -589,9 +610,11 @@ SELECT  @totalRowAffected
 #endif
         }
 #endif
-        public string EscapeName(string name, bool isMySql)
+        public string EscapeName(string name, bool isMySql, bool isOracle)
         {
-            return isMySql ? string.Concat("`", name, "`") : string.Concat("[", name, "]");
+            return isMySql ? string.Concat("`", name, "`") :
+                isOracle ? string.Concat("\"", name, "\"") :
+                    string.Concat("[", name, "]");
         }
     }
 }

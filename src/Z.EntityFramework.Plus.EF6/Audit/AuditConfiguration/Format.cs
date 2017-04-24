@@ -27,7 +27,7 @@ namespace Z.EntityFramework.Plus
 
             foreach (var accessor in propertyNames)
             {
-                EntityValueFormatters.Add((x, s) => x is T && s == accessor ? formatter : null);
+                EntityValueFormatters.Add((x, s, v) => x is T && s == accessor ? formatter : null);
             }
 
             return this;

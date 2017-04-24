@@ -6,6 +6,7 @@
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 using System;
+using Microsoft.EntityFrameworkCore;
 
 namespace Z.EntityFramework.Plus
 {
@@ -15,5 +16,12 @@ namespace Z.EntityFramework.Plus
         /// <summary>Gets or sets the batch update builder to change default configuration.</summary>
         /// <value>The batch update builder to change default configuration.</value>
         public static Action<BatchUpdate> BatchUpdateBuilder { get; set; }
+
+#if EFCORE
+
+        /// <summary>Gets or sets the factory to create an InMemory DbContext.</summary>
+        /// <value>The factory to create an InMemory DbContext.</value>
+        public static Func<DbContext> InMemoryDbContextFactory { get; set; }
+#endif
     }
 }

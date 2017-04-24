@@ -59,6 +59,7 @@
     <Compile Include="Audit\Audit.cs" />
     <Compile Include="Audit\AuditConfiguration\DisplayNameDataAnnotation.cs" />
     <Compile Include="Audit\AuditConfiguration\ExcludeDataAnnotation.cs" />
+    <Compile Include="Audit\AuditConfiguration\FormatType.cs" />
     <Compile Include="Audit\AuditConfiguration\IncludeDataAnnotation.cs" />
     <Compile Include="Audit\AuditConfiguration\Format.cs" />
     <Compile Include="Audit\AuditConfiguration\FormatValue.cs" />

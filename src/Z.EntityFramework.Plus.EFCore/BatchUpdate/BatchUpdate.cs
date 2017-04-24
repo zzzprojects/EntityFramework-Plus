@@ -199,6 +199,33 @@ SELECT  @totalRowAffected
                 }
             }
 #elif EFCORE
+            if (BatchUpdateManager.InMemoryDbContextFactory != null && query.IsInMemoryQueryContext())
+            {
+                var context = BatchUpdateManager.InMemoryDbContextFactory();
+
+                var list = query.ToList();
+                var compiled = updateFactory.Compile();
+                var memberBindings = ((MemberInitExpression)updateFactory.Body).Bindings;
+                var accessors = memberBindings
+                    .Select(x => x.Member.Name)
+                    .Select(x => new PropertyOrFieldAccessor(typeof(T).GetProperty(x, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)))
+                    .ToList();
+
+                foreach (var item in list)
+                {
+                    var newItem = compiled(item);
+
+                    foreach (var accessor in accessors)
+                    {
+                        var value = accessor.GetValue(newItem);
+                        accessor.SetValue(item, value);
+                    }
+                }
+
+                context.SaveChanges();
+                return list.Count;
+            }
+
             var dbContext = query.GetDbContext();
             var entity = dbContext.Model.FindEntityType(typeof(T));
 

@@ -48,7 +48,7 @@ namespace Z.EntityFramework.Plus
                     {
                         foreach (var formatProperty in EntityValueFormatters)
                         {
-                            formatter = formatProperty(entity, propertyName);
+                            formatter = formatProperty(entity, propertyName, currentValue);
 
                             if (formatter != null)
                             {

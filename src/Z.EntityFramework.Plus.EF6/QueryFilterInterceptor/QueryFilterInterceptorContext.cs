@@ -12,8 +12,8 @@ namespace Z.EntityFramework.Plus
 {
     public class QueryFilterContextInterceptor
     {
-        /// <summary>true if clear cache required.</summary>
-        public bool ClearCacheRequired;
+        /// <summary>true if clear cache required. Always true the fist time we create the context.</summary>
+        public bool ClearCacheRequired = true;
 
         /// <summary>Gets or sets filter set by type.</summary>
         /// <value>The filter set by type.</value>
@@ -103,6 +103,9 @@ namespace Z.EntityFramework.Plus
         {
             StringBuilder sb = new StringBuilder();
 
+            // Make queries unique every time a filter change and require a recompile
+            sb.Append(Guid.NewGuid());
+
             foreach (var filter in GlobalFilterByKey.Values)
             {
                 sb.Append(filter.UniqueKey);
@@ -117,7 +120,7 @@ namespace Z.EntityFramework.Plus
 
             return sb.ToString();
         }
-        
+
 
         /// <summary>Adds a query filter to the filter context associated with the specified key.</summary>
         /// <typeparam name="T">The type of elements of the query.</typeparam>
@@ -155,6 +158,7 @@ namespace Z.EntityFramework.Plus
             if (ClearCacheRequired)
             {
                 UpdateHook(Context);
+                ClearCacheRequired = false;
             }
 
             //if (ClearCacheRequired)

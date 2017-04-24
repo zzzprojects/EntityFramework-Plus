@@ -32,7 +32,7 @@ namespace Z.EntityFramework.Plus
         {
             IgnorePropertyUnchanged = true;
 
-            EntityValueFormatters = new List<Func<object, string, Func<object, object>>>();
+            EntityValueFormatters = new List<Func<object, string, object, Func<object, object>>>();
             ExcludeIncludeEntityPredicates = new List<Func<object, bool?>>();
             ExcludeIncludePropertyPredicates = new List<Func<object, string, bool?>>();
 
@@ -65,7 +65,7 @@ namespace Z.EntityFramework.Plus
 
         /// <summary>Gets or sets a list of formatter for entity values.</summary>
         /// <value>A list of formatter for entity values.</value>
-        public List<Func<object, string, Func<object, object>>> EntityValueFormatters { get; set; }
+        public List<Func<object, string, object, Func<object, object>>> EntityValueFormatters { get; set; }
 
         /// <summary>Gets or sets a list of predicates to exclude or include entities.</summary>
         /// <value>A list of predicates to exclude or include entities.</value>
@@ -151,7 +151,7 @@ namespace Z.EntityFramework.Plus
                 IgnorePropertyUnchanged = IgnorePropertyUnchanged,
                 IgnoreRelationshipAdded = IgnoreRelationshipAdded,
                 IgnoreRelationshipDeleted = IgnoreRelationshipDeleted,
-                EntityValueFormatters = new List<Func<object, string, Func<object, object>>>(EntityValueFormatters),
+                EntityValueFormatters = new List<Func<object, string, object, Func<object, object>>>(EntityValueFormatters),
                 ExcludeIncludeEntityPredicates = new List<Func<object, bool?>>(ExcludeIncludeEntityPredicates),
                 ExcludeIncludePropertyPredicates = new List<Func<object, string, bool?>>(ExcludeIncludePropertyPredicates),
                 SoftAddedPredicates = new List<Func<object, bool>>(SoftAddedPredicates),

@@ -57,6 +57,7 @@
     <Compile Include="Audit\AuditConfiguration\ExcludeEntity.cs" />
     <Compile Include="Audit\AuditConfiguration\ExcludeProperty.cs" />
     <Compile Include="Audit\AuditConfiguration\Format.cs" />
+    <Compile Include="Audit\AuditConfiguration\FormatType.cs" />
     <Compile Include="Audit\AuditConfiguration\FormatValue.cs" />
     <Compile Include="Audit\AuditConfiguration\GetEntityModifiedState.cs" />
     <Compile Include="Audit\AuditConfiguration\IncludeDataAnnotation.cs" />
