@@ -192,7 +192,7 @@ namespace Z.EntityFramework.Plus
 
                 var newQuery = QueryFilterManager.HookFilter2((IQueryable)currentQuery, set.ElementType, filterID);
 
-                set.UpdateInternalQueryCompiled.Value(Context, newQuery.GetObjectQuery());
+                set.UpdateInternalQueryCompiled(Context, newQuery.GetObjectQuery());
             }
         }
 

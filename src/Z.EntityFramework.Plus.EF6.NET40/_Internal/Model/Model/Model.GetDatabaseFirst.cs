@@ -111,12 +111,11 @@ namespace Z.EntityFramework.Plus.Internal
             // FIX multi model
             {
                 model.ConceptualModel.EntityContainer = model.ConceptualModel.EntityContainers[0];
-                model.ConceptualModel.EntityContainer.EntitySets.AddRange(model.ConceptualModel.EntityContainers.Skip(1).SelectMany(x => x.EntitySets));
-
                 model.StoreModel.EntityContainer = model.StoreModel.EntityContainers[0];
-                model.StoreModel.EntityContainer.EntitySets.AddRange(model.StoreModel.EntityContainers.Skip(1).SelectMany(x => x.EntitySets));
-
                 model.MappingModel.EntityContainerMapping = model.MappingModel.EntityContainerMappings[0];
+
+                model.ConceptualModel.EntityContainer.EntitySets.AddRange(model.ConceptualModel.EntityContainers.Skip(1).SelectMany(x => x.EntitySets));
+                model.StoreModel.EntityContainer.EntitySets.AddRange(model.StoreModel.EntityContainers.Skip(1).SelectMany(x => x.EntitySets));
                 model.MappingModel.EntityContainerMapping.EntitySetMappings.AddRange(model.MappingModel.EntityContainerMappings.Skip(1).SelectMany(x => x.EntitySetMappings));
             }
 

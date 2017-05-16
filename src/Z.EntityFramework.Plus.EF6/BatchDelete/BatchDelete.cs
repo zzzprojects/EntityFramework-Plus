@@ -315,6 +315,16 @@ SELECT  @totalRowAffected
             var isSqlCe = command.GetType().Name == "SqlCeCommand";
             var isOracle = command.GetType().Namespace.Contains("Oracle");
 
+            // Oracle BindByName
+            if (isOracle)
+            {
+                var bindByNameProperty = command.GetType().GetProperty("BindByName") ?? command.GetType().GetProperty("PassParametersByName");
+                if (bindByNameProperty != null)
+                {
+                    bindByNameProperty.SetValue(command, true, null);
+                }
+            }
+
             // GET mapping
             var mapping = entity.Info.EntityTypeMapping.MappingFragment;
             var store = mapping.StoreEntitySet;

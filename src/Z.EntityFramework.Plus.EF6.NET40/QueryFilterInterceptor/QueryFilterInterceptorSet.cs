@@ -7,6 +7,7 @@
 
 
 using System;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -19,22 +20,34 @@ namespace Z.EntityFramework.Plus
     /// <summary>A class for query filter set.</summary>
     public class QueryFilterSet
     {
+        public static ConcurrentDictionary<PropertyInfo, Action<DbContext, ObjectQuery>> CachedActions = new ConcurrentDictionary<PropertyInfo, Action<DbContext, ObjectQuery>>();
+
         /// <summary>Constructor.</summary>
         /// <param name="dbSetProperty">The database set property.</param>
         public QueryFilterSet(DbContext context, PropertyInfo dbSetProperty)
         {
-            CreateFilterQueryableCompiled = new Lazy<Func<DbContext, QueryFilterSet, object, IQueryable>>(CompileCreateFilterQueryable);
+            // NOT longer used?
+            // CreateFilterQueryableCompiled = new Lazy<Func<DbContext, QueryFilterSet, object, IQueryable>>(CompileCreateFilterQueryable);
             DbSetProperty = dbSetProperty;
             ElementType = dbSetProperty.PropertyType.GetDbSetElementType();
             GetDbSetCompiled = new Lazy<Func<DbContext, IQueryable>>(() => CompileGetDbSet(dbSetProperty));
-            UpdateInternalQueryCompiled = new Lazy<Action<DbContext, ObjectQuery>>(() => CompileUpdateInternalQuery(dbSetProperty));
+
+            // UpdateInternalQueryCompiled
+            {
+                Action<DbContext, ObjectQuery> compiled;
+                if (!CachedActions.TryGetValue(dbSetProperty, out compiled))
+                {
+                    compiled = CompileUpdateInternalQuery(dbSetProperty);
+                    CachedActions.TryAdd(dbSetProperty, compiled);
+                }
+                UpdateInternalQueryCompiled = compiled;
+            }
 
             {
                 var currentQuery = dbSetProperty.GetValue(context, null);
                 currentQuery = QueryFilterManager.HookFilter2((IQueryable)currentQuery, ElementType, QueryFilterManager.PrefixFilterID);
                 OriginalQuery = (IQueryable)currentQuery;
             }
-          
         }
 
         public IQueryable OriginalQuery { get; set; }
@@ -56,7 +69,7 @@ namespace Z.EntityFramework.Plus
 
         /// <summary>Gets or sets the compiled action to update the internal query.</summary>
         /// <value>The compiled action to update the internal query.</value>
-        public Lazy<Action<DbContext, ObjectQuery>> UpdateInternalQueryCompiled { get; set; }
+        public Action<DbContext, ObjectQuery> UpdateInternalQueryCompiled { get; set; }
 
         /// <summary>Compiles the function to create a new filter queryable.</summary>
         /// <returns>The compiled the function to create a new filter queryable</returns>

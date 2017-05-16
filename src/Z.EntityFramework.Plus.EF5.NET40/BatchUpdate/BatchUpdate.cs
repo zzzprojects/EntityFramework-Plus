@@ -49,6 +49,13 @@ WHERE EXISTS ( SELECT 1 FROM ({Select}) AS B
                WHERE {PrimaryKeys}
            )  
 ";
+        internal const string CommandTextOracleTemplate = @"
+UPDATE {TableName}
+SET {SetValue}
+WHERE EXISTS ( SELECT 1 FROM ({Select}) B
+               WHERE {PrimaryKeys}
+           )  
+";
 
         internal const string CommandTextTemplate_MySQL = @"
 UPDATE {TableName} AS A
@@ -199,6 +206,33 @@ SELECT  @totalRowAffected
                 }
             }
 #elif EFCORE
+            if (BatchUpdateManager.InMemoryDbContextFactory != null && query.IsInMemoryQueryContext())
+            {
+                var context = BatchUpdateManager.InMemoryDbContextFactory();
+
+                var list = query.ToList();
+                var compiled = updateFactory.Compile();
+                var memberBindings = ((MemberInitExpression)updateFactory.Body).Bindings;
+                var accessors = memberBindings
+                    .Select(x => x.Member.Name)
+                    .Select(x => new PropertyOrFieldAccessor(typeof(T).GetProperty(x, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)))
+                    .ToList();
+
+                foreach (var item in list)
+                {
+                    var newItem = compiled(item);
+
+                    foreach (var accessor in accessors)
+                    {
+                        var value = accessor.GetValue(newItem);
+                        accessor.SetValue(item, value);
+                    }
+                }
+
+                context.SaveChanges();
+                return list.Count;
+            }
+
             var dbContext = query.GetDbContext();
             var entity = dbContext.Model.FindEntityType(typeof(T));
 
@@ -253,6 +287,17 @@ SELECT  @totalRowAffected
             var command = query.Context.CreateStoreCommand();
             bool isMySql = command.GetType().FullName.Contains("MySql");
             var isSqlCe = command.GetType().Name == "SqlCeCommand";
+            var isOracle = command.GetType().Namespace.Contains("Oracle");
+
+            // Oracle BindByName
+            if (isOracle)
+            {
+                var bindByNameProperty = command.GetType().GetProperty("BindByName") ?? command.GetType().GetProperty("PassParametersByName");
+                if (bindByNameProperty != null)
+                {
+                    bindByNameProperty.SetValue(command, true, null);
+                }
+            }
 
             // GET mapping
             var mapping = entity.Info.EntityTypeMapping.MappingFragment;
@@ -267,6 +312,12 @@ SELECT  @totalRowAffected
             else if (isSqlCe)
             {
                 tableName = string.Concat("[", store.Table, "]");
+            }
+            else if (isOracle)
+            {
+                tableName = string.IsNullOrEmpty(store.Schema) || store.Schema == "dbo" ?
+                    string.Concat("\"", store.Table, "\"") :
+                    string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
             }
             else
             {
@@ -299,6 +350,7 @@ SELECT  @totalRowAffected
                     CommandTextWhileDelayTemplate :
                     CommandTextWhileTemplate :
 #endif
+                isOracle ? CommandTextOracleTemplate :
                 isMySql ? CommandTextTemplate_MySQL : 
                 isSqlCe ? CommandTextTemplateSqlCe :
                 CommandTextTemplate;
@@ -313,20 +365,29 @@ SELECT  @totalRowAffected
 
             if (isSqlCe)
             {
-                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".", EscapeName(x, isMySql), " = B.", EscapeName(x, isMySql), "")));
+                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".", EscapeName(x, isMySql, isOracle), " = B.", EscapeName(x, isMySql, isOracle), "")));
 
                 setValues = string.Join("," + Environment.NewLine, values.Select((x, i) => x.Item2 is ConstantExpression ?
-                    string.Concat(EscapeName(x.Item1, isMySql), " = ", ((ConstantExpression) x.Item2).Value.ToString().Replace("B.[", "[")) :
-                    string.Concat(EscapeName(x.Item1, isMySql), " = @zzz_BatchUpdate_", i)));
+                    string.Concat(EscapeName(x.Item1, isMySql, isOracle), " = ", ((ConstantExpression) x.Item2).Value.ToString().Replace("B.[", "[")) :
+                    string.Concat(EscapeName(x.Item1, isMySql, isOracle), " = @zzz_BatchUpdate_", i)));
             }
-            else
+            else if (isOracle)
             {
-                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.", EscapeName(x, isMySql), " = B.", EscapeName(x, isMySql), "")));
+                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".", EscapeName(x, isMySql, isOracle), " = B.", EscapeName(x, isMySql, isOracle), "")));
 
                 // GET updateSetValues
                 setValues = string.Join("," + Environment.NewLine, values.Select((x, i) => x.Item2 is ConstantExpression ?
-                    string.Concat("A.", EscapeName(x.Item1, isMySql), " = ", ((ConstantExpression) x.Item2).Value) :
-                    string.Concat("A.", EscapeName(x.Item1, isMySql), " = @zzz_BatchUpdate_", i)));
+                    string.Concat(EscapeName(x.Item1, isMySql, isOracle), " = ", ((ConstantExpression)x.Item2).Value) :
+                    string.Concat(EscapeName(x.Item1, isMySql, isOracle), " = :zzz_BatchUpdate_", i)));
+            }
+            else
+            {
+                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.", EscapeName(x, isMySql, isOracle), " = B.", EscapeName(x, isMySql, isOracle), "")));
+
+                // GET updateSetValues
+                setValues = string.Join("," + Environment.NewLine, values.Select((x, i) => x.Item2 is ConstantExpression ?
+                    string.Concat("A.", EscapeName(x.Item1, isMySql, isOracle), " = ", ((ConstantExpression) x.Item2).Value) :
+                    string.Concat("A.", EscapeName(x.Item1, isMySql, isOracle), " = @zzz_BatchUpdate_", i)));
             }
 
             // REPLACE template
@@ -369,8 +430,10 @@ SELECT  @totalRowAffected
                     continue;
                 }
 
+                var parameterPrefix = isOracle ? ":" : "@";
+
                 var parameter = command.CreateParameter();
-                parameter.ParameterName = "@zzz_BatchUpdate_" + i;
+                parameter.ParameterName = parameterPrefix + "zzz_BatchUpdate_" + i;
                 parameter.Value = values[i].Item2 ?? DBNull.Value;
                 command.Parameters.Add(parameter);
             }
@@ -686,9 +749,11 @@ SELECT  @totalRowAffected
             return destinationValues;
         }
 
-        public string EscapeName(string name, bool isMySql)
+        public string EscapeName(string name, bool isMySql, bool isOracle)
         {
-            return isMySql ? string.Concat("`", name, "`") : string.Concat("[", name, "]");
+            return isMySql ? string.Concat("`", name, "`") :
+                isOracle ? string.Concat("\"", name, "\"") :
+                    string.Concat("[", name, "]");
         }
 
         public Dictionary<string, object> ResolveUpdateFromQueryDictValues<T>(Expression<Func<T, T>> updateFactory)

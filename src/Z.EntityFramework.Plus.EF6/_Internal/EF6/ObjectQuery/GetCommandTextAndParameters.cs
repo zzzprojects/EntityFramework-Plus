@@ -47,6 +47,8 @@ namespace Z.EntityFramework.Plus
                 sql = prepareEntityCommandBeforeExecution.CommandText;
                 var parameters = prepareEntityCommandBeforeExecution.Parameters;
 
+                interceptors.ForEach(i => i.ReaderExecuted(prepareEntityCommandBeforeExecution, new DbCommandInterceptionContext<DbDataReader>(objectQuery.Context.GetInterceptionContext())));
+
                 return new Tuple<string, DbParameterCollection>(sql, parameters);
             }
         }

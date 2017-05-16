@@ -7,6 +7,10 @@
 
 using System;
 
+#if EFCORE
+using Microsoft.EntityFrameworkCore;
+#endif
+
 namespace Z.EntityFramework.Plus
 {
     /// <summary>Manage EF+ Batch Update Configuration.</summary>
@@ -15,5 +19,12 @@ namespace Z.EntityFramework.Plus
         /// <summary>Gets or sets the batch update builder to change default configuration.</summary>
         /// <value>The batch update builder to change default configuration.</value>
         public static Action<BatchUpdate> BatchUpdateBuilder { get; set; }
+
+#if EFCORE
+
+        /// <summary>Gets or sets the factory to create an InMemory DbContext.</summary>
+        /// <value>The factory to create an InMemory DbContext.</value>
+        public static Func<DbContext> InMemoryDbContextFactory { get; set; }
+#endif
     }
 }
