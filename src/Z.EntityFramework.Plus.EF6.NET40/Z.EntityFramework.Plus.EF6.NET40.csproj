@@ -225,6 +225,7 @@
     <Compile Include="_Internal\EFCore\IQueryable`\IsInMemoryQueryContext.cs" />
     <Compile Include="_Internal\EF\DbContext\DbContext.GetDbSetProperties.cs" />
     <Compile Include="_Internal\EF\DbContext\DbContext.MapReader.cs" />
+    <Compile Include="_Internal\EF\DbParameter\DbParameter.CopyFrom.cs" />
     <Compile Include="_Internal\EF\IQueryable`\IQueryable.Order.cs" />
     <Compile Include="_Internal\EF\IQueryable`\IQueryable.OrderBy.cs" />
     <Compile Include="_Internal\EF\IQueryable`\IQueryable.OrderByDescending.cs" />

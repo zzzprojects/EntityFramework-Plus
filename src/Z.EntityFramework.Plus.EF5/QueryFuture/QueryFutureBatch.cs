@@ -73,6 +73,18 @@ namespace Z.EntityFramework.Plus
                 return;
             }
 
+#if EFCORE
+            if (IsInMemory)
+            {
+                foreach (var query in Queries)
+                {
+                    query.ExecuteInMemory();
+                }
+                Queries.Clear();
+                return;
+            }
+#endif
+
             if (Queries.Count == 1)
             {
                 Queries[0].GetResultDirectly();
@@ -81,7 +93,7 @@ namespace Z.EntityFramework.Plus
             }
 
 #if EF5 || EF6
-            var connection = (EntityConnection) Context.Connection;
+            var connection = (EntityConnection)Context.Connection;
 #elif EFCORE
             if (IsInMemory)
             {
@@ -179,8 +191,8 @@ namespace Z.EntityFramework.Plus
 
                     // CREATE parameter
                     var dbParameter = command.CreateParameter();
-                    dbParameter.ParameterName = newValue;
-                    dbParameter.Value = parameter.Value;
+                    dbParameter.CopyFrom(parameter, newValue);
+
                     command.Parameters.Add(dbParameter);
 
                     // REPLACE parameter with new value
@@ -205,8 +217,8 @@ namespace Z.EntityFramework.Plus
 
                     // CREATE parameter
                     var dbParameter = command.CreateParameter();
-                    dbParameter.ParameterName = newValue;
-                    dbParameter.Value = parameter.Value;
+                    dbParameter.CopyFrom(parameter, newValue);
+
                     command.Parameters.Add(dbParameter);
 
                     // REPLACE parameter with new value
@@ -236,8 +248,8 @@ namespace Z.EntityFramework.Plus
 
                     // CREATE parameter
                     var dbParameter = command.CreateParameter();
-                    dbParameter.ParameterName = newValue;
-                    dbParameter.Value = parameter;
+                    dbParameter.CopyFrom(relationalParameter, parameter, newValue);
+
                     command.Parameters.Add(dbParameter);
 
                     // REPLACE parameter with new value

@@ -20,7 +20,10 @@ namespace Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel
         [XmlIgnore]
         internal Dictionary<string, SchemaEntityType> Index_EntityTypes_Name { get; set; }
 
-#region XmlDeserialization
+        [XmlIgnore]
+        internal EntityContainer EntityContainer { get; set; }
+
+        #region XmlDeserialization
 
         /// <summary>
         ///     Please visit the
@@ -42,7 +45,7 @@ namespace Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel
         /// </summary>
         /// <value>The entity container.</value>
         [XmlElement("EntityContainer")]
-        public EntityContainer EntityContainer { get; set; }
+        public List<EntityContainer> EntityContainers { get; set; }
 
 #endregion
     }

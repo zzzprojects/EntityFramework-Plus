@@ -191,8 +191,8 @@ namespace Z.EntityFramework.Plus
 
                     // CREATE parameter
                     var dbParameter = command.CreateParameter();
-                    dbParameter.ParameterName = newValue;
-                    dbParameter.Value = parameter.Value;
+                    dbParameter.CopyFrom(parameter, newValue);
+
                     command.Parameters.Add(dbParameter);
 
                     // REPLACE parameter with new value
@@ -217,8 +217,8 @@ namespace Z.EntityFramework.Plus
 
                     // CREATE parameter
                     var dbParameter = command.CreateParameter();
-                    dbParameter.ParameterName = newValue;
-                    dbParameter.Value = parameter.Value;
+                    dbParameter.CopyFrom(parameter, newValue);
+
                     command.Parameters.Add(dbParameter);
 
                     // REPLACE parameter with new value
@@ -248,8 +248,8 @@ namespace Z.EntityFramework.Plus
 
                     // CREATE parameter
                     var dbParameter = command.CreateParameter();
-                    dbParameter.ParameterName = newValue;
-                    dbParameter.Value = parameter;
+                    dbParameter.CopyFrom(relationalParameter, parameter, newValue);
+
                     command.Parameters.Add(dbParameter);
 
                     // REPLACE parameter with new value

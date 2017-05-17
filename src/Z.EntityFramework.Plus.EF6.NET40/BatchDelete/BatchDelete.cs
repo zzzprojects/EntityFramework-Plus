@@ -412,8 +412,7 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
             foreach (ObjectParameter parameter in parameterCollection)
             {
                 var param = command.CreateParameter();
-                param.ParameterName = parameter.Name;
-                param.Value = parameter.Value ?? DBNull.Value;
+                param.CopyFrom(parameter);
 
                 command.Parameters.Add(param);
             }
@@ -421,8 +420,7 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
             foreach (DbParameter parameter in parameterCollection)
             {
                 var param = command.CreateParameter();
-                param.ParameterName = parameter.ParameterName;
-                param.Value = parameter.Value ?? DBNull.Value;
+                param.CopyFrom(parameter);
 
                 command.Parameters.Add(param);
             }
@@ -508,8 +506,7 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
                     var parameter = queryContext.ParameterValues[relationalParameter.InvariantName];
 
                     var param = command.CreateParameter();
-                    param.ParameterName = relationalParameter.InvariantName;
-                    param.Value = parameter ?? DBNull.Value;
+                    param.CopyFrom(relationalParameter, parameter);
 
                     command.Parameters.Add(param);
                 }
@@ -519,8 +516,7 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
                 foreach (var parameter in parameterCollection)
                 {
                     var param = command.CreateParameter();
-                    param.ParameterName = parameter.Name;
-                    param.Value = parameter.Value ?? DBNull.Value;
+                    param.CopyFrom(parameter);
 
                     command.Parameters.Add(param);
                 }
@@ -596,8 +592,7 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
                     var parameter = queryContext.ParameterValues[relationalParameter.InvariantName];
 
                     var param = command.CreateParameter();
-                    param.ParameterName = relationalParameter.InvariantName;
-                    param.Value = parameter ?? DBNull.Value;
+                    param.CopyFrom(relationalParameter, parameter);
 
                     command.Parameters.Add(param);
                 }
@@ -607,8 +602,7 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
                 foreach (var parameter in parameterCollection)
                 {
                     var param = command.CreateParameter();
-                    param.ParameterName = parameter.Name;
-                    param.Value = parameter.Value ?? DBNull.Value;
+                    param.CopyFrom(parameter);
 
                     command.Parameters.Add(param);
                 }
