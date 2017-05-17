@@ -48,7 +48,14 @@ namespace Z.EntityFramework.Plus
 
             if (QueryIncludeOptimizedManager.AllowQueryBatch)
             {
-                queryable.Select(Filter).Future();
+                var subQuery = queryable.Select(Filter);
+
+                if (subQuery is QueryIncludeOptimizedParentQueryable<TChild>)
+                {
+                    subQuery = ((QueryIncludeOptimizedParentQueryable<TChild>) subQuery).OriginalQueryable;
+                }
+
+                subQuery.Future();
             }
             else
             {
