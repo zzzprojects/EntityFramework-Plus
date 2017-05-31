@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="SharedProjectFile_SccProperties">
+    <SharedProjectFile_ProjectGuid>{47155a83-7578-47a8-b566-a64a9dca3c89}</SharedProjectFile_ProjectGuid>
+    <SharedProjectFile_SccProjectName>SAK</SharedProjectFile_SccProjectName>
+    <SharedProjectFile_SccAuxPath>SAK</SharedProjectFile_SccAuxPath>
+    <SharedProjectFile_SccLocalPath>SAK</SharedProjectFile_SccLocalPath>
+    <SharedProjectFile_SccProvider>SAK</SharedProjectFile_SccProvider>
+  </PropertyGroup>
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>c3df9de1-3c26-42c8-b972-902214161bd7</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Z.EF.Plus.QueryExtensions.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`.AddOrAppendOrderBy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`.AddOrAppendOrderByDescending.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`.AddToRootOrAppendOrderBy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryAddOrAppendOrderExpressionVisitor`.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryAddOrAppendOrderExpressionVisitor`2.cs" />
+  </ItemGroup>
+</Project>

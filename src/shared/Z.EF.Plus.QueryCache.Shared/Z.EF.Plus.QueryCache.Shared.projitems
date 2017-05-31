@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="SharedProjectFile_SccProperties">
+    <SharedProjectFile_ProjectGuid>{ea8a91c0-de7f-4a15-aa22-4bbfd2139674}</SharedProjectFile_ProjectGuid>
+    <SharedProjectFile_SccProjectName>SAK</SharedProjectFile_SccProjectName>
+    <SharedProjectFile_SccAuxPath>SAK</SharedProjectFile_SccAuxPath>
+    <SharedProjectFile_SccLocalPath>SAK</SharedProjectFile_SccLocalPath>
+    <SharedProjectFile_SccProvider>SAK</SharedProjectFile_SccProvider>
+  </PropertyGroup>
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>287a066e-6fcc-42b2-bacc-e24faf056e4c</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Z.EF.Plus.QueryCache.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`\FromCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`\FromCacheAsync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\QueryDeferred`\FromCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\QueryDeferred`\FromCacheAsync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryCacheManager.cs" />
+  </ItemGroup>
+</Project>

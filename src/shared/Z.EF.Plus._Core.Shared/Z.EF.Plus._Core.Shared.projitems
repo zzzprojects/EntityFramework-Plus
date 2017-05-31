@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="SharedProjectFile_SccProperties">
+    <SharedProjectFile_ProjectGuid>{e11c5da2-5a40-43ba-96ff-5a67049739bb}</SharedProjectFile_ProjectGuid>
+    <SharedProjectFile_SccProjectName>SAK</SharedProjectFile_SccProjectName>
+    <SharedProjectFile_SccAuxPath>SAK</SharedProjectFile_SccAuxPath>
+    <SharedProjectFile_SccLocalPath>SAK</SharedProjectFile_SccLocalPath>
+    <SharedProjectFile_SccProvider>SAK</SharedProjectFile_SccProvider>
+  </PropertyGroup>
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>27cbb38c-9814-4251-b919-905514d6d8a0</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Z.EF.Plus._Core.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Dictionary\Dictionary.AddOrAppend.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DynamicAnonymousType\DynamicAnonymousType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF5\DbContext.SaveChangesAsync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF5\IDbSet`\DbContext.AddRange.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF5\IDbSet`\DbContext.RemoveRange.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF5\ObjectQuery\GetCommandTextAndParameters.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF5_EF6\Database\GetEntityConnection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF5_EF6\DbContext\DbContext.GetKeyNames.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF5_EF6\DbContext\DbContext.GetObjectContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF5_EF6\EntityConnection\GetDbTransaction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF5_EF6\EntityConnection\GetEntityTransaction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF5_EF6\EntityConnection\GetStoreConnection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF5_EF6\EntityConnection\GetStoreTransaction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF5_EF6\IDbSet`\GetDbContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF5_EF6\IQueryable\IQueryable.GetObjectQuery.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF5_EF6\IQueryable\IQueryable.SelectByName.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF5_EF6\IQueryable`\IQueryable`.GetDbContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF5_EF6\IQueryable`\IQueryable`.GetObjectQuery.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF5_EF6\ObjectContext\CreateStoreCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF5_EF6\ObjectContext\GetEntitySet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF5_EF6\Object\Object.GetObjectQuery.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF6\ObjectContext\GetDbContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF6\ObjectContext\GetInterceptionContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF6\ObjectQuery\GetCommandTextAndParameters.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EFCore\CreateEntity\CreateEntityCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EFCore\CreateEntity\CreateEntityConnection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EFCore\CreateEntity\CreateEntityDataReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EFCore\CreateEntity\CreateEntityRelationalConnection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EFCore\DbContext\CreateStoreCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EFCore\DbContext\DbContext.GetKeyNames.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EFCore\DbSet`\GetDbContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EFCore\GetStateManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EFCore\IQueryable`\CreateCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EFCore\IQueryable`\GetDbContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EFCore\IQueryable`\GetInMemoryContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EFCore\IQueryable`\IQueryable`.GetCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EFCore\IQueryable`\IsInMemoryQueryContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF\DbContext\DbContext.GetDbSetProperties.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF\DbContext\DbContext.MapReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF\DbParameter\DbParameter.CopyFrom.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF\IQueryable`\IQueryable.Order.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF\IQueryable`\IQueryable.OrderBy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF\IQueryable`\IQueryable.OrderByDescending.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF\IQueryable`\IQueryable.ThenBy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF\IQueryable`\IQueryable.ThenByDescending.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF\Type\Type.GetDbSetElementType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\List`\List`.GetVersion.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LazyAsyncEnumerator\LazyAsyncEnumerator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LinqExpressionExtensions\LambdaExpression\LambdaExpression.GetPropertyOrFieldAccessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LinqExpressionExtensions\LambdaExpression\LambdaExpression.GetPropertyOrFieldAccessors.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LinqExpressionExtensions\PropertyOrFieldAccessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LinqExpressionExtensions\_Internal\ExpressionExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\DbContext.GetModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Extensions\String\String.DeserializeXml.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Extensions\String\String.SubstringLastIndexOf.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Extensions\XElement\XElement.RemoveAllNamespaces.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Infrastructure\DbModelPlus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Mapping\EntityContainerMapping.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Mapping\EntitySetMapping.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Mapping\EntityTypeMapping.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Mapping\MappingFragment.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Mapping\ScalarPropertyMapping.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Mapping\SchemaMapping.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Model\Model.BuildMapping.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Model\Model.BuildSchema.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Model\Model.GetCodeFirstModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Model\Model.GetConceptualModelString.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Model\Model.GetDatabaseFirst.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Model\Model.GetMappingModelString.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Model\Model.GetModelName.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Model\Model.GetModelNames.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Model\Model.GetModelXDocument.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Model\Model.GetStorageModelString.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Model\Model.SchemaAddIndex.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\SchemaObjectModel\EntityContainer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\SchemaObjectModel\EntityContainerEntitySet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\SchemaObjectModel\EntityKeyElement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\SchemaObjectModel\Property.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\SchemaObjectModel\PropertyRefElement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\SchemaObjectModel\Schema.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\SchemaObjectModel\SchemaEntityType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\SchemaObjectModel\SchemaEntityType_Generic.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Visitor\ExpressionVisitor.cs" />
+  </ItemGroup>
+</Project>

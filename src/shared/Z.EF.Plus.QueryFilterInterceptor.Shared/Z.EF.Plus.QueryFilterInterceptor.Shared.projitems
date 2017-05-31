@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="SharedProjectFile_SccProperties">
+    <SharedProjectFile_ProjectGuid>{37924acc-312d-4d89-ae3a-7f221f3d34f7}</SharedProjectFile_ProjectGuid>
+    <SharedProjectFile_SccProjectName>SAK</SharedProjectFile_SccProjectName>
+    <SharedProjectFile_SccAuxPath>SAK</SharedProjectFile_SccAuxPath>
+    <SharedProjectFile_SccLocalPath>SAK</SharedProjectFile_SccLocalPath>
+    <SharedProjectFile_SccProvider>SAK</SharedProjectFile_SccProvider>
+  </PropertyGroup>
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>6731e6cf-d2ea-4ed2-9b32-02c462271d80</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Z.EF.Plus.QueryFilterInterceptor.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)BaseQueryFilterInterceptor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\DbContext.Filter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\DbContext.SetFiltered.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IDbSet.AsNoFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IDbSet.Filter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryFilterAlwaysEmptyDictionary`2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryFilterInterceptor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryFilterInterceptorApply.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryFilterInterceptorContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryFilterInterceptorDbCommandTree.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryFilterInterceptorDbFilterExpression.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryFilterInterceptorDbProjectExpression.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryFilterInterceptorDbScanExpression.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryFilterInterceptorManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryFilterInterceptorSet.cs" />
+  </ItemGroup>
+</Project>

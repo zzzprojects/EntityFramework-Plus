@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="SharedProjectFile_SccProperties">
+    <SharedProjectFile_ProjectGuid>{f53c2b9e-ca23-4465-b14a-6f72c6100b71}</SharedProjectFile_ProjectGuid>
+    <SharedProjectFile_SccProjectName>SAK</SharedProjectFile_SccProjectName>
+    <SharedProjectFile_SccAuxPath>SAK</SharedProjectFile_SccAuxPath>
+    <SharedProjectFile_SccLocalPath>SAK</SharedProjectFile_SccLocalPath>
+    <SharedProjectFile_SccProvider>SAK</SharedProjectFile_SccProvider>
+  </PropertyGroup>
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>ce6171c3-84cc-4ae1-82d0-cdac97ef5ab2</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Z.EF.Plus.BatchUpdate.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)BatchUpdate.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BatchUpdateManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BatchUpdateVisitor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\Update.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\UpdateAsync.cs" />
+  </ItemGroup>
+</Project>

@@ -37,9 +37,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EntityFramework">
+    <Reference Include="EntityFramework, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -53,214 +52,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Audit\Audit.cs" />
-    <Compile Include="Audit\AuditConfiguration.cs" />
-    <Compile Include="Audit\AuditConfiguration\DisplayNameDataAnnotation.cs" />
-    <Compile Include="Audit\AuditConfiguration\ExcludeDataAnnotation.cs" />
-    <Compile Include="Audit\AuditConfiguration\ExcludeEntity.cs" />
-    <Compile Include="Audit\AuditConfiguration\ExcludeProperty.cs" />
-    <Compile Include="Audit\AuditConfiguration\Format.cs" />
-    <Compile Include="Audit\AuditConfiguration\FormatType.cs" />
-    <Compile Include="Audit\AuditConfiguration\FormatValue.cs" />
-    <Compile Include="Audit\AuditConfiguration\GetEntityModifiedState.cs" />
-    <Compile Include="Audit\AuditConfiguration\IncludeDataAnnotation.cs" />
-    <Compile Include="Audit\AuditConfiguration\IncludeEntity.cs" />
-    <Compile Include="Audit\AuditConfiguration\IncludeProperty.cs" />
-    <Compile Include="Audit\AuditConfiguration\IsAuditedEntity.cs" />
-    <Compile Include="Audit\AuditConfiguration\IsAuditedProperty.cs" />
-    <Compile Include="Audit\AuditConfiguration\SoftAdded.cs" />
-    <Compile Include="Audit\AuditConfiguration\SoftDeleted.cs" />
-    <Compile Include="Audit\AuditEntry.cs" />
-    <Compile Include="Audit\AuditEntryFactoryArgs.cs" />
-    <Compile Include="Audit\AuditEntryProperty.cs" />
-    <Compile Include="Audit\AuditEntryPropertyArgs.cs" />
-    <Compile Include="Audit\AuditEntryState.cs" />
-    <Compile Include="Audit\AuditManager.cs" />
-    <Compile Include="Audit\Audit\AuditEntityAdded.cs" />
-    <Compile Include="Audit\Audit\AuditEntityDeleted.cs" />
-    <Compile Include="Audit\Audit\AuditEntityModified.cs" />
-    <Compile Include="Audit\Audit\AuditRelationshipAdded.cs" />
-    <Compile Include="Audit\Audit\AuditRelationshipDeleted.cs" />
-    <Compile Include="Audit\Audit\PostSaveChanges.cs" />
-    <Compile Include="Audit\Audit\PreSaveChanges.cs" />
-    <Compile Include="Audit\DataAnnotations\AuditDisplayAttribute.cs" />
-    <Compile Include="Audit\DataAnnotations\AuditExcludeAttribute.cs" />
-    <Compile Include="Audit\DataAnnotations\AuditIncludeAttribute.cs" />
-    <Compile Include="Audit\Extensions\DbContext\SaveChanges.cs" />
-    <Compile Include="Audit\Extensions\DbContext\SaveChangesAsync.cs" />
-    <Compile Include="Audit\Extensions\DbSet`AuditEntry\DbSet`AuditEntry.cs" />
-    <Compile Include="BatchDelete\BatchDelete.cs" />
-    <Compile Include="BatchDelete\BatchDeleteManager.cs" />
-    <Compile Include="BatchDelete\BatchDeleteVisitor.cs" />
-    <Compile Include="BatchDelete\Extensions\Delete.cs" />
-    <Compile Include="BatchDelete\Extensions\DeleteAsync.cs" />
-    <Compile Include="BatchUpdate\BatchUpdate.cs" />
-    <Compile Include="BatchUpdate\BatchUpdateManager.cs" />
-    <Compile Include="BatchUpdate\BatchUpdateVisitor.cs" />
-    <Compile Include="BatchUpdate\Extensions\Update.cs" />
-    <Compile Include="BatchUpdate\Extensions\UpdateAsync.cs" />
-    <Compile Include="ExceptionMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QueryCache\Extensions\IQueryable`\FromCache.cs" />
-    <Compile Include="QueryCache\Extensions\IQueryable`\FromCacheAsync.cs" />
-    <Compile Include="QueryCache\Extensions\QueryDeferred`\FromCache.cs" />
-    <Compile Include="QueryCache\Extensions\QueryDeferred`\FromCacheAsync.cs" />
-    <Compile Include="QueryCache\QueryCacheManager.cs" />
-    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredAggregate.cs" />
-    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredAll.cs" />
-    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredAny.cs" />
-    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredAverage.cs" />
-    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredContains.cs" />
-    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredCount.cs" />
-    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredElementAt.cs" />
-    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredElementAtOrDefault.cs" />
-    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredFirst.cs" />
-    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredFirstOrDefault.cs" />
-    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredLast.cs" />
-    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredLastOrDefault.cs" />
-    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredLongCount.cs" />
-    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredMax.cs" />
-    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredMin.cs" />
-    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredSequenceEqual.cs" />
-    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredSingle.cs" />
-    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredSingleOrDefault.cs" />
-    <Compile Include="QueryDeferred\Extensions\IQueryable`\DeferredSum.cs" />
-    <Compile Include="QueryDeferred\QueryDeferred.cs" />
-    <Compile Include="QueryDeferred\QueryDeferredExtensions.cs" />
-    <Compile Include="QueryDeferred\QueryDeferredExtensionsError.cs" />
-    <Compile Include="QueryExtensions\QueryAddOrAppendOrder\Extensions\IQueryable`.AddOrAppendOrderBy.cs" />
-    <Compile Include="QueryExtensions\QueryAddOrAppendOrder\Extensions\IQueryable`.AddOrAppendOrderByDescending.cs" />
-    <Compile Include="QueryExtensions\QueryAddOrAppendOrder\Extensions\IQueryable`.AddToRootOrAppendOrderBy.cs" />
-    <Compile Include="QueryExtensions\QueryAddOrAppendOrder\QueryAddOrAppendOrderExpressionVisitor`.cs" />
-    <Compile Include="QueryExtensions\QueryAddOrAppendOrder\QueryAddOrAppendOrderExpressionVisitor`2.cs" />
-    <Compile Include="QueryFilter\BaseQueryFilter.cs" />
-    <Compile Include="QueryFilter\BaseQueryFilterQueryable.cs" />
-    <Compile Include="QueryFilter\Extensions\DbContext.SetFiltered.cs" />
-    <Compile Include="QueryFilter\Extensions\DbContext.Filter.cs" />
-    <Compile Include="QueryFilter\Extensions\IDbSet.AsNoFilter.cs" />
-    <Compile Include="QueryFilter\Extensions\IDbSet.Filter.cs" />
-    <Compile Include="QueryFilter\QueryFilter.cs" />
-    <Compile Include="QueryFilter\QueryFilterContext.cs" />
-    <Compile Include="QueryFilter\QueryFilterManager.cs" />
-    <Compile Include="QueryFilter\QueryFilterQueryable.cs" />
-    <Compile Include="QueryFilter\QueryFilterSet.cs" />
-    <Compile Include="QueryFuture\BaseQueryFuture.cs" />
-    <Compile Include="QueryFuture\Extensions\IQueryable`\Future.cs" />
-    <Compile Include="QueryFuture\Extensions\IQueryable`\FutureValue.cs" />
-    <Compile Include="QueryFuture\Extensions\QueryDeferred\FutureValue.cs" />
-    <Compile Include="QueryFuture\QueryFutureBatch.cs" />
-    <Compile Include="QueryFuture\QueryFutureEnumerable.cs" />
-    <Compile Include="QueryFuture\QueryFutureManager.cs" />
-    <Compile Include="QueryFuture\QueryFutureOracleDbReader.cs" />
-    <Compile Include="QueryFuture\QueryFutureValue.cs" />
-    <Compile Include="QueryIncludeOptimized\BaseQueryIncludeOptimizedChild.cs" />
-    <Compile Include="QueryIncludeOptimized\Extensions\IQueryable`.IncludeOptimized.cs" />
-    <Compile Include="QueryIncludeOptimized\Extensions\IQueryable`.IncludeOptimizedByPath.cs" />
-    <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedByPath.cs" />
-    <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedChild`2.cs" />
-    <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedExpressionReduceVisitor.cs" />
-    <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedExpressionToReduceVisitor.cs" />
-    <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedIncludeSubPath.cs" />
-    <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedLazyLoading.cs" />
-    <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedManager.cs" />
-    <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedNullCollection.cs" />
-    <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedParentQueryable`.cs" />
-    <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedPathVisitor.cs" />
-    <Compile Include="QueryIncludeOptimized\QueryIncludeOptimizedProvider.cs" />
-    <Compile Include="_Internal\Dictionary\Dictionary.AddOrAppend.cs" />
-    <Compile Include="_Internal\DynamicAnonymousType\DynamicAnonymousType.cs" />
-    <Compile Include="_Internal\EF5\DbContext.SaveChangesAsync.cs" />
-    <Compile Include="_Internal\EF5\IDbSet`\DbContext.AddRange.cs" />
-    <Compile Include="_Internal\EF5\IDbSet`\DbContext.RemoveRange.cs" />
-    <Compile Include="_Internal\EF5\ObjectQuery\GetCommandTextAndParameters.cs" />
-    <Compile Include="_Internal\EF5_EF6\Database\GetEntityConnection.cs" />
-    <Compile Include="_Internal\EF5_EF6\DbContext\DbContext.GetKeyNames.cs" />
-    <Compile Include="_Internal\EF5_EF6\DbContext\DbContext.GetObjectContext.cs" />
-    <Compile Include="_Internal\EF5_EF6\EntityConnection\GetDbTransaction.cs" />
-    <Compile Include="_Internal\EF5_EF6\EntityConnection\GetEntityTransaction.cs" />
-    <Compile Include="_Internal\EF5_EF6\EntityConnection\GetStoreConnection.cs" />
-    <Compile Include="_Internal\EF5_EF6\EntityConnection\GetStoreTransaction.cs" />
-    <Compile Include="_Internal\EF5_EF6\IDbSet`\GetDbContext.cs" />
-    <Compile Include="_Internal\EF5_EF6\IQueryable\IQueryable.GetObjectQuery.cs" />
-    <Compile Include="_Internal\EF5_EF6\IQueryable\IQueryable.SelectByName.cs" />
-    <Compile Include="_Internal\EF5_EF6\IQueryable`\IQueryable`.GetDbContext.cs" />
-    <Compile Include="_Internal\EF5_EF6\IQueryable`\IQueryable`.GetObjectQuery.cs" />
-    <Compile Include="_Internal\EF5_EF6\ObjectContext\CreateStoreCommand.cs" />
-    <Compile Include="_Internal\EF5_EF6\ObjectContext\GetEntitySet.cs" />
-    <Compile Include="_Internal\EF5_EF6\Object\Object.GetObjectQuery.cs" />
-    <Compile Include="_Internal\EF6\ObjectContext\GetDbContext.cs" />
-    <Compile Include="_Internal\EF6\ObjectContext\GetInterceptionContext.cs" />
-    <Compile Include="_Internal\EF6\ObjectQuery\GetCommandTextAndParameters.cs" />
-    <Compile Include="_Internal\EFCore\CreateEntity\CreateEntityCommand.cs" />
-    <Compile Include="_Internal\EFCore\CreateEntity\CreateEntityConnection.cs" />
-    <Compile Include="_Internal\EFCore\CreateEntity\CreateEntityDataReader.cs" />
-    <Compile Include="_Internal\EFCore\CreateEntity\CreateEntityRelationalConnection.cs" />
-    <Compile Include="_Internal\EFCore\DbContext\CreateStoreCommand.cs" />
-    <Compile Include="_Internal\EFCore\DbContext\DbContext.GetKeyNames.cs" />
-    <Compile Include="_Internal\EFCore\DbSet`\GetDbContext.cs" />
-    <Compile Include="_Internal\EFCore\GetStateManager.cs" />
-    <Compile Include="_Internal\EFCore\IQueryable`\CreateCommand.cs" />
-    <Compile Include="_Internal\EFCore\IQueryable`\GetDbContext.cs" />
-    <Compile Include="_Internal\EFCore\IQueryable`\GetInMemoryContext.cs" />
-    <Compile Include="_Internal\EFCore\IQueryable`\IQueryable`.GetCommand.cs" />
-    <Compile Include="_Internal\EFCore\IQueryable`\IsInMemoryQueryContext.cs" />
-    <Compile Include="_Internal\EF\DbContext\DbContext.GetDbSetProperties.cs" />
-    <Compile Include="_Internal\EF\DbContext\DbContext.MapReader.cs" />
-    <Compile Include="_Internal\EF\DbParameter\DbParameter.CopyFrom.cs" />
-    <Compile Include="_Internal\EF\IQueryable`\IQueryable.Order.cs" />
-    <Compile Include="_Internal\EF\IQueryable`\IQueryable.OrderBy.cs" />
-    <Compile Include="_Internal\EF\IQueryable`\IQueryable.OrderByDescending.cs" />
-    <Compile Include="_Internal\EF\IQueryable`\IQueryable.ThenBy.cs" />
-    <Compile Include="_Internal\EF\IQueryable`\IQueryable.ThenByDescending.cs" />
-    <Compile Include="_Internal\EF\Type\Type.GetDbSetElementType.cs" />
-    <Compile Include="_Internal\Extensions\List`\List`.GetVersion.cs" />
-    <Compile Include="_Internal\LazyAsyncEnumerator\LazyAsyncEnumerator.cs" />
-    <Compile Include="_Internal\LinqExpressionExtensions\LambdaExpression\LambdaExpression.GetPropertyOrFieldAccessor.cs" />
-    <Compile Include="_Internal\LinqExpressionExtensions\LambdaExpression\LambdaExpression.GetPropertyOrFieldAccessors.cs" />
-    <Compile Include="_Internal\LinqExpressionExtensions\PropertyOrFieldAccessor.cs" />
-    <Compile Include="_Internal\LinqExpressionExtensions\_Internal\ExpressionExtensions.cs" />
-    <Compile Include="_Internal\Model\DbContext.GetModel.cs" />
-    <Compile Include="_Internal\Model\Extensions\String\String.DeserializeXml.cs" />
-    <Compile Include="_Internal\Model\Extensions\String\String.SubstringLastIndexOf.cs" />
-    <Compile Include="_Internal\Model\Extensions\XElement\XElement.RemoveAllNamespaces.cs" />
-    <Compile Include="_Internal\Model\Infrastructure\DbModelPlus.cs" />
-    <Compile Include="_Internal\Model\Mapping\EntityContainerMapping.cs" />
-    <Compile Include="_Internal\Model\Mapping\EntitySetMapping.cs" />
-    <Compile Include="_Internal\Model\Mapping\EntityTypeMapping.cs" />
-    <Compile Include="_Internal\Model\Mapping\MappingFragment.cs" />
-    <Compile Include="_Internal\Model\Mapping\ScalarPropertyMapping.cs" />
-    <Compile Include="_Internal\Model\Mapping\SchemaMapping.cs" />
-    <Compile Include="_Internal\Model\Model\Model.BuildMapping.cs" />
-    <Compile Include="_Internal\Model\Model\Model.BuildSchema.cs" />
-    <Compile Include="_Internal\Model\Model\Model.GetCodeFirstModel.cs" />
-    <Compile Include="_Internal\Model\Model\Model.GetConceptualModelString.cs" />
-    <Compile Include="_Internal\Model\Model\Model.GetDatabaseFirst.cs" />
-    <Compile Include="_Internal\Model\Model\Model.GetMappingModelString.cs" />
-    <Compile Include="_Internal\Model\Model\Model.GetModelName.cs" />
-    <Compile Include="_Internal\Model\Model\Model.GetModelNames.cs" />
-    <Compile Include="_Internal\Model\Model\Model.GetModelXDocument.cs" />
-    <Compile Include="_Internal\Model\Model\Model.GetStorageModelString.cs" />
-    <Compile Include="_Internal\Model\Model\Model.SchemaAddIndex.cs" />
-    <Compile Include="_Internal\Model\SchemaObjectModel\EntityContainer.cs" />
-    <Compile Include="_Internal\Model\SchemaObjectModel\EntityContainerEntitySet.cs" />
-    <Compile Include="_Internal\Model\SchemaObjectModel\EntityKeyElement.cs" />
-    <Compile Include="_Internal\Model\SchemaObjectModel\Property.cs" />
-    <Compile Include="_Internal\Model\SchemaObjectModel\PropertyRefElement.cs" />
-    <Compile Include="_Internal\Model\SchemaObjectModel\Schema.cs" />
-    <Compile Include="_Internal\Model\SchemaObjectModel\SchemaEntityType.cs" />
-    <Compile Include="_Internal\Model\SchemaObjectModel\SchemaEntityType_Generic.cs" />
-    <Compile Include="_Internal\Visitor\ExpressionVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Audit\Extensions\DbContext\SaveChanges.cs.bak">
-      <DependentUpon>SaveChanges.cs</DependentUpon>
-    </Content>
+    <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="Audit\Extensions\DbSet`AuditEntry\SaveChanges - Copy %282%29.cs.bak">
-      <DependentUpon>DbSet`AuditEntry.cs</DependentUpon>
-    </Content>
-  </ItemGroup>
+  <Import Project="..\shared\Z.EF.Plus._Core.Shared\Z.EF.Plus._Core.Shared.projitems" Label="Shared" />
+  <Import Project="..\shared\Z.EF.Plus._ExceptionMessage.Shared\Z.EF.Plus._ExceptionMessage.Shared.projitems" Label="Shared" />
+  <Import Project="..\shared\Z.EF.Plus.Audit.Shared\Z.EF.Plus.Audit.Shared.projitems" Label="Shared" />
+  <Import Project="..\shared\Z.EF.Plus.BatchDelete.Shared\Z.EF.Plus.BatchDelete.Shared.projitems" Label="Shared" />
+  <Import Project="..\shared\Z.EF.Plus.BatchUpdate.Shared\Z.EF.Plus.BatchUpdate.Shared.projitems" Label="Shared" />
+  <Import Project="..\shared\Z.EF.Plus.QueryCache.Shared\Z.EF.Plus.QueryCache.Shared.projitems" Label="Shared" />
+  <Import Project="..\shared\Z.EF.Plus.QueryDeferred.Shared\Z.EF.Plus.QueryDeferred.Shared.projitems" Label="Shared" />
+  <Import Project="..\shared\Z.EF.Plus.QueryExtensions.Shared\Z.EF.Plus.QueryExtensions.Shared.projitems" Label="Shared" />
+  <Import Project="..\shared\Z.EF.Plus.QueryFilter.Shared\Z.EF.Plus.QueryFilter.Shared.projitems" Label="Shared" />
+  <Import Project="..\shared\Z.EF.Plus.QueryFuture.Shared\Z.EF.Plus.QueryFuture.Shared.projitems" Label="Shared" />
+  <Import Project="..\shared\Z.EF.Plus.QueryIncludeOptimized.Shared\Z.EF.Plus.QueryIncludeOptimized.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

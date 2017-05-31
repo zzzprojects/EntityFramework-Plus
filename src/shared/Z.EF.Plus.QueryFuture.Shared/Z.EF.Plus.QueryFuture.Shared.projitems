@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="SharedProjectFile_SccProperties">
+    <SharedProjectFile_ProjectGuid>{2e37412b-7ff2-4ec4-aa19-efbec26335ad}</SharedProjectFile_ProjectGuid>
+    <SharedProjectFile_SccProjectName>SAK</SharedProjectFile_SccProjectName>
+    <SharedProjectFile_SccAuxPath>SAK</SharedProjectFile_SccAuxPath>
+    <SharedProjectFile_SccLocalPath>SAK</SharedProjectFile_SccLocalPath>
+    <SharedProjectFile_SccProvider>SAK</SharedProjectFile_SccProvider>
+  </PropertyGroup>
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>5ca1ed0d-1322-49f0-920b-f0c4ba36560e</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Z.EF.Plus.QueryFuture.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)BaseQueryFuture.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`\Future.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`\FutureValue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\QueryDeferred\FutureValue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryFutureBatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryFutureEnumerable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryFutureManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryFutureOracleDbReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryFutureValue.cs" />
+  </ItemGroup>
+</Project>

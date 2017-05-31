@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="SharedProjectFile_SccProperties">
+    <SharedProjectFile_ProjectGuid>{4cab62a7-a320-414e-b290-943e4dafafc1}</SharedProjectFile_ProjectGuid>
+    <SharedProjectFile_SccProjectName>SAK</SharedProjectFile_SccProjectName>
+    <SharedProjectFile_SccAuxPath>SAK</SharedProjectFile_SccAuxPath>
+    <SharedProjectFile_SccLocalPath>SAK</SharedProjectFile_SccLocalPath>
+    <SharedProjectFile_SccProvider>SAK</SharedProjectFile_SccProvider>
+  </PropertyGroup>
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>b9fce31e-4830-408c-95f0-447acb0b7490</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Z.EF.Plus.QueryDeferred.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`\DeferredAggregate.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`\DeferredAll.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`\DeferredAny.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`\DeferredAverage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`\DeferredContains.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`\DeferredCount.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`\DeferredElementAt.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`\DeferredElementAtOrDefault.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`\DeferredFirst.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`\DeferredFirstOrDefault.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`\DeferredLast.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`\DeferredLastOrDefault.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`\DeferredLongCount.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`\DeferredMax.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`\DeferredMin.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`\DeferredSequenceEqual.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`\DeferredSingle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`\DeferredSingleOrDefault.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`\DeferredSum.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryDeferred.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryDeferredExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryDeferredExtensionsError.cs" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="SharedProjectFile_SccProperties">
+    <SharedProjectFile_ProjectGuid>{868b0e69-fb31-4d58-949c-fbf0f476d36c}</SharedProjectFile_ProjectGuid>
+    <SharedProjectFile_SccProjectName>SAK</SharedProjectFile_SccProjectName>
+    <SharedProjectFile_SccAuxPath>SAK</SharedProjectFile_SccAuxPath>
+    <SharedProjectFile_SccLocalPath>SAK</SharedProjectFile_SccLocalPath>
+    <SharedProjectFile_SccProvider>SAK</SharedProjectFile_SccProvider>
+  </PropertyGroup>
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>5b3fa372-a872-4ca1-b7c0-5352052ac75a</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Z.EF.Plus.BatchDelete.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)BatchDelete.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BatchDeleteManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BatchDeleteVisitor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\Delete.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\DeleteAsync.cs" />
+  </ItemGroup>
+</Project>

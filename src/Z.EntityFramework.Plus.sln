@@ -1,8 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{14D8985E-0AA8-444A-A32E-D766ABA114D6}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.EntityFramework.Plus.EF5", "Z.EntityFramework.Plus.EF5\Z.EntityFramework.Plus.EF5.csproj", "{1B28EFB7-E679-4275-ACA9-DA7CD589A56A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.EntityFramework.Plus.EF5.NET40", "Z.EntityFramework.Plus.EF5.NET40\Z.EntityFramework.Plus.EF5.NET40.csproj", "{E4C2AF73-CAEB-4429-BCB6-0A359484E064}"
@@ -11,17 +13,116 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.EntityFramework.Plus.EF6"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.EntityFramework.Plus.EF6.NET40", "Z.EntityFramework.Plus.EF6.NET40\Z.EntityFramework.Plus.EF6.NET40.csproj", "{AC398EB8-0A31-4D06-A804-84D10B6DA96D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{14D8985E-0AA8-444A-A32E-D766ABA114D6}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.Test.EntityFramework.Plus.EF5", "test\Z.Test.EntityFramework.Plus.EF5\Z.Test.EntityFramework.Plus.EF5.csproj", "{149EC03D-4F7D-4EBA-9F24-0777FB7AB7F2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.Test.EntityFramework.Plus.EF6", "test\Z.Test.EntityFramework.Plus.EF6\Z.Test.EntityFramework.Plus.EF6.csproj", "{063FA382-DFDA-4BCB-BBB6-AAC04D0ED88E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.Test.EntityFramework.Plus.EFCore", "test\Z.Test.EntityFramework.Plus.EFCore\Z.Test.EntityFramework.Plus.EFCore.csproj", "{C47F920B-8064-44B0-BF3F-CD29298597A0}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Z.EntityFramework.Plus.EFCore", "Z.EntityFramework.Plus.EFCore\Z.EntityFramework.Plus.EFCore.xproj", "{AE726FF5-89DE-42BE-B75D-834A7C1EB6E4}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{45D50C58-9B18-475A-9839-D6754E87352B}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Z.EF.Plus._Core.Shared", "shared\Z.EF.Plus._Core.Shared\Z.EF.Plus._Core.Shared.shproj", "{27CBB38C-9814-4251-B919-905514D6D8A0}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Z.EF.Plus._ExceptionMessage.Shared", "shared\Z.EF.Plus._ExceptionMessage.Shared\Z.EF.Plus._ExceptionMessage.Shared.shproj", "{9D4357AC-9E62-4CF0-AE5E-29142CFC0A97}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Z.EF.Plus.Audit.Shared", "shared\Z.EF.Plus.Audit.Shared\Z.EF.Plus.Audit.Shared.shproj", "{6BFA5473-A429-4F9E-AA40-1387716DE22D}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Z.EF.Plus.BatchDelete.Shared", "shared\Z.EF.Plus.BatchDelete.Shared\Z.EF.Plus.BatchDelete.Shared.shproj", "{5B3FA372-A872-4CA1-B7C0-5352052AC75A}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Z.EF.Plus.BatchUpdate.Shared", "shared\Z.EF.Plus.BatchUpdate.Shared\Z.EF.Plus.BatchUpdate.Shared.shproj", "{CE6171C3-84CC-4AE1-82D0-CDAC97EF5AB2}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Z.EF.Plus.QueryCache.Shared", "shared\Z.EF.Plus.QueryCache.Shared\Z.EF.Plus.QueryCache.Shared.shproj", "{287A066E-6FCC-42B2-BACC-E24FAF056E4C}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Z.EF.Plus.QueryDeferred.Shared", "shared\Z.EF.Plus.QueryDeferred.Shared\Z.EF.Plus.QueryDeferred.Shared.shproj", "{B9FCE31E-4830-408C-95F0-447ACB0B7490}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Z.EF.Plus.QueryExtensions.Shared", "shared\Z.EF.Plus.QueryExtensions.Shared\Z.EF.Plus.QueryExtensions.Shared.shproj", "{C3DF9DE1-3C26-42C8-B972-902214161BD7}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Z.EF.Plus.QueryFilter.Shared", "shared\Z.EF.Plus.QueryFilter.Shared\Z.EF.Plus.QueryFilter.Shared.shproj", "{B8DB9C52-11B7-4D06-8E01-E25903F560CA}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Z.EF.Plus.QueryFilterInterceptor.Shared", "shared\Z.EF.Plus.QueryFilterInterceptor.Shared\Z.EF.Plus.QueryFilterInterceptor.Shared.shproj", "{6731E6CF-D2EA-4ED2-9B32-02C462271D80}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Z.EF.Plus.QueryFuture.Shared", "shared\Z.EF.Plus.QueryFuture.Shared\Z.EF.Plus.QueryFuture.Shared.shproj", "{5CA1ED0D-1322-49F0-920B-F0C4BA36560E}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Z.EF.Plus.QueryIncludeFilter.Shared", "shared\Z.EF.Plus.QueryIncludeFilter.Shared\Z.EF.Plus.QueryIncludeFilter.Shared.shproj", "{DC4C972B-6AE7-4620-B2CB-2AFD106E638B}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Z.EF.Plus.QueryIncludeOptimized.Shared", "shared\Z.EF.Plus.QueryIncludeOptimized.Shared\Z.EF.Plus.QueryIncludeOptimized.Shared.shproj", "{D1953D60-B322-4CAF-92DF-0581A1FD758F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.EntityFramework.Plus.EFCore.NET451", "Z.EntityFramework.Plus.EFCore.NET451\Z.EntityFramework.Plus.EFCore.NET451.csproj", "{035D058A-0DD2-4A74-B1E7-68E482C7C806}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Z.EntityFramework.Plus.EFCore.NETStandard", "Z.EntityFramework.Plus.EFCore.NETStandard\Z.EntityFramework.Plus.EFCore.NETStandard.csproj", "{C85E4987-DD55-4182-8125-6C8D996F4328}"
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		shared\Z.EF.Plus.Audit.Shared\Z.EF.Plus.Audit.Shared.projitems*{035d058a-0dd2-4a74-b1e7-68e482c7c806}*SharedItemsImports = 4
+		shared\Z.EF.Plus.BatchDelete.Shared\Z.EF.Plus.BatchDelete.Shared.projitems*{035d058a-0dd2-4a74-b1e7-68e482c7c806}*SharedItemsImports = 4
+		shared\Z.EF.Plus.BatchUpdate.Shared\Z.EF.Plus.BatchUpdate.Shared.projitems*{035d058a-0dd2-4a74-b1e7-68e482c7c806}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryCache.Shared\Z.EF.Plus.QueryCache.Shared.projitems*{035d058a-0dd2-4a74-b1e7-68e482c7c806}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryDeferred.Shared\Z.EF.Plus.QueryDeferred.Shared.projitems*{035d058a-0dd2-4a74-b1e7-68e482c7c806}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryFilter.Shared\Z.EF.Plus.QueryFilter.Shared.projitems*{035d058a-0dd2-4a74-b1e7-68e482c7c806}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryFuture.Shared\Z.EF.Plus.QueryFuture.Shared.projitems*{035d058a-0dd2-4a74-b1e7-68e482c7c806}*SharedItemsImports = 4
+		shared\Z.EF.Plus._Core.Shared\Z.EF.Plus._Core.Shared.projitems*{035d058a-0dd2-4a74-b1e7-68e482c7c806}*SharedItemsImports = 4
+		shared\Z.EF.Plus._ExceptionMessage.Shared\Z.EF.Plus._ExceptionMessage.Shared.projitems*{035d058a-0dd2-4a74-b1e7-68e482c7c806}*SharedItemsImports = 4
+		shared\Z.EF.Plus.Audit.Shared\Z.EF.Plus.Audit.Shared.projitems*{1b28efb7-e679-4275-aca9-da7cd589a56a}*SharedItemsImports = 4
+		shared\Z.EF.Plus.BatchDelete.Shared\Z.EF.Plus.BatchDelete.Shared.projitems*{1b28efb7-e679-4275-aca9-da7cd589a56a}*SharedItemsImports = 4
+		shared\Z.EF.Plus.BatchUpdate.Shared\Z.EF.Plus.BatchUpdate.Shared.projitems*{1b28efb7-e679-4275-aca9-da7cd589a56a}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryCache.Shared\Z.EF.Plus.QueryCache.Shared.projitems*{1b28efb7-e679-4275-aca9-da7cd589a56a}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryDeferred.Shared\Z.EF.Plus.QueryDeferred.Shared.projitems*{1b28efb7-e679-4275-aca9-da7cd589a56a}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryExtensions.Shared\Z.EF.Plus.QueryExtensions.Shared.projitems*{1b28efb7-e679-4275-aca9-da7cd589a56a}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryFilter.Shared\Z.EF.Plus.QueryFilter.Shared.projitems*{1b28efb7-e679-4275-aca9-da7cd589a56a}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryFuture.Shared\Z.EF.Plus.QueryFuture.Shared.projitems*{1b28efb7-e679-4275-aca9-da7cd589a56a}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryIncludeOptimized.Shared\Z.EF.Plus.QueryIncludeOptimized.Shared.projitems*{1b28efb7-e679-4275-aca9-da7cd589a56a}*SharedItemsImports = 4
+		shared\Z.EF.Plus._Core.Shared\Z.EF.Plus._Core.Shared.projitems*{1b28efb7-e679-4275-aca9-da7cd589a56a}*SharedItemsImports = 4
+		shared\Z.EF.Plus._ExceptionMessage.Shared\Z.EF.Plus._ExceptionMessage.Shared.projitems*{1b28efb7-e679-4275-aca9-da7cd589a56a}*SharedItemsImports = 4
+		shared\Z.EF.Plus._Core.Shared\Z.EF.Plus._Core.Shared.projitems*{27cbb38c-9814-4251-b919-905514d6d8a0}*SharedItemsImports = 13
+		shared\Z.EF.Plus.QueryCache.Shared\Z.EF.Plus.QueryCache.Shared.projitems*{287a066e-6fcc-42b2-bacc-e24faf056e4c}*SharedItemsImports = 13
+		shared\Z.EF.Plus.BatchDelete.Shared\Z.EF.Plus.BatchDelete.Shared.projitems*{5b3fa372-a872-4ca1-b7c0-5352052ac75a}*SharedItemsImports = 13
+		shared\Z.EF.Plus.QueryFuture.Shared\Z.EF.Plus.QueryFuture.Shared.projitems*{5ca1ed0d-1322-49f0-920b-f0c4ba36560e}*SharedItemsImports = 13
+		shared\Z.EF.Plus.QueryFilterInterceptor.Shared\Z.EF.Plus.QueryFilterInterceptor.Shared.projitems*{6731e6cf-d2ea-4ed2-9b32-02c462271d80}*SharedItemsImports = 13
+		shared\Z.EF.Plus.Audit.Shared\Z.EF.Plus.Audit.Shared.projitems*{6bfa5473-a429-4f9e-aa40-1387716de22d}*SharedItemsImports = 13
+		shared\Z.EF.Plus.Audit.Shared\Z.EF.Plus.Audit.Shared.projitems*{6ea3675a-ab66-4aba-94d1-3da69fa88d4e}*SharedItemsImports = 4
+		shared\Z.EF.Plus.BatchDelete.Shared\Z.EF.Plus.BatchDelete.Shared.projitems*{6ea3675a-ab66-4aba-94d1-3da69fa88d4e}*SharedItemsImports = 4
+		shared\Z.EF.Plus.BatchUpdate.Shared\Z.EF.Plus.BatchUpdate.Shared.projitems*{6ea3675a-ab66-4aba-94d1-3da69fa88d4e}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryCache.Shared\Z.EF.Plus.QueryCache.Shared.projitems*{6ea3675a-ab66-4aba-94d1-3da69fa88d4e}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryDeferred.Shared\Z.EF.Plus.QueryDeferred.Shared.projitems*{6ea3675a-ab66-4aba-94d1-3da69fa88d4e}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryExtensions.Shared\Z.EF.Plus.QueryExtensions.Shared.projitems*{6ea3675a-ab66-4aba-94d1-3da69fa88d4e}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryFilterInterceptor.Shared\Z.EF.Plus.QueryFilterInterceptor.Shared.projitems*{6ea3675a-ab66-4aba-94d1-3da69fa88d4e}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryFuture.Shared\Z.EF.Plus.QueryFuture.Shared.projitems*{6ea3675a-ab66-4aba-94d1-3da69fa88d4e}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryIncludeFilter.Shared\Z.EF.Plus.QueryIncludeFilter.Shared.projitems*{6ea3675a-ab66-4aba-94d1-3da69fa88d4e}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryIncludeOptimized.Shared\Z.EF.Plus.QueryIncludeOptimized.Shared.projitems*{6ea3675a-ab66-4aba-94d1-3da69fa88d4e}*SharedItemsImports = 4
+		shared\Z.EF.Plus._Core.Shared\Z.EF.Plus._Core.Shared.projitems*{6ea3675a-ab66-4aba-94d1-3da69fa88d4e}*SharedItemsImports = 4
+		shared\Z.EF.Plus._ExceptionMessage.Shared\Z.EF.Plus._ExceptionMessage.Shared.projitems*{6ea3675a-ab66-4aba-94d1-3da69fa88d4e}*SharedItemsImports = 4
+		shared_dev\Z.EF.Plus.QueryInterceptor.Shared\Z.EF.Plus.QueryInterceptor.Shared.projitems*{6ea3675a-ab66-4aba-94d1-3da69fa88d4e}*SharedItemsImports = 4
+		shared\Z.EF.Plus._ExceptionMessage.Shared\Z.EF.Plus._ExceptionMessage.Shared.projitems*{9d4357ac-9e62-4cf0-ae5e-29142cfc0a97}*SharedItemsImports = 13
+		shared\Z.EF.Plus.Audit.Shared\Z.EF.Plus.Audit.Shared.projitems*{ac398eb8-0a31-4d06-a804-84d10b6da96d}*SharedItemsImports = 4
+		shared\Z.EF.Plus.BatchDelete.Shared\Z.EF.Plus.BatchDelete.Shared.projitems*{ac398eb8-0a31-4d06-a804-84d10b6da96d}*SharedItemsImports = 4
+		shared\Z.EF.Plus.BatchUpdate.Shared\Z.EF.Plus.BatchUpdate.Shared.projitems*{ac398eb8-0a31-4d06-a804-84d10b6da96d}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryCache.Shared\Z.EF.Plus.QueryCache.Shared.projitems*{ac398eb8-0a31-4d06-a804-84d10b6da96d}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryDeferred.Shared\Z.EF.Plus.QueryDeferred.Shared.projitems*{ac398eb8-0a31-4d06-a804-84d10b6da96d}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryExtensions.Shared\Z.EF.Plus.QueryExtensions.Shared.projitems*{ac398eb8-0a31-4d06-a804-84d10b6da96d}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryFilterInterceptor.Shared\Z.EF.Plus.QueryFilterInterceptor.Shared.projitems*{ac398eb8-0a31-4d06-a804-84d10b6da96d}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryFuture.Shared\Z.EF.Plus.QueryFuture.Shared.projitems*{ac398eb8-0a31-4d06-a804-84d10b6da96d}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryIncludeFilter.Shared\Z.EF.Plus.QueryIncludeFilter.Shared.projitems*{ac398eb8-0a31-4d06-a804-84d10b6da96d}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryIncludeOptimized.Shared\Z.EF.Plus.QueryIncludeOptimized.Shared.projitems*{ac398eb8-0a31-4d06-a804-84d10b6da96d}*SharedItemsImports = 4
+		shared\Z.EF.Plus._Core.Shared\Z.EF.Plus._Core.Shared.projitems*{ac398eb8-0a31-4d06-a804-84d10b6da96d}*SharedItemsImports = 4
+		shared\Z.EF.Plus._ExceptionMessage.Shared\Z.EF.Plus._ExceptionMessage.Shared.projitems*{ac398eb8-0a31-4d06-a804-84d10b6da96d}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryFilter.Shared\Z.EF.Plus.QueryFilter.Shared.projitems*{b8db9c52-11b7-4d06-8e01-e25903f560ca}*SharedItemsImports = 13
+		shared\Z.EF.Plus.QueryDeferred.Shared\Z.EF.Plus.QueryDeferred.Shared.projitems*{b9fce31e-4830-408c-95f0-447acb0b7490}*SharedItemsImports = 13
+		shared\Z.EF.Plus.QueryExtensions.Shared\Z.EF.Plus.QueryExtensions.Shared.projitems*{c3df9de1-3c26-42c8-b972-902214161bd7}*SharedItemsImports = 13
+		shared\Z.EF.Plus.BatchUpdate.Shared\Z.EF.Plus.BatchUpdate.Shared.projitems*{ce6171c3-84cc-4ae1-82d0-cdac97ef5ab2}*SharedItemsImports = 13
+		shared\Z.EF.Plus.QueryIncludeOptimized.Shared\Z.EF.Plus.QueryIncludeOptimized.Shared.projitems*{d1953d60-b322-4caf-92df-0581a1fd758f}*SharedItemsImports = 13
+		shared\Z.EF.Plus.QueryIncludeFilter.Shared\Z.EF.Plus.QueryIncludeFilter.Shared.projitems*{dc4c972b-6ae7-4620-b2cb-2afd106e638b}*SharedItemsImports = 13
+		shared\Z.EF.Plus.Audit.Shared\Z.EF.Plus.Audit.Shared.projitems*{e4c2af73-caeb-4429-bcb6-0a359484e064}*SharedItemsImports = 4
+		shared\Z.EF.Plus.BatchDelete.Shared\Z.EF.Plus.BatchDelete.Shared.projitems*{e4c2af73-caeb-4429-bcb6-0a359484e064}*SharedItemsImports = 4
+		shared\Z.EF.Plus.BatchUpdate.Shared\Z.EF.Plus.BatchUpdate.Shared.projitems*{e4c2af73-caeb-4429-bcb6-0a359484e064}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryCache.Shared\Z.EF.Plus.QueryCache.Shared.projitems*{e4c2af73-caeb-4429-bcb6-0a359484e064}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryDeferred.Shared\Z.EF.Plus.QueryDeferred.Shared.projitems*{e4c2af73-caeb-4429-bcb6-0a359484e064}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryExtensions.Shared\Z.EF.Plus.QueryExtensions.Shared.projitems*{e4c2af73-caeb-4429-bcb6-0a359484e064}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryFilter.Shared\Z.EF.Plus.QueryFilter.Shared.projitems*{e4c2af73-caeb-4429-bcb6-0a359484e064}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryFuture.Shared\Z.EF.Plus.QueryFuture.Shared.projitems*{e4c2af73-caeb-4429-bcb6-0a359484e064}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryIncludeOptimized.Shared\Z.EF.Plus.QueryIncludeOptimized.Shared.projitems*{e4c2af73-caeb-4429-bcb6-0a359484e064}*SharedItemsImports = 4
+		shared\Z.EF.Plus._Core.Shared\Z.EF.Plus._Core.Shared.projitems*{e4c2af73-caeb-4429-bcb6-0a359484e064}*SharedItemsImports = 4
+		shared\Z.EF.Plus._ExceptionMessage.Shared\Z.EF.Plus._ExceptionMessage.Shared.projitems*{e4c2af73-caeb-4429-bcb6-0a359484e064}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -54,10 +155,14 @@ Global
 		{C47F920B-8064-44B0-BF3F-CD29298597A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C47F920B-8064-44B0-BF3F-CD29298597A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C47F920B-8064-44B0-BF3F-CD29298597A0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AE726FF5-89DE-42BE-B75D-834A7C1EB6E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AE726FF5-89DE-42BE-B75D-834A7C1EB6E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AE726FF5-89DE-42BE-B75D-834A7C1EB6E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AE726FF5-89DE-42BE-B75D-834A7C1EB6E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{035D058A-0DD2-4A74-B1E7-68E482C7C806}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{035D058A-0DD2-4A74-B1E7-68E482C7C806}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{035D058A-0DD2-4A74-B1E7-68E482C7C806}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{035D058A-0DD2-4A74-B1E7-68E482C7C806}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C85E4987-DD55-4182-8125-6C8D996F4328}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C85E4987-DD55-4182-8125-6C8D996F4328}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C85E4987-DD55-4182-8125-6C8D996F4328}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C85E4987-DD55-4182-8125-6C8D996F4328}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,5 +171,18 @@ Global
 		{149EC03D-4F7D-4EBA-9F24-0777FB7AB7F2} = {14D8985E-0AA8-444A-A32E-D766ABA114D6}
 		{063FA382-DFDA-4BCB-BBB6-AAC04D0ED88E} = {14D8985E-0AA8-444A-A32E-D766ABA114D6}
 		{C47F920B-8064-44B0-BF3F-CD29298597A0} = {14D8985E-0AA8-444A-A32E-D766ABA114D6}
+		{27CBB38C-9814-4251-B919-905514D6D8A0} = {45D50C58-9B18-475A-9839-D6754E87352B}
+		{9D4357AC-9E62-4CF0-AE5E-29142CFC0A97} = {45D50C58-9B18-475A-9839-D6754E87352B}
+		{6BFA5473-A429-4F9E-AA40-1387716DE22D} = {45D50C58-9B18-475A-9839-D6754E87352B}
+		{5B3FA372-A872-4CA1-B7C0-5352052AC75A} = {45D50C58-9B18-475A-9839-D6754E87352B}
+		{CE6171C3-84CC-4AE1-82D0-CDAC97EF5AB2} = {45D50C58-9B18-475A-9839-D6754E87352B}
+		{287A066E-6FCC-42B2-BACC-E24FAF056E4C} = {45D50C58-9B18-475A-9839-D6754E87352B}
+		{B9FCE31E-4830-408C-95F0-447ACB0B7490} = {45D50C58-9B18-475A-9839-D6754E87352B}
+		{C3DF9DE1-3C26-42C8-B972-902214161BD7} = {45D50C58-9B18-475A-9839-D6754E87352B}
+		{B8DB9C52-11B7-4D06-8E01-E25903F560CA} = {45D50C58-9B18-475A-9839-D6754E87352B}
+		{6731E6CF-D2EA-4ED2-9B32-02C462271D80} = {45D50C58-9B18-475A-9839-D6754E87352B}
+		{5CA1ED0D-1322-49F0-920B-F0C4BA36560E} = {45D50C58-9B18-475A-9839-D6754E87352B}
+		{DC4C972B-6AE7-4620-B2CB-2AFD106E638B} = {45D50C58-9B18-475A-9839-D6754E87352B}
+		{D1953D60-B322-4CAF-92DF-0581A1FD758F} = {45D50C58-9B18-475A-9839-D6754E87352B}
 	EndGlobalSection
 EndGlobal

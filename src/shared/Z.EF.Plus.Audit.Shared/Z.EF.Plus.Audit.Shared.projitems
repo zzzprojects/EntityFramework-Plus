@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="SharedProjectFile_SccProperties">
+    <SharedProjectFile_ProjectGuid>{2ad53f92-e59b-4cba-b195-62918e6865fb}</SharedProjectFile_ProjectGuid>
+    <SharedProjectFile_SccProjectName>SAK</SharedProjectFile_SccProjectName>
+    <SharedProjectFile_SccAuxPath>SAK</SharedProjectFile_SccAuxPath>
+    <SharedProjectFile_SccLocalPath>SAK</SharedProjectFile_SccLocalPath>
+    <SharedProjectFile_SccProvider>SAK</SharedProjectFile_SccProvider>
+  </PropertyGroup>
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>6bfa5473-a429-4f9e-aa40-1387716de22d</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Z.EF.Plus.Audit.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Audit.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\DisplayNameDataAnnotation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\ExcludeDataAnnotation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\ExcludeEntity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\ExcludeProperty.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\Format.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\FormatType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\FormatValue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\GetEntityModifiedState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\IncludeDataAnnotation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\IncludeEntity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\IncludeProperty.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\IsAuditedEntity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\IsAuditedProperty.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\SoftAdded.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\SoftDeleted.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AuditEntry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AuditEntryFactoryArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AuditEntryProperty.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AuditEntryPropertyArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AuditEntryState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AuditManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Audit\AuditEntityAdded.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Audit\AuditEntityDeleted.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Audit\AuditEntityModified.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Audit\AuditRelationshipAdded.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Audit\AuditRelationshipDeleted.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Audit\PostSaveChanges.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Audit\PreSaveChanges.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DataAnnotations\AuditDisplayAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DataAnnotations\AuditExcludeAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DataAnnotations\AuditIncludeAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\DbContext\SaveChanges.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\DbContext\SaveChangesAsync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\DbSet`AuditEntry\DbSet`AuditEntry.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)Extensions\DbContext\SaveChanges.cs.bak">
+      <DependentUpon>SaveChanges.cs</DependentUpon>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)Extensions\DbSet`AuditEntry\SaveChanges - Copy (2).cs.bak">
+      <DependentUpon>DbSet`AuditEntry.cs</DependentUpon>
+    </Content>
+  </ItemGroup>
+</Project>

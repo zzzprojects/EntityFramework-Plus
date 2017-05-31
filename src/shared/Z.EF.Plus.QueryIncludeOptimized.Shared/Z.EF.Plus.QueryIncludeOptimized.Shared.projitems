@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="SharedProjectFile_SccProperties">
+    <SharedProjectFile_ProjectGuid>{9ef2d9c1-6378-499e-a816-b964928c0b95}</SharedProjectFile_ProjectGuid>
+    <SharedProjectFile_SccProjectName>SAK</SharedProjectFile_SccProjectName>
+    <SharedProjectFile_SccAuxPath>SAK</SharedProjectFile_SccAuxPath>
+    <SharedProjectFile_SccLocalPath>SAK</SharedProjectFile_SccLocalPath>
+    <SharedProjectFile_SccProvider>SAK</SharedProjectFile_SccProvider>
+  </PropertyGroup>
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>d1953d60-b322-4caf-92df-0581a1fd758f</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Z.EF.Plus.QueryIncludeOptimized.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)BaseQueryIncludeOptimizedChild.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`.IncludeOptimized.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`.IncludeOptimizedByPath.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeOptimizedByPath.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeOptimizedChild`2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeOptimizedExpressionReduceVisitor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeOptimizedExpressionToReduceVisitor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeOptimizedIncludeSubPath.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeOptimizedLazyLoading.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeOptimizedManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeOptimizedNullCollection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeOptimizedParentQueryable`.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeOptimizedPathVisitor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeOptimizedProvider.cs" />
+  </ItemGroup>
+</Project>

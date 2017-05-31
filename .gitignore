@@ -8,4 +8,5 @@ Z.Lab/
 *.userprefs
 _ReSharper.*
 *.ReSharper.user
-*.resharper.user 
+*.resharper.user
+*.pfx

@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="SharedProjectFile_SccProperties">
+    <SharedProjectFile_ProjectGuid>{0863c778-9f94-41d0-9e89-edbeca19d75d}</SharedProjectFile_ProjectGuid>
+    <SharedProjectFile_SccProjectName>SAK</SharedProjectFile_SccProjectName>
+    <SharedProjectFile_SccAuxPath>SAK</SharedProjectFile_SccAuxPath>
+    <SharedProjectFile_SccLocalPath>SAK</SharedProjectFile_SccLocalPath>
+    <SharedProjectFile_SccProvider>SAK</SharedProjectFile_SccProvider>
+  </PropertyGroup>
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>b8db9c52-11b7-4d06-8e01-e25903f560ca</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Z.EF.Plus.QueryFilter.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)BaseQueryFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BaseQueryFilterQueryable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\DbContext.Filter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\DbContext.SetFiltered.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IDbSet.AsNoFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IDbSet.Filter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryFilterContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryFilterManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryFilterQueryable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryFilterSet.cs" />
+  </ItemGroup>
+</Project>

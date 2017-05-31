@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="SharedProjectFile_SccProperties">
+    <SharedProjectFile_ProjectGuid>{0322107e-4922-4bb1-aae3-909b56443c8c}</SharedProjectFile_ProjectGuid>
+    <SharedProjectFile_SccProjectName>SAK</SharedProjectFile_SccProjectName>
+    <SharedProjectFile_SccAuxPath>SAK</SharedProjectFile_SccAuxPath>
+    <SharedProjectFile_SccLocalPath>SAK</SharedProjectFile_SccLocalPath>
+    <SharedProjectFile_SccProvider>SAK</SharedProjectFile_SccProvider>
+  </PropertyGroup>
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>dc4c972b-6ae7-4620-b2cb-2afd106e638b</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Z.EF.Plus.QueryIncludeFilter.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)BaseQueryIncludeFilterChild.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`.IncludeFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeFilterChild`2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeFilterLazyLoading.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeFilterNullCollection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeFilterParentQueryable`.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeFilterPathVisitor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeFilterProvider.cs" />
+  </ItemGroup>
+</Project>
