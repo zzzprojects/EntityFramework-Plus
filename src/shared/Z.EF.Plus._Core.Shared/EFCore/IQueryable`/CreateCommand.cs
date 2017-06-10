@@ -8,7 +8,9 @@
 #if FULL || BATCH_DELETE || BATCH_UPDATE || QUERY_CACHE
 #if EFCORE
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal;
@@ -49,16 +51,48 @@ namespace Z.EntityFramework.Plus
             var evaluatableExpressionFilterField = queryCompiler.GetType().GetField("_evaluatableExpressionFilter", BindingFlags.NonPublic | BindingFlags.Static);
             var evaluatableExpressionFilter = (IEvaluatableExpressionFilter)evaluatableExpressionFilterField.GetValue(null);
 
-            // REFLECTION: Query.Provider._queryCompiler._database._queryCompilationContextFactory
-            var queryCompilationContextFactoryField = typeof(Database).GetField("_queryCompilationContextFactory", BindingFlags.NonPublic | BindingFlags.Instance);
-            var queryCompilationContextFactory = (IQueryCompilationContextFactory)queryCompilationContextFactoryField.GetValue(database);
+            Expression newQuery;
+            IQueryCompilationContextFactory queryCompilationContextFactory;
 
-            // REFLECTION: Query.Provider._queryCompiler._database._queryCompilationContextFactory.Logger
-            var loggerField = queryCompilationContextFactory.GetType().GetProperty("Logger", BindingFlags.NonPublic | BindingFlags.Instance);
-            var logger = (ISensitiveDataLogger)loggerField.GetValue(queryCompilationContextFactory);
+            var dependenciesProperty = typeof(Database).GetProperty("Dependencies", BindingFlags.NonPublic | BindingFlags.Instance);
+            if(dependenciesProperty != null)
+            {
+                var dependencies = dependenciesProperty.GetValue(database);
 
-            // CREATE new query from query visitor
-            var newQuery = ParameterExtractingExpressionVisitor.ExtractParameters(source.Expression, queryContext, evaluatableExpressionFilter, logger);
+                var queryCompilationContextFactoryField = typeof(DbContext).GetTypeFromAssembly_Core("Microsoft.EntityFrameworkCore.Storage.DatabaseDependencies")
+                                                                           .GetProperty("QueryCompilationContextFactory", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                
+                queryCompilationContextFactory = (IQueryCompilationContextFactory)queryCompilationContextFactoryField.GetValue(dependencies);
+
+                var dependenciesProperty2 = typeof(QueryCompilationContextFactory).GetProperty("Dependencies", BindingFlags.NonPublic | BindingFlags.Instance);
+                var dependencies2 = dependenciesProperty2.GetValue(queryCompilationContextFactory);
+
+                // REFLECTION: Query.Provider._queryCompiler._database._queryCompilationContextFactory.Logger
+                var loggerField =  typeof(DbContext).GetTypeFromAssembly_Core("Microsoft.EntityFrameworkCore.Query.Internal.QueryCompilationContextDependencies")
+                                                    .GetProperty("Logger", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                var logger = loggerField.GetValue(dependencies2);
+
+                var parameterExtractingExpressionVisitorConstructor = typeof(ParameterExtractingExpressionVisitor).GetConstructors().First(x => x.GetParameters().Length == 5);
+
+                var parameterExtractingExpressionVisitor = (ParameterExtractingExpressionVisitor)parameterExtractingExpressionVisitorConstructor.Invoke(new object[] {evaluatableExpressionFilter, queryContext, logger, false, false} );
+            
+                // CREATE new query from query visitor
+                newQuery = parameterExtractingExpressionVisitor.ExtractParameters(source.Expression);
+            }
+            else
+            {
+                // REFLECTION: Query.Provider._queryCompiler._database._queryCompilationContextFactory
+                var queryCompilationContextFactoryField = typeof(Database).GetField("_queryCompilationContextFactory", BindingFlags.NonPublic | BindingFlags.Instance);
+                queryCompilationContextFactory = (IQueryCompilationContextFactory)queryCompilationContextFactoryField.GetValue(database);
+
+                // REFLECTION: Query.Provider._queryCompiler._database._queryCompilationContextFactory.Logger
+                var loggerField = queryCompilationContextFactory.GetType().GetProperty("Logger", BindingFlags.NonPublic | BindingFlags.Instance);
+                var logger = (ISensitiveDataLogger)loggerField.GetValue(queryCompilationContextFactory);
+
+                // CREATE new query from query visitor
+                newQuery = ParameterExtractingExpressionVisitor.ExtractParameters(source.Expression, queryContext, evaluatableExpressionFilter, logger);
+            }
+
             //var query = new QueryAnnotatingExpressionVisitor().Visit(source.Expression);
             //var newQuery = ParameterExtractingExpressionVisitor.ExtractParameters(query, queryContext, evalutableExpressionFilter);
 
@@ -107,16 +141,48 @@ namespace Z.EntityFramework.Plus
             var evaluatableExpressionFilterField = queryCompiler.GetType().GetField("_evaluatableExpressionFilter", BindingFlags.NonPublic | BindingFlags.Static);
             var evaluatableExpressionFilter = (IEvaluatableExpressionFilter)evaluatableExpressionFilterField.GetValue(null);
 
-            // REFLECTION: Query.Provider._queryCompiler._database._queryCompilationContextFactory
-            var queryCompilationContextFactoryField = typeof(Database).GetField("_queryCompilationContextFactory", BindingFlags.NonPublic | BindingFlags.Instance);
-            var queryCompilationContextFactory = (IQueryCompilationContextFactory)queryCompilationContextFactoryField.GetValue(database);
+Expression newQuery;
+            IQueryCompilationContextFactory queryCompilationContextFactory;
 
-            // REFLECTION: Query.Provider._queryCompiler._database._queryCompilationContextFactory.Logger
-            var loggerField = queryCompilationContextFactory.GetType().GetProperty("Logger", BindingFlags.NonPublic | BindingFlags.Instance);
-            var logger = (ISensitiveDataLogger)loggerField.GetValue(queryCompilationContextFactory);
+            var dependenciesProperty = typeof(Database).GetProperty("Dependencies", BindingFlags.NonPublic | BindingFlags.Instance);
+            if(dependenciesProperty != null)
+            {
+                var dependencies = dependenciesProperty.GetValue(database);
 
-            // CREATE new query from query visitor
-            var newQuery = ParameterExtractingExpressionVisitor.ExtractParameters(source.Expression, queryContext, evaluatableExpressionFilter, logger);
+                var queryCompilationContextFactoryField = typeof(DbContext).GetTypeFromAssembly_Core("Microsoft.EntityFrameworkCore.Storage.DatabaseDependencies")
+                                                                           .GetProperty("QueryCompilationContextFactory", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                
+                queryCompilationContextFactory = (IQueryCompilationContextFactory)queryCompilationContextFactoryField.GetValue(dependencies);
+
+                var dependenciesProperty2 = typeof(QueryCompilationContextFactory).GetProperty("Dependencies", BindingFlags.NonPublic | BindingFlags.Instance);
+                var dependencies2 = dependenciesProperty2.GetValue(queryCompilationContextFactory);
+
+                // REFLECTION: Query.Provider._queryCompiler._database._queryCompilationContextFactory.Logger
+                var loggerField =  typeof(DbContext).GetTypeFromAssembly_Core("Microsoft.EntityFrameworkCore.Query.Internal.QueryCompilationContextDependencies")
+                                                    .GetProperty("Logger", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                var logger = loggerField.GetValue(dependencies2);
+
+                var parameterExtractingExpressionVisitorConstructor = typeof(ParameterExtractingExpressionVisitor).GetConstructors().First(x => x.GetParameters().Length == 5);
+
+                var parameterExtractingExpressionVisitor = (ParameterExtractingExpressionVisitor)parameterExtractingExpressionVisitorConstructor.Invoke(new object[] {evaluatableExpressionFilter, queryContext, logger, false, false} );
+            
+                // CREATE new query from query visitor
+                newQuery = parameterExtractingExpressionVisitor.ExtractParameters(source.Expression);
+            }
+            else
+            {
+                // REFLECTION: Query.Provider._queryCompiler._database._queryCompilationContextFactory
+                var queryCompilationContextFactoryField = typeof(Database).GetField("_queryCompilationContextFactory", BindingFlags.NonPublic | BindingFlags.Instance);
+                queryCompilationContextFactory = (IQueryCompilationContextFactory)queryCompilationContextFactoryField.GetValue(database);
+
+                // REFLECTION: Query.Provider._queryCompiler._database._queryCompilationContextFactory.Logger
+                var loggerField = queryCompilationContextFactory.GetType().GetProperty("Logger", BindingFlags.NonPublic | BindingFlags.Instance);
+                var logger = (ISensitiveDataLogger)loggerField.GetValue(queryCompilationContextFactory);
+
+                // CREATE new query from query visitor
+                newQuery = ParameterExtractingExpressionVisitor.ExtractParameters(source.Expression, queryContext, evaluatableExpressionFilter, logger);
+            }
+
             //var query = new QueryAnnotatingExpressionVisitor().Visit(source.Expression);
             //var newQuery = ParameterExtractingExpressionVisitor.ExtractParameters(query, queryContext, evalutableExpressionFilter);
 

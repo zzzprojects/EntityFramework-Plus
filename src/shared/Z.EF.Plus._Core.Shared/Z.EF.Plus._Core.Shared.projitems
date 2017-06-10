@@ -45,6 +45,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)EFCore\CreateEntity\CreateEntityDataReader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EFCore\CreateEntity\CreateEntityRelationalConnection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EFCore\DbContext\CreateStoreCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EFCore\DbContext\DbContext.IsEFCore2x.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EFCore\DbContext\DbContext.GetKeyNames.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EFCore\DbSet`\GetDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EFCore\GetStateManager.cs" />
@@ -53,6 +54,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)EFCore\IQueryable`\GetInMemoryContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EFCore\IQueryable`\IQueryable`.GetCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EFCore\IQueryable`\IsInMemoryQueryContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EFCore\Type\GetTypeFromAssembly_Core.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EF\DbContext\DbContext.GetDbSetProperties.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EF\DbContext\DbContext.MapReader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EF\DbParameter\DbParameter.CopyFrom.cs" />

@@ -7,6 +7,7 @@
 
 #if FULL || AUDIT || BATCH_DELETE || BATCH_UPDATE || QUERY_FUTURE
 #if EFCORE
+using System;
 using System.Linq;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
@@ -27,8 +28,23 @@ namespace Z.EntityFramework.Plus
             var queryContextFactory = (RelationalQueryContextFactory) queryContextFactoryField.GetValue(compiler);
 
 #if EFCORE
-            var stateManagerField = typeof(QueryContextFactory).GetProperty("StateManager", BindingFlags.NonPublic | BindingFlags.Instance);
-            var stateManagerDynamic = stateManagerField.GetValue(queryContextFactory);
+            object stateManagerDynamic;
+
+            var dependenciesProperty = typeof(RelationalQueryContextFactory).GetProperty("Dependencies", BindingFlags.NonPublic | BindingFlags.Instance);
+            if (dependenciesProperty != null)
+            {
+                // EFCore 2.x
+                var dependencies = dependenciesProperty.GetValue(queryContextFactory);
+
+                var stateManagerField = typeof(DbContext).GetTypeFromAssembly_Core("Microsoft.EntityFrameworkCore.Query.QueryContextDependencies").GetProperty("StateManager", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                stateManagerDynamic = stateManagerField.GetValue(dependencies);
+            }
+            else
+            {
+                // EFCore 1.x
+                var stateManagerField = typeof(QueryContextFactory).GetProperty("StateManager", BindingFlags.NonPublic | BindingFlags.Instance);
+                stateManagerDynamic = stateManagerField.GetValue(queryContextFactory);
+            }
 
             IStateManager stateManager = stateManagerDynamic as IStateManager;
 

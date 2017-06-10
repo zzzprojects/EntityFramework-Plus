@@ -51,8 +51,6 @@ namespace Z.EntityFramework.Plus
                 return objectQuery;
             }
 
-            var type = query.GetType();
-
             if (query.GetType().IsGenericType && query.GetType().GetGenericTypeDefinition() == typeof(DbQuery<>))
             {
                 var internalQueryProperty = typeof(DbQuery<>).MakeGenericType(query.ElementType).GetProperty("InternalQuery", BindingFlags.NonPublic | BindingFlags.Instance);

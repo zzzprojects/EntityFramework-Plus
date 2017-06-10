@@ -87,15 +87,28 @@ namespace Z.EntityFramework.Plus
                 filterQueryable = CreateFilterQueryableCompiled.Value(context, this, objectQuery);
                 QueryFilterManager.CacheWeakFilterQueryable.Add(set, filterQueryable);
 #elif EFCORE
-    // todo: Create compiled version
-                var field = set.GetType().GetField("_entityQueryable", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                var internalQuery = field.GetValue(set);
+                // todo: Create compiled version
 
-                var valueProperty = internalQuery.GetType().GetProperty("Value");
-                var valueInternalQuery = valueProperty.GetValue(internalQuery);
+                if(context.IsEFCore2x())
+                {
+                    var type = set.GetType();
+                    var field = set.GetType().GetProperty("EntityQueryable", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                    var internalQuery = field.GetValue(set);
 
-                filterQueryable = CreateFilterQueryableCompiled.Value(context, this, valueInternalQuery);
-                QueryFilterManager.CacheWeakFilterQueryable.Add(set, filterQueryable);
+                    filterQueryable = CreateFilterQueryableCompiled.Value(context, this, internalQuery);
+                    QueryFilterManager.CacheWeakFilterQueryable.Add(set, filterQueryable);
+                }
+                else
+                {
+                    var field = set.GetType().GetField("_entityQueryable", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                    var internalQuery = field.GetValue(set);
+
+                    var valueProperty = internalQuery.GetType().GetProperty("Value");
+                    var valueInternalQuery = valueProperty.GetValue(internalQuery);
+
+                    filterQueryable = CreateFilterQueryableCompiled.Value(context, this, valueInternalQuery);
+                    QueryFilterManager.CacheWeakFilterQueryable.Add(set, filterQueryable);
+                }
 #endif
             }
 
@@ -180,15 +193,26 @@ namespace Z.EntityFramework.Plus
         public void UpdateInternalQuery(DbContext context, object query)
         {
             // todo: Convert to expression once EF team fix the cast issue: https://github.com/aspnet/EntityFramework/issues/3736
-            var set = GetDbSetCompiled.Value(context);
+            
+            if(context.IsEFCore2x())
+            {
+                var set = GetDbSetCompiled.Value(context);
 
-            var field = set.GetType().GetField("_entityQueryable", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            var internalQuery = field.GetValue(set);
+                var field = set.GetType().GetField("_entityQueryable", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                field.SetValue(set, query);
+            }
+            else
+            {
+                var set = GetDbSetCompiled.Value(context);
 
-            var valueProperty = internalQuery.GetType().GetProperty("Value");
+                var field = set.GetType().GetField("_entityQueryable", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                var internalQuery = field.GetValue(set);
+
+                var valueProperty = internalQuery.GetType().GetProperty("Value");
 
 
-            valueProperty.SetValue(internalQuery, query);
+                valueProperty.SetValue(internalQuery, query);
+            }
         }
 #endif
     }

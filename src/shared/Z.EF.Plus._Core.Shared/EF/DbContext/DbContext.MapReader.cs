@@ -21,6 +21,7 @@ using System.Data.Entity.Infrastructure;
 
 #elif EFCORE
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
@@ -45,6 +46,8 @@ namespace Z.EntityFramework.Plus
         return ((IObjectContextAdapter) context).ObjectContext.Translate<T>(reader);
 
 #elif EFCORE
+            bool isEFCore2x = false;
+
             var list = new List<T>();
 
             var query = (IQueryable<T>) context.Set<T>();
@@ -90,12 +93,42 @@ namespace Z.EntityFramework.Plus
             var connection = (IRelationalConnection) connectionField.GetValue(queryContextFactory);
 
             // REFLECTION: Query.Provider._queryCompiler._database._queryCompilationContextFactory
-            var queryCompilationContextFactoryField = typeof (Database).GetField("_queryCompilationContextFactory", BindingFlags.NonPublic | BindingFlags.Instance);
-            var queryCompilationContextFactory = (IQueryCompilationContextFactory) queryCompilationContextFactoryField.GetValue(database);
+            object logger;
 
-            // REFLECTION: Query.Provider._queryCompiler._database._queryCompilationContextFactory.Logger
-            var loggerField = queryCompilationContextFactory.GetType().GetProperty("Logger", BindingFlags.NonPublic | BindingFlags.Instance);
-            var logger = (ISensitiveDataLogger) loggerField.GetValue(queryCompilationContextFactory);
+            var dependenciesProperty = typeof(Database).GetProperty("Dependencies", BindingFlags.NonPublic | BindingFlags.Instance);
+            IQueryCompilationContextFactory queryCompilationContextFactory;
+            if(dependenciesProperty != null)
+            {
+                // EF Core 2.x
+                isEFCore2x = true;
+
+                var dependencies = dependenciesProperty.GetValue(database);
+
+                var queryCompilationContextFactoryField = typeof(DbContext).GetTypeFromAssembly_Core("Microsoft.EntityFrameworkCore.Storage.DatabaseDependencies")
+                                                                           .GetProperty("QueryCompilationContextFactory", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                
+                queryCompilationContextFactory = (IQueryCompilationContextFactory)queryCompilationContextFactoryField.GetValue(dependencies);
+
+                var dependenciesProperty2 = typeof(QueryCompilationContextFactory).GetProperty("Dependencies", BindingFlags.NonPublic | BindingFlags.Instance);
+                var dependencies2 = dependenciesProperty2.GetValue(queryCompilationContextFactory);
+
+                // REFLECTION: Query.Provider._queryCompiler._database._queryCompilationContextFactory.Logger
+                var loggerField =  typeof(DbContext).GetTypeFromAssembly_Core("Microsoft.EntityFrameworkCore.Query.Internal.QueryCompilationContextDependencies")
+                                                    .GetProperty("Logger", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                // (IInterceptingLogger<LoggerCategory.Query>)
+                logger = loggerField.GetValue(dependencies2);
+            }
+            else
+            {
+                // EF Core 1.x
+                var queryCompilationContextFactoryField = typeof(Database).GetField("_queryCompilationContextFactory", BindingFlags.NonPublic | BindingFlags.Instance);
+                queryCompilationContextFactory = (IQueryCompilationContextFactory)queryCompilationContextFactoryField.GetValue(database);
+
+                // REFLECTION: Query.Provider._queryCompiler._database._queryCompilationContextFactory.Logger
+                var loggerField = queryCompilationContextFactory.GetType().GetProperty("Logger", BindingFlags.NonPublic | BindingFlags.Instance);
+                // 
+                logger = loggerField.GetValue(queryCompilationContextFactory);
+            }
 
             // CREATE connection
             var queryConnection = new CreateEntityRelationConnection(connection);
@@ -123,8 +156,22 @@ namespace Z.EntityFramework.Plus
                 }
             }
 
-            // CREATE new query from query visitor
-            var newQuery = ParameterExtractingExpressionVisitor.ExtractParameters(query.Expression, queryContext, evaluatableExpressionFilter, logger);
+            Expression newQuery;
+
+            if(isEFCore2x)
+            {
+                var parameterExtractingExpressionVisitorConstructor = typeof(ParameterExtractingExpressionVisitor).GetConstructors().First(x => x.GetParameters().Length == 5);
+
+                var parameterExtractingExpressionVisitor = (ParameterExtractingExpressionVisitor)parameterExtractingExpressionVisitorConstructor.Invoke(new object[] {evaluatableExpressionFilter, queryContext, logger, false, false} );
+            
+                // CREATE new query from query visitor
+                newQuery = parameterExtractingExpressionVisitor.ExtractParameters(query.Expression);
+            }
+            else
+            {
+                // CREATE new query from query visitor
+                newQuery = ParameterExtractingExpressionVisitor.ExtractParameters(query.Expression, queryContext, evaluatableExpressionFilter, (ISensitiveDataLogger)logger);
+            }
 
             // PARSE new query
             var queryModel = createQueryParser.GetParsedQuery(newQuery);

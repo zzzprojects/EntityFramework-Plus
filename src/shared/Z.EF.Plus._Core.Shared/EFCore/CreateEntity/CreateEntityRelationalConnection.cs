@@ -28,6 +28,8 @@ namespace Z.EntityFramework.Plus
 
         private IRelationalConnection OriginalRelationalConnection { get; }
 
+        public Guid ConnectionId { get; }
+
         public int? CommandTimeout
         {
             get { return OriginalRelationalConnection.CommandTimeout; }
@@ -60,20 +62,44 @@ namespace Z.EntityFramework.Plus
             set { OriginalRelationalConnection.ActiveCursor = value; }
         }
 
+#if EFCORE2_0
+        Task<bool> IRelationalConnection.OpenAsync(CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        bool IRelationalConnection.Close()
+        {
+            return OriginalRelationalConnection.Close();
+        }
+#else
         public void Close()
         {
             OriginalRelationalConnection.Close();
         }
+#endif
 
         public void Dispose()
         {
             OriginalRelationalConnection.Dispose();
         }
 
+#if EFCORE2_0
+        public bool Open()
+        {
+            return OriginalRelationalConnection.Open();
+        }
+
+        public void Reset()
+        {
+            throw new NotImplementedException();
+        }
+#else
         public void Open()
         {
             OriginalRelationalConnection.Open();
         }
+#endif
 
         public Task OpenAsync(CancellationToken cancellationToken = default(CancellationToken))
         {

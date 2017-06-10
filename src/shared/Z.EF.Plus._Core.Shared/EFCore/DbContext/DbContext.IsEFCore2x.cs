@@ -5,7 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
-#if FULL || AUDIT
+#if FULL || QUERY_FILTER
 #if EFCORE
 
 using System.Linq;
@@ -15,12 +15,9 @@ namespace Z.EntityFramework.Plus
 {
     public static partial class DbContextExtensions
     {
-        public static string[] GetKeyNames<T>(this DbContext context) where T : class
+        public static bool IsEFCore2x(this DbContext context)
         {
-            var entityType = context.Model.FindEntityType(typeof (T));
-            var keys = entityType.GetKeys();
-
-            return keys.SelectMany(x => x.Properties.Select(y => y.Name)).ToArray();
+            return false;
         }
     }
 }

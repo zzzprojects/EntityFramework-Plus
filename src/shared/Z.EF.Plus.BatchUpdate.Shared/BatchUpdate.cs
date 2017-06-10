@@ -57,6 +57,14 @@ WHERE EXISTS ( SELECT 1 FROM ({Select}) B
            )  
 ";
 
+        internal const string CommandTextTemplate_PostgreSQL = @"
+UPDATE {TableName}
+SET {SetValue}
+WHERE EXISTS ( SELECT 1 FROM ({Select}) B
+               WHERE {PrimaryKeys}
+           )  
+";
+
         internal const string CommandTextTemplate_MySQL = @"
 UPDATE {TableName} AS A
 INNER JOIN ( {Select}
@@ -288,6 +296,7 @@ SELECT  @totalRowAffected
             bool isMySql = command.GetType().FullName.Contains("MySql");
             var isSqlCe = command.GetType().Name == "SqlCeCommand";
             var isOracle = command.GetType().Namespace.Contains("Oracle");
+            var isPostgreSQL = command.GetType().Name == "NpgsqlCommand";
 
             // Oracle BindByName
             if (isOracle)
@@ -316,6 +325,12 @@ SELECT  @totalRowAffected
             else if (isOracle)
             {
                 tableName = string.IsNullOrEmpty(store.Schema) || store.Schema == "dbo" ?
+                    string.Concat("\"", store.Table, "\"") :
+                    string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
+            }
+            else if (isPostgreSQL)
+            {
+                tableName = string.IsNullOrEmpty(store.Schema) ?
                     string.Concat("\"", store.Table, "\"") :
                     string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
             }
@@ -350,6 +365,7 @@ SELECT  @totalRowAffected
                     CommandTextWhileDelayTemplate :
                     CommandTextWhileTemplate :
 #endif
+                isPostgreSQL ? CommandTextTemplate_PostgreSQL : 
                 isOracle ? CommandTextOracleTemplate :
                 isMySql ? CommandTextTemplate_MySQL : 
                 isSqlCe ? CommandTextTemplateSqlCe :
@@ -365,29 +381,29 @@ SELECT  @totalRowAffected
 
             if (isSqlCe)
             {
-                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".", EscapeName(x, isMySql, isOracle), " = B.", EscapeName(x, isMySql, isOracle), "")));
+                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".", EscapeName(x, isMySql, isOracle, isPostgreSQL), " = B.", EscapeName(x, isMySql, isOracle, isPostgreSQL), "")));
 
                 setValues = string.Join("," + Environment.NewLine, values.Select((x, i) => x.Item2 is ConstantExpression ?
-                    string.Concat(EscapeName(x.Item1, isMySql, isOracle), " = ", ((ConstantExpression) x.Item2).Value.ToString().Replace("B.[", "[")) :
-                    string.Concat(EscapeName(x.Item1, isMySql, isOracle), " = @zzz_BatchUpdate_", i)));
+                    string.Concat(EscapeName(x.Item1, isMySql, isOracle, isPostgreSQL), " = ", ((ConstantExpression) x.Item2).Value.ToString().Replace("B.[", "[")) :
+                    string.Concat(EscapeName(x.Item1, isMySql, isOracle, isPostgreSQL), " = @zzz_BatchUpdate_", i)));
             }
-            else if (isOracle)
+            else if (isOracle || isPostgreSQL)
             {
-                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".", EscapeName(x, isMySql, isOracle), " = B.", EscapeName(x, isMySql, isOracle), "")));
+                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".", EscapeName(x, isMySql, isOracle, isPostgreSQL), " = B.", EscapeName(x, isMySql, isOracle, isPostgreSQL), "")));
 
                 // GET updateSetValues
                 setValues = string.Join("," + Environment.NewLine, values.Select((x, i) => x.Item2 is ConstantExpression ?
-                    string.Concat(EscapeName(x.Item1, isMySql, isOracle), " = ", ((ConstantExpression)x.Item2).Value) :
-                    string.Concat(EscapeName(x.Item1, isMySql, isOracle), " = :zzz_BatchUpdate_", i)));
+                    string.Concat(EscapeName(x.Item1, isMySql, isOracle, isPostgreSQL), " = ", ((ConstantExpression)x.Item2).Value) :
+                    string.Concat(EscapeName(x.Item1, isMySql, isOracle, isPostgreSQL), " = :zzz_BatchUpdate_", i)));
             }
             else
             {
-                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.", EscapeName(x, isMySql, isOracle), " = B.", EscapeName(x, isMySql, isOracle), "")));
+                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.", EscapeName(x, isMySql, isOracle, isPostgreSQL), " = B.", EscapeName(x, isMySql, isOracle, isPostgreSQL), "")));
 
                 // GET updateSetValues
                 setValues = string.Join("," + Environment.NewLine, values.Select((x, i) => x.Item2 is ConstantExpression ?
-                    string.Concat("A.", EscapeName(x.Item1, isMySql, isOracle), " = ", ((ConstantExpression) x.Item2).Value) :
-                    string.Concat("A.", EscapeName(x.Item1, isMySql, isOracle), " = @zzz_BatchUpdate_", i)));
+                    string.Concat("A.", EscapeName(x.Item1, isMySql, isOracle, isPostgreSQL), " = ", ((ConstantExpression) x.Item2).Value) :
+                    string.Concat("A.", EscapeName(x.Item1, isMySql, isOracle, isPostgreSQL), " = @zzz_BatchUpdate_", i)));
             }
 
             // REPLACE template
@@ -442,7 +458,8 @@ SELECT  @totalRowAffected
         public DbCommand CreateCommand(IQueryable query, IEntityType entity, List<Tuple<string, object>> values)
         {
 #if NETSTANDARD1_3
-            Assembly assembly;
+            Assembly assembly = null;
+            Assembly postgreSqlAssembly = null;
 
             try
             {
@@ -450,64 +467,135 @@ SELECT  @totalRowAffected
             }
             catch (Exception ex)
             {
-                throw new Exception(ExceptionMessage.BatchOperations_AssemblyNotFound);
+                try
+                {
+                    postgreSqlAssembly = Assembly.Load(new AssemblyName("Npgsql.EntityFrameworkCore.PostgreSQL"));
+                }
+                catch
+                {
+                    throw new Exception(ExceptionMessage.BatchOperations_AssemblyNotFound);
+                }
             }
 
-            if (assembly != null)
+            if (assembly != null || postgreSqlAssembly != null)
             {
-                var type = assembly.GetType("Microsoft.EntityFrameworkCore.SqlServerMetadataExtensions");
-                var sqlServerEntityTypeMethod = type.GetMethod("SqlServer", new[] {typeof (IEntityType)});
-                var sqlServerPropertyMethod = type.GetMethod("SqlServer", new[] {typeof (IProperty)});
-                var sqlServer = (IRelationalEntityTypeAnnotations) sqlServerEntityTypeMethod.Invoke(null, new[] {entity});
+                string tableName = "";
+                string primaryKeys = "";
 
-                // GET mapping
-                var tableName = string.IsNullOrEmpty(sqlServer.Schema) ?
-                    string.Concat("[", sqlServer.TableName, "]") :
-                    string.Concat("[", sqlServer.Schema, "].[", sqlServer.TableName, "]");
-
-                // GET keys mappings
-                var columnKeys = new List<string>();
-                foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
+                if (assembly != null)
                 {
-                    var mappingProperty = sqlServerPropertyMethod.Invoke(null, new[] {propertyKey});
+                    var type = assembly.GetType("Microsoft.EntityFrameworkCore.SqlServerMetadataExtensions");
+                    var sqlServerEntityTypeMethod = type.GetMethod("SqlServer", new[] {typeof (IEntityType)});
+                    var sqlServerPropertyMethod = type.GetMethod("SqlServer", new[] {typeof (IProperty)});
+                    var sqlServer = (IRelationalEntityTypeAnnotations) sqlServerEntityTypeMethod.Invoke(null, new[] {entity});
 
-                    var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
-                    columnKeys.Add((string) columnNameProperty.GetValue(mappingProperty));
+                    // GET mapping
+                    tableName = string.IsNullOrEmpty(sqlServer.Schema) ?
+                        string.Concat("[", sqlServer.TableName, "]") :
+                        string.Concat("[", sqlServer.Schema, "].[", sqlServer.TableName, "]");
+
+                    // GET keys mappings
+                    var columnKeys = new List<string>();
+                    foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
+                    {
+                        var mappingProperty = sqlServerPropertyMethod.Invoke(null, new[] {propertyKey});
+
+                        var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
+                        columnKeys.Add((string) columnNameProperty.GetValue(mappingProperty));
+                    }
+
+                    // GET primary key join
+                    primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.[", x, "] = B.[", x, "]")));
+                }
+                else if (postgreSqlAssembly != null)
+                {
+                    var type = assembly.GetType("Microsoft.EntityFrameworkCore.NpgsqlMetadataExtensions");
+                    var sqlServerEntityTypeMethod = type.GetMethod("Npgsql", new[] {typeof (IEntityType)});
+                    var sqlServerPropertyMethod = type.GetMethod("Npgsql", new[] {typeof (IProperty)});
+                    var sqlServer = (IRelationalEntityTypeAnnotations) sqlServerEntityTypeMethod.Invoke(null, new[] {entity});
+
+                    // GET mapping
+                    tableName = string.IsNullOrEmpty(sqlServer.Schema) ? string.Concat("\"", sqlServer.TableName, "\"") : string.Concat("\"", sqlServer.Schema, "\".\"", sqlServer.TableName, "\"");
+
+                    // GET keys mappings
+                    var columnKeys = new List<string>();
+                    foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
+                    {
+                        var mappingProperty = sqlServerPropertyMethod.Invoke(null, new[] {propertyKey});
+
+                        var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
+                        columnKeys.Add((string) columnNameProperty.GetValue(mappingProperty));
+                    }
+
+                    // GET primary key join
+                    primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".\"", x, "\" = B.\"", x, "\"")));
                 }
 #else
             var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName.StartsWith("Microsoft.EntityFrameworkCore.SqlServer", StringComparison.InvariantCulture));
+            var postgreSqlAssembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName.StartsWith("Npgsql.EntityFrameworkCore.PostgreSQL", StringComparison.InvariantCulture));
 
-            if (assembly != null)
+            if (assembly != null || postgreSqlAssembly != null)
             {
-                var type = assembly.GetType("Microsoft.EntityFrameworkCore.SqlServerMetadataExtensions");
-                var sqlServerEntityTypeMethod = type.GetMethod("SqlServer", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(IEntityType) }, null);
-                var sqlServerPropertyMethod = type.GetMethod("SqlServer", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(IProperty) }, null);
-                var sqlServer = (IRelationalEntityTypeAnnotations)sqlServerEntityTypeMethod.Invoke(null, new[] { entity });
+                string tableName = "";
+                string primaryKeys = "";
 
-                // GET mapping
-                var tableName = string.IsNullOrEmpty(sqlServer.Schema) ?
-                    string.Concat("[", sqlServer.TableName, "]") :
-                    string.Concat("[", sqlServer.Schema, "].[", sqlServer.TableName, "]");
-
-                // GET keys mappings
-                var columnKeys = new List<string>();
-                foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
+                if (assembly != null)
                 {
-                    var mappingProperty = sqlServerPropertyMethod.Invoke(null, new[] { propertyKey });
+                    var type = assembly.GetType("Microsoft.EntityFrameworkCore.SqlServerMetadataExtensions");
+                    var sqlServerEntityTypeMethod = type.GetMethod("SqlServer", BindingFlags.Public | BindingFlags.Static, null, new[] {typeof(IEntityType)}, null);
+                    var sqlServerPropertyMethod = type.GetMethod("SqlServer", BindingFlags.Public | BindingFlags.Static, null, new[] {typeof(IProperty)}, null);
+                    var sqlServer = (IRelationalEntityTypeAnnotations) sqlServerEntityTypeMethod.Invoke(null, new[] {entity});
 
-                    var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
-                    columnKeys.Add((string)columnNameProperty.GetValue(mappingProperty));
+                    // GET mapping
+                    tableName = string.IsNullOrEmpty(sqlServer.Schema) ? string.Concat("[", sqlServer.TableName, "]") : string.Concat("[", sqlServer.Schema, "].[", sqlServer.TableName, "]");
+
+                    // GET keys mappings
+                    var columnKeys = new List<string>();
+                    foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
+                    {
+                        var mappingProperty = sqlServerPropertyMethod.Invoke(null, new[] {propertyKey});
+
+                        var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
+                        columnKeys.Add((string) columnNameProperty.GetValue(mappingProperty));
+                    }
+
+                    // GET primary key join
+                    primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.[", x, "] = B.[", x, "]")));
                 }
+                else if (postgreSqlAssembly != null)
+                {
+                    var type = postgreSqlAssembly.GetType("Microsoft.EntityFrameworkCore.NpgsqlMetadataExtensions");
+                    var sqlServerEntityTypeMethod = type.GetMethod("Npgsql", BindingFlags.Public | BindingFlags.Static, null, new[] {typeof(IEntityType)}, null);
+                    var sqlServerPropertyMethod = type.GetMethod("Npgsql", BindingFlags.Public | BindingFlags.Static, null, new[] {typeof(IProperty)}, null);
+                    var sqlServer = (IRelationalEntityTypeAnnotations) sqlServerEntityTypeMethod.Invoke(null, new[] {entity});
+
+                    // GET mapping
+                    tableName = string.IsNullOrEmpty(sqlServer.Schema) ? string.Concat("\"", sqlServer.TableName, "\"") : string.Concat("\"", sqlServer.Schema, "\".\"", sqlServer.TableName, "\"");
+
+                    // GET keys mappings
+                    var columnKeys = new List<string>();
+                    foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
+                    {
+                        var mappingProperty = sqlServerPropertyMethod.Invoke(null, new[] {propertyKey});
+
+                        var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
+                        columnKeys.Add((string) columnNameProperty.GetValue(mappingProperty));
+                    }
+
+                    // GET primary key join
+                    primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".\"", x, "\" = B.\"", x, "\"")));
+                }
+
 #endif
-                // GET command text template
-                var commandTextTemplate =
+        // GET command text template
+        var commandTextTemplate =
 #if TODO
                 BatchSize > 0 ?
                 BatchDelayInterval > 0 ?
                     CommandTextWhileDelayTemplate :
                     CommandTextWhileTemplate :
 #endif
-                    CommandTextTemplate;
+                    assembly == null && postgreSqlAssembly != null ? CommandTextTemplate_PostgreSQL : CommandTextTemplate;
 
                 // GET inner query
 #if EFCORE
@@ -518,13 +606,19 @@ SELECT  @totalRowAffected
 #endif
                 var querySelect = relationalCommand.CommandText;
 
-                // GET primary key join
-                var primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.[", x, "] = B.[", x, "]")));
+
 
                 // GET updateSetValues
-                var setValues = string.Join("," + Environment.NewLine, values.Select((x, i) => x.Item2 is ConstantExpression ?
-                    string.Concat("A.[", x.Item1, "] = ", ((ConstantExpression)x.Item2).Value) :
-                    string.Concat("A.[", x.Item1, "] = @zzz_BatchUpdate_", i)));
+                var setValues = "";
+
+                if (assembly != null)
+                {
+                    setValues = string.Join("," + Environment.NewLine, values.Select((x, i) => x.Item2 is ConstantExpression ? string.Concat("A.[", x.Item1, "] = ", ((ConstantExpression) x.Item2).Value) : string.Concat("A.[", x.Item1, "] = @zzz_BatchUpdate_", i)));
+                }
+                else if (postgreSqlAssembly != null)
+                {
+                    setValues = string.Join("," + Environment.NewLine, values.Select((x, i) => x.Item2 is ConstantExpression ? string.Concat("\"", x.Item1, "\" = ", ((ConstantExpression)x.Item2).Value) : string.Concat("\"", x.Item1, "\" = @zzz_BatchUpdate_", i)));
+                }
 
                 // REPLACE template
                 commandTextTemplate = commandTextTemplate.Replace("{TableName}", tableName)
@@ -612,14 +706,26 @@ SELECT  @totalRowAffected
             var sqlServerPropertyMethod = type.GetMethod("SqlServer", new[] {typeof (IProperty)});
 #else
             var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName.StartsWith("Microsoft.EntityFrameworkCore.SqlServer"));
+            var postgreSqlAssembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName.StartsWith("Npgsql.EntityFrameworkCore.PostgreSQL", StringComparison.InvariantCulture));
 
-            if (assembly == null)
+            if (assembly == null && postgreSqlAssembly == null)
             {
                 throw new Exception(ExceptionMessage.BatchOperations_AssemblyNotFound);
             }
 
-            var type = assembly.GetType("Microsoft.EntityFrameworkCore.SqlServerMetadataExtensions");
-            var sqlServerPropertyMethod = type.GetMethod("SqlServer", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(IProperty) }, null);
+            MethodInfo sqlServerPropertyMethod = null;
+
+            if (assembly != null)
+            {
+                var type = assembly.GetType("Microsoft.EntityFrameworkCore.SqlServerMetadataExtensions");
+                sqlServerPropertyMethod = type.GetMethod("SqlServer", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(IProperty) }, null);
+            }
+            else if (postgreSqlAssembly != null)
+            {
+                var type = postgreSqlAssembly.GetType("Microsoft.EntityFrameworkCore.NpgsqlMetadataExtensions");
+                sqlServerPropertyMethod = type.GetMethod("Npgsql", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(IProperty) }, null);
+            }
+
 
 #endif
 #endif
@@ -728,11 +834,26 @@ SELECT  @totalRowAffected
                                 commandText.IndexOf("FROM", StringComparison.InvariantCultureIgnoreCase) - 6;
 
                     var valueSql = commandText.Substring(6, pos);
-#endif                
+#endif
+
+                    valueSql = valueSql.Trim();
 
                     // Add the destination name
                     valueSql = valueSql.Replace("[x]", "B");
                     valueSql = valueSql.Replace("[c]", "B");
+
+                    if (valueSql.Length > 0 
+                        && valueSql[0] == '['
+                        && valueSql.IndexOf("]", StringComparison.CurrentCultureIgnoreCase) != -1
+                        && valueSql.IndexOf("]", StringComparison.CurrentCultureIgnoreCase) == valueSql.IndexOf("].[", StringComparison.CurrentCultureIgnoreCase)
+                        )
+                    {
+                        // Could contains [something].[column]
+                        
+                        // GET the tag
+                        var tagToReplace = valueSql.Substring(0, valueSql.IndexOf("]", StringComparison.CurrentCultureIgnoreCase) + 1);
+                        valueSql = valueSql.Replace(tagToReplace, "B");
+                    }
 #endif
                     destinationValues.Add(new Tuple<string, object>(columnName, Expression.Constant(valueSql)));
                 }
@@ -745,10 +866,10 @@ SELECT  @totalRowAffected
             return destinationValues;
         }
 
-        public string EscapeName(string name, bool isMySql, bool isOracle)
+        public string EscapeName(string name, bool isMySql, bool isOracle, bool isPostgreSQL)
         {
             return isMySql ? string.Concat("`", name, "`") :
-                isOracle ? string.Concat("\"", name, "\"") :
+                isOracle || isPostgreSQL ? string.Concat("\"", name, "\"") :
                     string.Concat("[", name, "]");
         }
 
