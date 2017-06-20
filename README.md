@@ -315,9 +315,9 @@ A **HUGE THANKS** for your help.
 - [Eval-SQL.NET](http://eval-sql.net/)
 - [Eval-Expression.NET](http://eval-expression.net/)
 
-**Others**
+**Utilities**
 - [Extension Methods Library](https://github.com/zzzprojects/Z.ExtensionMethods/)
-- [LINQ Async](https://github.com/zzzprojects/Linq-AsyncExtensions)
+- [Html Agility Pack](http://html-agility-pack.net/)
 
 **Need more info?** info@zzzprojects.com
 
