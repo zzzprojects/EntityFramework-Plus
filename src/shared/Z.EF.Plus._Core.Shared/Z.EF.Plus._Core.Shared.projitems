@@ -30,6 +30,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)EF5_EF6\EntityConnection\GetStoreConnection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EF5_EF6\EntityConnection\GetStoreTransaction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EF5_EF6\IDbSet`\GetDbContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF5_EF6\IQueryable\IQueryable.GetObjectQuerySafe.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EF5_EF6\IQueryable\IQueryable.GetObjectQuery.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EF5_EF6\IQueryable\IQueryable.SelectByName.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EF5_EF6\IQueryable`\IQueryable`.GetDbContext.cs" />

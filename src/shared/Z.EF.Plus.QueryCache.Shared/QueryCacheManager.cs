@@ -165,6 +165,15 @@ namespace Z.EntityFramework.Plus
         /// <value>true if use tag as cache key, false if not.</value>
         public static bool UseTagsAsCacheKey { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this object is command information optional for cache
+        /// key.
+        /// </summary>
+        /// <value>
+        /// True if this object is command information optional for cache key, false if not.
+        /// </value>
+        public static bool IsCommandInfoOptionalForCacheKey { get; set; }
+
         /// <summary>Adds cache tags corresponding to a cached key in the CacheTags dictionary.</summary>
         /// <param name="cacheKey">The cache key.</param>
         /// <param name="tags">A variable-length parameters list containing tags corresponding to the <paramref name="cacheKey" />.</param>
@@ -257,16 +266,22 @@ namespace Z.EntityFramework.Plus
                 }
             }
 
-            var objectQuery = query.GetObjectQuery();
+            if (IsCommandInfoOptionalForCacheKey && !UseFirstTagAsCacheKey && !UseTagsAsCacheKey)
+            {
+                throw new Exception(ExceptionMessage.QueryCache_IsCommandInfoOptionalForCacheKey_Invalid);
+            }
+
+            var objectQuery = IsCommandInfoOptionalForCacheKey ? query.GetObjectQuerySafe() : query.GetObjectQuery();
 
             sb.AppendLine(CachePrefix);
 
-            if (IncludeConnectionInCacheKey)
+            if (IncludeConnectionInCacheKey && objectQuery != null)
             {
                 sb.AppendLine(GetConnectionStringForCacheKey(query));
             }
 #elif EFCORE
-            RelationalQueryContext queryContext;
+            RelationalQueryContext queryContext = null;
+            
             var command = query.CreateCommand(out queryContext);
 
             sb.AppendLine(CachePrefix);
@@ -302,27 +317,35 @@ namespace Z.EntityFramework.Plus
             sb.AppendLine(string.Join(";", tags));
 
 #if EF5
-            sb.AppendLine(objectQuery.ToTraceString());
-
-            foreach (var parameter in objectQuery.Parameters)
+            if (objectQuery != null)
             {
-                sb.Append(parameter.Name);
-                sb.Append(";");
-                sb.Append(parameter.Value);
-                sb.AppendLine(";");
+                sb.AppendLine(objectQuery.ToTraceString());
+
+                foreach (var parameter in objectQuery.Parameters)
+                {
+                    sb.Append(parameter.Name);
+                    sb.Append(";");
+                    sb.Append(parameter.Value);
+                    sb.AppendLine(";");
+                }
             }
-#elif EF6
-            var commandTextAndParameters = objectQuery.GetCommandTextAndParameters();
-            sb.AppendLine(commandTextAndParameters.Item1);
 
-            foreach (DbParameter parameter in commandTextAndParameters.Item2)
+#elif EF6
+            if (objectQuery != null)
             {
-                sb.Append(parameter.ParameterName);
-                sb.Append(";");
-                sb.Append(parameter.Value);
-                sb.AppendLine(";");
+                var commandTextAndParameters = objectQuery.GetCommandTextAndParameters();
+                sb.AppendLine(commandTextAndParameters.Item1);
+
+                foreach (DbParameter parameter in commandTextAndParameters.Item2)
+                {
+                    sb.Append(parameter.ParameterName);
+                    sb.Append(";");
+                    sb.Append(parameter.Value);
+                    sb.AppendLine(";");
+                }
             }
 #elif EFCORE
+
             sb.AppendLine(query.Expression.ToString());
             sb.AppendLine(command.CommandText);
 

@@ -7,6 +7,7 @@
 
 
 using System;
+using System.Linq;
 
 #if EF5
 using System.Data;
@@ -15,6 +16,7 @@ using System.Data.Objects;
 #elif EF6
 
 #elif EFCORE
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 #endif
@@ -59,12 +61,23 @@ namespace Z.EntityFramework.Plus
                             }
                         }
 #elif EFCORE
-                        foreach (var property in entry.Properties)
+                        if (entry.State == AuditEntryState.EntityModified && entry.Entry.State == EntityState.Detached)
                         {
-                            if (!property.IsValueSet)
+                            // Oops! It's has not beed modified but deleted
+                            entry.State = AuditEntryState.EntityDeleted;
+
+                            var listToRemove = entry.Properties.Where(x => !x.PropertyEntry.Metadata.IsKey()).ToList();
+                            listToRemove.ForEach(x => entry.Properties.Remove(x));
+                        }
+                        else
+                        {
+                            foreach (var property in entry.Properties)
                             {
-                                var currentValue = property.PropertyEntry.CurrentValue;
-                                property.NewValue = currentValue;
+                                if (!property.IsValueSet)
+                                {
+                                    var currentValue = property.PropertyEntry.CurrentValue;
+                                    property.NewValue = currentValue;
+                                }
                             }
                         }
 #endif
