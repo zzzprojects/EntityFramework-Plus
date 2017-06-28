@@ -794,19 +794,35 @@ SELECT  @totalRowAffected
                     // Add the destination name
                     valueSql = valueSql.Replace("AS [C1]", "");
 
-                    valueSql = valueSql.Replace("[Extent1]", "B")
-                            .Replace("[Extent2]", "B")
-                            .Replace("[Extent3]", "B")
-                            .Replace("[Extent4]", "B")
-                            .Replace("[Extent5]", "B")
-                            .Replace("[Extent6]", "B")
-                            .Replace("[Extent7]", "B")
-                            .Replace("[Extent8]", "B")
-                            .Replace("[Extent9]", "B")
-                            .Replace("[Filter1]", "B")
-                            .Replace("[Filter2]", "B")
-                            .Replace("[Filter3]", "B")
-                            .Replace("[Filter4]", "B");
+                    var listReplace = new List<string>()
+                    {
+                        "[Extent1]",
+                        "[Extent2]",
+                        "[Extent3]",
+                        "[Extent4]",
+                        "[Extent5]",
+                        "[Extent6]",
+                        "[Extent7]",
+                        "[Extent8]",
+                        "[Extent9]",
+                        "[Filter1]",
+                        "[Filter2]",
+                        "[Filter3]",
+                        "[Filter4]",
+                        "[Filter5]",
+                        "[Filter6]",
+                    };
+
+                    // Replace the first value found only!
+                    foreach (var itemReplace in listReplace)
+                    {
+                        if (valueSql.Contains(itemReplace))
+                        {
+                            valueSql = valueSql.Replace(itemReplace, "B");
+                            break;
+                        }
+                    }
+
 #elif EFCORE
                     RelationalQueryContext queryContext;
                     var command = ((IQueryable)result).CreateCommand(out queryContext);
