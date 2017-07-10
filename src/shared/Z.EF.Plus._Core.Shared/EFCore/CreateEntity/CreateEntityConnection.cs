@@ -22,7 +22,7 @@ namespace Z.EntityFramework.Plus
 
         private DbConnection OriginalConnection { get; }
 
-        private DbDataReader OriginalDataReader { get; }
+        internal DbDataReader OriginalDataReader { get; set; }
 
         public override string ConnectionString
         {

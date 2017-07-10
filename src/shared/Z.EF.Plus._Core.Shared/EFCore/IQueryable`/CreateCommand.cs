@@ -87,10 +87,11 @@ namespace Z.EntityFramework.Plus
 
                 // REFLECTION: Query.Provider._queryCompiler._database._queryCompilationContextFactory.Logger
                 var loggerField = queryCompilationContextFactory.GetType().GetProperty("Logger", BindingFlags.NonPublic | BindingFlags.Instance);
-                var logger = (ISensitiveDataLogger)loggerField.GetValue(queryCompilationContextFactory);
+                var logger = loggerField.GetValue(queryCompilationContextFactory);
 
                 // CREATE new query from query visitor
-                newQuery = ParameterExtractingExpressionVisitor.ExtractParameters(source.Expression, queryContext, evaluatableExpressionFilter, logger);
+                var extractParametersMethods = typeof(ParameterExtractingExpressionVisitor).GetMethod("ExtractParameters", BindingFlags.Public | BindingFlags.Static);
+                newQuery = (Expression) extractParametersMethods.Invoke(null, new object[] {source.Expression, queryContext, evaluatableExpressionFilter, logger});
             }
 
             //var query = new QueryAnnotatingExpressionVisitor().Visit(source.Expression);

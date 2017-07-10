@@ -68,7 +68,7 @@ namespace Z.EntityFramework.Plus
 
         /// <summary>Gets or sets the query connection.</summary>
         /// <value>The query connection.</value>
-        internal CreateEntityRelationConnection QueryConnection { get; set; }
+        internal IRelationalConnection QueryConnection { get; set; }
 
         public virtual void ExecuteInMemory()
         {
@@ -157,11 +157,17 @@ namespace Z.EntityFramework.Plus
 
                 // REFLECTION: Query.Provider._queryCompiler._database._queryCompilationContextFactory.Logger
                 var loggerField = queryCompilationContextFactory.GetType().GetProperty("Logger", BindingFlags.NonPublic | BindingFlags.Instance);
-                logger = (ISensitiveDataLogger)loggerField.GetValue(queryCompilationContextFactory);
+                logger = loggerField.GetValue(queryCompilationContextFactory);
             }
 
             // CREATE connection
-            QueryConnection = new CreateEntityRelationConnection(connection);
+            {
+                QueryConnection = context.Database.GetService<IRelationalConnection>();
+                var innerConnection = new CreateEntityConnection(QueryConnection.DbConnection, null);
+                var innerConnectionField = typeof(RelationalConnection).GetField("_connection", BindingFlags.NonPublic | BindingFlags.Instance);
+                innerConnectionField.SetValue(QueryConnection, new Microsoft.EntityFrameworkCore.Internal.LazyRef<DbConnection>(() => innerConnection));
+            }
+
 
             // CREATE query context
             {
@@ -213,7 +219,9 @@ namespace Z.EntityFramework.Plus
             }
             else
             {
-                newQuery = ParameterExtractingExpressionVisitor.ExtractParameters(Query.Expression, queryContext, evaluatableExpressionFilter, (ISensitiveDataLogger)logger);
+                // CREATE new query from query visitor
+                var extractParametersMethods = typeof(ParameterExtractingExpressionVisitor).GetMethod("ExtractParameters", BindingFlags.Public | BindingFlags.Static);
+                newQuery = (Expression) extractParametersMethods.Invoke(null, new object[] {Query.Expression, queryContext, evaluatableExpressionFilter, logger});
             }
 
             // PARSE new query
@@ -281,7 +289,7 @@ namespace Z.EntityFramework.Plus
             var enumerator = (IEnumerator<T>)getEnumerator;
             return enumerator;
 #elif EFCORE
-            QueryConnection.OriginalDataReader = reader;
+            ((CreateEntityConnection)QueryConnection.DbConnection).OriginalDataReader = reader;
             var queryExecutor = (Func<QueryContext, IEnumerable<T>>) QueryExecutor;
             var queryEnumerable = queryExecutor(QueryContext);
             return queryEnumerable.GetEnumerator();

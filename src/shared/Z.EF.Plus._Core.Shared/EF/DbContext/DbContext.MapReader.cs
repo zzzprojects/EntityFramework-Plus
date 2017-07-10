@@ -43,7 +43,7 @@ namespace Z.EntityFramework.Plus
         internal static IEnumerable<T> MapReader<T>(this DbContext context, DbDataReader reader) where T : class
         {
 #if EF5 || EF6
-        return ((IObjectContextAdapter) context).ObjectContext.Translate<T>(reader);
+            return ((IObjectContextAdapter)context).ObjectContext.Translate<T>(reader);
 
 #elif EFCORE
             bool isEFCore2x = false;
@@ -131,7 +131,11 @@ namespace Z.EntityFramework.Plus
             }
 
             // CREATE connection
-            var queryConnection = new CreateEntityRelationConnection(connection);
+            var queryConnection = context.Database.GetService<IRelationalConnection>();
+            var innerConnection = new CreateEntityConnection(queryConnection.DbConnection, null);
+            //QueryConnection.DbConnection = innerConnection;
+            var innerConnectionField = typeof(RelationalConnection).GetField("_connection", BindingFlags.NonPublic | BindingFlags.Instance);
+            innerConnectionField.SetValue(queryConnection, new Microsoft.EntityFrameworkCore.Internal.LazyRef<DbConnection>(() => innerConnection));
 
             // CREATE query context
             RelationalQueryContext queryContext;
@@ -170,7 +174,8 @@ namespace Z.EntityFramework.Plus
             else
             {
                 // CREATE new query from query visitor
-                newQuery = ParameterExtractingExpressionVisitor.ExtractParameters(query.Expression, queryContext, evaluatableExpressionFilter, (ISensitiveDataLogger)logger);
+                var extractParametersMethods = typeof(ParameterExtractingExpressionVisitor).GetMethod("ExtractParameters", BindingFlags.Public | BindingFlags.Static);
+                newQuery = (Expression) extractParametersMethods.Invoke(null, new object[] {query.Expression, queryContext, evaluatableExpressionFilter, logger});
             }
 
             // PARSE new query
@@ -185,7 +190,7 @@ namespace Z.EntityFramework.Plus
             var queryExecutor = (Func<QueryContext, IEnumerable<T>>) createQueryExecutorMethodGeneric.Invoke(queryModelVisitor, new[] {queryModel});
 
             // CREATE a fake reader since EntityFramework close it
-            queryConnection.OriginalDataReader = new CreateEntityDataReader(reader);
+            ((CreateEntityConnection)queryConnection.DbConnection).OriginalDataReader = new CreateEntityDataReader(reader); ;
             var queryEnumerable = queryExecutor(queryContext);
             var enumerator = queryEnumerable.GetEnumerator();
 

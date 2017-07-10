@@ -152,7 +152,8 @@ namespace Z.EntityFramework.Plus
             else
             {
                 // CREATE new query from query visitor
-                newQuery = ParameterExtractingExpressionVisitor.ExtractParameters(query.Expression, queryContext, evaluatableExpressionFilter, (ISensitiveDataLogger)logger);
+                var extractParametersMethods = typeof(ParameterExtractingExpressionVisitor).GetMethod("ExtractParameters", BindingFlags.Public | BindingFlags.Static);
+                newQuery = (Expression) extractParametersMethods.Invoke(null, new object[] {query.Expression, queryContext, evaluatableExpressionFilter, logger});
             }
 
             // PARSE new query

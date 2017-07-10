@@ -187,6 +187,12 @@ SELECT  @totalRowAffected
             // CREATE command
             var command = CreateCommand(innerObjectQuery, entity, values);
 
+            // WHERE 1 = 0
+            if (command == null)
+            {
+                return 0;
+            }
+
             // EXECUTE
             var ownConnection = false;
 
@@ -373,6 +379,12 @@ SELECT  @totalRowAffected
 
             // GET inner query
             var customQuery = query.GetCommandTextAndParameters();
+
+            if (customQuery.Item1.EndsWith("WHERE 1 = 0", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return null;
+            }
+
             var querySelect = customQuery.Item1;
 
             // GET primary key join
