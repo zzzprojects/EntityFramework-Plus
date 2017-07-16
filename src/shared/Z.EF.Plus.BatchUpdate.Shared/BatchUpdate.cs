@@ -472,6 +472,8 @@ SELECT  @totalRowAffected
 #if NETSTANDARD1_3
             Assembly assembly = null;
             Assembly postgreSqlAssembly = null;
+            Assembly mySqlPomelo = null;
+            Assembly mySql = null;
 
             try
             {
@@ -485,68 +487,31 @@ SELECT  @totalRowAffected
                 }
                 catch
                 {
-                    throw new Exception(ExceptionMessage.BatchOperations_AssemblyNotFound);
+                    try
+                    {
+                        mySql = Assembly.Load(new AssemblyName("MySql.Data.EntityFrameworkCore"));
+                    }
+                    catch
+                    {
+                        try
+                        {
+                            mySqlPomelo = Assembly.Load(new AssemblyName("Pomelo.EntityFrameworkCore.MySql"));
+                        }
+                        catch
+                        {
+                            throw new Exception(ExceptionMessage.BatchOperations_AssemblyNotFound);
+                        }
+                    }
                 }
             }
-
-            if (assembly != null || postgreSqlAssembly != null)
-            {
-                string tableName = "";
-                string primaryKeys = "";
-
-                if (assembly != null)
-                {
-                    var type = assembly.GetType("Microsoft.EntityFrameworkCore.SqlServerMetadataExtensions");
-                    var sqlServerEntityTypeMethod = type.GetMethod("SqlServer", new[] {typeof (IEntityType)});
-                    var sqlServerPropertyMethod = type.GetMethod("SqlServer", new[] {typeof (IProperty)});
-                    var sqlServer = (IRelationalEntityTypeAnnotations) sqlServerEntityTypeMethod.Invoke(null, new[] {entity});
-
-                    // GET mapping
-                    tableName = string.IsNullOrEmpty(sqlServer.Schema) ?
-                        string.Concat("[", sqlServer.TableName, "]") :
-                        string.Concat("[", sqlServer.Schema, "].[", sqlServer.TableName, "]");
-
-                    // GET keys mappings
-                    var columnKeys = new List<string>();
-                    foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
-                    {
-                        var mappingProperty = sqlServerPropertyMethod.Invoke(null, new[] {propertyKey});
-
-                        var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
-                        columnKeys.Add((string) columnNameProperty.GetValue(mappingProperty));
-                    }
-
-                    // GET primary key join
-                    primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.[", x, "] = B.[", x, "]")));
-                }
-                else if (postgreSqlAssembly != null)
-                {
-                    var type = assembly.GetType("Microsoft.EntityFrameworkCore.NpgsqlMetadataExtensions");
-                    var sqlServerEntityTypeMethod = type.GetMethod("Npgsql", new[] {typeof (IEntityType)});
-                    var sqlServerPropertyMethod = type.GetMethod("Npgsql", new[] {typeof (IProperty)});
-                    var sqlServer = (IRelationalEntityTypeAnnotations) sqlServerEntityTypeMethod.Invoke(null, new[] {entity});
-
-                    // GET mapping
-                    tableName = string.IsNullOrEmpty(sqlServer.Schema) ? string.Concat("\"", sqlServer.TableName, "\"") : string.Concat("\"", sqlServer.Schema, "\".\"", sqlServer.TableName, "\"");
-
-                    // GET keys mappings
-                    var columnKeys = new List<string>();
-                    foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
-                    {
-                        var mappingProperty = sqlServerPropertyMethod.Invoke(null, new[] {propertyKey});
-
-                        var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
-                        columnKeys.Add((string) columnNameProperty.GetValue(mappingProperty));
-                    }
-
-                    // GET primary key join
-                    primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".\"", x, "\" = B.\"", x, "\"")));
-                }
 #else
             var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName.StartsWith("Microsoft.EntityFrameworkCore.SqlServer", StringComparison.InvariantCulture));
             var postgreSqlAssembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName.StartsWith("Npgsql.EntityFrameworkCore.PostgreSQL", StringComparison.InvariantCulture));
+            var mySqlPomelo = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName.StartsWith("Pomelo.EntityFrameworkCore.MySql", StringComparison.InvariantCulture));
+            var mySql = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName.StartsWith("MySql.Data.EntityFrameworkCore", StringComparison.InvariantCulture));
+#endif
 
-            if (assembly != null || postgreSqlAssembly != null)
+            if (assembly != null || postgreSqlAssembly != null || mySqlPomelo != null || mySql != null)
             {
                 string tableName = "";
                 string primaryKeys = "";
@@ -554,8 +519,8 @@ SELECT  @totalRowAffected
                 if (assembly != null)
                 {
                     var type = assembly.GetType("Microsoft.EntityFrameworkCore.SqlServerMetadataExtensions");
-                    var sqlServerEntityTypeMethod = type.GetMethod("SqlServer", BindingFlags.Public | BindingFlags.Static, null, new[] {typeof(IEntityType)}, null);
-                    var sqlServerPropertyMethod = type.GetMethod("SqlServer", BindingFlags.Public | BindingFlags.Static, null, new[] {typeof(IProperty)}, null);
+                    var sqlServerEntityTypeMethod = type.GetMethod("SqlServer", new[] {typeof(IEntityType)});
+                    var sqlServerPropertyMethod = type.GetMethod("SqlServer", new[] {typeof(IProperty)});
                     var sqlServer = (IRelationalEntityTypeAnnotations) sqlServerEntityTypeMethod.Invoke(null, new[] {entity});
 
                     // GET mapping
@@ -577,8 +542,8 @@ SELECT  @totalRowAffected
                 else if (postgreSqlAssembly != null)
                 {
                     var type = postgreSqlAssembly.GetType("Microsoft.EntityFrameworkCore.NpgsqlMetadataExtensions");
-                    var sqlServerEntityTypeMethod = type.GetMethod("Npgsql", BindingFlags.Public | BindingFlags.Static, null, new[] {typeof(IEntityType)}, null);
-                    var sqlServerPropertyMethod = type.GetMethod("Npgsql", BindingFlags.Public | BindingFlags.Static, null, new[] {typeof(IProperty)}, null);
+                    var sqlServerEntityTypeMethod = type.GetMethod("Npgsql", new[] {typeof(IEntityType)});
+                    var sqlServerPropertyMethod = type.GetMethod("Npgsql", new[] {typeof(IProperty)});
                     var sqlServer = (IRelationalEntityTypeAnnotations) sqlServerEntityTypeMethod.Invoke(null, new[] {entity});
 
                     // GET mapping
@@ -597,17 +562,65 @@ SELECT  @totalRowAffected
                     // GET primary key join
                     primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".\"", x, "\" = B.\"", x, "\"")));
                 }
+                else if (mySqlPomelo != null)
+                {
+                    var type = mySqlPomelo.GetType("Microsoft.EntityFrameworkCore.MySqlMetadataExtensions");
+                    var sqlServerEntityTypeMethod = type.GetMethod("MySql", new[] { typeof(IEntityType) });
+                    var sqlServerPropertyMethod = type.GetMethod("MySql", new[] { typeof(IProperty) });
+                    var sqlServer = (IRelationalEntityTypeAnnotations)sqlServerEntityTypeMethod.Invoke(null, new[] { entity });
 
-#endif
-        // GET command text template
-        var commandTextTemplate =
+                    // GET mapping
+                    tableName = string.Concat("`", sqlServer.TableName, "`");
+
+                    // GET keys mappings
+                    var columnKeys = new List<string>();
+                    foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
+                    {
+                        var mappingProperty = sqlServerPropertyMethod.Invoke(null, new[] { propertyKey });
+
+                        var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
+                        columnKeys.Add((string)columnNameProperty.GetValue(mappingProperty));
+                    }
+
+                    // GET primary key join
+                    primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.`", x, "` = B.`", x, "`")));
+                }
+                else if (mySql != null)
+                {
+                    var type = mySql.GetType("MySQL.Data.EntityFrameworkCore.MySQLMetadataExtensions");
+                    var sqlServerEntityTypeMethod = type.GetMethod("MySQL", new[] { typeof(IEntityType) });
+                    var sqlServerPropertyMethod = type.GetMethod("MySQL", new[] { typeof(IProperty) });
+                    var sqlServer = (IRelationalEntityTypeAnnotations)sqlServerEntityTypeMethod.Invoke(null, new[] { entity });
+
+                    // GET mapping
+                    tableName = string.Concat("`", sqlServer.TableName, "`");
+
+                    // GET keys mappings
+                    var columnKeys = new List<string>();
+                    foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
+                    {
+                        var mappingProperty = sqlServerPropertyMethod.Invoke(null, new[] { propertyKey });
+
+                        var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
+                        columnKeys.Add((string)columnNameProperty.GetValue(mappingProperty));
+                    }
+
+                    // GET primary key join
+                    primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.`", x, "` = B.`", x, "`")));
+                }
+
+                // GET command text template
+                var commandTextTemplate =
 #if TODO
                 BatchSize > 0 ?
                 BatchDelayInterval > 0 ?
                     CommandTextWhileDelayTemplate :
                     CommandTextWhileTemplate :
 #endif
-                    assembly == null && postgreSqlAssembly != null ? CommandTextTemplate_PostgreSQL : CommandTextTemplate;
+                    assembly == null && postgreSqlAssembly != null ? CommandTextTemplate_PostgreSQL : 
+                    mySqlPomelo != null || mySql != null ?
+                    CommandTextTemplate_MySQL :
+                    CommandTextTemplate;
 
                 // GET inner query
 #if EFCORE
@@ -630,6 +643,10 @@ SELECT  @totalRowAffected
                 else if (postgreSqlAssembly != null)
                 {
                     setValues = string.Join("," + Environment.NewLine, values.Select((x, i) => x.Item2 is ConstantExpression ? string.Concat("\"", x.Item1, "\" = ", ((ConstantExpression)x.Item2).Value) : string.Concat("\"", x.Item1, "\" = @zzz_BatchUpdate_", i)));
+                }
+                else if (mySqlPomelo != null || mySql != null)
+                {
+                    setValues = string.Join("," + Environment.NewLine, values.Select((x, i) => x.Item2 is ConstantExpression ? string.Concat("A.`", x.Item1, "` = ", ((ConstantExpression)x.Item2).Value) : string.Concat("A.`", x.Item1, "` = @zzz_BatchUpdate_", i)));
                 }
 
                 // REPLACE template
@@ -696,9 +713,11 @@ SELECT  @totalRowAffected
             // GET mapping
             var mapping = entity.Info.EntityTypeMapping.MappingFragment;
 #elif EFCORE
-
+            Assembly assembly = null;
+            Assembly postgreSqlAssembly = null;
+            Assembly mySqlPomelo = null;
+            Assembly mySql = null;
 #if NETSTANDARD1_3
-            Assembly assembly;
 
             try
             {
@@ -706,21 +725,38 @@ SELECT  @totalRowAffected
             }
             catch (Exception ex)
             {
-                throw new Exception(ExceptionMessage.BatchOperations_AssemblyNotFound);
+                try
+                {
+                    postgreSqlAssembly = Assembly.Load(new AssemblyName("Npgsql.EntityFrameworkCore.PostgreSQL"));
+                }
+                catch
+                {
+                    try
+                    {
+                        mySql = Assembly.Load(new AssemblyName("MySql.Data.EntityFrameworkCore"));
+                    }
+                    catch
+                    {
+                        try
+                        {
+                            mySqlPomelo = Assembly.Load(new AssemblyName("Pomelo.EntityFrameworkCore.MySql"));
+                        }
+                        catch
+                        {
+                            throw new Exception(ExceptionMessage.BatchOperations_AssemblyNotFound);
+                        }
+                    }
+                }
             }
 
-            if (assembly == null)
-            {
-                throw new Exception(ExceptionMessage.BatchOperations_AssemblyNotFound);
-            }
-
-            var type = assembly.GetType("Microsoft.EntityFrameworkCore.SqlServerMetadataExtensions");
-            var sqlServerPropertyMethod = type.GetMethod("SqlServer", new[] {typeof (IProperty)});
 #else
-            var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName.StartsWith("Microsoft.EntityFrameworkCore.SqlServer"));
-            var postgreSqlAssembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName.StartsWith("Npgsql.EntityFrameworkCore.PostgreSQL", StringComparison.InvariantCulture));
+            assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName.StartsWith("Microsoft.EntityFrameworkCore.SqlServer"));
+            postgreSqlAssembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName.StartsWith("Npgsql.EntityFrameworkCore.PostgreSQL", StringComparison.InvariantCulture));
+            mySqlPomelo = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName.StartsWith("Pomelo.EntityFrameworkCore.MySql", StringComparison.InvariantCulture));
+            mySql = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName.StartsWith("MySql.Data.EntityFrameworkCore", StringComparison.InvariantCulture));
+#endif
 
-            if (assembly == null && postgreSqlAssembly == null)
+            if (assembly == null && postgreSqlAssembly == null && mySqlPomelo == null && mySql == null)
             {
                 throw new Exception(ExceptionMessage.BatchOperations_AssemblyNotFound);
             }
@@ -730,19 +766,25 @@ SELECT  @totalRowAffected
             if (assembly != null)
             {
                 var type = assembly.GetType("Microsoft.EntityFrameworkCore.SqlServerMetadataExtensions");
-                sqlServerPropertyMethod = type.GetMethod("SqlServer", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(IProperty) }, null);
+                sqlServerPropertyMethod = type.GetMethod("SqlServer", new[] { typeof(IProperty) });
             }
             else if (postgreSqlAssembly != null)
             {
                 var type = postgreSqlAssembly.GetType("Microsoft.EntityFrameworkCore.NpgsqlMetadataExtensions");
-                sqlServerPropertyMethod = type.GetMethod("Npgsql", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(IProperty) }, null);
+                sqlServerPropertyMethod = type.GetMethod("Npgsql", new[] { typeof(IProperty) });
+            }
+            else if (mySqlPomelo != null)
+            {
+                var type = mySqlPomelo.GetType("Microsoft.EntityFrameworkCore.MySqlMetadataExtensions");
+                sqlServerPropertyMethod = type.GetMethod("MySql", new[] { typeof(IProperty) });
+            }
+            else if (mySql != null)
+            {
+                var type = mySql.GetType("MySQL.Data.EntityFrameworkCore.MySQLMetadataExtensions");
+                sqlServerPropertyMethod = type.GetMethod("MySQL", new[] { typeof(IProperty) });
             }
 
-
 #endif
-#endif
-
-
             // GET updateFactory command
             var values = ResolveUpdateFromQueryDictValues(updateFactory);
             var destinationValues = new List<Tuple<string, object>>();
