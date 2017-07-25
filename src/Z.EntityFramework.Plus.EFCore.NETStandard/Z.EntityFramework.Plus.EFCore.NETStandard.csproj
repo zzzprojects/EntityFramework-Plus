@@ -12,11 +12,11 @@
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>zzzproject.pfx</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
-    <Version>1.6.0</Version>
+    <Version>1.6.7</Version>
     <Description>Description: EF Bulk Operations &amp; Utilities | Bulk Insert, Update, Delete, Merge from database.</Description>
     <AssemblyName>Z.EntityFramework.Plus.EFCore</AssemblyName>
-    <AssemblyVersion>1.6.0.0</AssemblyVersion>
-    <FileVersion>1.6.0.0</FileVersion>
+    <AssemblyVersion>1.6.7.0</AssemblyVersion>
+    <FileVersion>1.6.7.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
