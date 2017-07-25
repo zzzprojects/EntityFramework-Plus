@@ -173,7 +173,7 @@ SELECT  @totalRowAffected
          
             // GET model and info
 #if EF5 || EF6
-            var model = query.GetDbContext().GetModel();
+            var model = query.GetModel();
             var entity = model.Entity<T>();
             var keys = entity.Info.Key.PropertyRefs;
 

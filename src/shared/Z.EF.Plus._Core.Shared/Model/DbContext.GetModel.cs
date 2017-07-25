@@ -13,6 +13,8 @@ using System.Data.Entity.Infrastructure;
 using System.Runtime.Caching;
 using Z.EntityFramework.Plus.Internal;
 using Z.EntityFramework.Plus.Internal.Core.Infrastructure;
+using System.Linq;
+using System.Data.Entity.Core.Objects;
 #if EF5
 using System.Data.Metadata.Edm;
 
@@ -28,6 +30,38 @@ namespace Z.EntityFramework.Plus
 #if BATCH_DELETE || BATCH_UPDATE
         public static string STANDALONE_ID = Guid.NewGuid().ToString();
 #endif
+
+        internal static DbModelPlus GetModel<T>(this IQueryable<T> query) {
+
+            var dbContext = query.GetDbContext();
+
+            if (dbContext == null) {
+                return query.GetObjectQuery<T>().Context.GetModel();
+            }
+
+            return query.GetDbContext().GetModel();
+        }
+
+        internal static DbModelPlus GetModel(this ObjectContext context) {
+
+            var cache = MemoryCache.Default;
+
+#if BATCH_DELETE || BATCH_UPDATE
+            var cacheName = "Z.EntityFramework.Plus.Model;" + STANDALONE_ID + ";" + context.GetType().FullName;
+#else
+            var cacheName = "Z.EntityFramework.Plus.Model;" + context.GetType().FullName;
+#endif
+            var model = (DbModelPlus)cache.Get(cacheName);
+            if (model == null) {
+
+                var metadataworkspace = context.MetadataWorkspace;
+                model = Model.GetDatabaseFirst(context);
+                cache.Add(new CacheItem(cacheName, model), new CacheItemPolicy());
+            }
+
+            return model;
+        }
+
         internal static DbModelPlus GetModel(this DbContext context)
         {
             var cache = MemoryCache.Default;

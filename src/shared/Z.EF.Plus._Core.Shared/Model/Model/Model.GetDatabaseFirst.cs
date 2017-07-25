@@ -9,7 +9,12 @@
 #if EF5 || EF6
 using System;
 using System.Data.Entity;
+using System.Data.Entity.Core.Metadata.Edm;
+using System.Data.Entity.Core.Objects;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Xml;
 using System.Xml.Linq;
 using Z.EntityFramework.Plus.Internal.Core.Infrastructure;
 using Z.EntityFramework.Plus.Internal.Core.Mapping;
@@ -36,6 +41,32 @@ namespace Z.EntityFramework.Plus.Internal
 
             return GetDatabaseFirst(conceptualString, storageString, mappingString, modelSplit);
         }
+
+        public static DbModelPlus GetDatabaseFirst(ObjectContext context) {
+
+            var modelSplit = "---zzz_multi_model_split_zzz---";
+            var asm = context.GetType().Assembly;
+
+            if(!asm.GetManifestResourceNames().Any(x => x.EndsWith(".ssdl"))) {
+                asm = context.GetType().BaseType.Assembly;
+            }
+
+            var rn = asm.GetManifestResourceNames();
+            var ssdl = rn.SingleOrDefault(x => x.EndsWith(".ssdl"));
+            var csdl = rn.SingleOrDefault(x => x.EndsWith(".csdl"));
+            var msl = rn.SingleOrDefault(x => x.EndsWith(".msl"));
+
+                
+
+            return GetDatabaseFirst(GetXml(asm,csdl), GetXml(asm,ssdl), GetXml(asm,msl), modelSplit);
+        }
+
+        private static string GetXml(Assembly asm, string rn) {
+            using (var sr = new StreamReader(asm.GetManifestResourceStream(rn))) {
+                return sr.ReadToEnd();
+            }
+        }
+
 
         public static DbModelPlus GetDatabaseFirst(string conceptualModel, string storageModel, string mappingModel, string modelSplit)
         {

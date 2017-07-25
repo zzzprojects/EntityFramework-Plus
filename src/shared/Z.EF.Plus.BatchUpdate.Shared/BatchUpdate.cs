@@ -172,7 +172,7 @@ SELECT  @totalRowAffected
             var objectQuery = query.GetObjectQuery();
 
             // GET model and info
-            var model = query.GetDbContext().GetModel();
+            var model = query.GetModel();
             var entity = model.Entity<T>();
 
             // TODO: Select only key + lambda columns
