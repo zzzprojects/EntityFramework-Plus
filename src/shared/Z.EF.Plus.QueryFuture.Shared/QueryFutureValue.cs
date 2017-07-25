@@ -115,5 +115,15 @@ namespace Z.EntityFramework.Plus
             _result = value;
             HasValue = true;
         }
+        
+        /// <summary>
+        /// Performs an implicit conversion from QueryFutureValue to T.
+        /// </summary>
+        /// <param name="futureValue">The future value.</param>
+        /// <returns>The result of forcing this lazy value.</returns>
+        public static implicit operator T(QueryFutureValue<T> futureValue)
+        {
+            return futureValue.Value;
+        }
     }
 }
