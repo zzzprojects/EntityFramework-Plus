@@ -142,7 +142,7 @@ namespace Z.EntityFramework.Plus
             var evaluatableExpressionFilterField = queryCompiler.GetType().GetField("_evaluatableExpressionFilter", BindingFlags.NonPublic | BindingFlags.Static);
             var evaluatableExpressionFilter = (IEvaluatableExpressionFilter)evaluatableExpressionFilterField.GetValue(null);
 
-Expression newQuery;
+            Expression newQuery;
             IQueryCompilationContextFactory queryCompilationContextFactory;
 
             var dependenciesProperty = typeof(Database).GetProperty("Dependencies", BindingFlags.NonPublic | BindingFlags.Instance);

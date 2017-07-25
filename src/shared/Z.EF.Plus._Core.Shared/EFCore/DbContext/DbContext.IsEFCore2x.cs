@@ -18,6 +18,9 @@ namespace Z.EntityFramework.Plus
         public static bool IsEFCore2x(this DbContext context)
         {
             return false;
+            //var assembly = context.Database.GetType().Assembly;
+            //var version = assembly.GetName().Version;
+            //return version.Major >= 2;
         }
     }
 }

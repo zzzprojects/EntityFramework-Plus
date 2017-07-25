@@ -8,9 +8,11 @@
 using System.Runtime.CompilerServices;
 #if EF5
 using System.Data.Objects;
+using System.Data.Entity;
 
 #elif EF6
 using System.Data.Entity.Core.Objects;
+using System.Data.Entity;
 
 #elif EFCORE
 using Microsoft.EntityFrameworkCore;
@@ -62,6 +64,16 @@ namespace Z.EntityFramework.Plus
             }
 
             return futureBatch;
+        }
+
+        public static void ExecuteBatch(DbContext context)
+        {
+#if EF5 || EF6
+            var batch = AddOrGetBatch(context.GetObjectContext());
+#elif EFCORE
+            var batch = AddOrGetBatch(context);
+#endif
+            batch.ExecuteQueries();
         }
     }
 }

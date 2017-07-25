@@ -112,18 +112,21 @@ namespace Z.EntityFramework.Plus
 
                 if (newQuery == null)
                 {
-                    newQuery = OriginalQueryable.Select(x => new {x, child = childQuery});
+                    // REFLECTION: newQuery.CreateAnonymousFromQuery<TElement>(newQuery, childQuery);
+                    var createAnonymousFromQueryMethodGeneric = createAnonymousFromQueryMethod.MakeGenericMethod(OriginalQueryable.ElementType, childQuery.ElementType);
+                    newQuery = (IQueryable)createAnonymousFromQueryMethodGeneric.Invoke(this, new object[] { OriginalQueryable, childQuery });
                 }
                 else
                 {
                     // REFLECTION: newQuery.CreateAnonymousFromQuery<TElement>(newQuery, childQuery);
-                    var createAnonymousFromQueryMethodGeneric = createAnonymousFromQueryMethod.MakeGenericMethod(newQuery.ElementType);
+                    var createAnonymousFromQueryMethodGeneric = createAnonymousFromQueryMethod.MakeGenericMethod(newQuery.ElementType, childQuery.ElementType);
                     newQuery = (IQueryable) createAnonymousFromQueryMethodGeneric.Invoke(this, new object[] {newQuery, childQuery});
                 }
             }
-
+          
             // REFLECTION: newQuery.ToList();
             var toListMethod = typeof (Enumerable).GetMethod("ToList").MakeGenericMethod(newQuery.ElementType);
+            
             var toList = (IEnumerable<object>) toListMethod.Invoke(null, new object[] {newQuery});
 
             try
@@ -181,7 +184,7 @@ namespace Z.EntityFramework.Plus
                 else
                 {
                     // REFLECTION: newQuery.CreateAnonymousFromQuery<TElement>(newQuery, childQuery);
-                    var createAnonymousFromQueryMethodGeneric = createAnonymousFromQueryMethod.MakeGenericMethod(newQuery.ElementType);
+                    var createAnonymousFromQueryMethodGeneric = createAnonymousFromQueryMethod.MakeGenericMethod(newQuery.ElementType, childQuery.ElementType);
                     newQuery = (IQueryable) createAnonymousFromQueryMethodGeneric.Invoke(this, new object[] {newQuery, childQuery});
                 }
             }
@@ -207,7 +210,7 @@ namespace Z.EntityFramework.Plus
         /// <param name="parent">The parent query.</param>
         /// <param name="child">The child query.</param>
         /// <returns>The new Queryable selecting parent and child query in an anonymous type.</returns>
-        public IQueryable CreateAnonymousFromQuery<TElement>(IQueryable<TElement> parent, IQueryable child)
+        public IQueryable CreateAnonymousFromQuery<TElement, TChild>(IQueryable<TElement> parent, IQueryable<TChild> child)
         {
             return parent.Select(x => new {x, child});
         }

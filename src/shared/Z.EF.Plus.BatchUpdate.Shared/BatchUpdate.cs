@@ -877,6 +877,12 @@ SELECT  @totalRowAffected
                         }
                     }
 
+                    // CHECK if valueSql end with ' AS [XYZ]'
+                    if (valueSql.LastIndexOf('[') != -1 && valueSql.Substring(0, valueSql.LastIndexOf('[')).EndsWith(" AS ", StringComparison.InvariantCulture))
+                    {
+                        valueSql = valueSql.Substring(0, valueSql.LastIndexOf('[') - 4);
+                    }
+
 #elif EFCORE
                     RelationalQueryContext queryContext;
                     var command = ((IQueryable)result).CreateCommand(out queryContext);

@@ -1,4 +1,4 @@
-﻿// Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update, Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
+﻿ // Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update, Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
 // Forum & Issues: https://github.com/zzzprojects/EntityFramework-Plus/issues
 // License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
@@ -115,13 +115,13 @@ namespace Z.EntityFramework.Plus
             _result = value;
             HasValue = true;
         }
-        
+
         /// <summary>
-        /// Performs an implicit conversion from QueryFutureValue to T.
+        /// Performs an implicit conversion from QueryFutureValue to TResult.
         /// </summary>
         /// <param name="futureValue">The future value.</param>
         /// <returns>The result of forcing this lazy value.</returns>
-        public static implicit operator T(QueryFutureValue<T> futureValue)
+        public static implicit operator TResult(QueryFutureValue<TResult> futureValue)
         {
             return futureValue.Value;
         }
