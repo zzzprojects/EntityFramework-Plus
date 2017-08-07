@@ -201,6 +201,11 @@ SELECT  @totalRowAffected
                     innerObjectQuery.Context.Connection.Open();
                 }
 
+                if (Executing != null)
+                {
+                    Executing(command);
+                }
+
                 if (command.GetType().Name == "NpgsqlCommand")
                 {
                     command.CommandText = command.CommandText.Replace("[", "\"").Replace("]", "\"");
@@ -224,11 +229,6 @@ SELECT  @totalRowAffected
                 }
                 else
                 {
-                    if (Executing != null)
-                    {
-                        Executing(command);
-                    }
-
                     var rowAffecteds = (int)command.ExecuteScalar();
                     return rowAffecteds;
                 }
@@ -272,6 +272,11 @@ SELECT  @totalRowAffected
                     dbContext.Database.OpenConnection();
                 }
 
+                if (Executing != null)
+                {
+                    Executing(command);
+                }
+
                 if (command.GetType().Name == "NpgsqlCommand")
                 {
                     command.CommandText = command.CommandText.Replace("[", "\"").Replace("]", "\"");
@@ -282,13 +287,6 @@ SELECT  @totalRowAffected
                 {
                     int totalRowAffecteds = command.ExecuteNonQuery();
                     return totalRowAffecteds;
-                }
-                else
-                {
-                    if (Executing != null)
-                    {
-                        Executing(command);
-                    }
                 }
 
                 var rowAffecteds = (int)command.ExecuteScalar();

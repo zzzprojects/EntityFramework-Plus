@@ -9,6 +9,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
+using System.Threading.Tasks;
 #if EF5
 using System.Data.Objects;
 
@@ -74,6 +75,53 @@ namespace Z.EntityFramework.Plus
             return GetEnumerator();
         }
 
+#if NET45 
+        public async Task<List<T>> ToListAsync()
+        {
+            if (!HasValue)
+            {
+                await OwnerBatch.ExecuteQueriesAsync().ConfigureAwait(false);
+            }
+
+            if (_result == null)
+            {
+                return new List<T>();
+            }
+
+            using (var enumerator = _result.GetEnumerator())
+            {
+                var list = new List<T>();
+                while (enumerator.MoveNext())
+                {
+                    list.Add(enumerator.Current);
+                }
+                return list;
+            }
+        }
+
+        public async Task<T[]> ToArrayAsync()
+        {
+            if (!HasValue)
+            {
+                await OwnerBatch.ExecuteQueriesAsync().ConfigureAwait(false);
+            }
+
+            if (_result == null)
+            {
+                return new T[0];
+            }
+
+            using (var enumerator = _result.GetEnumerator())
+            {
+                var list = new List<T>();
+                while (enumerator.MoveNext())
+                {
+                    list.Add(enumerator.Current);
+                }
+                return list.ToArray();
+            }
+        }
+#endif
 
         /// <summary>Sets the result of the query deferred.</summary>
         /// <param name="reader">The reader returned from the query execution.</param>

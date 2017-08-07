@@ -179,7 +179,9 @@ namespace Z.EntityFramework.Plus
 
                 if (newQuery == null)
                 {
-                    newQuery = OriginalQueryable.Select(x => new {x, q = childQuery});
+                    // REFLECTION: newQuery.CreateAnonymousFromQuery<TElement>(newQuery, childQuery);
+                    var createAnonymousFromQueryMethodGeneric = createAnonymousFromQueryMethod.MakeGenericMethod(OriginalQueryable.ElementType, childQuery.ElementType);
+                    newQuery = (IQueryable)createAnonymousFromQueryMethodGeneric.Invoke(this, new object[] { OriginalQueryable, childQuery });
                 }
                 else
                 {

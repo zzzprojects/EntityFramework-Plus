@@ -847,6 +847,7 @@ SELECT  @totalRowAffected
 
                     // Add the destination name
                     valueSql = valueSql.Replace("AS [C1]", "");
+                    valueSql = valueSql.Replace("AS `C1`", "");
 
                     var listReplace = new List<string>()
                     {
@@ -865,6 +866,21 @@ SELECT  @totalRowAffected
                         "[Filter4]",
                         "[Filter5]",
                         "[Filter6]",
+                        "`Extent1`",
+                        "`Extent2`",
+                        "`Extent3`",
+                        "`Extent4`",
+                        "`Extent5`",
+                        "`Extent6`",
+                        "`Extent7`",
+                        "`Extent8`",
+                        "`Extent9`",
+                        "`Filter1`",
+                        "`Filter2`",
+                        "`Filter3`",
+                        "`Filter4`",
+                        "`Filter5`",
+                        "`Filter6`",
                     };
 
                     // Replace the first value found only!
@@ -881,6 +897,11 @@ SELECT  @totalRowAffected
                     if (valueSql.LastIndexOf('[') != -1 && valueSql.Substring(0, valueSql.LastIndexOf('[')).EndsWith(" AS ", StringComparison.InvariantCulture))
                     {
                         valueSql = valueSql.Substring(0, valueSql.LastIndexOf('[') - 4);
+                    }
+
+                    if (valueSql.LastIndexOf('`') != -1 && valueSql.Substring(0, valueSql.LastIndexOf('`')).EndsWith(" AS ", StringComparison.InvariantCulture))
+                    {
+                        valueSql = valueSql.Substring(0, valueSql.LastIndexOf('`') - 4);
                     }
 
 #elif EFCORE

@@ -29,6 +29,12 @@ namespace Z.EntityFramework.Plus.Internal
             var modelSplit = "---zzz_multi_model_split_zzz---";
             var modelNames = context.GetModelNames();
 
+            if (modelNames.Count == 0)
+            {
+                // Oops, something is wrong! Use the old way instead
+                modelNames.Add(context.GetModelName());
+            }
+
             var conceptualString = context.GetConceptualModelString(modelNames, modelSplit);
             var storageString = context.GetStorageModelString(modelNames, modelSplit);
             var mappingString = context.GetMappingModelString(modelNames, modelSplit);

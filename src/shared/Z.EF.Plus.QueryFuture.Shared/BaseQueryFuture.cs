@@ -160,11 +160,14 @@ namespace Z.EntityFramework.Plus
                 logger = loggerField.GetValue(queryCompilationContextFactory);
             }
 
+
             // CREATE connection
             {
                 QueryConnection = context.Database.GetService<IRelationalConnection>();
+               
                 var innerConnection = new CreateEntityConnection(QueryConnection.DbConnection, null);
                 var innerConnectionField = typeof(RelationalConnection).GetField("_connection", BindingFlags.NonPublic | BindingFlags.Instance);
+
                 innerConnectionField.SetValue(QueryConnection, new Microsoft.EntityFrameworkCore.Internal.LazyRef<DbConnection>(() => innerConnection));
             }
 

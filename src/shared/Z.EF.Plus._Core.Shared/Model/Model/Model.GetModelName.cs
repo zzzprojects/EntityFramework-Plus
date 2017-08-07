@@ -7,6 +7,7 @@
 
 #if FULL || BATCH_DELETE || BATCH_UPDATE
 #if EF5 || EF6
+using System;
 using System.Data.Entity;
 
 namespace Z.EntityFramework.Plus.Internal
@@ -20,17 +21,33 @@ namespace Z.EntityFramework.Plus.Internal
         /// <returns>The model name.</returns>
         internal static string GetModelName(this DbContext @this)
         {
-            // Only EntityConnection contains model
-            var connectionString = @this.Database.GetEntityConnection().ConnectionString;
-            var end = connectionString.IndexOf(".msl") - 1;
+            string connectionString = @this.Database.GetEntityConnection().ConnectionString;
+            int end = connectionString.IndexOf(".msl", StringComparison.InvariantCulture) - 1;
 
             if (end <= -1)
             {
                 return null;
             }
 
-            var start = connectionString.Substring(0, end).LastIndexOf("/") + 1;
-            var modelName = connectionString.Substring(start, end - start + 1);
+            // CHECK if no path |.\z.msl
+            {
+                var lastIndex = connectionString.Substring(0, end).LastIndexOf("|.\\", StringComparison.InvariantCulture);
+
+                if (lastIndex != -1)
+                {
+                    var s = connectionString.Substring(lastIndex + 3, end - lastIndex - 2).Trim();
+
+                    // Must be one word and don't contains some special character
+                    if (!s.Contains(" ") && !s.Contains("\\") && !s.Contains("/"))
+                    {
+                        return s;
+                    }
+                }
+            }
+
+            // CHECK if path /x/y/z.msl
+            int start = connectionString.Substring(0, end).LastIndexOf("/", StringComparison.InvariantCulture) + 1;
+            string modelName = connectionString.Substring(start, end - start + 1);
             return modelName;
         }
     }

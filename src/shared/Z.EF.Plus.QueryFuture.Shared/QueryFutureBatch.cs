@@ -12,7 +12,7 @@ using System.Data.Common;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-
+using System.Threading.Tasks;
 #if EF5
 using System.Data.EntityClient;
 using System.Data.Objects;
@@ -25,6 +25,7 @@ using System.Data.Entity.Infrastructure.Interception;
 #elif EFCORE
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.EntityFrameworkCore.Storage;
 
 #endif
 
@@ -163,12 +164,113 @@ namespace Z.EntityFramework.Plus
             }
         }
 
+#if NET45
+        /// <summary>Executes deferred query lists.</summary>
+        public async Task ExecuteQueriesAsync()
+        {
+            if (Queries.Count == 0)
+            {
+                // Already all executed
+                return;
+            }
+
+#if EFCORE
+            if (IsInMemory)
+            {
+                foreach (var query in Queries)
+                {
+                    query.ExecuteInMemory();
+                }
+                Queries.Clear();
+                return;
+            }
+#endif
+
+            if (Queries.Count == 1)
+            {
+                Queries[0].GetResultDirectly();
+                Queries.Clear();
+                return;
+            }
+
+#if EF5 || EF6
+            var connection = (EntityConnection)Context.Connection;
+#elif EFCORE
+            if (IsInMemory)
+            {
+                foreach (var query in Queries)
+                {
+                    query.ExecuteInMemory();
+                }
+                return;
+            }
+
+            var connection = Context.Database.GetDbConnection();
+#endif
+            var command = CreateCommandCombined();
+
+            var ownConnection = false;
+
+            try
+            {
+                if (connection.State != ConnectionState.Open)
+                {
+                    await connection.OpenAsync().ConfigureAwait(false);
+                    ownConnection = true;
+                }
+
+                using (command)
+                {
+#if EF5
+                    using (var reader = command.ExecuteReader())
+                    {
+                        foreach (var query in Queries)
+                        {
+                            query.SetResult(reader);
+                            await reader.NextResultAsync().ConfigureAwait(false);
+                        }
+}
+#elif EF6
+                    var interceptionContext = Context.GetInterceptionContext();
+                    using (var reader = DbInterception.Dispatch.Command.Reader(command, new DbCommandInterceptionContext(interceptionContext)))
+                    {
+                        foreach (var query in Queries)
+                        {
+                            query.SetResult(reader);
+                            await reader.NextResultAsync().ConfigureAwait(false);
+                        }
+                    }
+#elif EFCORE
+                    using (var reader = command.ExecuteReader())
+                    {
+                        var createEntityDataReader = new CreateEntityDataReader(reader);
+                        foreach (var query in Queries)
+                        {
+                            query.SetResult(createEntityDataReader);
+                            await reader.NextResultAsync().ConfigureAwait(false);
+                        }
+                    }
+#endif
+                }
+
+                Queries.Clear();
+            }
+            finally
+            {
+                if (ownConnection)
+                {
+                    connection.Close();
+                }
+            }
+        }
+#endif
+
         /// <summary>Creates a new command combining deferred queries.</summary>
         /// <returns>The combined command created from deferred queries.</returns>
         protected DbCommand CreateCommandCombined()
         {
             var command = Context.CreateStoreCommand();
-
+         
             var sb = new StringBuilder();
             var queryCount = 1;
 
@@ -232,7 +334,7 @@ namespace Z.EntityFramework.Plus
                     }
                 }
 #elif EFCORE
-
+         
                 RelationalQueryContext queryContext;
                 var queryCommand = query.CreateExecutorAndGetCommand(out queryContext);
                 var sql = queryCommand.CommandText;

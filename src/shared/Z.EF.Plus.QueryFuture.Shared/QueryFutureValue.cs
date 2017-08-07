@@ -10,6 +10,7 @@ using System.Collections;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
+using System.Threading.Tasks;
 #if EF5
 using System.Data.Objects;
 
@@ -64,6 +65,20 @@ namespace Z.EntityFramework.Plus
                 return _result;
             }
         }
+
+#if NET45 
+        /// <summary>Gets the value of the future query.</summary>
+        /// <value>The value of the future query.</value>
+        public async Task<TResult> ValueAsync()
+        {
+            if (!HasValue)
+            {
+                await OwnerBatch.ExecuteQueriesAsync().ConfigureAwait(false);
+            }
+
+            return _result;
+        }
+#endif
 
         /// <summary>Sets the result of the query deferred.</summary>
         /// <param name="reader">The reader returned from the query execution.</param>
