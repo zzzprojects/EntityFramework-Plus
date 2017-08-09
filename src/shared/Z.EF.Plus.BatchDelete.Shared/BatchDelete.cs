@@ -20,6 +20,7 @@ using Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel;
 
 #elif EF6
 using System.Data.Entity.Core.Objects;
+using System.Data.Entity.Infrastructure.Interception;
 using Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel;
 
 #elif EFCORE
@@ -173,7 +174,8 @@ SELECT  @totalRowAffected
          
             // GET model and info
 #if EF5 || EF6
-            var model = query.GetDbContext().GetModel();
+            var dbContext = query.GetDbContext();
+            var model = dbContext.GetModel();
             var entity = model.Entity<T>();
             var keys = entity.Info.Key.PropertyRefs;
 
@@ -206,6 +208,7 @@ SELECT  @totalRowAffected
                     Executing(command);
                 }
 
+#if EF5
                 if (command.GetType().Name == "NpgsqlCommand")
                 {
                     command.CommandText = command.CommandText.Replace("[", "\"").Replace("]", "\"");
@@ -232,6 +235,36 @@ SELECT  @totalRowAffected
                     var rowAffecteds = (int)command.ExecuteScalar();
                     return rowAffecteds;
                 }
+#elif EF6
+                var interceptionContext = new DbCommandInterceptionContext(dbContext.GetObjectContext().GetInterceptionContext());
+
+                if (command.GetType().Name == "NpgsqlCommand")
+                {
+                    command.CommandText = command.CommandText.Replace("[", "\"").Replace("]", "\"");
+                    int totalRowAffecteds = DbInterception.Dispatch.Command.NonQuery(command, interceptionContext);
+                    return totalRowAffecteds;
+                }
+                else if (command.Connection.GetType().Name.Contains("MySql"))
+                {
+                    int totalRowAffecteds = DbInterception.Dispatch.Command.NonQuery(command, interceptionContext);
+                    return totalRowAffecteds;
+                }
+                else if (command.Connection.GetType().Name.Contains("Oracle"))
+                {
+                    int totalRowAffecteds = DbInterception.Dispatch.Command.NonQuery(command, interceptionContext);
+                    return totalRowAffecteds;
+                }
+                else if (command.GetType().Name == "SqlCeCommand")
+                {
+                    int totalRowAffecteds = DbInterception.Dispatch.Command.NonQuery(command, interceptionContext);
+                    return totalRowAffecteds;
+                }
+                else
+                {
+                    var rowAffecteds = (int)DbInterception.Dispatch.Command.Scalar(command, interceptionContext);
+                    return rowAffecteds;
+                }
+#endif
 
             }
             finally
@@ -300,7 +333,7 @@ SELECT  @totalRowAffected
                 }
             }
 #endif
-        }
+            }
 
 #if EF5 || EF6
         /// <summary>Creates a command to execute the batch operation.</summary>

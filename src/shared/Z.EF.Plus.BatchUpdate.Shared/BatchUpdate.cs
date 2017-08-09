@@ -18,6 +18,7 @@ using Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel;
 
 #elif EF6
 using System.Data.Entity.Core.Objects;
+using System.Data.Entity.Infrastructure.Interception;
 using Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel;
 
 #elif EFCORE
@@ -172,7 +173,8 @@ SELECT  @totalRowAffected
             var objectQuery = query.GetObjectQuery();
 
             // GET model and info
-            var model = query.GetDbContext().GetModel();
+            var dbContext = query.GetDbContext();
+            var model = dbContext.GetModel();
             var entity = model.Entity<T>();
 
             // TODO: Select only key + lambda columns
@@ -209,7 +211,12 @@ SELECT  @totalRowAffected
                     Executing(command);
                 }
 
+#if EF5
                 var rowAffecteds = command.ExecuteNonQuery();
+#elif EF6
+                var interceptionContext = new DbCommandInterceptionContext(dbContext.GetObjectContext().GetInterceptionContext());
+                var rowAffecteds = DbInterception.Dispatch.Command.NonQuery(command, interceptionContext);
+#endif
                 return rowAffecteds;
             }
             finally
@@ -289,7 +296,7 @@ SELECT  @totalRowAffected
                 }
             }
 #endif
-        }
+            }
 
 #if EF5 || EF6
         /// <summary>Creates a command to execute the batch operation.</summary>
