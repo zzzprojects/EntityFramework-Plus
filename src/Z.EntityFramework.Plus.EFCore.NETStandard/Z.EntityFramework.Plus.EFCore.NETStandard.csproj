@@ -8,9 +8,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.3</TargetFramework>
-    <SignAssembly>True</SignAssembly>
-    <AssemblyOriginatorKeyFile>zzzproject.pfx</AssemblyOriginatorKeyFile>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <SignAssembly>False</SignAssembly>
     <DelaySign>False</DelaySign>
     <Version>1.6.7</Version>
     <Description>Description: EF Bulk Operations &amp; Utilities | Bulk Insert, Update, Delete, Merge from database.</Description>
@@ -28,7 +27,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="1.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.0.0-preview2-final" />
     <PackageReference Include="System.Reflection.Emit" Version="4.0.1" />
     <PackageReference Include="System.Reflection.TypeExtensions" Version="4.1.0" />
   </ItemGroup>
