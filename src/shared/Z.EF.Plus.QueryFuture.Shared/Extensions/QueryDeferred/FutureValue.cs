@@ -21,6 +21,13 @@ namespace Z.EntityFramework.Plus
         /// </returns>
         public static QueryFutureValue<TResult> FutureValue<TResult>(this QueryDeferred<TResult> query)
         {
+            if (!QueryFutureManager.AllowQueryBatch)
+            {
+                var futureValue = new QueryFutureValue<TResult>(null, null);
+                futureValue.GetResultDirectly(query.Query);
+                return futureValue;
+            }
+
 #if EF5 || EF6
             var objectQuery = query.Query.GetObjectQuery();
             var futureBatch = QueryFutureManager.AddOrGetBatch(objectQuery.Context);

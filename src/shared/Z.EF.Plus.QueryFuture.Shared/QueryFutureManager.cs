@@ -38,6 +38,10 @@ namespace Z.EntityFramework.Plus
 #endif
         }
 
+        /// <summary>Gets or sets a value indicating whether we allow query batch.</summary>
+        /// <value>True if allow query batch, false if not.</value>
+        public static bool AllowQueryBatch { get; set; } = true;
+
         /// <summary>Gets or sets the weak table used to cache future batch associated to a context.</summary>
         /// <value>The weak table used to cache future batch associated to a context.</value>
 #if EF5 || EF6

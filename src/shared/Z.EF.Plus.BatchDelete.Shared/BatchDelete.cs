@@ -39,7 +39,7 @@ namespace Z.EntityFramework.Plus
         /// <summary>The command text template.</summary>
         internal const string CommandTextTemplate = @"
 DELETE
-FROM    A
+FROM    A {Hint}
 FROM    {TableName} AS A
         INNER JOIN ( {Select}
                     ) AS B ON {PrimaryKeys}
@@ -85,7 +85,7 @@ WHILE @rowAffected IS NULL
     OR @rowAffected > 0
     BEGIN
         DELETE TOP ({Top})
-        FROM    A
+        FROM    A {Hint}
         FROM    {TableName} AS A
                 INNER JOIN ( {Select}
                            ) AS B ON {PrimaryKeys}
@@ -113,7 +113,7 @@ WHILE @rowAffected IS NULL
             END
 
         DELETE TOP ({Top})
-        FROM    A
+        FROM    A {Hint}
         FROM    {TableName} AS A
                 INNER JOIN ( {Select}
                            ) AS B ON {PrimaryKeys}
@@ -138,6 +138,10 @@ SELECT  @totalRowAffected
         /// <summary>Gets or sets the batch delay interval in milliseconds (The wait time between batch).</summary>
         /// <value>The batch delay interval in milliseconds (The wait time between batch).</value>
         public int BatchDelayInterval { get; set; }
+
+        /// <summary>Gets or sets a value indicating whether the query use table lock.</summary>
+        /// <value>True if use table lock, false if not.</value>
+        public bool UseTableLock { get; set; }
 
         /// <summary>Gets or sets the DbCommand before being executed.</summary>
         /// <value>The DbCommand before being executed.</value>
@@ -444,7 +448,8 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
                 .Replace("{Select}", querySelect)
                 .Replace("{PrimaryKeys}", primaryKeys)
                 .Replace("{Top}", BatchSize.ToString())
-                .Replace("{Delay}", TimeSpan.FromMilliseconds(BatchDelayInterval).ToString(@"hh\:mm\:ss\:fff"));
+                .Replace("{Delay}", TimeSpan.FromMilliseconds(BatchDelayInterval).ToString(@"hh\:mm\:ss\:fff"))
+                .Replace("{Hint}", UseTableLock ? "WITH ( TABLOCK )" : "");
 
             // CREATE command
             command.CommandText = commandTextTemplate;
@@ -639,7 +644,8 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
                     .Replace("{Select}", querySelect)
                     .Replace("{PrimaryKeys}", primaryKeys)
                     .Replace("{Top}", BatchSize.ToString())
-                    .Replace("{Delay}", TimeSpan.FromMilliseconds(BatchDelayInterval).ToString(@"hh\:mm\:ss\:fff"));
+                    .Replace("{Delay}", TimeSpan.FromMilliseconds(BatchDelayInterval).ToString(@"hh\:mm\:ss\:fff"))
+                    .Replace("{Hint}", UseTableLock ? "WITH ( TABLOCK )" : "");
 
                 // CREATE command
                 var command = query.GetDbContext().CreateStoreCommand();

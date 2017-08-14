@@ -29,6 +29,13 @@ namespace Z.EntityFramework.Plus
         /// </returns>
         public static QueryFutureEnumerable<T> Future<T>(this IQueryable<T> query)
         {
+            if (!QueryFutureManager.AllowQueryBatch)
+            {
+                var queryFuture = new QueryFutureEnumerable<T>(null, null);
+                queryFuture.GetResultDirectly(query);
+                return queryFuture;
+            }
+
 #if EF5 || EF6
             var objectQuery = query.GetObjectQuery();
             var futureBatch = QueryFutureManager.AddOrGetBatch(objectQuery.Context);

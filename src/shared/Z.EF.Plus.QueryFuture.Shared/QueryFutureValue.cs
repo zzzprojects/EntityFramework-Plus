@@ -131,6 +131,14 @@ namespace Z.EntityFramework.Plus
             HasValue = true;
         }
 
+        internal void GetResultDirectly(IQueryable<TResult> query)
+        {
+            var value = query.Provider.Execute<TResult>(query.Expression);
+
+            _result = value;
+            HasValue = true;
+        }
+
         /// <summary>
         /// Performs an implicit conversion from QueryFutureValue to TResult.
         /// </summary>

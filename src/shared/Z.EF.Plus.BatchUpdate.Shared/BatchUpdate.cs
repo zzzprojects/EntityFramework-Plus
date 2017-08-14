@@ -36,7 +36,7 @@ namespace Z.EntityFramework.Plus
     {
         /// <summary>The command text template.</summary>
         internal const string CommandTextTemplate = @"
-UPDATE A 
+UPDATE A {Hint}
 SET {SetValue}
 FROM {TableName} AS A
 INNER JOIN ( {Select}
@@ -143,6 +143,10 @@ SELECT  @totalRowAffected
         /// <summary>Gets or sets the DbCommand before being executed.</summary>
         /// <value>The DbCommand before being executed.</value>
         public Action<DbCommand> Executing { get; set; }
+
+        /// <summary>Gets or sets a value indicating whether the query use table lock.</summary>
+        /// <value>True if use table lock, false if not.</value>
+        public bool UseTableLock { get; set; }
 
         /// <summary>Executes the batch delete operation.</summary>
         /// <typeparam name="T">The type of elements of the query.</typeparam>
@@ -429,7 +433,8 @@ SELECT  @totalRowAffected
             commandTextTemplate = commandTextTemplate.Replace("{TableName}", tableName)
                 .Replace("{Select}", querySelect)
                 .Replace("{PrimaryKeys}", primaryKeys)
-                .Replace("{SetValue}", setValues);
+                .Replace("{SetValue}", setValues)
+                .Replace("{Hint}", UseTableLock ? "WITH ( TABLOCK )" : "");
 
             // CREATE command
             command.CommandText = commandTextTemplate;
@@ -660,7 +665,8 @@ SELECT  @totalRowAffected
                 commandTextTemplate = commandTextTemplate.Replace("{TableName}", tableName)
                     .Replace("{Select}", querySelect)
                     .Replace("{PrimaryKeys}", primaryKeys)
-                    .Replace("{SetValue}", setValues);
+                    .Replace("{SetValue}", setValues)
+                    .Replace("{Hint}", UseTableLock ? "WITH ( TABLOCK )" : "");
 
                 // CREATE command
                 var command = query.GetDbContext().CreateStoreCommand();

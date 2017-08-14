@@ -93,6 +93,17 @@ namespace Z.EntityFramework.Plus
                 return;
             }
 
+            if (!QueryFutureManager.AllowQueryBatch)
+            {
+                foreach (var query in Queries)
+                {
+                    query.GetResultDirectly();
+                }
+
+                Queries.Clear();
+                return;
+            }
+
 #if EF5 || EF6
             var connection = (EntityConnection)Context.Connection;
 #elif EFCORE
