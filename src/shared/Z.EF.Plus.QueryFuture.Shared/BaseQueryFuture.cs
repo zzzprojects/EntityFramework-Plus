@@ -84,8 +84,12 @@ namespace Z.EntityFramework.Plus
             var context = Query.GetDbContext();
 
             // REFLECTION: Query._context.StateManager
+#if NETSTANDARD2_0
+            var stateManager = context.ChangeTracker.GetStateManager();
+#else
             var stateManagerProperty = typeof(DbContext).GetProperty("StateManager", BindingFlags.NonPublic | BindingFlags.Instance);
             var stateManager = (StateManager)stateManagerProperty.GetValue(context);
+#endif
 
             // REFLECTION: Query._context.StateManager._concurrencyDetector
             var concurrencyDetectorField = typeof(StateManager).GetField("_concurrencyDetector", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -100,16 +104,25 @@ namespace Z.EntityFramework.Plus
             var nodeTypeProvider = nodeTypeProviderField.GetValue(queryCompiler);
 
             // REFLECTION: Query.Provider._queryCompiler.CreateQueryParser();
+#if NETSTANDARD2_0
+            var createQueryParserMethod = queryCompiler.GetType().GetMethod("CreateQueryParser", BindingFlags.NonPublic | BindingFlags.Instance);
+            var createQueryParser = (QueryParser)createQueryParserMethod.Invoke(queryCompiler, new[] { nodeTypeProvider });
+#else
             var createQueryParserMethod = queryCompiler.GetType().GetMethod("CreateQueryParser", BindingFlags.NonPublic | BindingFlags.Static);
             var createQueryParser = (QueryParser)createQueryParserMethod.Invoke(null, new[] { nodeTypeProvider });
+#endif
 
             // REFLECTION: Query.Provider._queryCompiler._database
             var databaseField = queryCompiler.GetType().GetField("_database", BindingFlags.NonPublic | BindingFlags.Instance);
             var database = (IDatabase) databaseField.GetValue(queryCompiler);
 
             // REFLECTION: Query.Provider._queryCompiler._evaluatableExpressionFilter
+#if NETSTANDARD2_0
+            var evaluatableExpressionFilter = (IEvaluatableExpressionFilter)queryCompiler.GetType().GetField("_evaluatableExpressionFilter", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(queryCompiler);
+#else
             var evaluatableExpressionFilterField = queryCompiler.GetType().GetField("_evaluatableExpressionFilter", BindingFlags.NonPublic | BindingFlags.Static);
             var evaluatableExpressionFilter = (IEvaluatableExpressionFilter) evaluatableExpressionFilterField.GetValue(null);
+#endif
 
             // REFLECTION: Query.Provider._queryCompiler._queryContextFactory
             var queryContextFactoryField = queryCompiler.GetType().GetField("_queryContextFactory", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -249,8 +262,8 @@ namespace Z.EntityFramework.Plus
         }
 #endif
 
-        /// <summary>Sets the result of the query deferred.</summary>
-        /// <param name="reader">The reader returned from the query execution.</param>
+            /// <summary>Sets the result of the query deferred.</summary>
+            /// <param name="reader">The reader returned from the query execution.</param>
         public virtual void SetResult(DbDataReader reader)
         {
         }

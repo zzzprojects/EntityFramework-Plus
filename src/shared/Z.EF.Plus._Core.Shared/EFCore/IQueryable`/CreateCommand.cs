@@ -128,9 +128,6 @@ namespace Z.EntityFramework.Plus
 
             queryContext = (RelationalQueryContext)queryContextFactory.Create();
 
-            var evalutableExpressionFilterField = compiler.GetType().GetField("_evaluatableExpressionFilter", BindingFlags.NonPublic | BindingFlags.Static);
-
-            var evalutableExpressionFilter = (IEvaluatableExpressionFilter)evalutableExpressionFilterField.GetValue(null);
             var databaseField = compiler.GetType().GetField("_database", BindingFlags.NonPublic | BindingFlags.Instance);
             var database = (IDatabase)databaseField.GetValue(compiler);
 
@@ -139,8 +136,15 @@ namespace Z.EntityFramework.Plus
             var queryCompiler = queryCompilerField.GetValue(source.Provider);
 
             // REFLECTION: Query.Provider._queryCompiler._evaluatableExpressionFilter
+#if NETSTANDARD2_0
+            var evaluatableExpressionFilter = (IEvaluatableExpressionFilter)compiler.GetType().GetField("_evaluatableExpressionFilter", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(queryCompiler);
+#else
+            var evalutableExpressionFilterField = compiler.GetType().GetField("_evaluatableExpressionFilter", BindingFlags.NonPublic | BindingFlags.Static);
+            var evalutableExpressionFilter = (IEvaluatableExpressionFilter)evalutableExpressionFilterField.GetValue(null);
+
             var evaluatableExpressionFilterField = queryCompiler.GetType().GetField("_evaluatableExpressionFilter", BindingFlags.NonPublic | BindingFlags.Static);
             var evaluatableExpressionFilter = (IEvaluatableExpressionFilter)evaluatableExpressionFilterField.GetValue(null);
+#endif
 
             Expression newQuery;
             IQueryCompilationContextFactory queryCompilationContextFactory;
@@ -189,8 +193,13 @@ namespace Z.EntityFramework.Plus
             //var query = new QueryAnnotatingExpressionVisitor().Visit(source.Expression);
             //var newQuery = ParameterExtractingExpressionVisitor.ExtractParameters(query, queryContext, evalutableExpressionFilter);
 
+#if NETSTANDARD2_0
+            var queryParserMethod = compiler.GetType().GetMethod("CreateQueryParser", BindingFlags.NonPublic | BindingFlags.Instance);
+            var queryparser = (QueryParser)queryParserMethod.Invoke(compiler, new[] { nodeTypeProvider });
+#else
             var queryParserMethod = compiler.GetType().GetMethod("CreateQueryParser", BindingFlags.NonPublic | BindingFlags.Static);
             var queryparser = (QueryParser)queryParserMethod.Invoke(null, new[] { nodeTypeProvider });
+#endif
             var queryModel = queryparser.GetParsedQuery(newQuery);
 
             var queryModelVisitor = (RelationalQueryModelVisitor)queryCompilationContextFactory.Create(false).CreateQueryModelVisitor();

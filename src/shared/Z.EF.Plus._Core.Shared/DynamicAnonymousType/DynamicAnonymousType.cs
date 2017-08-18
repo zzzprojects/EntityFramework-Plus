@@ -20,7 +20,7 @@ namespace Z.EntityFramework.Plus
     {
 
         private static readonly AssemblyName AssemblyName = new AssemblyName { Name = "<>f__AnonymousType" };
-#if NETSTANDARD1_3
+#if NETSTANDARD1_3 || NETSTANDARD2_0
         private static readonly ModuleBuilder ModuleBuilder = System.Reflection.Emit.AssemblyBuilder.DefineDynamicAssembly(AssemblyName, AssemblyBuilderAccess.Run).DefineDynamicModule(AssemblyName.Name);
 #else
         private static readonly ModuleBuilder ModuleBuilder = Thread.GetDomain().DefineDynamicAssembly(AssemblyName, AssemblyBuilderAccess.Run).DefineDynamicModule(AssemblyName.Name);
@@ -112,7 +112,7 @@ namespace Z.EntityFramework.Plus
                 foreach (var field in fields)
                     typeBuilder.DefineField(field.Item1, field.Item2, FieldAttributes.Public);
 
-#if NETSTANDARD1_3
+#if NETSTANDARD1_3 || NETSTANDARD2_0
                 BuiltTypes[typeKey] = new Tuple<string, Type>(typeName, typeBuilder.CreateTypeInfo().AsType());
 #else
                 BuiltTypes[typeKey] = new Tuple<string, Type>(typeName, typeBuilder.CreateType());

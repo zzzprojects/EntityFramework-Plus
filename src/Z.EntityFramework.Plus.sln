@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.6
+VisualStudioVersion = 15.0.26730.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{14D8985E-0AA8-444A-A32E-D766ABA114D6}"
 EndProject
@@ -50,6 +50,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.EntityFramework.Plus.EFCore.NET451", "Z.EntityFramework.Plus.EFCore.NET451\Z.EntityFramework.Plus.EFCore.NET451.csproj", "{035D058A-0DD2-4A74-B1E7-68E482C7C806}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Z.EntityFramework.Plus.EFCore.NETStandard", "Z.EntityFramework.Plus.EFCore.NETStandard\Z.EntityFramework.Plus.EFCore.NETStandard.csproj", "{C85E4987-DD55-4182-8125-6C8D996F4328}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Z.EntityFramework.Plus.EFCore.NETStandard20", "Z.EntityFramework.Plus.EFCore.NETStandard20\Z.EntityFramework.Plus.EFCore.NETStandard20.csproj", "{EF1CBE03-3B93-4F28-8D98-3166320F62DB}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -163,6 +165,10 @@ Global
 		{C85E4987-DD55-4182-8125-6C8D996F4328}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C85E4987-DD55-4182-8125-6C8D996F4328}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C85E4987-DD55-4182-8125-6C8D996F4328}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF1CBE03-3B93-4F28-8D98-3166320F62DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF1CBE03-3B93-4F28-8D98-3166320F62DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF1CBE03-3B93-4F28-8D98-3166320F62DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF1CBE03-3B93-4F28-8D98-3166320F62DB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -184,5 +190,8 @@ Global
 		{5CA1ED0D-1322-49F0-920B-F0C4BA36560E} = {45D50C58-9B18-475A-9839-D6754E87352B}
 		{DC4C972B-6AE7-4620-B2CB-2AFD106E638B} = {45D50C58-9B18-475A-9839-D6754E87352B}
 		{D1953D60-B322-4CAF-92DF-0581A1FD758F} = {45D50C58-9B18-475A-9839-D6754E87352B}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AEE441E3-DEE9-48F2-9212-1F3A573007AE}
 	EndGlobalSection
 EndGlobal

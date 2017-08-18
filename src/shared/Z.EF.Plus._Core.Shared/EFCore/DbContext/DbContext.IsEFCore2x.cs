@@ -17,7 +17,11 @@ namespace Z.EntityFramework.Plus
     {
         public static bool IsEFCore2x(this DbContext context)
         {
+#if NETSTANDARD2_0
+            return true;
+#else
             return false;
+#endif
             //var assembly = context.Database.GetType().Assembly;
             //var version = assembly.GetName().Version;
             //return version.Major >= 2;
