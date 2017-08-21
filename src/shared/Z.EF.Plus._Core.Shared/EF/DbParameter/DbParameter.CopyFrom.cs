@@ -9,9 +9,11 @@
 
 using System;
 using System.Data.Common;
+using System.Reflection;
 
 #if EF5
 using System.Data.Objects;
+#elif EF6
 #elif EFCORE
 using Microsoft.EntityFrameworkCore.Storage;
 #endif
@@ -22,22 +24,48 @@ namespace Z.EntityFramework.Plus
     {
         public static void CopyFrom(this DbParameter @this, DbParameter from)
         {
+#if NETSTANDARD
+            var fullName = @this.GetType().GetTypeInfo().FullName;
+#else
+            var fullName = @this.GetType().FullName;
+#endif
             @this.DbType = from.DbType;
             @this.Direction = from.Direction;
             @this.IsNullable = from.IsNullable;
             @this.ParameterName = from.ParameterName;
             @this.Size = from.Size;
 
+#if EF6
+            if(fullName.Contains("Oracle") && from.GetType().GetProperty("OracleDbType") != null)
+            {
+                  var property = from.GetType().GetProperty("OracleDbType");
+                  property.SetValue(@this, property.GetValue(from, null), new object[0]);
+            }
+#endif
+
             @this.Value = from.Value ?? DBNull.Value;
         }
 
         public static void CopyFrom(this DbParameter @this, DbParameter from, string newParameterName)
         {
+#if NETSTANDARD
+            var fullName = @this.GetType().GetTypeInfo().FullName;
+#else
+            var fullName = @this.GetType().FullName;
+#endif
             @this.DbType = from.DbType;
             @this.Direction = from.Direction;
             @this.IsNullable = from.IsNullable;
             @this.ParameterName = newParameterName;
             @this.Size = from.Size;
+
+#if EF6
+            if (fullName.Contains("Oracle") && from.GetType().GetProperty("OracleDbType") != null)
+            {
+                var property = from.GetType().GetProperty("OracleDbType");
+                property.SetValue(@this, property.GetValue(from, null), new object[0]);
+            }
+#endif
 
             @this.Value = from.Value ?? DBNull.Value;
         }

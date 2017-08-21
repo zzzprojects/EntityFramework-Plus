@@ -27,6 +27,19 @@ namespace Z.EntityFramework.Plus
             var queryContextFactory = queryContextFactoryField.GetValue(compiler);
 
 #if EFCORE
+#if NETSTANDARD2_0
+            var dependenciesProperty = typeof(QueryContextFactory).GetProperty("Dependencies", BindingFlags.NonPublic | BindingFlags.Instance);
+            var dependencies = dependenciesProperty.GetValue(queryContextFactory);
+
+            var stateManagerField = dependencies.GetType().GetProperty("StateManager", BindingFlags.Public | BindingFlags.Instance);
+            var stateManagerDynamic = stateManagerField.GetValue(dependencies);
+
+            IStateManager stateManager = stateManagerDynamic as IStateManager;
+            if (stateManager == null)
+            {
+                stateManager = ((dynamic)stateManagerDynamic).Value;
+            }
+#else
             var stateManagerField = typeof(QueryContextFactory).GetProperty("StateManager", BindingFlags.NonPublic | BindingFlags.Instance);
             var stateManagerDynamic = stateManagerField.GetValue(queryContextFactory);
 
@@ -35,6 +48,7 @@ namespace Z.EntityFramework.Plus
             {
                 stateManager = ((dynamic) stateManagerDynamic).Value;
             }
+#endif
 #else
             var stateManagerField = typeof (QueryContextFactory).GetField("_stateManager", BindingFlags.NonPublic | BindingFlags.Instance);
             var stateManager = (IStateManager) stateManagerField.GetValue(queryContextFactory);

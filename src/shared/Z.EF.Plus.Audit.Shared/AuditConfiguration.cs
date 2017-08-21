@@ -123,6 +123,12 @@ namespace Z.EntityFramework.Plus
         /// <value>A dictionary of value formatter for a property name.</value>
         public ConcurrentDictionary<string, Func<object, object>> ValueFormatterDictionary { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the exclude relationship if one excluded.
+        /// </summary>
+        /// <value>True if exclude relationship if one excluded, false if not.</value>
+        public bool ExcludeRelationshipIfOneExcluded { get; set; }
+
 #if EF5 || EF6
         /// <summary>
         ///     Gets or sets a value indicating whether null value should be used in the Audit instead of DBNull.Value
@@ -156,6 +162,7 @@ namespace Z.EntityFramework.Plus
                 ExcludeIncludePropertyPredicates = new List<Func<object, string, bool?>>(ExcludeIncludePropertyPredicates),
                 SoftAddedPredicates = new List<Func<object, bool>>(SoftAddedPredicates),
                 SoftDeletedPredicates = new List<Func<object, bool>>(SoftDeletedPredicates),
+                ExcludeRelationshipIfOneExcluded = ExcludeRelationshipIfOneExcluded,
 #if EF5 || EF6
                 UseNullForDBNullValue = UseNullForDBNullValue
 #endif

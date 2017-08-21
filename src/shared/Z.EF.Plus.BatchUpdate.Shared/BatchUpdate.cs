@@ -14,11 +14,13 @@ using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 #if EF5
 using System.Data.Objects;
+using System.Data.SqlClient;
 using Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel;
 
 #elif EF6
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure.Interception;
+using System.Data.SqlClient;
 using Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel;
 
 #elif EFCORE
@@ -473,6 +475,15 @@ SELECT  @totalRowAffected
                 var parameter = command.CreateParameter();
                 parameter.ParameterName = parameterPrefix + "zzz_BatchUpdate_" + i;
                 parameter.Value = values[i].Item2 ?? DBNull.Value;
+
+                if(parameter is SqlParameter)
+                {
+                    var sqlParameter = (SqlParameter)parameter;
+                    if(sqlParameter.DbType == DbType.DateTime)
+                    {
+                        sqlParameter.DbType = DbType.DateTime2;
+                    }
+                }
                 command.Parameters.Add(parameter);
             }
 
