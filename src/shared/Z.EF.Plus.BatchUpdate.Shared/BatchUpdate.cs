@@ -68,6 +68,14 @@ WHERE EXISTS ( SELECT 1 FROM ({Select}) B
            )  
 ";
 
+        internal const string CommandTextTemplate_SQLite = @"
+UPDATE {TableName}
+SET {SetValue}
+WHERE EXISTS ( SELECT 1 FROM ({Select}) B
+               WHERE {PrimaryKeys}
+           )  
+";
+
         internal const string CommandTextTemplate_MySQL = @"
 UPDATE {TableName} AS A
 INNER JOIN ( {Select}
@@ -316,6 +324,7 @@ SELECT  @totalRowAffected
             var isSqlCe = command.GetType().Name == "SqlCeCommand";
             var isOracle = command.GetType().Namespace.Contains("Oracle");
             var isPostgreSQL = command.GetType().Name == "NpgsqlCommand";
+            var isSQLite = command.GetType().Namespace.Contains("SQLite");
 
             // Oracle BindByName
             if (isOracle)
@@ -353,6 +362,10 @@ SELECT  @totalRowAffected
                     string.Concat("\"", store.Table, "\"") :
                     string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
             }
+            else if (isSQLite)
+            {
+                tableName = string.Concat("\"", store.Table, "\"");
+            }
             else
             {
                 tableName = string.IsNullOrEmpty(store.Schema) ?
@@ -388,6 +401,7 @@ SELECT  @totalRowAffected
                 isOracle ? CommandTextOracleTemplate :
                 isMySql ? CommandTextTemplate_MySQL : 
                 isSqlCe ? CommandTextTemplateSqlCe :
+                isSQLite ? CommandTextTemplate_SQLite :
                 CommandTextTemplate;
 
             // GET inner query
@@ -420,6 +434,15 @@ SELECT  @totalRowAffected
                 setValues = string.Join("," + Environment.NewLine, values.Select((x, i) => x.Item2 is ConstantExpression ?
                     string.Concat(EscapeName(x.Item1, isMySql, isOracle, isPostgreSQL), " = ", ((ConstantExpression)x.Item2).Value) :
                     string.Concat(EscapeName(x.Item1, isMySql, isOracle, isPostgreSQL), " = :zzz_BatchUpdate_", i)));
+            }
+            else if (isSQLite)
+            {
+                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(EscapeName(x, isMySql, isOracle, isPostgreSQL), " = B.", EscapeName(x, isMySql, isOracle, isPostgreSQL), "")));
+
+                // GET updateSetValues
+                setValues = string.Join("," + Environment.NewLine, values.Select((x, i) => x.Item2 is ConstantExpression ?
+                    string.Concat(EscapeName(x.Item1, isMySql, isOracle, isPostgreSQL), " = ", ((ConstantExpression)x.Item2).Value) :
+                    string.Concat(EscapeName(x.Item1, isMySql, isOracle, isPostgreSQL), " = @zzz_BatchUpdate_", i)));
             }
             else
             {

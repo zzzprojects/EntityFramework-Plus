@@ -61,6 +61,14 @@ WHERE EXISTS ( SELECT 1 FROM ({Select}) B
            )
 ";
 
+        internal const string CommandTextSQLiteTemplate = @"
+DELETE
+FROM    {TableName}
+WHERE EXISTS ( SELECT 1 FROM ({Select}) B
+               WHERE {PrimaryKeys}
+           )
+";
+
         /// <summary>The command text postgre SQL template.</summary>
         internal const string CommandTextPostgreSQLTemplate = @"
 DELETE FROM {TableName} AS A
@@ -253,7 +261,7 @@ SELECT  @totalRowAffected
                     int totalRowAffecteds = DbInterception.Dispatch.Command.NonQuery(command, interceptionContext);
                     return totalRowAffecteds;
                 }
-                else if (command.Connection.GetType().Name.Contains("Oracle"))
+                else if (command.Connection.GetType().Name.Contains("Oracle") || command.Connection.GetType().Name.Contains("SQLite"))
                 {
                     int totalRowAffecteds = DbInterception.Dispatch.Command.NonQuery(command, interceptionContext);
                     return totalRowAffecteds;
@@ -355,6 +363,7 @@ SELECT  @totalRowAffected
             bool isMySql = command.GetType().FullName.Contains("MySql");
             var isSqlCe = command.GetType().Name == "SqlCeCommand";
             var isOracle = command.GetType().Namespace.Contains("Oracle");
+            var isSQLite = command.GetType().Namespace.Contains("SQLite");
 
             // Oracle BindByName
             if (isOracle)
@@ -379,6 +388,10 @@ SELECT  @totalRowAffected
             else if (isSqlCe)
             {
                 tableName = string.Concat("[", store.Table, "]");
+            }
+            else if (isSQLite)
+            {
+                tableName = string.Concat("\"", store.Table, "\"");
             }
             else if (isOracle)
             {
@@ -416,6 +429,8 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
                         CommandTextTemplate_MySql :
                         isSqlCe ?
                             CommandTextSqlCeTemplate :
+                            isSQLite ?
+                                CommandTextSQLiteTemplate :
                             BatchSize > 0 ?
                                 BatchDelayInterval > 0 ?
                                     CommandTextWhileDelayTemplate :
@@ -434,7 +449,7 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
 
             // GET primary key join
             string primaryKeys;
-            if (isSqlCe || isOracle)
+            if (isSqlCe || isOracle || isSQLite)
             {
                 primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".", EscapeName(x, isMySql, isOracle), " = B.", EscapeName(x, isMySql, isOracle), "")));
             }
