@@ -10,7 +10,7 @@ namespace Z.EntityFramework.Plus
     internal class ExceptionMessage
     {
         public static string GeneralException = "Oops! A general error has occurred. Please report the issue including the stack trace to our support team: info@zzzprojects.com";
-
+        public static string Unsupported_Provider = "The provider is not supported yet: '{0}. If you believe it's a mistake, please report this message to our support team: info@zzzprojects.com";
 #if FULL
         public static string BatchOperations_MaxKeyColumns = "Oops! Batch operation only support table with primary keys containing 5 columns or less. For more information, contact us: info@zzzprojects.com";
 #endif
