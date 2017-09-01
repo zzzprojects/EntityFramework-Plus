@@ -11,7 +11,7 @@ namespace Z.EntityFramework.Plus
     {
         public static bool IsInMemoryEffortQueryContext<T>(this IQueryable<T> q)
         {
-            return q.GetDbContext().Database.Connection is Effort.Provider.EffortConnection;
+            return q.GetDbContext().Database.Connection.GetType().FullName == "Effort.Provider.EffortConnection";
         }
     }
 }
