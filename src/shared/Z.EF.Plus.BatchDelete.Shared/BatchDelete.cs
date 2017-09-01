@@ -185,7 +185,19 @@ SELECT  @totalRowAffected
             {
                 return 0;
             }
-         
+
+#if EF6
+            if (query.IsInMemoryEffortQueryContext())
+            {
+                var context = query.GetDbContext();
+
+                var list = query.ToList();
+                context.Set<T>().RemoveRange(list);
+                context.SaveChanges();
+                return list.Count;
+            }
+#endif
+
             // GET model and info
 #if EF5 || EF6
             var dbContext = query.GetDbContext();

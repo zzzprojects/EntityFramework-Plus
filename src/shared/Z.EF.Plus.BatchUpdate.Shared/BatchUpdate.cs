@@ -12,6 +12,7 @@ using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
+using System.Reflection;
 #if EF5
 using System.Data.Objects;
 using System.Data.SqlClient;
@@ -184,8 +185,37 @@ SELECT  @totalRowAffected
             {
                 return 0;
             }
+#if EF6
+            if (query.IsInMemoryEffortQueryContext())
+            {
+                var context = query.GetDbContext();
+
+                var list = query.ToList();
+                var compiled = updateFactory.Compile();
+                var memberBindings = ((MemberInitExpression)updateFactory.Body).Bindings;
+                var accessors = memberBindings
+                    .Select(x => x.Member.Name)
+                    .Select(x => new PropertyOrFieldAccessor(typeof(T).GetProperty(x, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)))
+                    .ToList();
+
+                foreach (var item in list)
+                {
+                    var newItem = compiled(item);
+
+                    foreach (var accessor in accessors)
+                    {
+                        var value = accessor.GetValue(newItem);
+                        accessor.SetValue(item, value);
+                    }
+                }
+
+                context.SaveChanges();
+                return list.Count;
+            }
+#endif
 
 #if EF5 || EF6
+
             var objectQuery = query.GetObjectQuery();
 
             // GET model and info
@@ -242,6 +272,7 @@ SELECT  @totalRowAffected
                     innerObjectQuery.Context.Connection.Close();
                 }
             }
+
 #elif EFCORE
             if (BatchUpdateManager.InMemoryDbContextFactory != null && query.IsInMemoryQueryContext())
             {
@@ -312,7 +343,7 @@ SELECT  @totalRowAffected
                 }
             }
 #endif
-            }
+        }
 
 #if EF5 || EF6
         /// <summary>Creates a command to execute the batch operation.</summary>
