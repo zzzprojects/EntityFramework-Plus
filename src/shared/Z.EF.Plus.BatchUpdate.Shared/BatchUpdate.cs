@@ -1067,7 +1067,10 @@ SELECT  @totalRowAffected
                     foreach (var additionalParameter in parameters)
                     {
                         var newName = additionalParameter.Name + "_" + valueI;
-                        var newParameter = new ObjectParameter(newName, additionalParameter.Value);
+                        var newParameter = new ObjectParameter(newName, additionalParameter.ParameterType)
+                        {
+                            Value = additionalParameter.Value
+                        };
                         destinationValues.Add(new Tuple<string, object>(columnName, newParameter));
 
                         valueSql = valueSql.Replace(additionalParameter.Name, newName);
