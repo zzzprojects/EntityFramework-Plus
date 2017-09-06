@@ -1,9 +1,6 @@
-﻿
+﻿#if FULL || BATCH_DELETE || BATCH_UPDATE
 #if EF6
-using System;
-using System.Data.Entity;
 using System.Linq;
-using System.Reflection;
 
 namespace Z.EntityFramework.Plus
 {
@@ -16,4 +13,5 @@ namespace Z.EntityFramework.Plus
     }
 }
 
+#endif
 #endif

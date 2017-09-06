@@ -186,8 +186,12 @@ SELECT  @totalRowAffected
                 return 0;
             }
 
+            // GET model and info
+#if EF5 || EF6
+            var dbContext = query.GetDbContext();
+
 #if EF6
-            if (query.IsInMemoryEffortQueryContext())
+            if (dbContext.IsInMemoryEffortQueryContext())
             {
                 var context = query.GetDbContext();
 
@@ -198,9 +202,6 @@ SELECT  @totalRowAffected
             }
 #endif
 
-            // GET model and info
-#if EF5 || EF6
-            var dbContext = query.GetDbContext();
             var model = dbContext.GetModel();
             var entity = model.Entity<T>();
             var keys = entity.Info.Key.PropertyRefs;

@@ -12,7 +12,6 @@ using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
-using System.Reflection;
 #if EF5
 using System.Data.Objects;
 using System.Data.SqlClient;
@@ -22,6 +21,7 @@ using Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel;
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure.Interception;
 using System.Data.SqlClient;
+using System.Reflection;
 using Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel;
 
 #elif EFCORE
@@ -185,8 +185,12 @@ SELECT  @totalRowAffected
             {
                 return 0;
             }
+
+#if EF5 || EF6
+            var dbContext = query.GetDbContext();
+
 #if EF6
-            if (query.IsInMemoryEffortQueryContext())
+            if (dbContext.IsInMemoryEffortQueryContext())
             {
                 var context = query.GetDbContext();
 
@@ -214,12 +218,9 @@ SELECT  @totalRowAffected
             }
 #endif
 
-#if EF5 || EF6
-
             var objectQuery = query.GetObjectQuery();
 
             // GET model and info
-            var dbContext = query.GetDbContext();
             var model = dbContext.GetModel();
             var entity = model.Entity<T>();
 
@@ -272,7 +273,6 @@ SELECT  @totalRowAffected
                     innerObjectQuery.Context.Connection.Close();
                 }
             }
-
 #elif EFCORE
             if (BatchUpdateManager.InMemoryDbContextFactory != null && query.IsInMemoryQueryContext())
             {
@@ -343,7 +343,7 @@ SELECT  @totalRowAffected
                 }
             }
 #endif
-        }
+            }
 
 #if EF5 || EF6
         /// <summary>Creates a command to execute the batch operation.</summary>
@@ -1159,7 +1159,7 @@ SELECT  @totalRowAffected
                         {
                             var lambda = Expression.Lambda(m, null);
                             var value = lambda.Compile().DynamicInvoke();
-                            var c =  Expression.Constant(value);
+                            var c = Expression.Constant(value, m.Type);
                             return c;
                         }
 
