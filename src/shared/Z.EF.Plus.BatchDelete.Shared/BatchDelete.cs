@@ -380,6 +380,7 @@ SELECT  @totalRowAffected
             // GET command
             var command = query.Context.CreateStoreCommand();
 
+            bool isPostgreSql = command.GetType().Name == "NpgsqlCommand";
             bool isMySql = command.GetType().FullName.Contains("MySql");
             var isSqlCe = command.GetType().Name == "SqlCeCommand";
             var isOracle = command.GetType().Namespace.Contains("Oracle");
@@ -441,7 +442,7 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
             }
 
             // GET command text template
-            var commandTextTemplate = command.GetType().Name == "NpgsqlCommand" ?
+            var commandTextTemplate = isPostgreSql ?
                 CommandTextPostgreSQLTemplate :
                 isOracle ?
                     CommandTextOracleTemplate :
@@ -461,6 +462,11 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
             var customQuery = query.GetCommandTextAndParameters();
 
             if (customQuery.Item1.EndsWith("WHERE 1 = 0", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return null;
+            }
+
+            if (isPostgreSql && customQuery.Item1.EndsWith("WHERE TRUE = FALSE", StringComparison.InvariantCultureIgnoreCase))
             {
                 return null;
             }

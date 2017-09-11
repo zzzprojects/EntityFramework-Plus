@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Data.Entity.Core.Common.CommandTrees;
+using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Infrastructure.Interception;
 using System.Linq;
+using System.Reflection;
 
 namespace Z.EntityFramework.Plus
 {
     /// <summary>A query interceptor filter database command tree.</summary>
     public class QueryFilterInterceptorDbCommandTree : IDbCommandTreeInterceptor
     {
+        public static ConstructorInfo DbQueryCommandTreeConstructor = typeof(DbQueryCommandTree).GetConstructor(new Type[] { typeof(MetadataWorkspace), typeof(DataSpace), typeof(DbExpression), typeof(bool), typeof(bool) });
         /// <summary>
         ///     This method is called after a new
         ///     <see cref="T:System.Data.Entity.Core.Common.CommandTrees.DbCommandTree" /> has been created.
@@ -80,9 +83,19 @@ namespace Z.EntityFramework.Plus
                     };
 
                     var newQuery = queryFiltered.Accept(visitor);
-               
+
                     // CREATE a new Query
-                    var commandTree = new DbQueryCommandTree(dbQueryCommandTree.MetadataWorkspace, dbQueryCommandTree.DataSpace, newQuery, true);
+                    DbQueryCommandTree commandTree;
+                    if (DbQueryCommandTreeConstructor != null)
+                    {
+                        commandTree = (DbQueryCommandTree)DbQueryCommandTreeConstructor.Invoke(new object[] { dbQueryCommandTree.MetadataWorkspace, dbQueryCommandTree.DataSpace, newQuery, true, interceptionContext.OriginalResult.DataSpace != DataSpace.CSpace });
+                    }
+                    else
+                    {
+                        commandTree = new DbQueryCommandTree(dbQueryCommandTree.MetadataWorkspace, dbQueryCommandTree.DataSpace, newQuery, true);
+
+                    }
+
                     interceptionContext.Result = commandTree;
                 }
             }
