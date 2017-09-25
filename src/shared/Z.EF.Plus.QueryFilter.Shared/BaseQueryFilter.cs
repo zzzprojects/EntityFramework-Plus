@@ -5,13 +5,30 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
-#if !EF6
 using System;
+
+#if EF6
+using AliasBaseQueryFilter = Z.EntityFramework.Plus.BaseQueryDbSetFilter;
+using AliasBaseQueryFilterQueryable = Z.EntityFramework.Plus.BaseQueryDbSetFilterQueryable;
+using AliasQueryFilterContext = Z.EntityFramework.Plus.QueryDbSetFilterContext;
+using AliasQueryFilterManager = Z.EntityFramework.Plus.QueryDbSetFilterManager;
+using AliasQueryFilterSet = Z.EntityFramework.Plus.QueryDbSetFilterSet;
+#else
+using AliasBaseQueryFilter = Z.EntityFramework.Plus.BaseQueryFilter;
+using AliasBaseQueryFilterQueryable = Z.EntityFramework.Plus.BaseQueryFilterQueryable;
+using AliasQueryFilterContext = Z.EntityFramework.Plus.QueryFilterContext;
+using AliasQueryFilterManager = Z.EntityFramework.Plus.QueryFilterManager;
+using AliasQueryFilterSet = Z.EntityFramework.Plus.QueryFilterSet;
+#endif
 
 namespace Z.EntityFramework.Plus
 {
     /// <summary>A base class for query filter.</summary>
+#if EF6
+    public abstract class BaseQueryDbSetFilter
+#else
     public abstract class BaseQueryFilter
+#endif
     {
         /// <summary>Gets or sets the type of the filter element.</summary>
         /// <value>The type of the filter element.</value>
@@ -23,7 +40,7 @@ namespace Z.EntityFramework.Plus
 
         /// <summary>Gets or sets the filter context that owns this filter.</summary>
         /// <value>The filter context that owns this filter.</value>
-        public QueryFilterContext OwnerFilterContext { get; set; }
+        public AliasQueryFilterContext OwnerFilterContext { get; set; }
 
         /// <summary>Apply the filter on the query and return the new filtered query.</summary>
         /// <param name="query">The query to filter.</param>
@@ -52,7 +69,7 @@ namespace Z.EntityFramework.Plus
         {
             if (OwnerFilterContext == null)
             {
-                QueryFilterManager.GlobalInitializeFilterActions.Add(new Tuple<BaseQueryFilter, Action<BaseQueryFilter>>(this, filter => filter.Disable(types)));
+                AliasQueryFilterManager.GlobalInitializeFilterActions.Add(new Tuple<AliasBaseQueryFilter, Action<AliasBaseQueryFilter>>(this, filter => filter.Disable(types)));
             }
             else
             {
@@ -79,7 +96,7 @@ namespace Z.EntityFramework.Plus
         {
             if (OwnerFilterContext == null)
             {
-                QueryFilterManager.GlobalInitializeFilterActions.Add(new Tuple<BaseQueryFilter, Action<BaseQueryFilter>>(this, filter => filter.Enable(types)));
+                AliasQueryFilterManager.GlobalInitializeFilterActions.Add(new Tuple<AliasBaseQueryFilter, Action<AliasBaseQueryFilter>>(this, filter => filter.Enable(types)));
             }
             else
             {
@@ -97,10 +114,9 @@ namespace Z.EntityFramework.Plus
         /// <summary>Makes a deep copy of this filter.</summary>
         /// <param name="filterContext">The filter context that owns the filter copy.</param>
         /// <returns>A copy of this filter.</returns>
-        public virtual BaseQueryFilter Clone(QueryFilterContext filterContext)
+        public virtual AliasBaseQueryFilter Clone(AliasQueryFilterContext filterContext)
         {
             throw new Exception(ExceptionMessage.GeneralException);
         }
     }
 }
-#endif
