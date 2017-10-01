@@ -217,6 +217,13 @@ namespace Z.EntityFramework.Plus
 
                 // DbSet<>.InternalQuery.EntitySet
                 var entitySetProperty = internalQuery.GetType().GetProperty("EntitySet", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+                if(entitySetProperty == null)
+                {
+                    // May happen on filter override (FilterInterceptor and DbSetFilter)
+                    continue;
+                }
+
                 var entitySet = (EntitySet) entitySetProperty.GetValue(internalQuery, null);
 
                 var elementType = dbSet.ElementType;

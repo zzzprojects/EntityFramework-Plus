@@ -5,7 +5,6 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
-#if !EF6
 using System;
 using System.Linq;
 using System.Linq.Expressions;
@@ -25,16 +24,38 @@ using Microsoft.EntityFrameworkCore;
 
 #endif
 
+#if EF6
+using AliasBaseQueryFilter = Z.EntityFramework.Plus.BaseQueryDbSetFilter;
+using AliasBaseQueryFilterQueryable = Z.EntityFramework.Plus.BaseQueryDbSetFilterQueryable;
+using AliasQueryFilterContext = Z.EntityFramework.Plus.QueryDbSetFilterContext;
+using AliasQueryFilterManager = Z.EntityFramework.Plus.QueryDbSetFilterManager;
+using AliasQueryFilterSet = Z.EntityFramework.Plus.QueryDbSetFilterSet;
+#else
+using AliasBaseQueryFilter = Z.EntityFramework.Plus.BaseQueryFilter;
+using AliasBaseQueryFilterQueryable = Z.EntityFramework.Plus.BaseQueryFilterQueryable;
+using AliasQueryFilterContext = Z.EntityFramework.Plus.QueryFilterContext;
+using AliasQueryFilterManager = Z.EntityFramework.Plus.QueryFilterManager;
+using AliasQueryFilterSet = Z.EntityFramework.Plus.QueryFilterSet;
+#endif
+
 namespace Z.EntityFramework.Plus
 {
     /// <summary>A class for query filter set.</summary>
+#if EF6
+    public class QueryDbSetFilterSet
+#else
     public class QueryFilterSet
+#endif
     {
         /// <summary>Constructor.</summary>
         /// <param name="dbSetProperty">The database set property.</param>
+#if EF6
+        public QueryDbSetFilterSet(PropertyInfo dbSetProperty)
+#else
         public QueryFilterSet(PropertyInfo dbSetProperty)
+#endif
         {
-            CreateFilterQueryableCompiled = new Lazy<Func<DbContext, QueryFilterSet, object, BaseQueryFilterQueryable>>(CompileCreateFilterQueryable);
+            CreateFilterQueryableCompiled = new Lazy<Func<DbContext, AliasQueryFilterSet, object, AliasBaseQueryFilterQueryable>>(CompileCreateFilterQueryable);
             DbSetProperty = dbSetProperty;
             ElementType = dbSetProperty.PropertyType.GetDbSetElementType();
             GetDbSetCompiled = new Lazy<Func<DbContext, IQueryable>>(() => CompileGetDbSet(dbSetProperty));
@@ -47,7 +68,7 @@ namespace Z.EntityFramework.Plus
 
         /// <summary>Gets or sets the compiled function to create a new filter queryable.</summary>
         /// <value>The compiled function to create a new filter queryable.</value>
-        public Lazy<Func<DbContext, QueryFilterSet, object, BaseQueryFilterQueryable>> CreateFilterQueryableCompiled { get; set; }
+        public Lazy<Func<DbContext, AliasQueryFilterSet, object, AliasBaseQueryFilterQueryable>> CreateFilterQueryableCompiled { get; set; }
 
         /// <summary>Gets or sets the database set property.</summary>
         /// <value>The database set property.</value>
@@ -74,22 +95,23 @@ namespace Z.EntityFramework.Plus
         /// <summary>Adds an or get a filter queryable from the context.</summary>
         /// <param name="context">The context to add or get a filter queryable.</param>
         /// <returns>the filter queryable fromt the context.</returns>
-        public BaseQueryFilterQueryable AddOrGetFilterQueryable(DbContext context)
+        public AliasBaseQueryFilterQueryable AddOrGetFilterQueryable(DbContext context)
         {
-            BaseQueryFilterQueryable filterQueryable;
+            AliasBaseQueryFilterQueryable filterQueryable;
             var set = GetDbSetCompiled.Value(context);
 
-            if (!QueryFilterManager.CacheWeakFilterQueryable.TryGetValue(set, out filterQueryable))
+            if (!AliasQueryFilterManager.CacheWeakFilterQueryable.TryGetValue(set, out filterQueryable))
             {
 #if EF5 || EF6
 
                 var objectQuery = set.GetObjectQuery(ElementType);
                 filterQueryable = CreateFilterQueryableCompiled.Value(context, this, objectQuery);
-                QueryFilterManager.CacheWeakFilterQueryable.Add(set, filterQueryable);
+
+                AliasQueryFilterManager.CacheWeakFilterQueryable.Add(set, filterQueryable);
 #elif EFCORE
                 // todo: Create compiled version
 
-                if(context.IsEFCore2x())
+                if (context.IsEFCore2x())
                 {
                     var type = set.GetType();
                     var field = set.GetType().GetProperty("EntityQueryable", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
@@ -117,17 +139,21 @@ namespace Z.EntityFramework.Plus
 
         /// <summary>Compiles the function to create a new filter queryable.</summary>
         /// <returns>The compiled the function to create a new filter queryable</returns>
-        public Func<DbContext, QueryFilterSet, object, BaseQueryFilterQueryable> CompileCreateFilterQueryable()
+        public Func<DbContext, AliasQueryFilterSet, object, AliasBaseQueryFilterQueryable> CompileCreateFilterQueryable()
         {
             var p1 = Expression.Parameter(typeof(DbContext));
-            var p2 = Expression.Parameter(typeof(QueryFilterSet));
+            var p2 = Expression.Parameter(typeof(AliasQueryFilterSet));
             var p3 = Expression.Parameter(typeof(object));
 
             var p3Convert = Expression.Convert(p3, typeof(IQueryable<>).MakeGenericType(ElementType));
+#if EF6
+            var contructorInfo = typeof(QueryDbSetFilterQueryable<>).MakeGenericType(ElementType).GetConstructors()[0];
+#else
             var contructorInfo = typeof(QueryFilterQueryable<>).MakeGenericType(ElementType).GetConstructors()[0];
+#endif
             var expression = Expression.New(contructorInfo, p1, p2, p3Convert);
 
-            return Expression.Lambda<Func<DbContext, QueryFilterSet, object, BaseQueryFilterQueryable>>(expression, p1, p2, p3).Compile();
+            return Expression.Lambda<Func<DbContext, AliasQueryFilterSet, object, AliasBaseQueryFilterQueryable>>(expression, p1, p2, p3).Compile();
         }
 
         /// <summary>Compiles the function to retrieve the DbSet from the DbContext.</summary>
@@ -217,4 +243,3 @@ namespace Z.EntityFramework.Plus
 #endif
     }
 }
-#endif

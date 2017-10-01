@@ -39,7 +39,8 @@ namespace Z.EntityFramework.Plus
                 var property = entry.GetType().GetProperty(keyName);
                 var value = property.GetValue(entry, null).ToString();
 
-                query = query.Where(x => x.Properties.Any(y => y.PropertyName == property.Name && y.NewValueFormatted == value));
+                query = query.Where(x => x.Properties.Any(y => y.PropertyName == property.Name && (y.NewValueFormatted == value
+                                                                                                   || (x.State == AuditEntryState.EntityDeleted && y.OldValueFormatted == value))));
             }
 
             query = query.Include(x => x.Properties).OrderBy(x => x.CreatedDate);
@@ -68,7 +69,8 @@ namespace Z.EntityFramework.Plus
                 var propertyName = keyNames[i];
                 var value = keyValues[i] != null ? keyValues[i].ToString() : "";
 
-                query = query.Where(x => x.Properties.Any(y => y.PropertyName == propertyName && y.NewValueFormatted == value));
+                query = query.Where(x => x.Properties.Any(y => y.PropertyName == propertyName && (y.NewValueFormatted == value
+                                                                                                  || (x.State == AuditEntryState.EntityDeleted && y.OldValueFormatted == value))));
             }
 
             query = query.Include(x => x.Properties).OrderBy(x => x.CreatedDate);

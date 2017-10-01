@@ -5,7 +5,6 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
-#if !EF6
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,21 +17,47 @@ using Microsoft.EntityFrameworkCore;
 
 #endif
 
+#if EF6
+using AliasBaseQueryFilter = Z.EntityFramework.Plus.BaseQueryDbSetFilter;
+using AliasBaseQueryFilterQueryable = Z.EntityFramework.Plus.BaseQueryDbSetFilterQueryable;
+using AliasQueryFilterContext = Z.EntityFramework.Plus.QueryDbSetFilterContext;
+using AliasQueryFilterManager = Z.EntityFramework.Plus.QueryDbSetFilterManager;
+using AliasQueryFilterSet = Z.EntityFramework.Plus.QueryDbSetFilterSet;
+#else
+using AliasBaseQueryFilter = Z.EntityFramework.Plus.BaseQueryFilter;
+using AliasBaseQueryFilterQueryable = Z.EntityFramework.Plus.BaseQueryFilterQueryable;
+using AliasQueryFilterContext = Z.EntityFramework.Plus.QueryFilterContext;
+using AliasQueryFilterManager = Z.EntityFramework.Plus.QueryFilterManager;
+using AliasQueryFilterSet = Z.EntityFramework.Plus.QueryFilterSet;
+#endif
+
 namespace Z.EntityFramework.Plus
 {
     /// <summary>A class for query filter context.</summary>
+#if EF6
+    public class QueryDbSetFilterContext
+#else
     public class QueryFilterContext
+#endif
     {
         /// <summary>Constructor.</summary>
         /// <param name="context">The context associated to the filter context.</param>
+#if EF6
+        public QueryDbSetFilterContext(DbContext context) : this(context, false)
+#else
         public QueryFilterContext(DbContext context) : this(context, false)
+#endif
         {
         }
 
         /// <summary>Create a new QueryFilterContext.</summary>
         /// <param name="context">The context associated to the filter context.</param>
         /// <param name="isGenericContext">true if this filter context is the generic context used by other filter context.</param>
+#if EF6
+        public QueryDbSetFilterContext(DbContext context, bool isGenericContext)
+#else
         public QueryFilterContext(DbContext context, bool isGenericContext)
+#endif
         {
             if (isGenericContext)
             {
@@ -41,9 +66,10 @@ namespace Z.EntityFramework.Plus
             else
             {
                 Context = context;
-                Filters = new Dictionary<object, BaseQueryFilter>();
+                Filters = new Dictionary<object, AliasBaseQueryFilter>();
 
-                var genericContext = QueryFilterManager.AddOrGetGenericFilterContext(context);
+                var genericContext = AliasQueryFilterManager.AddOrGetGenericFilterContext(context);
+
                 FilterSetByType = genericContext.FilterSetByType;
                 FilterSets = genericContext.FilterSets;
             }
@@ -55,24 +81,28 @@ namespace Z.EntityFramework.Plus
 
         /// <summary>Gets or sets the filters.</summary>
         /// <value>The filters.</value>
-        public Dictionary<object, BaseQueryFilter> Filters { get; set; }
+        public Dictionary<object, AliasBaseQueryFilter> Filters { get; set; }
 
         /// <summary>Gets or sets filter set by type.</summary>
         /// <value>The filter set by type.</value>
-        public Dictionary<Type, List<QueryFilterSet>> FilterSetByType { get; set; }
+        public Dictionary<Type, List<AliasQueryFilterSet>> FilterSetByType { get; set; }
 
         /// <summary>Gets or sets filter sets.</summary>
         /// <value>The filter sets.</value>
-        public List<QueryFilterSet> FilterSets { get; set; }
+        public List<AliasQueryFilterSet> FilterSets { get; set; }
 
         /// <summary>Adds a query filter to the filter context associated with the specified key.</summary>
         /// <typeparam name="T">The type of elements of the query.</typeparam>
         /// <param name="key">The filter key.</param>
         /// <param name="filter">The filter.</param>
         /// <returns>The query filter added to the filter context associated with the specified ke .</returns>
-        public BaseQueryFilter AddFilter<T>(object key, Func<IQueryable<T>, IQueryable<T>> filter)
+        public AliasBaseQueryFilter AddFilter<T>(object key, Func<IQueryable<T>, IQueryable<T>> filter)
         {
+#if EF6
+            var queryFilter = new QueryDbSetFilter<T>(this, filter);
+#else
             var queryFilter = new QueryFilter<T>(this, filter);
+#endif
             Filters.Add(key, queryFilter);
 
             return queryFilter;
@@ -125,20 +155,20 @@ namespace Z.EntityFramework.Plus
         /// <param name="filter">The filter to disable.</param>
         /// <param name="types">A variable-length parameters list containing types to disable the filter on.</param>
         /// m>
-        public void DisableFilter(BaseQueryFilter filter, params Type[] types)
+        public void DisableFilter(AliasBaseQueryFilter filter, params Type[] types)
         {
-            List<QueryFilterSet> filterSets;
+            List<AliasQueryFilterSet> filterSets;
 
             // CHECK if the element type can be used in the context
             if (FilterSetByType.TryGetValue(filter.ElementType, out filterSets))
             {
                 if (types != null)
                 {
-                    var applySets = new List<QueryFilterSet>();
+                    var applySets = new List<AliasQueryFilterSet>();
 
                     foreach (var type in types)
                     {
-                        List<QueryFilterSet> setToAdd;
+                        List<AliasQueryFilterSet> setToAdd;
                         if (FilterSetByType.TryGetValue(type, out setToAdd))
                         {
                             applySets.AddRange(setToAdd);
@@ -159,20 +189,20 @@ namespace Z.EntityFramework.Plus
         /// <summary>Enables this filter on the specified types.</summary>
         /// <param name="filter">The filter to enable.</param>
         /// <param name="types">A variable-length parameters list containing types to enable the filter on.</param>
-        public void EnableFilter(BaseQueryFilter filter, params Type[] types)
+        public void EnableFilter(AliasBaseQueryFilter filter, params Type[] types)
         {
-            List<QueryFilterSet> filterSets;
+            List<AliasQueryFilterSet> filterSets;
 
             // CHECK if the element type can be used in the context
             if (FilterSetByType.TryGetValue(filter.ElementType, out filterSets))
             {
                 if (types != null)
                 {
-                    var applySets = new List<QueryFilterSet>();
+                    var applySets = new List<AliasQueryFilterSet>();
 
                     foreach (var type in types)
                     {
-                        List<QueryFilterSet> setToAdd;
+                        List<AliasQueryFilterSet> setToAdd;
                         if (FilterSetByType.TryGetValue(type, out setToAdd))
                         {
                             applySets.AddRange(setToAdd);
@@ -193,9 +223,9 @@ namespace Z.EntityFramework.Plus
         /// <summary>Gets the filter associated to the specified key.</summary>
         /// <param name="key">The filter key.</param>
         /// <returns>The filter associated to the specified key.</returns>
-        public BaseQueryFilter GetFilter(object key)
+        public AliasBaseQueryFilter GetFilter(object key)
         {
-            BaseQueryFilter filter;
+            AliasBaseQueryFilter filter;
             Filters.TryGetValue(key, out filter);
             return filter;
         }
@@ -204,15 +234,15 @@ namespace Z.EntityFramework.Plus
         /// <param name="context">The context to use to load information to the generic context.</param>
         public void LoadGenericContextInfo(DbContext context)
         {
-            FilterSetByType = new Dictionary<Type, List<QueryFilterSet>>();
-            FilterSets = new List<QueryFilterSet>();
+            FilterSetByType = new Dictionary<Type, List<AliasQueryFilterSet>>();
+            FilterSets = new List<AliasQueryFilterSet>();
 
             var dbSetProperties = context.GetDbSetProperties();
 
             // ADD DbSet
             foreach (var dbSetProperty in dbSetProperties)
             {
-                FilterSets.Add(new QueryFilterSet(dbSetProperty));
+                FilterSets.Add(new AliasQueryFilterSet(dbSetProperty));
             }
 
             // LINK DbSet to Type
@@ -243,4 +273,3 @@ namespace Z.EntityFramework.Plus
         }
     }
 }
-#endif
