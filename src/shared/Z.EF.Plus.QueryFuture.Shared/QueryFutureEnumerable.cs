@@ -17,18 +17,17 @@ using System.Data.Objects;
 using System.Data.Entity.Core.Objects;
 
 #elif EFCORE
-using System.Linq;
 
 #endif
 
 namespace Z.EntityFramework.Plus
 {
-    /// <summary>Class for query future value.</summary>
-    /// <typeparam name="T">The type of elements of the query.</typeparam>
+	/// <summary>Class for query future value.</summary>
+	/// <typeparam name="T">The type of elements of the query.</typeparam>
 #if QUERY_INCLUDEOPTIMIZED
     internal class QueryFutureEnumerable<T> : BaseQueryFuture, IEnumerable<T>
 #else
-    public class QueryFutureEnumerable<T> : BaseQueryFuture, IEnumerable<T>
+	public class QueryFutureEnumerable<T> : BaseQueryFuture, IEnumerable<T>
 #endif
     {
         /// <summary>The result of the query future.</summary>

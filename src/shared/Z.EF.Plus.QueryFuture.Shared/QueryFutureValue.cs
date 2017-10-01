@@ -5,9 +5,6 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
-using System;
-using System.Collections;
-using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,7 +15,6 @@ using System.Data.Objects;
 using System.Data.Entity.Core.Objects;
 
 #elif EFCORE
-using System.Linq;
 
 #endif
 

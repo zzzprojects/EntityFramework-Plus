@@ -9,7 +9,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Z.Test.EntityFramework.Plus
 {
-    [Table("Inheritance_TPT_Cat")]
+    [Table("Inheritance_TPT_Cats")]
     public class Inheritance_TPT_Cat : Inheritance_TPT_Animal
     {
         public int ColumnCat { get; set; }

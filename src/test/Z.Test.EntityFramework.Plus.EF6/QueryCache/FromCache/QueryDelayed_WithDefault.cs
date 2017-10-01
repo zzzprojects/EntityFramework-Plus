@@ -5,36 +5,36 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Z.EntityFramework.Plus;
 
 namespace Z.Test.EntityFramework.Plus
 {
-    public partial class QueryCache_ForceFirstTagAsCacheKey
+    public partial class QueryCache_FromCache
     {
         [TestMethod]
-        public void Many()
+        public void FromCache_QueryDelayed_WithDefault()
         {
             TestContext.DeleteAll(x => x.Entity_Basics);
-            TestContext.Insert(x => x.Entity_Basics, 3);
+            TestContext.Insert(x => x.Entity_Basics, 1);
 
             using (var ctx = new TestContext())
             {
-                var firstTag = "zzzprojects";
+                // BEFORE
+                var itemCountBefore = ctx.Entity_Basics.DeferredCount().FromCache();
+                var cacheCountBefore = QueryCacheHelper.GetCacheCount();
 
-                var query = ctx.Entity_Basics.Where(x => x.ColumnInt > 0);
+                TestContext.DeleteAll(x => x.Entity_Basics);
 
-                var cacheKey1 = QueryCacheManager.GetCacheKey(query, new string[0]);
-                QueryCacheManager.ForceFirstTagAsCacheKey = true;
-                var cacheKey2 = QueryCacheManager.GetCacheKey(query, new[] {firstTag, "tag2", "tag3"});
-                QueryCacheManager.ForceFirstTagAsCacheKey = false;
+                // AFTER
+                var itemCountAfter = ctx.Entity_Basics.DeferredCount().FromCache();
+                var cacheCountAfter = QueryCacheHelper.GetCacheCount();
 
-                // Cache key are different
-                Assert.AreNotEqual(cacheKey1, cacheKey2);
+                // TEST: The item count are equal
+                Assert.AreEqual(itemCountBefore, itemCountAfter);
 
-                // Cache key2 is equal to hardcoded cacheKey
-                Assert.AreEqual(firstTag, cacheKey2);
+                // TEST: The cache count are equal
+                Assert.AreEqual(cacheCountBefore, cacheCountAfter);
             }
         }
     }

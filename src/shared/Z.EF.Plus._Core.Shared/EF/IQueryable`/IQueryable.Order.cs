@@ -8,7 +8,7 @@
 #if FULL
 using System.Linq;
 using System.Linq.Expressions;
-#if NETSTANDARD1_3
+#if NETSTANDARD1_6
 using System.Reflection;
 #endif
 namespace Z.EntityFramework.Plus

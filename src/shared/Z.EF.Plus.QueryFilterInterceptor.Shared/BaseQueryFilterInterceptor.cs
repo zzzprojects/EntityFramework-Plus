@@ -7,8 +7,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
+#if NET45
 using System.Data.Entity.Core.Common.CommandTrees;
+using System.Data.Entity;
+#elif NETSTANDARD1_6
+using Microsoft.EntityFrameworkCore;
+#endif
 
 namespace Z.EntityFramework.Plus
 {

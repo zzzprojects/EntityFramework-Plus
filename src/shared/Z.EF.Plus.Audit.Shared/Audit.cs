@@ -38,7 +38,7 @@ namespace Z.EntityFramework.Plus
 
             try
             {
-#if !NETSTANDARD1_3
+#if !NETSTANDARD1_6
                 CreatedBy = System.Threading.Thread.CurrentPrincipal.Identity.Name;
 #endif
 

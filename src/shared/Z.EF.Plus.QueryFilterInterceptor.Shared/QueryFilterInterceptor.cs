@@ -6,9 +6,13 @@
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 using System;
-using System.Data.Entity;
-using System.Data.Entity.Core.Common.CommandTrees;
 using System.Linq;
+#if NET45
+using System.Data.Entity.Core.Common.CommandTrees;
+using System.Data.Entity;
+#elif NETSTANDARD1_6
+using Microsoft.EntityFrameworkCore;
+#endif
 
 namespace Z.EntityFramework.Plus
 {
@@ -33,7 +37,7 @@ namespace Z.EntityFramework.Plus
         /// <param name="type">The type.</param>
         /// <returns>The database expression.</returns>
         public override DbExpression GetDbExpression(DbContext context, Type type)
-        {
+		{
             var contextFullName = context.GetType().AssemblyQualifiedName ?? context.GetType().FullName;
             var typeFullName = type.AssemblyQualifiedName ?? type.FullName;
             var hookId = QueryFilterManager.PrefixHook + contextFullName + ";" + typeFullName + ";" + UniqueKey;

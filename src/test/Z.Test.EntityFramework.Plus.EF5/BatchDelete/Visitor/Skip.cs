@@ -27,7 +27,7 @@ namespace Z.Test.EntityFramework.Plus
                 Assert.AreEqual(1225, ctx.Entity_Basics.Sum(x => x.ColumnInt));
 
                 // ACTION
-                var rowsAffected = ctx.Entity_Basics.Where(x => x.ColumnInt > 10 && x.ColumnInt <= 40).OrderBy(x => x.ID).Skip(20).Delete(delete => delete.Executing = command => sql = command.CommandText);
+                var rowsAffected = ctx.Entity_Basics.Where(x => x.ColumnInt > 10 && x.ColumnInt <= 40).OrderBy(x => x.ColumnInt).Skip(20).Delete(delete => delete.Executing = command => sql = command.CommandText);
 
                 // AFTER
                 Assert.AreEqual(870, ctx.Entity_Basics.Sum(x => x.ColumnInt));
@@ -51,7 +51,7 @@ ORDER BY [Filter1].[ID] ASC
 SELECT @@ROWCOUNT
 ", sql);
 #elif EF6
-                  Assert.AreEqual(@"
+                Assert.AreEqual(@"
 DELETE
 FROM    A
 FROM    [dbo].[Entity_Basic] AS A
@@ -59,35 +59,28 @@ FROM    [dbo].[Entity_Basic] AS A
     [Extent1].[ID] AS [ID]
     FROM [dbo].[Entity_Basic] AS [Extent1]
     WHERE ([Extent1].[ColumnInt] > 10) AND ([Extent1].[ColumnInt] <= 40)
-    ORDER BY [Extent1].[ID] ASC
+    ORDER BY [Extent1].[ColumnInt] ASC
     OFFSET 20 ROWS FETCH NEXT 2147483647 ROWS ONLY 
                     ) AS B ON A.[ID] = B.[ID]
 
 SELECT @@ROWCOUNT
-", sql);
+".CollapseWhiteSpace(), sql.CollapseWhiteSpace());
 #elif EFCORE
                 Assert.AreEqual(@"
-DECLARE @rowAffected INT
-DECLARE @totalRowAffected INT
+DELETE
+FROM    A
+FROM    [Entity_Basic] AS A
+        INNER JOIN ( SELECT [t].[ID]
+FROM (
+    SELECT [x0].*
+    FROM [Entity_Basic] AS [x0]
+    WHERE ([x0].[ColumnInt] > 10) AND ([x0].[ColumnInt] <= 40)
+    ORDER BY [x0].[ColumnInt]
+    OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY
+) AS [t]
+                    ) AS B ON A.[ID] = B.[ID]
 
-SET @totalRowAffected = 0
-
-WHILE @rowAffected IS NULL
-    OR @rowAffected > 0
-    BEGIN
-        DELETE TOP (4000)
-        FROM    A
-        FROM    [Entity_Basic] AS A
-                INNER JOIN ( SELECT [x].[ID]
-FROM [Entity_Basic] AS [x]
-WHERE ([x].[ColumnInt] > 10) AND ([x].[ColumnInt] <= 40)
-                           ) AS B ON A.[ID] = B.[ID]
-
-        SET @rowAffected = @@ROWCOUNT
-        SET @totalRowAffected = @totalRowAffected + @rowAffected
-    END
-
-SELECT  @totalRowAffected
+SELECT @@ROWCOUNT
 ", sql);
 #endif
             }

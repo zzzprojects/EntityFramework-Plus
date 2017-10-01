@@ -15,15 +15,18 @@ using System.Text.RegularExpressions;
 #if EF5
 using System.Data.Objects;
 using System.Data.SqlClient;
-using Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel;
-
+using Z.EF.Plus.BatchUpdate.Shared.Extensions;
+using Z.EF.Plus.BatchUpdate.Shared.Model;
+using Z.EntityFramework.Plus.Internal.Core.Mapping;
 #elif EF6
+using Z.EF.Plus.BatchUpdate.Shared.Extensions;
+using Z.EF.Plus.BatchUpdate.Shared.Model;
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure.Interception;
 using System.Data.SqlClient;
 using System.Reflection;
 using Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel;
-
+using Z.EntityFramework.Plus.Internal.Core.Mapping;
 #elif EFCORE
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
@@ -31,7 +34,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
-
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 #endif
 
 namespace Z.EntityFramework.Plus
@@ -222,7 +225,21 @@ SELECT  @totalRowAffected
 
             // GET model and info
             var model = dbContext.GetModel();
-            var entity = model.Entity<T>();
+
+            //get our list of update entities for this model
+            IEnumerable<TableDefinition> lsTableDefinitions = model
+                .GetTableDefinitions<T>();
+
+			Dictionary<string, TableDefinition> dicTableDefinitionIndex = new Dictionary<string, TableDefinition>();
+
+			//index for easy lookup
+	        foreach (TableDefinition tdTableDefinition in lsTableDefinitions)
+	        {
+		        foreach (ScalarPropertyMapping spmProperty in tdTableDefinition.Properties)
+		        {
+			        dicTableDefinitionIndex[spmProperty.Name] = tdTableDefinition;
+		        }
+	        }
 
             // TODO: Select only key + lambda columns
             // var keys = entity.Info.Key.PropertyRefs;
@@ -230,49 +247,54 @@ SELECT  @totalRowAffected
             //var innerObjectQuery = queryKeys.GetObjectQuery();
             var innerObjectQuery = objectQuery;
 
-            // GET UpdateSetValues
-            var values = GetInnerValues(query, updateFactory, entity);
+            // this will populate the values for all the update entities
+            GetInnerValues(query, updateFactory, dicTableDefinitionIndex);
 
-            // CREATE command
-            var command = CreateCommand(innerObjectQuery, entity, values);
+            int rowAffecteds = 0;
 
-            // WHERE 1 = 0
-            if (command == null)
+			//loop through and process them one at a time
+			foreach (TableDefinition ueUpdateEntity in lsTableDefinitions.OrderByDescending(i => i.Order))
             {
-                return 0;
-            }
+				// CREATE command
+				DbCommand command = CreateCommand(innerObjectQuery, ueUpdateEntity);
 
-            // EXECUTE
-            var ownConnection = false;
-
-            try
-            {
-                if (innerObjectQuery.Context.Connection.State != ConnectionState.Open)
+                // WHERE 1 = 0
+                if (command == null)
                 {
-                    ownConnection = true;
-                    innerObjectQuery.Context.Connection.Open();
+                    return 0;
                 }
 
-                if (Executing != null)
+                // EXECUTE
+                var ownConnection = false;
+
+                try
                 {
-                    Executing(command);
-                }
+                    if (innerObjectQuery.Context.Connection.State != ConnectionState.Open)
+                    {
+                        ownConnection = true;
+                        innerObjectQuery.Context.Connection.Open();
+                    }
+
+                    Executing?.Invoke(command);
 
 #if EF5
-                var rowAffecteds = command.ExecuteNonQuery();
+                    rowAffecteds += command.ExecuteNonQuery();
 #elif EF6
-                var interceptionContext = new DbCommandInterceptionContext(dbContext.GetObjectContext().GetInterceptionContext());
-                var rowAffecteds = DbInterception.Dispatch.Command.NonQuery(command, interceptionContext);
+                    var interceptionContext = new DbCommandInterceptionContext(dbContext.GetObjectContext().GetInterceptionContext());
+                    rowAffecteds += DbInterception.Dispatch.Command.NonQuery(command, interceptionContext);
 #endif
-                return rowAffecteds;
-            }
-            finally
-            {
-                if (ownConnection && innerObjectQuery.Context.Connection.State != ConnectionState.Closed)
+                }
+                finally
                 {
-                    innerObjectQuery.Context.Connection.Close();
+                    if (ownConnection && innerObjectQuery.Context.Connection.State != ConnectionState.Closed)
+                    {
+                        innerObjectQuery.Context.Connection.Close();
+                    }
                 }
             }
+
+            return rowAffecteds;
+
 #elif EFCORE
             if (BatchUpdateManager.InMemoryDbContextFactory != null && query.IsInMemoryQueryContext())
             {
@@ -301,60 +323,93 @@ SELECT  @totalRowAffected
                 return list.Count;
             }
 
-            var dbContext = query.GetDbContext();
-            var entity = dbContext.Model.FindEntityType(typeof(T));
+            DbContext dbContext = query.GetDbContext();
 
-            // TODO: Select only key + lambda columns
-            //  var keys = entity.GetKeys().ToList()[0].Properties;
-            //var queryKeys = query.SelectByName(keys.Select(x => x.Name).ToList());
-            //var innerObjectQuery = queryKeys.GetObjectQuery();
-            var queryKeys = query;
+			//get the top most entity
+            IEntityType entity = dbContext.Model.FindEntityType(typeof(T));
 
-            // GET UpdateSetValues
-            var values = GetInnerValues(query, updateFactory, entity);
+			int rowAffecteds = 0;
 
-            // CREATE command
-            var command = CreateCommand(queryKeys, entity, values);
+			// TODO: Select only key + lambda columns
+			//  var keys = entity.GetKeys().ToList()[0].Properties;
+			//var queryKeys = query.SelectByName(keys.Select(x => x.Name).ToList());
+			//var innerObjectQuery = queryKeys.GetObjectQuery();
+			IQueryable<T> queryKeys = query;
 
-            // EXECUTE
-            var ownConnection = false;
+			//holds the tables we've updated
+			HashSet<string> hsUpdated = new HashSet<string>();
 
-            try
-            {
-                if (dbContext.Database.GetDbConnection().State != ConnectionState.Open)
-                {
-                    ownConnection = true;
-                    dbContext.Database.OpenConnection();
-                }
+			//so basically we'll loop iteratively over the root model and it's base types until we have all the tables updated
+			while (true)
+			{
+				IRelationalEntityTypeAnnotations relational = entity.Relational();
 
-                if (Executing != null)
-                {
-                    Executing(command);
-                }
+				//if we've already updated this table, skip it
+				if (hsUpdated.Contains(relational.Schema + "-" + relational.TableName))
+				{
+					//stop if there's nothing more to process
+					if (entity.BaseType == null)
+					{
+						break;
+					}
 
-                var rowAffecteds = command.ExecuteNonQuery();
-                return rowAffecteds;
-            }
-            finally
-            {
-                if (ownConnection && dbContext.Database.GetDbConnection().State != ConnectionState.Closed)
-                {
-                    dbContext.Database.CloseConnection();
-                }
-            }
+					entity = entity.BaseType;
+
+					continue;
+				}
+
+				//add to our index
+				hsUpdated.Add(relational.Schema + "-" + relational.TableName);
+
+				//get the values for this model
+				List<Tuple<string, object>> values = GetInnerValues(query, updateFactory, entity);
+
+				// CREATE command
+				DbCommand command = CreateCommand(queryKeys, entity, values);
+
+				// EXECUTE
+				bool ownConnection = false;
+
+				try
+				{
+					if (dbContext.Database.GetDbConnection().State != ConnectionState.Open)
+					{
+						ownConnection = true;
+						dbContext.Database.OpenConnection();
+					}
+
+					Executing?.Invoke(command);
+
+					rowAffecteds += command.ExecuteNonQuery();
+				}
+				finally
+				{
+					if (ownConnection && dbContext.Database.GetDbConnection().State != ConnectionState.Closed)
+					{
+						dbContext.Database.CloseConnection();
+					}
+				}
+
+				//stop if there's nothing more to process
+				if(entity.BaseType == null)
+				{
+					break;
+				}
+
+				entity = entity.BaseType;
+			}
+
+			return rowAffecteds;
 #endif
-            }
+		}
 
 #if EF5 || EF6
         /// <summary>Creates a command to execute the batch operation.</summary>
         /// <param name="query">The query.</param>
-        /// <param name="entity">The schema entity.</param>
+        /// <param name="ueTableDefinition">The schema entity.</param>
         /// <returns>The new command to execute the batch operation.</returns>
-        internal DbCommand CreateCommand<T>(ObjectQuery query, SchemaEntityType<T> entity, List<Tuple<string, object>> values)
+        public DbCommand CreateCommand(ObjectQuery query, TableDefinition ueTableDefinition)
         {
-            var objectParameters = values.Where(x => x.Item2 is ObjectParameter);
-            values = values.Except(objectParameters).ToList();
-
             var command = query.Context.CreateStoreCommand();
             bool isMySql = command.GetType().FullName.Contains("MySql");
             var isSqlCe = command.GetType().Name == "SqlCeCommand";
@@ -372,58 +427,38 @@ SELECT  @totalRowAffected
                 }
             }
 
-            // GET mapping
-            var mapping = entity.Info.EntityTypeMapping.MappingFragment;
-            var store = mapping.StoreEntitySet;
-
             string tableName;
 
             if (isMySql)
             {
-                tableName = string.Concat("`", store.Table, "`");
+                tableName = string.Concat("`", ueTableDefinition.Table, "`");
             }
             else if (isSqlCe)
             {
-                tableName = string.Concat("[", store.Table, "]");
+                tableName = string.Concat("[", ueTableDefinition.Table, "]");
             }
             else if (isOracle)
             {
-                tableName = string.IsNullOrEmpty(store.Schema) || store.Schema == "dbo" ?
-                    string.Concat("\"", store.Table, "\"") :
-                    string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
+                tableName = string.IsNullOrEmpty(ueTableDefinition.Schema) || ueTableDefinition.Schema == "dbo" ?
+                    string.Concat("\"", ueTableDefinition.Table, "\"") :
+                    string.Concat("\"", ueTableDefinition.Schema, "\".\"", ueTableDefinition.Table, "\"");
             }
             else if (isPostgreSQL)
             {
-                tableName = string.IsNullOrEmpty(store.Schema) ?
-                    string.Concat("\"", store.Table, "\"") :
-                    string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
+                tableName = string.IsNullOrEmpty(ueTableDefinition.Schema) ?
+                    string.Concat("\"", ueTableDefinition.Table, "\"") :
+                    string.Concat("\"", ueTableDefinition.Schema, "\".\"", ueTableDefinition.Table, "\"");
             }
             else if (isSQLite)
             {
-                tableName = string.Concat("\"", store.Table, "\"");
+                tableName = string.Concat("\"", ueTableDefinition.Table, "\"");
             }
             else
             {
-                tableName = string.IsNullOrEmpty(store.Schema) ?
-    string.Concat("[", store.Table, "]") :
-    string.Concat("[", store.Schema, "].[", store.Table, "]");
+                tableName = string.IsNullOrEmpty(ueTableDefinition.Schema) ?
+                    string.Concat("[", ueTableDefinition.Table, "]") :
+                    string.Concat("[", ueTableDefinition.Schema, "].[", ueTableDefinition.Table, "]");
             }
-
-
-            // GET keys mappings
-            var columnKeys = new List<string>();
-            foreach (var propertyKey in entity.Info.Key.PropertyRefs)
-            {
-                var mappingProperty = mapping.ScalarProperties.Find(x => x.Name == propertyKey.Name);
-
-                if (mappingProperty == null)
-                {
-                    throw new Exception(string.Format(ExceptionMessage.BatchOperations_PropertyNotFound, propertyKey.Name));
-                }
-
-                columnKeys.Add(mappingProperty.ColumnName);
-            }
-
 
             // GET command text template
             var commandTextTemplate =
@@ -456,36 +491,36 @@ SELECT  @totalRowAffected
 
             if (isSqlCe)
             {
-                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".", EscapeName(x, isMySql, isOracle, isPostgreSQL), " = B.", EscapeName(x, isMySql, isOracle, isPostgreSQL), "")));
+                primaryKeys = string.Join(Environment.NewLine + "AND ", ueTableDefinition.Keys.Select(x => string.Concat(tableName + ".", EscapeName(x.ColumnName, isMySql, isOracle, isPostgreSQL), " = B.", EscapeName(x.ColumnName, isMySql, isOracle, isPostgreSQL), "")));
 
-                setValues = string.Join("," + Environment.NewLine, values.Select((x, i) => x.Item2 is ConstantExpression ?
+                setValues = string.Join("," + Environment.NewLine, ueTableDefinition.Values.Select((x, i) => x.Item2 is ConstantExpression ?
                     string.Concat(EscapeName(x.Item1, isMySql, isOracle, isPostgreSQL), " = ", ((ConstantExpression) x.Item2).Value.ToString().Replace("B.[", "[")) :
                     string.Concat(EscapeName(x.Item1, isMySql, isOracle, isPostgreSQL), " = @zzz_BatchUpdate_", i)));
             }
             else if (isOracle || isPostgreSQL)
             {
-                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".", EscapeName(x, isMySql, isOracle, isPostgreSQL), " = B.", EscapeName(x, isMySql, isOracle, isPostgreSQL), "")));
+                primaryKeys = string.Join(Environment.NewLine + "AND ", ueTableDefinition.Keys.Select(x => string.Concat(tableName + ".", EscapeName(x.ColumnName, isMySql, isOracle, isPostgreSQL), " = B.", EscapeName(x.ColumnName, isMySql, isOracle, isPostgreSQL), "")));
 
                 // GET updateSetValues
-                setValues = string.Join("," + Environment.NewLine, values.Select((x, i) => x.Item2 is ConstantExpression ?
+                setValues = string.Join("," + Environment.NewLine, ueTableDefinition.Values.Select((x, i) => x.Item2 is ConstantExpression ?
                     string.Concat(EscapeName(x.Item1, isMySql, isOracle, isPostgreSQL), " = ", ((ConstantExpression)x.Item2).Value) :
                     string.Concat(EscapeName(x.Item1, isMySql, isOracle, isPostgreSQL), " = :zzz_BatchUpdate_", i)));
             }
             else if (isSQLite)
             {
-                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".", EscapeName(x, isMySql, isOracle, isPostgreSQL), " = B.", EscapeName(x, isMySql, isOracle, isPostgreSQL), "")));
+                primaryKeys = string.Join(Environment.NewLine + "AND ", ueTableDefinition.Keys.Select(x => string.Concat(tableName + ".", EscapeName(x.ColumnName, isMySql, isOracle, isPostgreSQL), " = B.", EscapeName(x.ColumnName, isMySql, isOracle, isPostgreSQL), "")));
 
                 // GET updateSetValues
-                setValues = string.Join("," + Environment.NewLine, values.Select((x, i) => x.Item2 is ConstantExpression ?
+                setValues = string.Join("," + Environment.NewLine, ueTableDefinition.Values.Select((x, i) => x.Item2 is ConstantExpression ?
                     string.Concat(EscapeName(x.Item1, isMySql, isOracle, isPostgreSQL), " = ", ((ConstantExpression)x.Item2).Value) :
                     string.Concat(EscapeName(x.Item1, isMySql, isOracle, isPostgreSQL), " = @zzz_BatchUpdate_", i)));
             }
             else
             {
-                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.", EscapeName(x, isMySql, isOracle, isPostgreSQL), " = B.", EscapeName(x, isMySql, isOracle, isPostgreSQL), "")));
+                primaryKeys = string.Join(Environment.NewLine + "AND ", ueTableDefinition.Keys.Select(x => string.Concat("A.", EscapeName(x.ColumnName, isMySql, isOracle, isPostgreSQL), " = B.", EscapeName(x.ColumnName, isMySql, isOracle, isPostgreSQL), "")));
 
                 // GET updateSetValues
-                setValues = string.Join("," + Environment.NewLine, values.Select((x, i) => x.Item2 is ConstantExpression ?
+                setValues = string.Join("," + Environment.NewLine, ueTableDefinition.Values.Select((x, i) => x.Item2 is ConstantExpression ?
                     string.Concat("A.", EscapeName(x.Item1, isMySql, isOracle, isPostgreSQL), " = ", ((ConstantExpression) x.Item2).Value) :
                     string.Concat("A.", EscapeName(x.Item1, isMySql, isOracle, isPostgreSQL), " = @zzz_BatchUpdate_", i)));
             }
@@ -520,46 +555,50 @@ SELECT  @totalRowAffected
             }
 #endif
 
-            for (var i = 0; i < values.Count; i++)
+            for (int i = 0; i < ueTableDefinition.Values.Count; i++)
             {
-                var value = values[i];
+                Tuple<string, object> value = ueTableDefinition.Values[i];
 
                 if (value.Item2 is ConstantExpression)
                 {
                     continue;
                 }
 
-                var parameterPrefix = isOracle ? ":" : "@";
+                DbParameter parameter;
 
-                var parameter = command.CreateParameter();
-                parameter.ParameterName = parameterPrefix + "zzz_BatchUpdate_" + i;
-                parameter.Value = values[i].Item2 ?? DBNull.Value;
-
-                if (parameter is SqlParameter)
+                //handle object parameters
+                ObjectParameter opItem = value.Item2 as ObjectParameter;
+                if (opItem != null)
                 {
-                    var sqlParameter = (SqlParameter)parameter;
-                    if (sqlParameter.DbType == DbType.DateTime)
-                    {
-                        sqlParameter.DbType = DbType.DateTime2;
-                    }
+                    parameter = command.CreateParameter();
+
+                    parameter.Value = opItem.Value ?? DBNull.Value;
+                    parameter.ParameterName = opItem.Name;
+                    command.Parameters.Add(parameter);
+
+                    //stop here
+                    continue;
+                }
+
+                string parameterPrefix = isOracle ? ":" : "@";
+
+                parameter = command.CreateParameter();
+                parameter.ParameterName = parameterPrefix + "zzz_BatchUpdate_" + i;
+                parameter.Value = value.Item2 ?? DBNull.Value;
+
+                //use datetime 2 where applicable
+                SqlParameter sqParameter = parameter as SqlParameter;
+                if (sqParameter?.DbType == DbType.DateTime)
+                {
+                    sqParameter.DbType = DbType.DateTime2;
                 }
 
                 command.Parameters.Add(parameter);
             }
 
-            foreach (var value in objectParameters)
-            {
-                var objectParameter = (ObjectParameter)value.Item2;
-
-                var parameter = command.CreateParameter();
-
-                parameter.Value = objectParameter.Value ?? DBNull.Value;
-                parameter.ParameterName = objectParameter.Name;
-                command.Parameters.Add(parameter);
-            }
-
             return command;
         }
+
 #elif EFCORE
         public DbCommand CreateCommand(IQueryable query, IEntityType entity, List<Tuple<string, object>> values)
         {
@@ -741,15 +780,10 @@ SELECT  @totalRowAffected
                 CommandTextTemplate;
 
             // GET inner query
-#if EFCORE
             RelationalQueryContext queryContext;
             var relationalCommand = query.CreateCommand(out queryContext);
-#else
-            var relationalCommand = query.CreateCommand();
-#endif
+
             var querySelect = relationalCommand.CommandText;
-
-
 
             // GET updateSetValues
             var setValues = "";
@@ -782,7 +816,6 @@ SELECT  @totalRowAffected
             var command = query.GetDbContext().CreateStoreCommand();
             command.CommandText = commandTextTemplate;
 
-#if EFCORE
             // ADD Parameter
             foreach (var relationalParameter in relationalCommand.Parameters)
             {
@@ -793,17 +826,6 @@ SELECT  @totalRowAffected
 
                 command.Parameters.Add(param);
             }
-#else
-            // ADD Parameter
-            var parameterCollection = relationalCommand.Parameters;
-            foreach (var parameter in parameterCollection)
-            {
-                var param = command.CreateParameter();
-                param.CopyFrom(parameter);
-
-                command.Parameters.Add(param);
-            }
-#endif
 
             for (var i = 0; i < values.Count; i++)
             {
@@ -825,104 +847,33 @@ SELECT  @totalRowAffected
 #endif
 
 #if EF5 || EF6
-        internal List<Tuple<string, object>> GetInnerValues<T>(IQueryable<T> query, Expression<Func<T, T>> updateFactory, SchemaEntityType<T> entity) where T : class
-#elif EFCORE
-        public List<Tuple<string, object>> GetInnerValues<T>(IQueryable<T> query, Expression<Func<T, T>> updateFactory, IEntityType entity) where T : class
-#endif
+        public void GetInnerValues<T>(IQueryable<T> query, Expression<Func<T, T>> updateFactory, IDictionary<string, TableDefinition> dicColumns) where T : class
         {
-#if EF5 || EF6
-            // GET mapping
-            var mapping = entity.Info.EntityTypeMapping.MappingFragment;
-#elif EFCORE
-            var context = query.GetDbContext();
-
-            var databaseCreator = context.Database.GetService<IDatabaseCreator>();
-
-            var assembly = databaseCreator.GetType().GetTypeInfo().Assembly;
-            var assemblyName = assembly.GetName().Name;
-
-            MethodInfo dynamicProviderEntityType = null;
-            MethodInfo dynamicProviderProperty = null;
-
-            bool isSqlServer = false;
-            bool isPostgreSQL = false;
-            bool isMySql = false;
-            bool isMySqlPomelo = false;
-            bool isSQLite = false;
-
-            if (assemblyName == "Microsoft.EntityFrameworkCore.SqlServer")
-            {
-                isSqlServer = true;
-                var type = assembly.GetType("Microsoft.EntityFrameworkCore.SqlServerMetadataExtensions");
-                dynamicProviderEntityType = type.GetMethod("SqlServer", new[] { typeof(IEntityType) });
-                dynamicProviderProperty = type.GetMethod("SqlServer", new[] { typeof(IProperty) });
-            }
-            else if (assemblyName == "Npgsql.EntityFrameworkCore.PostgreSQL")
-            {
-                isPostgreSQL = true;
-                var type = assembly.GetType("Microsoft.EntityFrameworkCore.NpgsqlMetadataExtensions");
-                dynamicProviderEntityType = type.GetMethod("Npgsql", new[] { typeof(IEntityType) });
-                dynamicProviderProperty = type.GetMethod("Npgsql", new[] { typeof(IProperty) });
-            }
-            else if (assemblyName == "MySql.Data.EntityFrameworkCore")
-            {
-                isMySql = true;
-                var type = assembly.GetType("MySQL.Data.EntityFrameworkCore.MySQLMetadataExtensions");
-                dynamicProviderEntityType = type.GetMethod("MySQL", new[] { typeof(IEntityType) });
-                dynamicProviderProperty = type.GetMethod("MySQL", new[] { typeof(IProperty) });
-            }
-            else if (assemblyName == "Pomelo.EntityFrameworkCore.MySql")
-            {
-                isMySqlPomelo = true;
-                var type = assembly.GetType("Microsoft.EntityFrameworkCore.MySqlMetadataExtensions");
-                dynamicProviderEntityType = type.GetMethod("MySql", new[] { typeof(IEntityType) });
-                dynamicProviderProperty = type.GetMethod("MySql", new[] { typeof(IProperty) });
-            }
-            else if (assemblyName == "Microsoft.EntityFrameworkCore.Sqlite")
-            {
-                isSQLite = true;
-
-                // CHANGE all for this one?
-                dynamicProviderEntityType = typeof(RelationalMetadataExtensions).GetMethod("Relational", new[] { typeof(IEntityType) });
-                dynamicProviderProperty = typeof(RelationalMetadataExtensions).GetMethod("Relational", new[] { typeof(IProperty) });
-            }
-            else
-            {
-                throw new Exception(string.Format(ExceptionMessage.Unsupported_Provider, assemblyName));
-            }
-
-#endif
-            // GET updateFactory command
+            
             var values = ResolveUpdateFromQueryDictValues(updateFactory);
-            var destinationValues = new List<Tuple<string, object>>();
 
             int valueI = -1;
             foreach (var value in values)
             {
                 valueI++;
 
-#if EF5 || EF6
                 // FIND the mapped column
-                var column = mapping.ScalarProperties.Find(x => x.Name == value.Key);
-                if (column == null)
+                TableDefinition ueTableDefinition = dicColumns.ContainsKey(value.Key) ? dicColumns[value.Key] : null;
+
+                if (ueTableDefinition == null)
                 {
                     throw new Exception("The destination column could not be found:" + value.Key);
                 }
-                var columnName = column.ColumnName;
-#elif EFCORE
 
-                var property = entity.FindProperty(value.Key);
-                var mappingProperty = dynamicProviderProperty.Invoke(null, new[] { property });
+                //get our property 
+                ScalarPropertyMapping spmProperty = ueTableDefinition.Properties.FirstOrDefault(i => i.Name == value.Key);
 
-                var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
-                var columnName = (string)columnNameProperty.GetValue(mappingProperty);
-#endif
-
-                if (value.Value is Expression)
+                Expression exValue = value.Value as Expression;
+                if (exValue != null)
                 {
                     // Oops! the value is not resolved yet!
                     ParameterExpression parameterExpression = null;
-                    ((Expression)value.Value).Visit((ParameterExpression p) =>
+                    exValue.Visit((ParameterExpression p) =>
                     {
                         if (p.Type == typeof(T))
                             parameterExpression = p;
@@ -931,8 +882,8 @@ SELECT  @totalRowAffected
                     });
 
                     // GET the update value by creating a new select command
-                    Type[] typeArguments = { typeof(T), ((Expression)value.Value).Type };
-                    var lambdaExpression = Expression.Lambda(((Expression)value.Value), parameterExpression);
+                    Type[] typeArguments = { typeof(T), exValue.Type };
+                    var lambdaExpression = Expression.Lambda(exValue, parameterExpression);
                     var selectExpression = Expression.Call(
                         typeof(Queryable),
                         "Select",
@@ -940,7 +891,7 @@ SELECT  @totalRowAffected
                         Expression.Constant(query),
                         lambdaExpression);
                     var result = Expression.Lambda(selectExpression).Compile().DynamicInvoke();
-#if EF5 || EF6
+
                     // GET the select command text
                     var commandText = ((IQueryable)result).ToString();
                     var parameters = ((IQueryable) result).GetObjectQuery().Parameters;
@@ -1015,12 +966,125 @@ SELECT  @totalRowAffected
                         valueSql = valueSql.Substring(0, valueSql.LastIndexOf('`') - 4);
                     }
 
+                    foreach (var additionalParameter in parameters)
+                    {
+                        var newName = additionalParameter.Name + "_" + valueI;
+                        var newParameter = new ObjectParameter(newName, additionalParameter.ParameterType)
+                        {
+                            Value = additionalParameter.Value
+                        };
+
+                        ueTableDefinition.Values.Add(new Tuple<string, object>(spmProperty.ColumnName, newParameter));
+
+                        valueSql = valueSql.Replace(additionalParameter.Name, newName);
+                    }
+
+                    ueTableDefinition.Values.Add(new Tuple<string, object>(spmProperty.ColumnName, Expression.Constant(valueSql)));
+                }
+                else
+                {
+                    ueTableDefinition.Values.Add(new Tuple<string, object>(spmProperty.ColumnName, value.Value ?? DBNull.Value));
+                }
+            }
+        }
 #elif EFCORE
+        public List<Tuple<string, object>> GetInnerValues<T>(IQueryable<T> query, Expression<Func<T, T>> updateFactory, IEntityType entity) where T : class
+		{ 
+            var context = query.GetDbContext();
+
+            var databaseCreator = context.Database.GetService<IDatabaseCreator>();
+
+            var assembly = databaseCreator.GetType().GetTypeInfo().Assembly;
+            var assemblyName = assembly.GetName().Name;
+
+            MethodInfo dynamicProviderEntityType = null;
+            MethodInfo dynamicProviderProperty = null;
+
+			if (assemblyName == "Microsoft.EntityFrameworkCore.SqlServer")
+            {
+	            var type = assembly.GetType("Microsoft.EntityFrameworkCore.SqlServerMetadataExtensions");
+                dynamicProviderEntityType = type.GetMethod("SqlServer", new[] { typeof(IEntityType) });
+                dynamicProviderProperty = type.GetMethod("SqlServer", new[] { typeof(IProperty) });
+            }
+            else if (assemblyName == "Npgsql.EntityFrameworkCore.PostgreSQL")
+            {
+	            var type = assembly.GetType("Microsoft.EntityFrameworkCore.NpgsqlMetadataExtensions");
+                dynamicProviderEntityType = type.GetMethod("Npgsql", new[] { typeof(IEntityType) });
+                dynamicProviderProperty = type.GetMethod("Npgsql", new[] { typeof(IProperty) });
+            }
+            else if (assemblyName == "MySql.Data.EntityFrameworkCore")
+            {
+	            var type = assembly.GetType("MySQL.Data.EntityFrameworkCore.MySQLMetadataExtensions");
+                dynamicProviderEntityType = type.GetMethod("MySQL", new[] { typeof(IEntityType) });
+                dynamicProviderProperty = type.GetMethod("MySQL", new[] { typeof(IProperty) });
+            }
+            else if (assemblyName == "Pomelo.EntityFrameworkCore.MySql")
+            {
+	            var type = assembly.GetType("Microsoft.EntityFrameworkCore.MySqlMetadataExtensions");
+                dynamicProviderEntityType = type.GetMethod("MySql", new[] { typeof(IEntityType) });
+                dynamicProviderProperty = type.GetMethod("MySql", new[] { typeof(IProperty) });
+            }
+            else if (assemblyName == "Microsoft.EntityFrameworkCore.Sqlite")
+            {
+	            // CHANGE all for this one?
+                dynamicProviderEntityType = typeof(RelationalMetadataExtensions).GetMethod("Relational", new[] { typeof(IEntityType) });
+                dynamicProviderProperty = typeof(RelationalMetadataExtensions).GetMethod("Relational", new[] { typeof(IProperty) });
+            }
+            else
+            {
+                throw new Exception(string.Format(ExceptionMessage.Unsupported_Provider, assemblyName));
+            }
+
+            // GET updateFactory command
+            var values = ResolveUpdateFromQueryDictValues(updateFactory);
+            var destinationValues = new List<Tuple<string, object>>();
+
+            int valueI = -1;
+            foreach (var value in values)
+            {
+                valueI++;
+
+                var property = entity.FindProperty(value.Key);
+
+				//if we couldn't find the property, skip to the next
+	            if (property == null)
+	            {
+		            continue;
+	            }
+
+                var mappingProperty = dynamicProviderProperty.Invoke(null, new[] { property });
+
+                var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
+                var columnName = (string)columnNameProperty.GetValue(mappingProperty);
+
+                if (value.Value is Expression)
+                {
+                    // Oops! the value is not resolved yet!
+                    ParameterExpression parameterExpression = null;
+                    ((Expression)value.Value).Visit((ParameterExpression p) =>
+                    {
+                        if (p.Type == typeof(T))
+                            parameterExpression = p;
+
+                        return p;
+                    });
+
+                    // GET the update value by creating a new select command
+                    Type[] typeArguments = { typeof(T), ((Expression)value.Value).Type };
+                    var lambdaExpression = Expression.Lambda(((Expression)value.Value), parameterExpression);
+                    var selectExpression = Expression.Call(
+                        typeof(Queryable),
+                        "Select",
+                        typeArguments,
+                        Expression.Constant(query),
+                        lambdaExpression);
+                    var result = Expression.Lambda(selectExpression).Compile().DynamicInvoke();
+
                     RelationalQueryContext queryContext;
                     var command = ((IQueryable)result).CreateCommand(out queryContext);
                     var commandText = command.CommandText;
 
-#if NETSTANDARD1_3
+#if NETSTANDARD1_6
                     // GET the 'value' part
                     var pos = commandText.IndexOf("AS [value]" + Environment.NewLine + "FROM", StringComparison.CurrentCultureIgnoreCase) != -1 ?
                         commandText.IndexOf("AS [value]" + Environment.NewLine + "FROM", StringComparison.CurrentCultureIgnoreCase) - 6 :
@@ -1062,22 +1126,6 @@ SELECT  @totalRowAffected
                         var tagToReplace = valueSql.Substring(0, valueSql.IndexOf("]", StringComparison.CurrentCultureIgnoreCase) + 1);
                         valueSql = valueSql.Replace(tagToReplace, "B");
                     }
-#endif
-#if EF5 || EF6
-                    foreach (var additionalParameter in parameters)
-                    {
-                        var newName = additionalParameter.Name + "_" + valueI;
-                        var newParameter = new ObjectParameter(newName, additionalParameter.ParameterType)
-                        {
-                            Value = additionalParameter.Value
-                        };
-                        destinationValues.Add(new Tuple<string, object>(columnName, newParameter));
-
-                        valueSql = valueSql.Replace(additionalParameter.Name, newName);
-                    }
-
-                    // TODO: For EF Core?
-#endif
 
                     destinationValues.Add(new Tuple<string, object>(columnName, Expression.Constant(valueSql)));
                 }
@@ -1089,6 +1137,7 @@ SELECT  @totalRowAffected
 
             return destinationValues;
         }
+#endif
 
         public string EscapeName(string name, bool isMySql, bool isOracle, bool isPostgreSQL)
         {

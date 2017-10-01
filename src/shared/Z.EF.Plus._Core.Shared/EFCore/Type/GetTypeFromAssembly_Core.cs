@@ -17,7 +17,7 @@ namespace Z.EntityFramework.Plus
     {
         internal static Type GetTypeFromAssembly_Core(this Type fromType, string name)
         {
-#if NETSTANDARD1_3
+#if NETSTANDARD1_6
             return fromType.GetTypeInfo().Assembly.GetType(name);
 #else
             return fromType.Assembly.GetType(name);

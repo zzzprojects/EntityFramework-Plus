@@ -62,6 +62,17 @@ namespace Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel
         ///     </see>
         ///     for more detail.
         /// </summary>
+        /// <value>The name.</value>
+        [XmlAttribute("BaseType")]
+        public string BaseType { get; set; }
+
+        /// <summary>
+        ///     Please visit the
+        ///     <see href="http://msdn.microsoft.com/en-us/library/vstudio/bb399292(v=vs.100).aspx">
+        ///         Microsoft documentation
+        ///     </see>
+        ///     for more detail.
+        /// </summary>
         /// <value>The key.</value>
         [XmlElement("Key")]
         public EntityKeyElement Key { get; set; }

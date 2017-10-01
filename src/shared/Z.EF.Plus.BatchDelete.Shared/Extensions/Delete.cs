@@ -36,17 +36,11 @@ namespace Z.EntityFramework.Plus
         {
             var batchDelete = new BatchDelete();
 
-            if (BatchDeleteManager.BatchDeleteBuilder != null)
-            {
-                BatchDeleteManager.BatchDeleteBuilder(batchDelete);
-            }
+			BatchDeleteManager.BatchDeleteBuilder?.Invoke(batchDelete);
 
-            if (batchDeleteBuilder != null)
-            {
-                batchDeleteBuilder(batchDelete);
-            }
+			batchDeleteBuilder?.Invoke(batchDelete);
 
-            return batchDelete.Execute(query);
+			return batchDelete.Execute(query);
         }
     }
 }

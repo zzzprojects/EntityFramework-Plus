@@ -14,7 +14,7 @@ using Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel;
 namespace Z.EntityFramework.Plus.Internal.Core.Infrastructure
 {
     /// <summary>A data Model for the database.</summary>
-    internal class DbModelPlus
+    public class DbModelPlus
     {
         /// <summary>Gets or sets the conceptual model.</summary>
         /// <value>The conceptual model.</value>

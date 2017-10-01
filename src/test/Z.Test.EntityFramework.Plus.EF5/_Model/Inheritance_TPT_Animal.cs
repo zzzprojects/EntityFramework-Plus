@@ -9,7 +9,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Z.Test.EntityFramework.Plus
 {
-    public abstract class Inheritance_TPT_Animal
+	[Table("Inheritance_TPT_Animals")]
+    public class Inheritance_TPT_Animal
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }

@@ -5,297 +5,154 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
-using System.Data.SqlClient;
-using System.Linq;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Z.EntityFramework.Plus;
-#if EF5 || EF6
-using System.Data.Entity;
-
-#elif EFCORE
 using System.Configuration;
 using System.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-
-#endif
+using System.Linq;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Z.EntityFramework.Plus;
 
 namespace Z.Test.EntityFramework.Plus
 {
-#if EF5 || EF6
-    public class TestContextInitializer : CreateDatabaseIfNotExists<TestContext>
-    {
-        protected override void Seed(TestContext context)
-        {
-            var sql = @"
-TRUNCATE TABLE Inheritance_TPC_Cat
-IF IDENT_CURRENT( 'Inheritance_TPC_Cat' ) < 1000000
-BEGIN
-	DBCC CHECKIDENT('Inheritance_TPC_Cat', RESEED, 1000000)
-END
-";
-            using (var connection = new SqlConnection(My.Config.ConnectionStrings.TestDatabase))
-            using (var command = new SqlCommand(sql, connection))
-            {
-                connection.Open();
-                command.ExecuteNonQuery();
-            }
-            base.Seed(context);
-        }
-    }
-#endif
-
     public partial class TestContext : DbContext
     {
-#if EF5 || EF6
-        public TestContext() : base(My.Config.ConnectionStrings.TestDatabase)
-#elif EFCORE
-        public TestContext()
-#endif
+        public TestContext() : base()
         {
-#if EF5 || EF6
-            Database.SetInitializer(new TestContextInitializer());
-#elif EFCORE
             Database.EnsureCreated();
-#endif
         }
 
-#if EFCORE
         public TestContext(DbContextOptions options) : base(options)
         {
-            
-        }
-#endif
+			Database.EnsureCreated();
+		}
 
-
-#if EF5 || EF6
-        public TestContext(bool isEnabled, string fixResharper = null, bool? enableFilter1 = null, bool? enableFilter2 = null, bool? enableFilter3 = null, bool? enableFilter4 = null, bool? excludeClass = null, bool? excludeInterface = null, bool? excludeBaseClass = null, bool? excludeBaseInterface = null, bool? includeClass = null, bool? includeInterface = null, bool? includeBaseClass = null, bool? includeBaseInterface = null) : base(My.Config.ConnectionStrings.TestDatabase)
-#elif EFCORE
         public TestContext(bool isEnabled, string fixResharper = null, bool? enableFilter1 = null, bool? enableFilter2 = null, bool? enableFilter3 = null, bool? enableFilter4 = null, bool? excludeClass = null, bool? excludeInterface = null, bool? excludeBaseClass = null, bool? excludeBaseInterface = null, bool? includeClass = null, bool? includeInterface = null, bool? includeBaseClass = null, bool? includeBaseInterface = null)
-#endif
         {
-#if EF5 || EF6
-            Database.SetInitializer(new CreateDatabaseIfNotExists<TestContext>());
-#elif EFCORE
             Database.EnsureCreated();
-#endif
-#if EFCORE
-    // TODO: Remove this when cast issue will be fixed
-            QueryFilterManager.GlobalFilters.Clear();
-            QueryFilterManager.GlobalInitializeFilterActions.Clear();
-#endif
 
-            if (enableFilter1 != null)
-            {
-                this.Filter<Inheritance_Interface_Entity>(QueryFilterHelper.Filter.Filter1, entities => entities.Where(x => x.ColumnInt != 1), isEnabled);
-                if (!isEnabled && enableFilter1.Value)
-                {
-                    this.Filter(QueryFilterHelper.Filter.Filter1).Enable();
-                }
-                else if (isEnabled && !enableFilter1.Value)
-                {
-                    this.Filter(QueryFilterHelper.Filter.Filter1).Disable();
-                }
-            }
-            if (enableFilter2 != null)
-            {
-                this.Filter<Inheritance_Interface_IEntity>(QueryFilterHelper.Filter.Filter2, entities => entities.Where(x => x.ColumnInt != 2), isEnabled);
-                if (!isEnabled && enableFilter2.Value)
-                {
-                    this.Filter(QueryFilterHelper.Filter.Filter2).Enable();
-                }
-                else if (isEnabled && !enableFilter2.Value)
-                {
-                    this.Filter(QueryFilterHelper.Filter.Filter2).Disable();
-                }
-            }
-            if (enableFilter3 != null)
-            {
-                this.Filter<Inheritance_Interface_Base>(QueryFilterHelper.Filter.Filter3, entities => entities.Where(x => x.ColumnInt != 3), isEnabled);
-                if (!isEnabled && enableFilter3.Value)
-                {
-                    this.Filter(QueryFilterHelper.Filter.Filter3).Enable();
-                }
-                else if (isEnabled && !enableFilter3.Value)
-                {
-                    this.Filter(QueryFilterHelper.Filter.Filter3).Disable();
-                }
-            }
-            if (enableFilter4 != null)
-            {
-                this.Filter<Inheritance_Interface_IBase>(QueryFilterHelper.Filter.Filter4, entities => entities.Where(x => x.ColumnInt != 4), isEnabled);
-                if (!isEnabled && enableFilter4.Value)
-                {
-                    this.Filter(QueryFilterHelper.Filter.Filter4).Enable();
-                }
-                else if (isEnabled && !enableFilter4.Value)
-                {
-                    this.Filter(QueryFilterHelper.Filter.Filter4).Disable();
-                }
-            }
+			//// TODO: Remove this when cast issue will be fixed
+			//QueryFilterManager.GlobalFilters.Clear();
+			//QueryFilterManager.GlobalInitializeFilterActions.Clear();
 
-            if (excludeClass != null && excludeClass.Value)
-            {
-                this.Filter(QueryFilterHelper.Filter.Filter1).Disable(typeof (Inheritance_Interface_Entity));
-            }
+			//if (enableFilter1 != null)
+   //         {
+   //             this.Filter<Inheritance_Interface_Entity>(QueryFilterHelper.Filter.Filter1, entities => entities.Where(x => x.ColumnInt != 1), isEnabled);
+   //             if (!isEnabled && enableFilter1.Value)
+   //             {
+   //                 this.Filter(QueryFilterHelper.Filter.Filter1).Enable();
+   //             }
+   //             else if (isEnabled && !enableFilter1.Value)
+   //             {
+   //                 this.Filter(QueryFilterHelper.Filter.Filter1).Disable();
+   //             }
+   //         }
+   //         if (enableFilter2 != null)
+   //         {
+   //             this.Filter<Inheritance_Interface_IEntity>(QueryFilterHelper.Filter.Filter2, entities => entities.Where(x => x.ColumnInt != 2), isEnabled);
+   //             if (!isEnabled && enableFilter2.Value)
+   //             {
+   //                 this.Filter(QueryFilterHelper.Filter.Filter2).Enable();
+   //             }
+   //             else if (isEnabled && !enableFilter2.Value)
+   //             {
+   //                 this.Filter(QueryFilterHelper.Filter.Filter2).Disable();
+   //             }
+   //         }
+   //         if (enableFilter3 != null)
+   //         {
+   //             this.Filter<Inheritance_Interface_Base>(QueryFilterHelper.Filter.Filter3, entities => entities.Where(x => x.ColumnInt != 3), isEnabled);
+   //             if (!isEnabled && enableFilter3.Value)
+   //             {
+   //                 this.Filter(QueryFilterHelper.Filter.Filter3).Enable();
+   //             }
+   //             else if (isEnabled && !enableFilter3.Value)
+   //             {
+   //                 this.Filter(QueryFilterHelper.Filter.Filter3).Disable();
+   //             }
+   //         }
+   //         if (enableFilter4 != null)
+   //         {
+   //             this.Filter<Inheritance_Interface_IBase>(QueryFilterHelper.Filter.Filter4, entities => entities.Where(x => x.ColumnInt != 4), isEnabled);
+   //             if (!isEnabled && enableFilter4.Value)
+   //             {
+   //                 this.Filter(QueryFilterHelper.Filter.Filter4).Enable();
+   //             }
+   //             else if (isEnabled && !enableFilter4.Value)
+   //             {
+   //                 this.Filter(QueryFilterHelper.Filter.Filter4).Disable();
+   //             }
+   //         }
 
-            if (excludeInterface != null && excludeInterface.Value)
-            {
-                this.Filter(QueryFilterHelper.Filter.Filter2).Disable(typeof (Inheritance_Interface_IEntity));
-            }
+   //         if (excludeClass != null && excludeClass.Value)
+   //         {
+   //             this.Filter(QueryFilterHelper.Filter.Filter1).Disable(typeof (Inheritance_Interface_Entity));
+   //         }
 
-            if (excludeBaseClass != null && excludeBaseClass.Value)
-            {
-                this.Filter(QueryFilterHelper.Filter.Filter3).Disable(typeof (Inheritance_Interface_Base));
-            }
+   //         if (excludeInterface != null && excludeInterface.Value)
+   //         {
+   //             this.Filter(QueryFilterHelper.Filter.Filter2).Disable(typeof (Inheritance_Interface_IEntity));
+   //         }
 
-            if (excludeBaseInterface != null && excludeBaseInterface.Value)
-            {
-                this.Filter(QueryFilterHelper.Filter.Filter4).Disable(typeof (Inheritance_Interface_IBase));
-            }
+   //         if (excludeBaseClass != null && excludeBaseClass.Value)
+   //         {
+   //             this.Filter(QueryFilterHelper.Filter.Filter3).Disable(typeof (Inheritance_Interface_Base));
+   //         }
 
-            if (includeClass != null && includeClass.Value)
-            {
-                this.Filter(QueryFilterHelper.Filter.Filter1).Enable(typeof (Inheritance_Interface_IEntity));
-            }
+   //         if (excludeBaseInterface != null && excludeBaseInterface.Value)
+   //         {
+   //             this.Filter(QueryFilterHelper.Filter.Filter4).Disable(typeof (Inheritance_Interface_IBase));
+   //         }
 
-            if (includeInterface != null && includeInterface.Value)
-            {
-                this.Filter(QueryFilterHelper.Filter.Filter2).Enable(typeof (Inheritance_Interface_IEntity));
-            }
+   //         if (includeClass != null && includeClass.Value)
+   //         {
+   //             this.Filter(QueryFilterHelper.Filter.Filter1).Enable(typeof (Inheritance_Interface_IEntity));
+   //         }
 
-            if (includeBaseClass != null && includeBaseClass.Value)
-            {
-                this.Filter(QueryFilterHelper.Filter.Filter3).Enable(typeof (Inheritance_Interface_Base));
-            }
+   //         if (includeInterface != null && includeInterface.Value)
+   //         {
+   //             this.Filter(QueryFilterHelper.Filter.Filter2).Enable(typeof (Inheritance_Interface_IEntity));
+   //         }
 
-            if (includeBaseInterface != null && includeBaseInterface.Value)
-            {
-                this.Filter(QueryFilterHelper.Filter.Filter4).Enable(typeof (Inheritance_Interface_IBase));
-            }
+   //         if (includeBaseClass != null && includeBaseClass.Value)
+   //         {
+   //             this.Filter(QueryFilterHelper.Filter.Filter3).Enable(typeof (Inheritance_Interface_Base));
+   //         }
+
+   //         if (includeBaseInterface != null && includeBaseInterface.Value)
+   //         {
+   //             this.Filter(QueryFilterHelper.Filter.Filter4).Enable(typeof (Inheritance_Interface_IBase));
+   //         }
         }
 
-#if EF5 || EF6
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
-        {
-            // Association
-            {
-                // Many to Many
-                {
-                    modelBuilder.Entity<Association_ManyToMany_Left>()
-                        .HasMany(x => x.Rights)
-                        .WithMany(x => x.Lefts)
-                        .Map(c =>
-                        {
-                            c.MapLeftKey("ChildID");
-                            c.MapRightKey("ParentID");
-                            c.ToTable("Association_ManyToMany");
-                        });
-                }
-
-                // Many
-                {
-                    modelBuilder.Entity<Association_OneToMany_Left>()
-                        .HasMany(x => x.Rights)
-                        .WithRequired(x => x.Left);
-                }
-            }
-
-            // Association Multi
-            {
-                // Many
-                {
-                    modelBuilder.Entity<Association_Multi_OneToMany_Left>()
-                        .HasMany(x => x.Right1s)
-                        .WithRequired(x => x.Left);
-
-                    modelBuilder.Entity<Association_Multi_OneToMany_Left>()
-                        .HasMany(x => x.Right2s)
-                        .WithRequired(x => x.Left);
-
-                    modelBuilder.Entity<Association_OneToManyToMany_Left>()
-                        .HasMany(x => x.Rights)
-                        .WithRequired(x => x.Left);
-
-                    modelBuilder.Entity<Association_OneToManyToMany_Right>()
-                        .HasMany(x => x.Rights)
-                        .WithRequired(x => x.Left);
-                }
-            }
-
-            // Entity
-            {
-                modelBuilder.ComplexType<Entity_Complex_Info>();
-                modelBuilder.ComplexType<Entity_Complex_Info_Info>();
-            }
-
-            // Inheritance
-            {
-                modelBuilder.Entity<Inheritance_TPC_Cat>().Map(m =>
-                {
-                    m.MapInheritedProperties();
-                    m.ToTable("Inheritance_TPC_Cat");
-                });
-
-                modelBuilder.Entity<Inheritance_TPC_Dog>().Map(m =>
-                {
-                    m.MapInheritedProperties();
-                    m.ToTable("Inheritance_TPC_Dog");
-                });
-            }
-
-            // Many
-            {
-                modelBuilder.Entity<AuditEntry>().HasMany(x => x.Properties).WithRequired(x => x.Parent);
-            }
-
-            modelBuilder.Configurations.Add(new Internal_Entity_Basic.EntityPropertyVisibilityConfiguration());
-            modelBuilder.Configurations.Add(new Internal_Entity_Basic_Many.EntityPropertyVisibilityConfiguration());
-        }
-#elif EFCORE
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(new SqlConnection(My.Config.ConnectionStrings.TestDatabase));
+
+			base.OnConfiguring(optionsBuilder);
         }
 
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+//			foreach (var entity in modelBuilder.Model.GetEntityTypes())
+//			{
+//				entity.Relational().TableName = entity.DisplayName();
+//			}
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            foreach (var entity in modelBuilder.Model.GetEntityTypes())
-            {
-                entity.Relational().TableName = entity.DisplayName();
-            }
+//			AuditManager.DefaultConfiguration.AutoSavePreAction = (ApplicationDbContext, audit) =>
+//(ApplicationDbContext as TestContext).AuditEntries.AddRange(audit.Entries);
 
-            AuditManager.DefaultConfiguration.AutoSavePreAction = (ApplicationDbContext, audit) =>
-(ApplicationDbContext as TestContext).AuditEntries.AddRange(audit.Entries);
+			modelBuilder.Entity<Entity_ManyGuid>().HasKey(guid => new { guid.ID1, guid.ID2, guid.ID3 });
 
-            modelBuilder.Entity<Entity_ManyGuid>().HasKey(guid => new {guid.ID1, guid.ID2, guid.ID3});
+			//tell EF these are our derivative types for TPH
+			modelBuilder.Entity<Inheritance_TPH_Cat>();
+			modelBuilder.Entity<Inheritance_TPH_Dog>();
 
-            // Association
-            {
-            }
+			base.OnModelCreating(modelBuilder);
+		}
 
-            // Audit
-            {
-                //modelBuilder.Entity<AuditEntry>().HasKey(x => x.AuditEntryID);
-                //modelBuilder.Entity<AuditEntryProperty>().Ignore(x => x.NewValue);
-                //modelBuilder.Entity<AuditEntryProperty>().Ignore(x => x.OldValue);
-                //modelBuilder.Entity<AuditEntry>().HasMany(x => x.Properties).WithOne(x => x.AuditEntry);
-                //modelBuilder.Entity<AuditEntryProperty>().HasKey(x => x.AuditEntryPropertyID);
+		#region Association
 
-            }
-        }
-
-#endif
-
-        #region Association
-
-#if EF5 || EF6
-        public DbSet<Association_ManyToMany_Left> Association_ManyToMany_Lefts { get; set; }
-
-        public DbSet<Association_ManyToMany_Right> Association_ManyToMany_Rights { get; set; }
-
-#endif
-        public DbSet<Association_OneToMany_Left> Association_OneToMany_Lefts { get; set; }
+		public DbSet<Association_OneToMany_Left> Association_OneToMany_Lefts { get; set; }
 
         public DbSet<Association_OneToMany_Right> Association_OneToMany_Rights { get; set; }
 
@@ -337,39 +194,30 @@ END
 
         public DbSet<Entity_Basic_Many> Entity_Basic_Manies { get; set; }
 
-#if EF5 || EF6
-        public DbSet<Internal_Entity_Basic> Internal_Entity_Basics { get; set; }
-
-        public DbSet<Internal_Entity_Basic_Many> Internal_Entity_Basic_Manies { get; set; }
-#endif
-
-
         public DbSet<Entity_Guid> Entity_Guids { get; set; }
 
         public DbSet<Entity_ManyGuid> Entity_ManyGuids { get; set; }
 
-#if EF5 || EF6
-        public DbSet<Entity_Complex> Entity_Complexes { get; set; }
-#endif
+		#endregion
 
-#endregion
-
-#region Inheritance
+		#region Inheritance
 
         public DbSet<Inheritance_Interface_Entity> Inheritance_Interface_Entities { get; set; }
 
-#if EF5 || EF6
-        public DbSet<Inheritance_TPC_Animal> Inheritance_TPC_Animals { get; set; }
+	    public DbSet<Inheritance_TPC_Cat> Inheritance_TPC_Cats { get; set; }
 
-        public DbSet<Inheritance_TPH_Animal> Inheritance_TPH_Animals { get; set; }
+	    public DbSet<Inheritance_TPC_Dog> Inheritance_TPC_Dogs { get; set; }
+
+		public DbSet<Inheritance_TPH_Animal> Inheritance_TPH_Animals { get; set; }
 
         public DbSet<Inheritance_TPT_Animal> Inheritance_TPT_Animals { get; set; }
 
-#endif
-        public DbSet<Inheritance_TPT_Cat> Inheritance_TPT_Cats { get; set; }
+		public DbSet<Inheritance_TPT_Cat> Inheritance_TPT_Cats { get; set; }
 
-        public DbSet<Property_AllType> Property_AllTypes { get; set; }
+		public DbSet<Inheritance_TPT_Dog> Inheritance_TPT_Dogs { get; set; }
 
-#endregion
+		public DbSet<Property_AllType> Property_AllTypes { get; set; }
+
+		#endregion
     }
 }

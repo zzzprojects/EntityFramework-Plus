@@ -23,7 +23,7 @@ namespace Z.EntityFramework.Plus
     {
         private static MethodInfo GetMethodInfo<T1, T2>(Func<T1, T2> f, T1 unused1)
         {
-#if NETSTANDARD1_3
+#if NETSTANDARD1_6
             return f.GetMethodInfo();
 #else
             return f.Method;
@@ -32,7 +32,7 @@ namespace Z.EntityFramework.Plus
 
         private static MethodInfo GetMethodInfo<T1, T2, T3>(Func<T1, T2, T3> f, T1 unused1, T2 unused2)
         {
-#if NETSTANDARD1_3
+#if NETSTANDARD1_6
             return f.GetMethodInfo();
 #else
             return f.Method;
@@ -41,7 +41,7 @@ namespace Z.EntityFramework.Plus
 
         private static MethodInfo GetMethodInfo<T1, T2, T3, T4>(Func<T1, T2, T3, T4> f, T1 unused1, T2 unused2, T3 unused3)
         {
-#if NETSTANDARD1_3
+#if NETSTANDARD1_6
             return f.GetMethodInfo();
 #else
             return f.Method;
@@ -50,7 +50,7 @@ namespace Z.EntityFramework.Plus
 
         private static MethodInfo GetMethodInfo<T1, T2, T3, T4, T5>(Func<T1, T2, T3, T4, T5> f, T1 unused1, T2 unused2, T3 unused3, T4 unused4)
         {
-#if NETSTANDARD1_3
+#if NETSTANDARD1_6
             return f.GetMethodInfo();
 #else
             return f.Method;

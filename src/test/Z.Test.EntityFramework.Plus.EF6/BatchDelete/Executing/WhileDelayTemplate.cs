@@ -96,7 +96,7 @@ WHILE @rowAffected IS NULL
     END
 
 SELECT  @totalRowAffected
-", sql);
+".CollapseWhiteSpace(), sql.CollapseWhiteSpace());
 #elif EFCORE
                 Assert.AreEqual(@"
 DECLARE @rowAffected INT

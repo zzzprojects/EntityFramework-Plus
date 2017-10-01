@@ -7,7 +7,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
@@ -15,21 +15,18 @@ using System.Threading.Tasks;
 #if EF5
 using System.Data.Metadata.Edm;
 using System.Data.Objects;
-using System.Linq;
-
 #elif EF6
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Core.Objects;
-using System.Linq;
-#elif EFCORE
+using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
+#elif EFCORE && NET45
 using Microsoft.Data.Entity.Internal;
 using Microsoft.Data.Entity.Query.Internal;
+#elif EFCORE && NETSTANDARD1_6
+using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Remotion.Linq;
-
-#endif
-#if NET45
-using System.Data.Entity.Infrastructure;
-
 #endif
 
 namespace Z.EntityFramework.Plus
@@ -129,7 +126,11 @@ namespace Z.EntityFramework.Plus
             // CHECK if the internal expression can be supported
             var isExpressionSupported = false;
 
-            var firstExpression = methodCall.Arguments.FirstOrDefault(x => x.Type.IsSubclassOf(typeof (Expression)));
+#if !(EFCORE && NETSTANDARD1_6)
+			var firstExpression = methodCall.Arguments.FirstOrDefault(x => x.Type.IsSubclassOf(typeof (Expression)));
+#else
+	        var firstExpression = methodCall.Arguments.FirstOrDefault(x => x.Type.IsAssignableFrom(typeof(Expression)));
+#endif
             if (firstExpression != null && methodCall.Arguments.Count == 2)
             {
                 var quoteExpression = ((UnaryExpression) firstExpression).Operand;
@@ -218,7 +219,10 @@ namespace Z.EntityFramework.Plus
             }
             else
             {
-                value = immediateQuery.Execute(objectQuery.MergeOption).FirstOrDefault();
+#if NETSTANDARD1_6
+				throw new NotImplementedException();
+#else
+				value = immediateQuery.Execute(objectQuery.MergeOption).FirstOrDefault();
 
                 // RESOLVE child queries using .Future()
                 {
@@ -244,7 +248,7 @@ namespace Z.EntityFramework.Plus
 
                     currentQuery.CreateQueryable(currentNewQuery);
                 }
-
+#endif
             }
 
 
@@ -272,7 +276,7 @@ namespace Z.EntityFramework.Plus
 #endif
         }
 
-#if EF6 && NET45
+#if (EF6 && NET45) || EFCORE
         /// <summary>Executes the given expression asynchronously.</summary>
         /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
         /// <param name="expression">The expression to execute.</param>

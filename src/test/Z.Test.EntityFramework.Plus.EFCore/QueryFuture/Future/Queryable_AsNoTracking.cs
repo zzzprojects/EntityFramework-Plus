@@ -9,12 +9,6 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Z.EntityFramework.Plus;
-#if EF5 || EF6
-using System.Data.Entity;
-
-#elif EFCORE
-
-#endif
 
 namespace Z.Test.EntityFramework.Plus
 {

@@ -10,3 +10,4 @@ _ReSharper.*
 *.ReSharper.user
 *.resharper.user
 *.pfx
+/src/.vs

@@ -47,6 +47,7 @@ namespace Z.EntityFramework.Plus
                     MethodCallExpression callExpression;
                     while ((callExpression = currentNode as MethodCallExpression) != null)
                     {
+						
                         var isSelectMethod = callExpression.Method.ReflectedType != null
                                              && callExpression.Method.ReflectedType.FullName == "System.Linq.Enumerable"
                                              && (callExpression.Method.Name == "Select"

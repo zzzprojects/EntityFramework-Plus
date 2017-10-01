@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.3</TargetFramework>
-    <SignAssembly>True</SignAssembly>
+    <TargetFramework>netstandard1.6</TargetFramework>
+    <SignAssembly>False</SignAssembly>
     <AssemblyOriginatorKeyFile>zzzproject.pfx</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
     <Version>1.6.7</Version>
@@ -20,24 +20,18 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>TRACE;RELEASE;NETSTANDARD1_3 EFCORE NET45 FULL</DefineConstants>
+    <DefineConstants>TRACE RELEASE NETSTANDARD1_6 EFCORE NET45 FULL</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;DEBUG;NETSTANDARD1_3 EFCORE NET45 FULL</DefineConstants>
+    <DefineConstants>DEBUG;TRACE DEBUG EFCORE FULL NETSTANDARD1_6</DefineConstants>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="1.0.0" />
-    <PackageReference Include="System.Reflection.Emit" Version="4.0.1" />
-    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.1.0" />
-  </ItemGroup>
 
   <Import Project="..\shared\Z.EF.Plus._Core.Shared\Z.EF.Plus._Core.Shared.projitems" Label="Shared" />
 
-  <Import Project="..\shared\Z.EF.Plus._ExceptionMessage.Shared\Z.EF.Plus._ExceptionMessage.Shared.projitems" Label="Shared" />
-
   <Import Project="..\shared\Z.EF.Plus.Audit.Shared\Z.EF.Plus.Audit.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus._ExceptionMessage.Shared\Z.EF.Plus._ExceptionMessage.Shared.projitems" Label="Shared" />
 
   <Import Project="..\shared\Z.EF.Plus.BatchDelete.Shared\Z.EF.Plus.BatchDelete.Shared.projitems" Label="Shared" />
 
@@ -47,8 +41,24 @@
 
   <Import Project="..\shared\Z.EF.Plus.QueryDeferred.Shared\Z.EF.Plus.QueryDeferred.Shared.projitems" Label="Shared" />
 
+  <Import Project="..\shared\Z.EF.Plus.QueryExtensions.Shared\Z.EF.Plus.QueryExtensions.Shared.projitems" Label="Shared" />
+
   <Import Project="..\shared\Z.EF.Plus.QueryFilter.Shared\Z.EF.Plus.QueryFilter.Shared.projitems" Label="Shared" />
 
   <Import Project="..\shared\Z.EF.Plus.QueryFuture.Shared\Z.EF.Plus.QueryFuture.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus.QueryIncludeFilter.Shared\Z.EF.Plus.QueryIncludeFilter.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus.QueryIncludeOptimized.Shared\Z.EF.Plus.QueryIncludeOptimized.Shared.projitems" Label="Shared" />
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="1.1.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="1.1.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="1.1.3" />
+    <PackageReference Include="System.Data.Common" Version="4.3.0" />
+    <PackageReference Include="System.Reflection" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
+	<PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" />
+  </ItemGroup>
 
 </Project>

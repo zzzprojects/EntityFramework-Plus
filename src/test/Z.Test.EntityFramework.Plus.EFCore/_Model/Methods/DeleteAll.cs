@@ -41,12 +41,14 @@ namespace Z.Test.EntityFramework.Plus
 
         public static void DeleteAll<T>(Func<TestContext, DbSet<T>> func) where T : class
         {
-            var ctx = new TestContext();
-            var sets = func(ctx);
-            sets.RemoveRange(sets);
-            ctx.SaveChanges();
+	        using (var ctx = new TestContext())
+	        {
+		        var sets = func(ctx);
+		        sets.RemoveRange(sets);
+		        ctx.SaveChanges();
 
-            Assert.AreEqual(0, sets.Count());
+		        Assert.AreEqual(0, sets.Count());
+			}
         }
     }
 }

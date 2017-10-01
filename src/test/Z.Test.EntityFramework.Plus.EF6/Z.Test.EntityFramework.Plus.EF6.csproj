@@ -44,11 +44,11 @@
   <ItemGroup>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>$(SolutionDir)\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <HintPath>$(SolutionDir)\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -207,6 +207,8 @@
     <Compile Include="BatchDelete\BatchDelete_InMemory.cs" />
     <Compile Include="BatchDelete\BatchDelete_PrimaryKey.cs" />
     <Compile Include="BatchDelete\BatchDelete_WhereValue.cs" />
+    <Compile Include="BatchDelete\BatchDelete_Inheritance.cs" />
+    <Compile Include="BatchDelete\Inheritance\BatchDelete_Inheritance.cs" />
     <Compile Include="BatchDelete\InMemory\Ten.cs" />
     <Compile Include="BatchDelete\InMemory\Thirty.cs" />
     <Compile Include="BatchDelete\InMemory\Twenty.cs" />
@@ -237,6 +239,7 @@
     <Compile Include="BatchUpdate\BatchUpdate_BatchSize.cs" />
     <Compile Include="BatchUpdate\BatchUpdate_Executing.cs" />
     <Compile Include="BatchUpdate\BatchUpdate_SqlSchema.cs" />
+    <Compile Include="BatchUpdate\BatchUpdate_Inheritance.cs" />
     <Compile Include="BatchUpdate\BatchUpdate_WhereValue.cs" />
     <Compile Include="BatchUpdate\BatchUpdate_Value.cs" />
     <Compile Include="BatchUpdate\BatchUpdate_Transaction.cs" />
@@ -247,6 +250,7 @@
     <Compile Include="BatchUpdate\Executing\Template.cs" />
     <Compile Include="BatchUpdate\Executing\WhileDelayTemplate.cs" />
     <Compile Include="BatchUpdate\Executing\WhileTemplate.cs" />
+    <Compile Include="BatchUpdate\Inheritance\BatchUpdate_Inheritance.cs" />
     <Compile Include="BatchUpdate\Keyword\From.cs" />
     <Compile Include="BatchUpdate\PrimaryKey\Many.cs" />
     <Compile Include="BatchUpdate\PrimaryKey\Single.cs" />
@@ -306,6 +310,11 @@
     <Compile Include="QueryCache\ExpireAll\Queryable_WithTag.cs" />
     <Compile Include="QueryCache\ExpireAll\Queryable_WithDefault.cs" />
     <Compile Include="QueryCache\ExpireAll\Queryable_WithExpiration.cs" />
+    <Compile Include="QueryCache\FromCacheAsync\QueryDelayed_WithDefault.cs" />
+    <Compile Include="QueryCache\FromCacheAsync\QueryDelayed_WithExpiration.cs" />
+    <Compile Include="QueryCache\FromCache\QueryDelayed_WithDefault.cs" />
+    <Compile Include="QueryCache\FromCache\QueryDelayed_WithExpiration.cs" />
+    <Compile Include="QueryCache\QueryCache_ForceFirstTagAsCacheKey.cs" />
     <Compile Include="QueryCache\UseTagsAsCacheKey\Many.cs" />
     <Compile Include="QueryCache\UseTagsAsCacheKey\None.cs" />
     <Compile Include="QueryCache\UseTagsAsCacheKey\Single.cs" />
@@ -434,6 +443,8 @@
     <Compile Include="QueryIncludeOptimized\QueryIncludeOptimized_ByPath.cs" />
     <Compile Include="QueryIncludeOptimized\QueryIncludeOptimized_Null_Executor.cs" />
     <Compile Include="QueryIncludeOptimized\QueryIncludeOptimized_Null_Enumerator.cs" />
+    <Compile Include="_Helper\Extensions\StringExtensions.cs" />
+    <Compile Include="_Helper\Extensions\TestContextExtensions.cs" />
     <Compile Include="_Helper\QueryIncludeOptimizedHelper.cs" />
     <Compile Include="_Model\Association_OneToSingleAndMany_RightRight.cs" />
     <Compile Include="_Model\Association_OneToSingleAndMany_RightRightRight.cs" />
@@ -729,7 +740,6 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\..\Z.EntityFramework.Plus.EF6\Z.EntityFramework.Plus.EF6.csproj">
       <Project>{6ea3675a-ab66-4aba-94d1-3da69fa88d4e}</Project>
