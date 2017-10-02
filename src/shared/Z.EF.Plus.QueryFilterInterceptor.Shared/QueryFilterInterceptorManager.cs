@@ -57,6 +57,10 @@ namespace Z.EntityFramework.Plus
             RegisterType(types);
         }
 
+        /// <summary>Gets or sets a value indicating whether we allow property to be filtering.</summary>
+        /// <value>True if allow property filtering, false if not.</value>
+        public static bool AllowPropertyFilter { get; set; }
+
         /// <summary>Gets the database expression by hook.</summary>
         /// <value>The database expression by hook.</value>
         public static ConcurrentDictionary<string, DbExpression> DbExpressionByHook { get; }

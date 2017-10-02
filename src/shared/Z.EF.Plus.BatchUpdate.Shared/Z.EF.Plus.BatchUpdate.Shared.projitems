@@ -22,7 +22,4 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\Update.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\UpdateAsync.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Model\" />
-  </ItemGroup>
 </Project>
