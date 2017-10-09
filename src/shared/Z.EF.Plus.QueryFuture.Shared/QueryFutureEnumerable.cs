@@ -161,16 +161,20 @@ namespace Z.EntityFramework.Plus
         public override void GetResultDirectly()
         {
             var query = ((IQueryable<T>)Query);
-            var enumerator = query.GetEnumerator();
 
-            SetResult(enumerator);
+            GetResultDirectly(query);
         }
 
         internal void GetResultDirectly(IQueryable<T> query)
         {
+#if NETSTANDARD2_0
+            using(var enumerator = query.GetEnumerator())
+                SetResult(enumerator);
+#else
             var enumerator = query.GetEnumerator();
 
             SetResult(enumerator);
+#endif
         }
     }
 }
