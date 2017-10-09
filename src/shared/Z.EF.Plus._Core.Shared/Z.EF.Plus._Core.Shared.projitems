@@ -38,6 +38,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)EF5_EF6\ObjectContext\CreateStoreCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EF5_EF6\ObjectContext\GetEntitySet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EF5_EF6\Object\Object.GetObjectQuery.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF6\DbContext\IsInMemoryEffortQueryContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF6\IQueryable`\IsInMemoryEffortQueryContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EF6\ObjectContext\GetDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EF6\ObjectContext\GetInterceptionContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EF6\ObjectQuery\GetCommandTextAndParameters.cs" />

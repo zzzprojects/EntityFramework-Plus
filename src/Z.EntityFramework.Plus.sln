@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.3
+VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{14D8985E-0AA8-444A-A32E-D766ABA114D6}"
 EndProject
@@ -87,6 +87,7 @@ Global
 		shared\Z.EF.Plus.QueryCache.Shared\Z.EF.Plus.QueryCache.Shared.projitems*{6ea3675a-ab66-4aba-94d1-3da69fa88d4e}*SharedItemsImports = 4
 		shared\Z.EF.Plus.QueryDeferred.Shared\Z.EF.Plus.QueryDeferred.Shared.projitems*{6ea3675a-ab66-4aba-94d1-3da69fa88d4e}*SharedItemsImports = 4
 		shared\Z.EF.Plus.QueryExtensions.Shared\Z.EF.Plus.QueryExtensions.Shared.projitems*{6ea3675a-ab66-4aba-94d1-3da69fa88d4e}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryFilter.Shared\Z.EF.Plus.QueryFilter.Shared.projitems*{6ea3675a-ab66-4aba-94d1-3da69fa88d4e}*SharedItemsImports = 4
 		shared\Z.EF.Plus.QueryFilterInterceptor.Shared\Z.EF.Plus.QueryFilterInterceptor.Shared.projitems*{6ea3675a-ab66-4aba-94d1-3da69fa88d4e}*SharedItemsImports = 4
 		shared\Z.EF.Plus.QueryFuture.Shared\Z.EF.Plus.QueryFuture.Shared.projitems*{6ea3675a-ab66-4aba-94d1-3da69fa88d4e}*SharedItemsImports = 4
 		shared\Z.EF.Plus.QueryIncludeFilter.Shared\Z.EF.Plus.QueryIncludeFilter.Shared.projitems*{6ea3675a-ab66-4aba-94d1-3da69fa88d4e}*SharedItemsImports = 4
@@ -101,6 +102,7 @@ Global
 		shared\Z.EF.Plus.QueryCache.Shared\Z.EF.Plus.QueryCache.Shared.projitems*{ac398eb8-0a31-4d06-a804-84d10b6da96d}*SharedItemsImports = 4
 		shared\Z.EF.Plus.QueryDeferred.Shared\Z.EF.Plus.QueryDeferred.Shared.projitems*{ac398eb8-0a31-4d06-a804-84d10b6da96d}*SharedItemsImports = 4
 		shared\Z.EF.Plus.QueryExtensions.Shared\Z.EF.Plus.QueryExtensions.Shared.projitems*{ac398eb8-0a31-4d06-a804-84d10b6da96d}*SharedItemsImports = 4
+		shared\Z.EF.Plus.QueryFilter.Shared\Z.EF.Plus.QueryFilter.Shared.projitems*{ac398eb8-0a31-4d06-a804-84d10b6da96d}*SharedItemsImports = 4
 		shared\Z.EF.Plus.QueryFilterInterceptor.Shared\Z.EF.Plus.QueryFilterInterceptor.Shared.projitems*{ac398eb8-0a31-4d06-a804-84d10b6da96d}*SharedItemsImports = 4
 		shared\Z.EF.Plus.QueryFuture.Shared\Z.EF.Plus.QueryFuture.Shared.projitems*{ac398eb8-0a31-4d06-a804-84d10b6da96d}*SharedItemsImports = 4
 		shared\Z.EF.Plus.QueryIncludeFilter.Shared\Z.EF.Plus.QueryIncludeFilter.Shared.projitems*{ac398eb8-0a31-4d06-a804-84d10b6da96d}*SharedItemsImports = 4

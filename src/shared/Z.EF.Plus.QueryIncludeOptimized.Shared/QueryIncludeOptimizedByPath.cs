@@ -93,7 +93,19 @@ namespace Z.EntityFramework.Plus
             // ENSURE property exists
             if (property == null)
             {
-                throw new Exception(string.Format(ExceptionMessage.QueryIncludeOptimized_ByPath_MissingPath, elementType.FullName, paths[currentIndex]));
+                // Try Again with case insensitive
+                var properties = elementType.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+                    .Where(x => x.Name.ToLowerInvariant() == paths[currentIndex].ToLowerInvariant()).ToList();
+
+                if (properties.Count == 1)
+                {
+                    property = properties[0];
+                }
+
+                if (property == null)
+                {
+                    throw new Exception(string.Format(ExceptionMessage.QueryIncludeOptimized_ByPath_MissingPath, elementType.FullName, paths[currentIndex]));
+                }
             }
 
             expression = Expression.Property(expression, property);

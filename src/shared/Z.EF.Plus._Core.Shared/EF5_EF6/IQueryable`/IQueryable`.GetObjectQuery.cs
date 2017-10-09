@@ -45,6 +45,20 @@ namespace Z.EntityFramework.Plus
 
                 if (internalQueryProperty == null)
                 {
+                    // CHECK if a InnerQuery exists
+                    var innerQueryProperty = query.GetType().GetProperty("InnerQuery", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+                    if (innerQueryProperty != null)
+                    {
+                        var innerQuery = innerQueryProperty.GetValue(query, null) as IQueryable<T>;
+
+                        if (innerQuery != null && query != innerQuery)
+                        {
+                            var innerObjectQuery = innerQuery.GetObjectQuery();
+                            return innerObjectQuery;
+                        }
+                    }
+
                     throw new Exception(ExceptionMessage.GeneralException);
                 }
 

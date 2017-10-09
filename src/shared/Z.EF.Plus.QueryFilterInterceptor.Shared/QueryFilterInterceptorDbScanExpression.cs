@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data.Entity;
 using System.Data.Entity.Core.Common.CommandTrees;
+using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Infrastructure.Interception;
 using Z.EntityFramework.Plus.QueryInterceptorFilter;
@@ -60,6 +61,13 @@ namespace Z.EntityFramework.Plus
 
                 baseExpression = ApplyFilter(baseExpression, fullName);
             }
+            else if (QueryFilterManager.AllowPropertyFilter && navProp != null)
+            {
+                var targetEntityType = navProp.ToEndMember.GetEntityType();
+                var fullName = targetEntityType.FullName;
+
+                baseExpression = ApplyFilter(baseExpression, fullName);
+            }
 
             return baseExpression;
         }
@@ -92,6 +100,8 @@ namespace Z.EntityFramework.Plus
                         {
                             var visitor = new QueryFilterInterceptorDbProjectExpression();
                             visitor.DbScanExpression = baseExpression;
+                            visitor.ParameterCollection = QueryFilterManager.DbExpressionParameterByHook[expression2];
+
                             var filetered = expression2.Accept(visitor);
                             baseExpression = filetered;
                         }
@@ -118,13 +128,33 @@ namespace Z.EntityFramework.Plus
 
                         if (expression2 != null)
                         {
-                            var visitor = new QueryFilterInterceptorDbProjectExpression();
-                            visitor.DbScanExpression = baseExpression;
-                            visitor.ParameterCollection = QueryFilterManager.DbExpressionParameterByHook[expression2];
+                            var baseExpressionProperty = baseExpression as DbPropertyExpression;
+                            NavigationProperty navProp = null;
 
-                            var filetered = expression2.Accept(visitor);
+                            if (baseExpressionProperty != null)
+                            {
+                                navProp = baseExpressionProperty.Property as NavigationProperty;
+                            }
+                            
+                            if (QueryFilterManager.AllowPropertyFilter && navProp != null && !baseExpression.ResultType.ToString().Contains("Transient.collection["))
+                            {
+                                // Filter property
+                                expression2 = DbExpressionBuilder.Take(expression2, 1);
+                                expression2 = DbExpressionBuilder.Element(expression2);
 
-                            baseExpression = filetered;
+                                baseExpression = expression2;
+ 
+                            }
+                            else
+                            {
+                                var visitor = new QueryFilterInterceptorDbProjectExpression();
+                                visitor.DbScanExpression = baseExpression;
+                                visitor.ParameterCollection = QueryFilterManager.DbExpressionParameterByHook[expression2];
+
+                                var filetered = expression2.Accept(visitor);
+
+                                baseExpression = filetered;
+                            }
                         }
                     }
                 }

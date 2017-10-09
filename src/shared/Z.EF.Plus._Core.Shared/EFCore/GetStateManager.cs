@@ -5,7 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
-#if FULL
+#if FULL || QUERY_FUTURE
 #if EFCORE
 using System.Reflection;
 using Microsoft.EntityFrameworkCore.ChangeTracking;

@@ -29,6 +29,9 @@ namespace Z.EntityFramework.Plus
         RelationshipAdded,
 
         /// <summary>An enum constant representing the relationship deleted option.</summary>
-        RelationshipDeleted
+        RelationshipDeleted,
+
+        /// <summary>An enum constant representing the entity current option.</summary>
+        EntityCurrent
     }
 }
