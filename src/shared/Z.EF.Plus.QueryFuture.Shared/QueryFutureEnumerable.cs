@@ -167,14 +167,8 @@ namespace Z.EntityFramework.Plus
 
         internal void GetResultDirectly(IQueryable<T> query)
         {
-#if NETSTANDARD2_0
             using(var enumerator = query.GetEnumerator())
                 SetResult(enumerator);
-#else
-            var enumerator = query.GetEnumerator();
-
-            SetResult(enumerator);
-#endif
         }
     }
 }
