@@ -1005,12 +1005,12 @@ SELECT  @totalRowAffected
                     }
 
                     // CHECK if valueSql end with ' AS [XYZ]'
-                    if (valueSql.LastIndexOf('[') != -1 && valueSql.Substring(0, valueSql.LastIndexOf('[')).EndsWith(" AS ", StringComparison.InvariantCulture))
+                    if (valueSql.LastIndexOf('[') != -1 && !valueSql.Trim().EndsWith(")", StringComparison.InvariantCulture) && valueSql.Substring(0, valueSql.LastIndexOf('[')).EndsWith(" AS ", StringComparison.InvariantCulture))
                     {
                         valueSql = valueSql.Substring(0, valueSql.LastIndexOf('[') - 4);
                     }
 
-                    if (valueSql.LastIndexOf('`') != -1 && valueSql.Substring(0, valueSql.LastIndexOf('`')).EndsWith(" AS ", StringComparison.InvariantCulture))
+                    if (valueSql.LastIndexOf('`') != -1 && !valueSql.Trim().EndsWith(")", StringComparison.InvariantCulture) &&  valueSql.Substring(0, valueSql.LastIndexOf('`')).EndsWith(" AS ", StringComparison.InvariantCulture))
                     {
                         valueSql = valueSql.Substring(0, valueSql.LastIndexOf('`') - 4);
                     }
