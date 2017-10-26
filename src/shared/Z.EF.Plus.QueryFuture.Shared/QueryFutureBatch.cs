@@ -117,6 +117,8 @@ namespace Z.EntityFramework.Plus
             }
 
             var connection = Context.Database.GetDbConnection();
+
+            var firstQuery = Queries[0];
 #endif
             var command = CreateCommandCombined();
 
@@ -173,6 +175,13 @@ namespace Z.EntityFramework.Plus
                     connection.Close();
                 }
             }
+
+#if EFCORE
+            if(firstQuery.RestoreConnection != null)
+            {
+                firstQuery.RestoreConnection();
+            }
+#endif
         }
 
 #if NET45
@@ -217,6 +226,8 @@ namespace Z.EntityFramework.Plus
             }
 
             var connection = Context.Database.GetDbConnection();
+
+            var firstQuery = Queries[0];
 #endif
             var command = CreateCommandCombined();
 
@@ -273,6 +284,13 @@ namespace Z.EntityFramework.Plus
                     connection.Close();
                 }
             }
+
+#if EFCORE
+            if (firstQuery.RestoreConnection != null)
+            {
+                firstQuery.RestoreConnection();
+            }
+#endif
         }
 #endif
 

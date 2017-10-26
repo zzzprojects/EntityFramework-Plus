@@ -167,8 +167,10 @@ namespace Z.EntityFramework.Plus
 
         internal void GetResultDirectly(IQueryable<T> query)
         {
-            using(var enumerator = query.GetEnumerator())
+            using (var enumerator = query.GetEnumerator())
+            {
                 SetResult(enumerator);
+            }
         }
     }
 }

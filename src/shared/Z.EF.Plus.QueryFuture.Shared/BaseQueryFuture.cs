@@ -70,6 +70,8 @@ namespace Z.EntityFramework.Plus
         /// <value>The query connection.</value>
         internal IRelationalConnection QueryConnection { get; set; }
 
+        internal Action RestoreConnection { get;set;}
+
         public virtual void ExecuteInMemory()
         {
             
@@ -180,8 +182,11 @@ namespace Z.EntityFramework.Plus
                
                 var innerConnection = new CreateEntityConnection(QueryConnection.DbConnection, null);
                 var innerConnectionField = typeof(RelationalConnection).GetField("_connection", BindingFlags.NonPublic | BindingFlags.Instance);
+                var initalConnection = innerConnectionField.GetValue(QueryConnection);
 
                 innerConnectionField.SetValue(QueryConnection, new Microsoft.EntityFrameworkCore.Internal.LazyRef<DbConnection>(() => innerConnection));
+
+                RestoreConnection = () => innerConnectionField.SetValue(QueryConnection, initalConnection);
             }
 
 
