@@ -13,7 +13,6 @@ using System.Threading;
 using System.Threading.Tasks;
 #if NET45
 using System.Data.Entity.Infrastructure;
-
 #endif
 
 namespace Z.EntityFramework.Plus
@@ -110,8 +109,12 @@ namespace Z.EntityFramework.Plus
             // CHECK if the internal expression can be supported
             var isExpressionSupported = false;
 
-            var firstExpression = methodCall.Arguments.FirstOrDefault(x => x.Type.IsSubclassOf(typeof (Expression)));
-            var unaryExpression = firstExpression as UnaryExpression;
+#if !(EFCORE && NETSTANDARD1_6)
+			var firstExpression = methodCall.Arguments.FirstOrDefault(x => x.Type.IsSubclassOf(typeof (Expression)));
+#else
+			var firstExpression = methodCall.Arguments.FirstOrDefault(x => x.Type.IsAssignableFrom(typeof (Expression)));
+#endif
+			var unaryExpression = firstExpression as UnaryExpression;
             if (firstExpression != null && unaryExpression != null && methodCall.Arguments.Count == 2)
             {
                 var lambdaExpression = unaryExpression.Operand as LambdaExpression;

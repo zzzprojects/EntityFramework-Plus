@@ -12,17 +12,13 @@ using System.Reflection;
 #if EF5
 using System.Data.Entity;
 using System.Data.Objects;
-using System.Reflection;
-
 #elif EF6
 using System.Data.Entity;
-using System.Reflection;
-
 #endif
 
 namespace Z.EntityFramework.Plus
 {
-    internal static partial class InternalExtensions
+	internal static partial class InternalExtensions
     {
         public static Type GetDbSetElementType(this Type type)
         {
@@ -44,7 +40,7 @@ namespace Z.EntityFramework.Plus
             return null;
 #elif EFCORE
 
-#if NETSTANDARD1_3
+#if NETSTANDARD1_6
             return type.GetTypeInfo().GenericTypeArguments[0];
 #else
             return type.GetGenericArguments()[0];

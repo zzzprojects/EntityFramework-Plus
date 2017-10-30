@@ -13,16 +13,17 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+#if EF5 || EF6
+using Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel;
+using Z.EF.Plus.BatchUpdate.Shared.Extensions;
+using Z.EF.Plus.BatchUpdate.Shared.Model;
+#endif
 
 #if EF5
 using System.Data.Objects;
-using Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel;
-
 #elif EF6
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure.Interception;
-using Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel;
-
 #elif EFCORE
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
@@ -186,7 +187,7 @@ SELECT  @totalRowAffected
                 return 0;
             }
 
-            // GET model and info
+			// GET model and info
 #if EF5 || EF6
             var dbContext = query.GetDbContext();
 
@@ -203,179 +204,186 @@ SELECT  @totalRowAffected
 #endif
 
             var model = dbContext.GetModel();
-            var entity = model.Entity<T>();
-            var keys = entity.Info.Key.PropertyRefs;
 
-            // SELECT keys names
-            var queryKeys = query.SelectByName(keys.Select(x => x.Name).ToList());
-            var innerObjectQuery = queryKeys.GetObjectQuery();
-             
-            // CREATE command
-            var command = CreateCommand(innerObjectQuery, entity);
+			//get our table definitions for the requested type
+	        IEnumerable<TableDefinition> lsTableDefinitions = model.GetTableDefinitions<T>();
 
-            // WHERE 1 = 0
-            if (command == null)
-            {
-                return 0;
-            }
+	        //reverse the order so the most base table is the first
+			TableDefinition tdBaseTableDefinition = lsTableDefinitions.OrderByDescending(i => i.Order).FirstOrDefault();
 
-            // EXECUTE
-            var ownConnection = false;
+			//stop if there's nothing
+	        if (tdBaseTableDefinition == null)
+	        {
+		        throw new Exception("Could not find Entity meta data");
+	        }
 
-            try
-            {
-                if (innerObjectQuery.Context.Connection.State != ConnectionState.Open)
-                {
-                    ownConnection = true;
-                    innerObjectQuery.Context.Connection.Open();
-                }
+			int rowsAffected = 0;
 
-                if (Executing != null)
-                {
-                    Executing(command);
-                }
+	        // SELECT keys names
+	        var queryKeys = query.SelectByName(tdBaseTableDefinition.Keys.Select(x => x.ColumnName).ToList());
+	        var innerObjectQuery = queryKeys.GetObjectQuery();
+
+	        // CREATE command
+	        var command = CreateCommand(innerObjectQuery, tdBaseTableDefinition);
+
+	        // WHERE 1 = 0
+	        if (command == null)
+	        {
+		        return 0;
+	        }
+
+	        // EXECUTE
+	        var ownConnection = false;
+
+	        try
+	        {
+		        if (innerObjectQuery.Context.Connection.State != ConnectionState.Open)
+		        {
+			        ownConnection = true;
+			        innerObjectQuery.Context.Connection.Open();
+		        }
+
+		        Executing?.Invoke(command);
 
 #if EF5
-                if (command.GetType().Name == "NpgsqlCommand")
-                {
-                    command.CommandText = command.CommandText.Replace("[", "\"").Replace("]", "\"");
-                    int totalRowAffecteds = command.ExecuteNonQuery();
-                    return totalRowAffecteds;
-                }
-                else if (command.Connection.GetType().Name.Contains("MySql"))
-                {
-                    int totalRowAffecteds = command.ExecuteNonQuery();
-                    return totalRowAffecteds;
-                }
-                else if (command.Connection.GetType().Name.Contains("Oracle"))
-                {
-                    int totalRowAffecteds = command.ExecuteNonQuery();
-                    return totalRowAffecteds;
-                }
-                else if (command.GetType().Name == "SqlCeCommand")
-                {
-                    int totalRowAffecteds = command.ExecuteNonQuery();
-                    return totalRowAffecteds;
-                }
-                else
-                {
-                    var rowAffecteds = (int)command.ExecuteScalar();
-                    return rowAffecteds;
-                }
+				if (command.GetType().Name == "NpgsqlCommand")
+				{
+					command.CommandText = command.CommandText.Replace("[", "\"").Replace("]", "\"");
+					rowsAffected += command.ExecuteNonQuery();
+				}
+				else if (command.Connection.GetType().Name.Contains("MySql"))
+				{
+					rowsAffected += command.ExecuteNonQuery();
+				}
+				else if (command.Connection.GetType().Name.Contains("Oracle"))
+				{
+					rowsAffected += command.ExecuteNonQuery();
+				}
+				else if (command.GetType().Name == "SqlCeCommand")
+				{
+					rowsAffected += command.ExecuteNonQuery();
+				}
+				else
+				{
+					rowsAffected += (int)command.ExecuteScalar();
+				}
 #elif EF6
-                var interceptionContext = new DbCommandInterceptionContext(dbContext.GetObjectContext().GetInterceptionContext());
+		        var interceptionContext = new DbCommandInterceptionContext(dbContext.GetObjectContext().GetInterceptionContext());
 
-                if (command.GetType().Name == "NpgsqlCommand")
-                {
-                    command.CommandText = command.CommandText.Replace("[", "\"").Replace("]", "\"");
-                    int totalRowAffecteds = DbInterception.Dispatch.Command.NonQuery(command, interceptionContext);
-                    return totalRowAffecteds;
-                }
-                else if (command.Connection.GetType().Name.Contains("MySql"))
-                {
-                    int totalRowAffecteds = DbInterception.Dispatch.Command.NonQuery(command, interceptionContext);
-                    return totalRowAffecteds;
-                }
-                else if (command.Connection.GetType().Name.Contains("Oracle") || command.Connection.GetType().Name.Contains("SQLite"))
-                {
-                    int totalRowAffecteds = DbInterception.Dispatch.Command.NonQuery(command, interceptionContext);
-                    return totalRowAffecteds;
-                }
-                else if (command.GetType().Name == "SqlCeCommand")
-                {
-                    int totalRowAffecteds = DbInterception.Dispatch.Command.NonQuery(command, interceptionContext);
-                    return totalRowAffecteds;
-                }
-                else
-                {
-                    var rowAffecteds = (int)DbInterception.Dispatch.Command.Scalar(command, interceptionContext);
-                    return rowAffecteds;
-                }
+		        if (command.GetType().Name == "NpgsqlCommand")
+		        {
+			        command.CommandText = command.CommandText.Replace("[", "\"").Replace("]", "\"");
+			        rowsAffected += DbInterception.Dispatch.Command.NonQuery(command, interceptionContext);
+		        }
+		        else if (command.Connection.GetType().Name.Contains("MySql"))
+		        {
+			        rowsAffected += DbInterception.Dispatch.Command.NonQuery(command, interceptionContext);
+		        }
+		        else if (command.Connection.GetType().Name.Contains("Oracle") || command.Connection.GetType().Name.Contains("SQLite"))
+		        {
+			        rowsAffected += DbInterception.Dispatch.Command.NonQuery(command, interceptionContext);
+		        }
+		        else if (command.GetType().Name == "SqlCeCommand")
+		        {
+			        rowsAffected += DbInterception.Dispatch.Command.NonQuery(command, interceptionContext);
+		        }
+		        else
+		        {
+			        rowsAffected += (int)DbInterception.Dispatch.Command.Scalar(command, interceptionContext);
+		        }
 #endif
+	        }
+	        finally
+	        {
+		        if (ownConnection && innerObjectQuery.Context.Connection.State != ConnectionState.Closed)
+		        {
+			        innerObjectQuery.Context.Connection.Close();
+		        }
+	        }
 
-            }
-            finally
-            {
-                if (ownConnection && innerObjectQuery.Context.Connection.State != ConnectionState.Closed)
-                {
-                    innerObjectQuery.Context.Connection.Close();
-                }
-            }
+			return rowsAffected;
+
 #elif EFCORE
-            if (BatchDeleteManager.InMemoryDbContextFactory != null && query.IsInMemoryQueryContext())
-            {
-                var context = BatchDeleteManager.InMemoryDbContextFactory();
+			if (BatchDeleteManager.InMemoryDbContextFactory != null && query.IsInMemoryQueryContext())
+			{
+				var context = BatchDeleteManager.InMemoryDbContextFactory();
 
-                var list = query.ToList();
-                context.RemoveRange(list);
-                context.SaveChanges();
-                return list.Count;
-            }
+				var list = query.ToList();
+				context.RemoveRange(list);
+				context.SaveChanges();
+				return list.Count;
+			}
 
-            var dbContext = query.GetDbContext();
-            var entity = dbContext.Model.FindEntityType(typeof(T));
-            var keys = entity.GetKeys().ToList()[0].Properties;
+			var dbContext = query.GetDbContext();
+			var entity = dbContext.Model.FindEntityType(typeof(T));
 
-            var queryKeys = query.SelectByName(keys.Select(x => x.Name).ToList());
+			//go all the way to our base type
+	        while (entity.BaseType != null)
+	        {
+		        entity = entity.BaseType;
+	        }
 
-            // CREATE command
-            var command = CreateCommand(queryKeys, entity);
+			//get our keys
+	        var keys = entity.GetKeys().SelectMany(i => i.Properties);
 
-            // EXECUTE
-            var ownConnection = false;
+			var queryKeys = query.SelectByName(keys.Select(x => x.Name).ToList());
 
-            try
-            {
-                if (dbContext.Database.GetDbConnection().State != ConnectionState.Open)
-                {
-                    ownConnection = true;
-                    dbContext.Database.OpenConnection();
-                }
+			// CREATE command
+			var command = CreateCommand(queryKeys, entity);
 
-                if (Executing != null)
-                {
-                    Executing(command);
-                }
+			// EXECUTE
+			var ownConnection = false;
 
-                if (command.GetType().Name == "NpgsqlCommand")
-                {
-                    command.CommandText = command.CommandText.Replace("[", "\"").Replace("]", "\"");
-                    int totalRowAffecteds = command.ExecuteNonQuery();
-                    return totalRowAffecteds;
-                }
-                else if (command.Connection.GetType().Name.Contains("MySql"))
-                {
-                    int totalRowAffecteds = command.ExecuteNonQuery();
-                    return totalRowAffecteds;
-                }
-                else if (command.GetType().Name.Contains("Sqlite"))
-                {
-                    int totalRowAffecteds = command.ExecuteNonQuery();
-                    return totalRowAffecteds;
-                }
+	        int intRowsAffected = 0;
 
-                var rowAffecteds = (int)command.ExecuteScalar();
-                return rowAffecteds;
-            }
-            finally
-            {
-                if (ownConnection && dbContext.Database.GetDbConnection().State != ConnectionState.Closed)
-                {
-                    dbContext.Database.CloseConnection();
-                }
-            }
+			try
+			{
+				if (dbContext.Database.GetDbConnection().State != ConnectionState.Open)
+				{
+					ownConnection = true;
+					dbContext.Database.OpenConnection();
+				}
+
+				Executing?.Invoke(command);
+
+				if (command.GetType().Name == "NpgsqlCommand")
+				{
+					command.CommandText = command.CommandText.Replace("[", "\"").Replace("]", "\"");
+					intRowsAffected = command.ExecuteNonQuery();
+				}
+				else if (command.Connection.GetType().Name.Contains("MySql"))
+				{
+					intRowsAffected = command.ExecuteNonQuery();
+				}
+				else if (command.GetType().Name.Contains("Sqlite"))
+				{
+					intRowsAffected = command.ExecuteNonQuery();
+				}
+				else
+				{
+					intRowsAffected = (int)command.ExecuteScalar();
+				}
+			}
+			finally
+			{
+				if (ownConnection && dbContext.Database.GetDbConnection().State != ConnectionState.Closed)
+				{
+					dbContext.Database.CloseConnection();
+				}
+			}
+
+	        return intRowsAffected;
 #endif
-            }
+        }
 
 #if EF5 || EF6
-        /// <summary>Creates a command to execute the batch operation.</summary>
-        /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
-        /// <typeparam name="T">Generic type parameter.</typeparam>
-        /// <param name="query">The query.</param>
-        /// <param name="entity">The schema entity.</param>
-        /// <param name="visitor">The visitor.</param>
-        /// <returns>The new command to execute the batch operation.</returns>
-        internal DbCommand CreateCommand<T>(ObjectQuery query, SchemaEntityType<T> entity)
+		/// <summary>Creates a command to execute the batch operation.</summary>
+		/// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
+		/// <typeparam name="T">Generic type parameter.</typeparam>
+		/// <param name="query">The query.</param>
+		/// <param name="tdTableDefinition">The schema entity.</param>
+		/// <returns>The new command to execute the batch operation.</returns>
+		public DbCommand CreateCommand(ObjectQuery query, TableDefinition tdTableDefinition)
         {
             // GET command
             var command = query.Context.CreateStoreCommand();
@@ -396,49 +404,31 @@ SELECT  @totalRowAffected
                 }
             }
 
-            // GET mapping
-            var mapping = entity.Info.EntityTypeMapping.MappingFragment;
-            var store = mapping.StoreEntitySet;
-
             string tableName;
 
             if (isMySql)
             {
-                tableName = string.Concat("`", store.Table, "`");
+                tableName = string.Concat("`", tdTableDefinition.Table, "`");
             }
             else if (isSqlCe)
             {
-                tableName = string.Concat("[", store.Table, "]");
+                tableName = string.Concat("[", tdTableDefinition.Table, "]");
             }
             else if (isSQLite)
             {
-                tableName = string.Concat("\"", store.Table, "\"");
+                tableName = string.Concat("\"", tdTableDefinition.Table, "\"");
             }
             else if (isOracle)
             {
-                tableName = string.IsNullOrEmpty(store.Schema) || store.Schema == "dbo" ?
-string.Concat("\"", store.Table, "\"") :
-string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
+                tableName = string.IsNullOrEmpty(tdTableDefinition.Schema) || tdTableDefinition.Schema == "dbo" ?
+					string.Concat("\"", tdTableDefinition.Table, "\"") :
+					string.Concat("\"", tdTableDefinition.Schema, "\".\"", tdTableDefinition.Table, "\"");
             }
             else
             {
-                tableName = string.IsNullOrEmpty(store.Schema) ?
-    string.Concat("[", store.Table, "]") :
-    string.Concat("[", store.Schema, "].[", store.Table, "]");
-            }
-
-            // GET keys mappings
-            var columnKeys = new List<string>();
-            foreach (var propertyKey in entity.Info.Key.PropertyRefs)
-            {
-                var mappingProperty = mapping.ScalarProperties.Find(x => x.Name == propertyKey.Name);
-
-                if (mappingProperty == null)
-                {
-                    throw new Exception(string.Format(ExceptionMessage.BatchOperations_PropertyNotFound, propertyKey.Name));
-                }
-
-                columnKeys.Add(mappingProperty.ColumnName);
+                tableName = string.IsNullOrEmpty(tdTableDefinition.Schema) ?
+					string.Concat("[", tdTableDefinition.Table, "]") :
+					string.Concat("[", tdTableDefinition.Schema, "].[", tdTableDefinition.Table, "]");
             }
 
             // GET command text template
@@ -477,11 +467,11 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
             string primaryKeys;
             if (isSqlCe || isOracle || isSQLite)
             {
-                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".", EscapeName(x, isMySql, isOracle), " = B.", EscapeName(x, isMySql, isOracle), "")));
+                primaryKeys = string.Join(Environment.NewLine + "AND ", tdTableDefinition.Keys.Select(x => string.Concat(tableName + ".", EscapeName(x.ColumnName, isMySql, isOracle), " = B.", EscapeName(x.ColumnName, isMySql, isOracle), "")));
             }
             else
             {
-                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.", EscapeName(x, isMySql, isOracle), " = B.", EscapeName(x, isMySql, isOracle), "")));
+                primaryKeys = string.Join(Environment.NewLine + "AND ", tdTableDefinition.Keys.Select(x => string.Concat("A.", EscapeName(x.ColumnName, isMySql, isOracle), " = B.", EscapeName(x.ColumnName, isMySql, isOracle), "")));
             }
 
             // REPLACE template

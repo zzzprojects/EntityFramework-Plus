@@ -22,8 +22,6 @@ namespace Z.Test.EntityFramework.Plus
 
             using (var ctx = new TestContext())
             {
-                var firstTag = "zzzprojects";
-
                 var query = ctx.Entity_Basics.Where(x => x.ColumnInt > 0);
 
                 var cacheKey1 = QueryCacheManager.GetCacheKey(query, new string[0]);

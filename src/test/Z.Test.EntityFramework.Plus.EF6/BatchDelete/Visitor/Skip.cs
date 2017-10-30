@@ -64,7 +64,7 @@ FROM    [dbo].[Entity_Basic] AS A
                     ) AS B ON A.[ID] = B.[ID]
 
 SELECT @@ROWCOUNT
-", sql);
+".CollapseWhiteSpace(), sql.CollapseWhiteSpace());
 #elif EFCORE
                 Assert.AreEqual(@"
 DELETE

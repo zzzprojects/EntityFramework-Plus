@@ -39,17 +39,11 @@ namespace Z.EntityFramework.Plus
         {
             var batchUpdate = new BatchUpdate();
 
-            if (BatchUpdateManager.BatchUpdateBuilder != null)
-            {
-                BatchUpdateManager.BatchUpdateBuilder(batchUpdate);
-            }
+			BatchUpdateManager.BatchUpdateBuilder?.Invoke(batchUpdate);
 
-            if (batchUpdateBuilder != null)
-            {
-                batchUpdateBuilder(batchUpdate);
-            }
+			batchUpdateBuilder?.Invoke(batchUpdate);
 
-            return batchUpdate.Execute(query, updateFactory);
+			return batchUpdate.Execute(query, updateFactory);
         }
     }
 }

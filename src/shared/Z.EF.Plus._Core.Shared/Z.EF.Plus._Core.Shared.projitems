@@ -67,6 +67,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)EF\IQueryable`\IQueryable.ThenBy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EF\IQueryable`\IQueryable.ThenByDescending.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EF\Type\Type.GetDbSetElementType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\DbModelPlusExtentions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\List`\List`.GetVersion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LazyAsyncEnumerator\LazyAsyncEnumerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LinqExpressionExtensions\LambdaExpression\LambdaExpression.GetPropertyOrFieldAccessor.cs" />
@@ -76,6 +77,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Model\DbContext.GetModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Extensions\String\String.DeserializeXml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Extensions\String\String.SubstringLastIndexOf.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Extensions\TableDefinition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Extensions\XElement\XElement.RemoveAllNamespaces.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Infrastructure\DbModelPlus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Mapping\EntityContainerMapping.cs" />

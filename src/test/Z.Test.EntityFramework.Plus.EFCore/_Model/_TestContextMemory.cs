@@ -5,85 +5,34 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
-#if EFCORE
-using System.Data.SqlClient;
-using System.Linq;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Z.EntityFramework.Plus;
-#if EF5 || EF6
-using System.Data.Entity;
-
-#elif EFCORE
 using System.Configuration;
 using System.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-
-#endif
+using System.Linq;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Z.EntityFramework.Plus;
 
 namespace Z.Test.EntityFramework.Plus
 {
-#if EF5 || EF6
-    public class TestContextInitializer : CreateDatabaseIfNotExists<TestContext>
-    {
-        protected override void Seed(TestContext context)
-        {
-            var sql = @"
-TRUNCATE TABLE Inheritance_TPC_Cat
-IF IDENT_CURRENT( 'Inheritance_TPC_Cat' ) < 1000000
-BEGIN
-	DBCC CHECKIDENT('Inheritance_TPC_Cat', RESEED, 1000000)
-END
-";
-            using (var connection = new SqlConnection(My.Config.ConnectionStrings.TestDatabase))
-            using (var command = new SqlCommand(sql, connection))
-            {
-                connection.Open();
-                command.ExecuteNonQuery();
-            }
-            base.Seed(context);
-        }
-    }
-#endif
-
     public partial class TestContextMemory : DbContext
     {
-#if EF5 || EF6
-        public TestContext() : base(My.Config.ConnectionStrings.TestDatabase)
-#elif EFCORE
         public TestContextMemory()
-#endif
         {
-#if EF5 || EF6
-            Database.SetInitializer(new TestContextInitializer());
-#elif EFCORE
             Database.EnsureCreated();
-#endif
         }
 
-#if EFCORE
         public TestContextMemory(DbContextOptions options) : base(options)
         {
-            
-        }
-#endif
+			Database.EnsureCreated();
+		}
 
-
-#if EF5 || EF6
-        public TestContext(bool isEnabled, string fixResharper = null, bool? enableFilter1 = null, bool? enableFilter2 = null, bool? enableFilter3 = null, bool? enableFilter4 = null, bool? excludeClass = null, bool? excludeInterface = null, bool? excludeBaseClass = null, bool? excludeBaseInterface = null, bool? includeClass = null, bool? includeInterface = null, bool? includeBaseClass = null, bool? includeBaseInterface = null) : base(My.Config.ConnectionStrings.TestDatabase)
-#elif EFCORE
         public TestContextMemory(bool isEnabled, string fixResharper = null, bool? enableFilter1 = null, bool? enableFilter2 = null, bool? enableFilter3 = null, bool? enableFilter4 = null, bool? excludeClass = null, bool? excludeInterface = null, bool? excludeBaseClass = null, bool? excludeBaseInterface = null, bool? includeClass = null, bool? includeInterface = null, bool? includeBaseClass = null, bool? includeBaseInterface = null)
-#endif
         {
-#if EF5 || EF6
-            Database.SetInitializer(new CreateDatabaseIfNotExists<TestContext>());
-#elif EFCORE
             Database.EnsureCreated();
-#endif
-#if EFCORE
-    // TODO: Remove this when cast issue will be fixed
+
+			// TODO: Remove this when cast issue will be fixed
             QueryFilterManager.GlobalFilters.Clear();
             QueryFilterManager.GlobalInitializeFilterActions.Clear();
-#endif
 
             if (enableFilter1 != null)
             {
@@ -175,89 +124,10 @@ END
             }
         }
 
-#if EF5 || EF6
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
-        {
-            // Association
-            {
-                // Many to Many
-                {
-                    modelBuilder.Entity<Association_ManyToMany_Left>()
-                        .HasMany(x => x.Rights)
-                        .WithMany(x => x.Lefts)
-                        .Map(c =>
-                        {
-                            c.MapLeftKey("ChildID");
-                            c.MapRightKey("ParentID");
-                            c.ToTable("Association_ManyToMany");
-                        });
-                }
-
-                // Many
-                {
-                    modelBuilder.Entity<Association_OneToMany_Left>()
-                        .HasMany(x => x.Rights)
-                        .WithRequired(x => x.Left);
-                }
-            }
-
-            // Association Multi
-            {
-                // Many
-                {
-                    modelBuilder.Entity<Association_Multi_OneToMany_Left>()
-                        .HasMany(x => x.Right1s)
-                        .WithRequired(x => x.Left);
-
-                    modelBuilder.Entity<Association_Multi_OneToMany_Left>()
-                        .HasMany(x => x.Right2s)
-                        .WithRequired(x => x.Left);
-
-                    modelBuilder.Entity<Association_OneToManyToMany_Left>()
-                        .HasMany(x => x.Rights)
-                        .WithRequired(x => x.Left);
-
-                    modelBuilder.Entity<Association_OneToManyToMany_Right>()
-                        .HasMany(x => x.Rights)
-                        .WithRequired(x => x.Left);
-                }
-            }
-
-            // Entity
-            {
-                modelBuilder.ComplexType<Entity_Complex_Info>();
-                modelBuilder.ComplexType<Entity_Complex_Info_Info>();
-            }
-
-            // Inheritance
-            {
-                modelBuilder.Entity<Inheritance_TPC_Cat>().Map(m =>
-                {
-                    m.MapInheritedProperties();
-                    m.ToTable("Inheritance_TPC_Cat");
-                });
-
-                modelBuilder.Entity<Inheritance_TPC_Dog>().Map(m =>
-                {
-                    m.MapInheritedProperties();
-                    m.ToTable("Inheritance_TPC_Dog");
-                });
-            }
-
-            // Many
-            {
-                modelBuilder.Entity<AuditEntry>().HasMany(x => x.Properties).WithRequired(x => x.Parent);
-            }
-
-            modelBuilder.Configurations.Add(new Internal_Entity_Basic.EntityPropertyVisibilityConfiguration());
-            modelBuilder.Configurations.Add(new Internal_Entity_Basic_Many.EntityPropertyVisibilityConfiguration());
-        }
-#elif EFCORE
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             // optionsBuilder.UseSqlServer(new SqlConnection(My.Config.ConnectionStrings.TestDatabase));
         }
-
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -267,7 +137,7 @@ END
             }
 
             AuditManager.DefaultConfiguration.AutoSavePreAction = (ApplicationDbContext, audit) =>
-(ApplicationDbContext as TestContext).AuditEntries.AddRange(audit.Entries);
+				(ApplicationDbContext as TestContext).AuditEntries.AddRange(audit.Entries);
 
             modelBuilder.Entity<Entity_ManyGuid>().HasKey(guid => new {guid.ID1, guid.ID2, guid.ID3});
 
@@ -286,16 +156,12 @@ END
             }
         }
 
-#endif
-
         #region Association
 
-#if EF5 || EF6
         public DbSet<Association_ManyToMany_Left> Association_ManyToMany_Lefts { get; set; }
 
         public DbSet<Association_ManyToMany_Right> Association_ManyToMany_Rights { get; set; }
 
-#endif
         public DbSet<Association_OneToMany_Left> Association_OneToMany_Lefts { get; set; }
 
         public DbSet<Association_OneToMany_Right> Association_OneToMany_Rights { get; set; }
@@ -338,40 +204,30 @@ END
 
         public DbSet<Entity_Basic_Many> Entity_Basic_Manies { get; set; }
 
-#if EF5 || EF6
-        public DbSet<Internal_Entity_Basic> Internal_Entity_Basics { get; set; }
-
-        public DbSet<Internal_Entity_Basic_Many> Internal_Entity_Basic_Manies { get; set; }
-#endif
-
-
         public DbSet<Entity_Guid> Entity_Guids { get; set; }
 
         public DbSet<Entity_ManyGuid> Entity_ManyGuids { get; set; }
 
-#if EF5 || EF6
         public DbSet<Entity_Complex> Entity_Complexes { get; set; }
-#endif
 
-#endregion
+		#endregion
 
-#region Inheritance
+		#region Inheritance
 
         public DbSet<Inheritance_Interface_Entity> Inheritance_Interface_Entities { get; set; }
 
-#if EF5 || EF6
         public DbSet<Inheritance_TPC_Animal> Inheritance_TPC_Animals { get; set; }
 
         public DbSet<Inheritance_TPH_Animal> Inheritance_TPH_Animals { get; set; }
 
         public DbSet<Inheritance_TPT_Animal> Inheritance_TPT_Animals { get; set; }
 
-#endif
         public DbSet<Inheritance_TPT_Cat> Inheritance_TPT_Cats { get; set; }
 
-        public DbSet<Property_AllType> Property_AllTypes { get; set; }
+	    public DbSet<Inheritance_TPT_Dog> Inheritance_TPT_Dogs { get; set; }
 
-#endregion
+		public DbSet<Property_AllType> Property_AllTypes { get; set; }
+
+		#endregion
     }
 }
-#endif

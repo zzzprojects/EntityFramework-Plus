@@ -410,7 +410,7 @@ namespace Z.EntityFramework.Plus
 
                     if (isOracle)
                     {
-#if NETSTANDARD1_3
+#if NETSTANDARD1_6
                         SetOracleDbType(command.GetType().GetTypeInfo().Assembly, param, 121);
 #else
                         SetOracleDbType(command.GetType().Assembly, param, 121);
@@ -418,7 +418,7 @@ namespace Z.EntityFramework.Plus
                     }
                     else if (isOracleManaged)
                     {
-#if NETSTANDARD1_3
+#if NETSTANDARD1_6
                         SetOracleManagedDbType(command.GetType().GetTypeInfo().Assembly, param, 121);
 #else
                         SetOracleManagedDbType(command.GetType().Assembly, param, 121);
@@ -426,7 +426,7 @@ namespace Z.EntityFramework.Plus
                     }
                     else if (isOracleDevArt)
                     {
-#if NETSTANDARD1_3
+#if NETSTANDARD1_6
                         SetOracleDevArtDbType(command.GetType().GetTypeInfo().Assembly, param, 7);
 #else
                         SetOracleDevArtDbType(command.GetType().Assembly, param, 7);

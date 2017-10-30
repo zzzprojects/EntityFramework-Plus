@@ -9,36 +9,22 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using Z.EntityFramework.Plus;
-#if EF5 
-using System.Data.Entity;
-
-#elif EF6
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure.Interception;
 
-#elif EFCORE
-using System.Configuration;
-using System.Data.SqlClient;
-using Microsoft.Data.Entity;
-
-#endif
-
 namespace Z.Test.EntityFramework.Plus
 {
-   
-
-#if EF5 || EF6
     public class TestContextInitializer : CreateDatabaseIfNotExists<TestContext>
     {
         protected override void Seed(TestContext context)
         {
             var sql = @"
-TRUNCATE TABLE Inheritance_TPC_Cat
-IF IDENT_CURRENT( 'Inheritance_TPC_Cat' ) < 1000000
-BEGIN
-	DBCC CHECKIDENT('Inheritance_TPC_Cat', RESEED, 1000000)
-END
-";
+				TRUNCATE TABLE Inheritance_TPC_Cat
+				IF IDENT_CURRENT( 'Inheritance_TPC_Cat' ) < 1000000
+				BEGIN
+					DBCC CHECKIDENT('Inheritance_TPC_Cat', RESEED, 1000000)
+				END
+			";
             using (var connection = new SqlConnection(My.Config.ConnectionStrings.TestDatabase))
             using (var command = new SqlCommand(sql, connection))
             {
@@ -48,52 +34,23 @@ END
             base.Seed(context);
         }
     }
-#endif
 
     public partial class TestContext : DbContext
     {
-#if EF5 || EF6
         public TestContext() : base(My.Config.ConnectionStrings.TestDatabase)
-#elif EFCORE
-        public TestContext()
-#endif
         {
-#if EF5 || EF6
             Database.SetInitializer(new CreateDatabaseIfNotExists<TestContext>());
-#elif EFCORE
-            Database.EnsureCreated();
-#endif
 
-#if EF6
             // BE careful, this one also need to clear filter!
             QueryFilterManager.ClearQueryCache(this);
-#endif
-
         }
 
-
-#if EF5 || EF6
         public TestContext(bool isEnabled, string fixResharper = null, bool? enableFilter1 = null, bool? enableFilter2 = null, bool? enableFilter3 = null, bool? enableFilter4 = null, bool? excludeClass = null, bool? excludeInterface = null, bool? excludeBaseClass = null, bool? excludeBaseInterface = null, bool? includeClass = null, bool? includeInterface = null, bool? includeBaseClass = null, bool? includeBaseInterface = null) : base(My.Config.ConnectionStrings.TestDatabase)
-#elif EFCORE
-        public TestContext(bool isEnabled, string fixResharper = null, bool? enableFilter1 = null, bool? enableFilter2 = null, bool? enableFilter3 = null, bool? enableFilter4 = null, bool? excludeClass = null, bool? excludeInterface = null, bool? excludeBaseClass = null, bool? excludeBaseInterface = null, bool? includeClass = null, bool? includeInterface = null, bool? includeBaseClass = null, bool? includeBaseInterface = null)
-#endif
         {
-#if EF5 || EF6
             Database.SetInitializer(new CreateDatabaseIfNotExists<TestContext>());
-#elif EFCORE
-            Database.EnsureCreated();
-#endif
-#if EFCORE
-    // TODO: Remove this when cast issue will be fixed
-            QueryFilterManager.GlobalFilters.Clear();
-            QueryFilterManager.GlobalInitializeFilterActions.Clear();
-#endif
 
-#if EF6
             // Clear query cache
             QueryFilterManager.ClearQueryCache(this);
-#endif
-
 
             if (enableFilter1 != null)
             {
@@ -185,7 +142,6 @@ END
             }
         }
 
-#if EF5 || EF6
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             // Association
@@ -262,42 +218,13 @@ END
             modelBuilder.Configurations.Add(new Internal_Entity_Basic.EntityPropertyVisibilityConfiguration());
             modelBuilder.Configurations.Add(new Internal_Entity_Basic_Many.EntityPropertyVisibilityConfiguration());
         }
-#elif EFCORE
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(new SqlConnection(My.Config.ConnectionStrings.TestDatabase));
-        }
-
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Entity_ManyGuid>().HasKey(guid => new {guid.ID1, guid.ID2, guid.ID3});
-
-            // Association
-            {
-            }
-
-            // Audit
-            {
-                //modelBuilder.Entity<AuditEntry>().HasKey(x => x.AuditEntryID);
-                //modelBuilder.Entity<AuditEntryProperty>().Ignore(x => x.NewValue);
-                //modelBuilder.Entity<AuditEntryProperty>().Ignore(x => x.OldValue);
-                //modelBuilder.Entity<AuditEntry>().HasMany(x => x.Properties).WithOne(x => x.AuditEntry);
-                //modelBuilder.Entity<AuditEntryProperty>().HasKey(x => x.AuditEntryPropertyID);
-
-            }
-        }
-
-#endif
 
         #region Association
 
-#if EF5 || EF6
         public DbSet<Association_ManyToMany_Left> Association_ManyToMany_Lefts { get; set; }
 
         public DbSet<Association_ManyToMany_Right> Association_ManyToMany_Rights { get; set; }
 
-#endif
         public DbSet<Association_OneToMany_Left> Association_OneToMany_Lefts { get; set; }
 
         public DbSet<Association_OneToMany_Right> Association_OneToMany_Rights { get; set; }
@@ -344,7 +271,6 @@ END
 
         public DbSet<AuditEntryProperty> AuditEntryProperties { get; set; }
 
-
         public DbSet<AuditEntry_Extended> AuditEntry_Extendeds { get; set; }
 
         public DbSet<AuditEntryProperty_Extended> AuditEntryProperty_Extendeds { get; set; }
@@ -361,12 +287,9 @@ END
 
         public DbSet<Entity_Basic_Many> Entity_Basic_Manies { get; set; }
 
-#if EF5 || EF6
         public DbSet<Internal_Entity_Basic> Internal_Entity_Basics { get; set; }
 
         public DbSet<Internal_Entity_Basic_Many> Internal_Entity_Basic_Manies { get; set; }
-#endif
-
 
         public DbSet<Entity_Guid> Entity_Guids { get; set; }
 
@@ -376,11 +299,9 @@ END
 
         public DbSet<Entity_Proxy_Right> Entity_Proxy_Rights { get; set; }
 
-#if EF5 || EF6
         public DbSet<Entity_Complex> Entity_Complexes { get; set; }
 
         public DbSet<Entity_Enum> Entity_Enums { get; set; }
-#endif
 
         #endregion
 
@@ -390,18 +311,22 @@ END
 
         public DbSet<Inheritance_Interface_Entity_LazyLoading> Inheritance_Interface_Entities_LazyLoading { get; set; }
 
-#if EF5 || EF6
-        public DbSet<Inheritance_TPC_Animal> Inheritance_TPC_Animals { get; set; }
+	    public DbSet<Inheritance_TPC_Animal> Inheritance_TPC_Animals { get; set; }
 
-        public DbSet<Inheritance_TPH_Animal> Inheritance_TPH_Animals { get; set; }
+		public DbSet<Inheritance_TPC_Cat> Inheritance_TPC_Cats { get; set; }
+
+	    public DbSet<Inheritance_TPC_Dog> Inheritance_TPC_Dogs { get; set; }
+
+		public DbSet<Inheritance_TPH_Animal> Inheritance_TPH_Animals { get; set; }
 
         public DbSet<Inheritance_TPT_Animal> Inheritance_TPT_Animals { get; set; }
 
-#endif
         public DbSet<Inheritance_TPT_Cat> Inheritance_TPT_Cats { get; set; }
 
-        public DbSet<Property_AllType> Property_AllTypes { get; set; }
+	    public DbSet<Inheritance_TPT_Dog> Inheritance_TPT_Dogs { get; set; }
 
-#endregion
+		public DbSet<Property_AllType> Property_AllTypes { get; set; }
+
+		#endregion
     }
 }

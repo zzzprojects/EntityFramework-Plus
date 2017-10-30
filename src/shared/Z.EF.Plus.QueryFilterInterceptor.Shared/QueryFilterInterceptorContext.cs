@@ -7,6 +7,9 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+#if NETSTANDARD1_6
+using Microsoft.EntityFrameworkCore;
+#endif
 
 namespace Z.EntityFramework.Plus
 {

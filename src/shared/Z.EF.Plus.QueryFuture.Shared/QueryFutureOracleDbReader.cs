@@ -49,7 +49,7 @@ namespace Z.EntityFramework.Plus
             get { return Reader.HasRows; }
         }
 
-#if !NETSTANDARD1_3
+#if !NETSTANDARD1_6
         public override void Close()
         {
             Reader.Close();

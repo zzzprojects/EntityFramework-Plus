@@ -43,7 +43,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>$(SolutionDir)\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -78,6 +78,7 @@
     <Compile Include="Audit\Audit_Configuration_Ignore.cs" />
     <Compile Include="Audit\Audit_Configuration_Include.cs" />
     <Compile Include="Audit\Audit_Configuration_IncludeProperty.cs" />
+    <Compile Include="Audit\Audit_Configuration_UseNullForDBNullValue.cs" />
     <Compile Include="Audit\Audit_CreatedBy.cs" />
     <Compile Include="Audit\Audit_EntityAdded.cs" />
     <Compile Include="Audit\Audit_EntityDeleted.cs" />
@@ -136,6 +137,10 @@
     <Compile Include="Audit\Configuration_IncludeProperty\Type.cs" />
     <Compile Include="Audit\Configuration_Include\All.cs" />
     <Compile Include="Audit\Configuration_Include\Type.cs" />
+    <Compile Include="Audit\Configuration_UseNullForDBNullValue\EntityAdded_IsFalse.cs" />
+    <Compile Include="Audit\Configuration_UseNullForDBNullValue\EntityAdded_IsTrue.cs" />
+    <Compile Include="Audit\Configuration_UseNullForDBNullValue\EntityModified_IsFalse.cs" />
+    <Compile Include="Audit\Configuration_UseNullForDBNullValue\EntityModified_IsTrue.cs" />
     <Compile Include="Audit\CreatedBy\CurrentPrincipal.cs" />
     <Compile Include="Audit\EntityAdded\Entity_Basic.cs" />
     <Compile Include="Audit\EntityAdded\Entity_Complex.cs" />
@@ -208,6 +213,7 @@
     <Compile Include="BatchDelete\BatchDelete_BatchDelayInterval.cs" />
     <Compile Include="BatchDelete\BatchDelete_BatchSize.cs" />
     <Compile Include="BatchDelete\BatchDelete_Executing.cs" />
+    <Compile Include="BatchDelete\BatchDelete_Inheritance.cs" />
     <Compile Include="BatchDelete\BatchDelete_InMemory.cs" />
     <Compile Include="BatchDelete\BatchDelete_PrimaryKey.cs" />
     <Compile Include="BatchDelete\BatchDelete_SqlSchema.cs" />
@@ -221,6 +227,7 @@
     <Compile Include="BatchDelete\Executing\Template.cs" />
     <Compile Include="BatchDelete\Executing\WhileDelayTemplate.cs" />
     <Compile Include="BatchDelete\Executing\WhileTemplate.cs" />
+    <Compile Include="BatchDelete\Inheritance\BatchDelete_Inheritance.cs" />
     <Compile Include="BatchDelete\InMemory\Ten.cs" />
     <Compile Include="BatchDelete\InMemory\Thirty.cs" />
     <Compile Include="BatchDelete\InMemory\Twenty.cs" />
@@ -255,6 +262,7 @@
     <Compile Include="BatchUpdate\BatchUpdate_BatchDelayInterval.cs" />
     <Compile Include="BatchUpdate\BatchUpdate_BatchSize.cs" />
     <Compile Include="BatchUpdate\BatchUpdate_Executing.cs" />
+    <Compile Include="BatchUpdate\BatchUpdate_Inheritance.cs" />
     <Compile Include="BatchUpdate\BatchUpdate_Keyword.cs" />
     <Compile Include="BatchUpdate\BatchUpdate_PrimaryKey.cs" />
     <Compile Include="BatchUpdate\BatchUpdate_SqlSchema.cs" />
@@ -265,6 +273,7 @@
     <Compile Include="BatchUpdate\Executing\Template.cs" />
     <Compile Include="BatchUpdate\Executing\WhileDelayTemplate.cs" />
     <Compile Include="BatchUpdate\Executing\WhileTemplate.cs" />
+    <Compile Include="BatchUpdate\Inheritance\BatchUpdate_Inheritance.cs" />
     <Compile Include="BatchUpdate\Keyword\From.cs" />
     <Compile Include="BatchUpdate\PrimaryKey\Many.cs" />
     <Compile Include="BatchUpdate\PrimaryKey\Single.cs" />
@@ -322,6 +331,7 @@
     <Compile Include="QueryCache\QueryCache_CacheKey.cs" />
     <Compile Include="QueryCache\QueryCache_CacheKeyFactory.cs" />
     <Compile Include="QueryCache\QueryCache_ExpireAll.cs" />
+    <Compile Include="QueryCache\QueryCache_ForceFirstTagAsCacheKey.cs" />
     <Compile Include="QueryCache\QueryCache_FromCache.cs" />
     <Compile Include="QueryCache\QueryCache_FromCacheAsync.cs" />
     <Compile Include="QueryCache\QueryCache_Tag.cs" />
@@ -399,6 +409,12 @@
     <Compile Include="QueryFilter\DbContext_Filter\WithLazyLoading\SingleFilter_Enable.cs" />
     <Compile Include="QueryFilter\DbContext_Filter\WithLazyLoading\SingleFilter_Exclude.cs" />
     <Compile Include="QueryFilter\DbContext_Filter\WithLazyLoading\SingleFilter_Include.cs" />
+    <Compile Include="QueryFilter\DbContext_Filter\WithParameter\ManyFilter_ManyParameter.cs" />
+    <Compile Include="QueryFilter\DbContext_Filter\WithParameter\ManyFilter_NoParameter.cs" />
+    <Compile Include="QueryFilter\DbContext_Filter\WithParameter\ManyFilter_SingleParameter.cs" />
+    <Compile Include="QueryFilter\DbContext_Filter\WithParameter\SingleFilter_ManyParameter.cs" />
+    <Compile Include="QueryFilter\DbContext_Filter\WithParameter\SingleFilter_NoParameter.cs" />
+    <Compile Include="QueryFilter\DbContext_Filter\WithParameter\SingleFilter_SingleParameter.cs" />
     <Compile Include="QueryFilter\DbSet_AsNoFilter\WithGlobalFilter\ManyFilter_Disabled.cs" />
     <Compile Include="QueryFilter\DbSet_AsNoFilter\WithGlobalFilter\ManyFilter_Enabled.cs" />
     <Compile Include="QueryFilter\DbSet_AsNoFilter\WithGlobalFilter\SingleFilter_Disabled.cs" />
@@ -468,6 +484,34 @@
     <Compile Include="QueryFuture\Future\Queryable_AsTracking.cs" />
     <Compile Include="QueryFuture\QueryFuture_Future.cs" />
     <Compile Include="QueryFuture\QueryFuture_FutureValue.cs" />
+    <Compile Include="QueryIncludeFilter\Empty\LeftEmpty_Many_Enumerator.cs" />
+    <Compile Include="QueryIncludeFilter\Empty\LeftEmpty_Many_Executor.cs" />
+    <Compile Include="QueryIncludeFilter\Empty\LeftEmpty_Single_Enumerator.cs" />
+    <Compile Include="QueryIncludeFilter\Empty\LeftEmpty_Single_Executor.cs" />
+    <Compile Include="QueryIncludeFilter\Empty\RightEmpty_Many_Enumerator.cs" />
+    <Compile Include="QueryIncludeFilter\Empty\RightEmpty_Many_Executor.cs" />
+    <Compile Include="QueryIncludeFilter\Empty\RightEmpty_Single_Enumerator.cs" />
+    <Compile Include="QueryIncludeFilter\Empty\RightEmpty_Single_Executor.cs" />
+    <Compile Include="QueryIncludeFilter\FirstWithPredicate\Many_Executor.cs" />
+    <Compile Include="QueryIncludeFilter\FirstWithPredicate\Many_ThenQuery_Executor.cs" />
+    <Compile Include="QueryIncludeFilter\FirstWithPredicate\Single_Executor.cs" />
+    <Compile Include="QueryIncludeFilter\FirstWithPredicate\Single_ThenQuery_Executor.cs" />
+    <Compile Include="QueryIncludeFilter\QueryIncludeFilter_Empty.cs" />
+    <Compile Include="QueryIncludeFilter\QueryIncludeFilter_FirstWithPredicate.cs" />
+    <Compile Include="QueryIncludeFilter\QueryIncludeFilter_FirstWithPredicate_Async.cs" />
+    <Compile Include="QueryIncludeFilter\QueryIncludeFilter_IncludeEF.cs" />
+    <Compile Include="QueryIncludeFilter\QueryIncludeFilter_Where.cs" />
+    <Compile Include="QueryIncludeFilter\QueryIncludeFilter_Where_Async.cs" />
+    <Compile Include="QueryIncludeFilter\Where\Many_Enumerator.cs" />
+    <Compile Include="QueryIncludeFilter\Where\Many_Executor.cs" />
+    <Compile Include="QueryIncludeFilter\Where\Many_Property.cs" />
+    <Compile Include="QueryIncludeFilter\Where\Many_ThenQuery_Enumerator.cs" />
+    <Compile Include="QueryIncludeFilter\Where\Many_ThenQuery_Executor.cs" />
+    <Compile Include="QueryIncludeFilter\Where\Single_Enumerator.cs" />
+    <Compile Include="QueryIncludeFilter\Where\Single_Executor.cs" />
+    <Compile Include="QueryIncludeFilter\Where\Single_Property.cs" />
+    <Compile Include="QueryIncludeFilter\Where\Single_ThenQuery_Enumerator.cs" />
+    <Compile Include="QueryIncludeFilter\Where\Single_ThenQuery_Executor.cs" />
     <Compile Include="QueryIncludeOptimized\AllowQueryBatch\Many_Enumerator.cs" />
     <Compile Include="QueryIncludeOptimized\AllowQueryBatch\Many_Executor.cs" />
     <Compile Include="QueryIncludeOptimized\AllowQueryBatch\Many_Property.cs" />
@@ -619,6 +663,8 @@
     <Compile Include="QueryIncludeOptimized\Where_Async\Single_ThenQuery_EnumeratorAsync.cs" />
     <Compile Include="_Helper\AuditHelper.cs" />
     <Compile Include="_Helper\Extensions\QueryCacheHelper.cs" />
+    <Compile Include="_Helper\Extensions\StringExtensions.cs" />
+    <Compile Include="_Helper\Extensions\TestContextExtensions.cs" />
     <Compile Include="_Helper\QueryCacheHelper.cs" />
     <Compile Include="_Helper\QueryFilterHelper.cs" />
     <Compile Include="_Helper\QueryIncludeOptimizedHelper.cs" />
@@ -641,6 +687,7 @@
     <Compile Include="_Model\AuditEntry_Extended.cs" />
     <Compile Include="_Model\Entity_Basic.cs" />
     <Compile Include="_Model\Entity_Basic_Many.cs" />
+    <Compile Include="_Model\Entity_Basic_WithString.cs" />
     <Compile Include="_Model\Entity_Complex.cs" />
     <Compile Include="_Model\Entity_Complex_Info.cs" />
     <Compile Include="_Model\Entity_Complex_Info_Info.cs" />
@@ -686,7 +733,6 @@
       <Name>Z.EntityFramework.Plus.EF5</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

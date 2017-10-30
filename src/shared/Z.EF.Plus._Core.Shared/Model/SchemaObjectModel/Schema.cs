@@ -32,6 +32,17 @@ namespace Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel
         ///     </see>
         ///     for more detail.
         /// </summary>
+        /// <value>Schema alias for referencing between schemas easily.</value>
+        [XmlAttribute("Alias")]
+        public string Alias { get; set; }
+
+        /// <summary>
+        ///     Please visit the
+        ///     <see href="http://msdn.microsoft.com/en-us/library/vstudio/bb399292(v=vs.100).aspx">
+        ///         Microsoft documentation
+        ///     </see>
+        ///     for more detail.
+        /// </summary>
         /// <value>A list of types of the entities.</value>
         [XmlElement("EntityType")]
         public List<SchemaEntityType> EntityTypes { get; set; }

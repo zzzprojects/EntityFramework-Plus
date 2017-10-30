@@ -38,7 +38,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>$(SolutionDir)\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -64,13 +64,13 @@
   <Import Project="..\shared\Z.EF.Plus.BatchUpdate.Shared\Z.EF.Plus.BatchUpdate.Shared.projitems" Label="Shared" />
   <Import Project="..\shared\Z.EF.Plus.QueryCache.Shared\Z.EF.Plus.QueryCache.Shared.projitems" Label="Shared" />
   <Import Project="..\shared\Z.EF.Plus.QueryDeferred.Shared\Z.EF.Plus.QueryDeferred.Shared.projitems" Label="Shared" />
-  <Import Project="..\shared\Z.EF.Plus.QueryFilterInterceptor.Shared\Z.EF.Plus.QueryFilterInterceptor.Shared.projitems" Label="Shared" />
   <Import Project="..\shared\Z.EF.Plus.QueryFuture.Shared\Z.EF.Plus.QueryFuture.Shared.projitems" Label="Shared" />
   <Import Project="..\shared_dev\Z.EF.Plus.QueryInterceptor.Shared\Z.EF.Plus.QueryInterceptor.Shared.projitems" Label="Shared" />
   <Import Project="..\shared\Z.EF.Plus.QueryIncludeOptimized.Shared\Z.EF.Plus.QueryIncludeOptimized.Shared.projitems" Label="Shared" />
   <Import Project="..\shared\Z.EF.Plus.QueryIncludeFilter.Shared\Z.EF.Plus.QueryIncludeFilter.Shared.projitems" Label="Shared" />
   <Import Project="..\shared\Z.EF.Plus.QueryExtensions.Shared\Z.EF.Plus.QueryExtensions.Shared.projitems" Label="Shared" />
   <Import Project="..\shared\Z.EF.Plus.QueryFilter.Shared\Z.EF.Plus.QueryFilter.Shared.projitems" Label="Shared" />
+  <Import Project="..\shared\Z.EF.Plus.QueryFilterInterceptor.Shared\Z.EF.Plus.QueryFilterInterceptor.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

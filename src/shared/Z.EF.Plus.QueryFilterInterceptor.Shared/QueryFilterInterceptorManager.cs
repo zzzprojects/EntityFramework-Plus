@@ -2,8 +2,12 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Data.Entity;
+#if EF5
+using System.Data.Common.CommandTrees;
+#elif EF6
 using System.Data.Entity.Core.Common.CommandTrees;
+#endif
+using System.Data.Entity;
 using System.Data.Entity.Infrastructure.Interception;
 using System.Linq;
 using System.Linq.Expressions;
