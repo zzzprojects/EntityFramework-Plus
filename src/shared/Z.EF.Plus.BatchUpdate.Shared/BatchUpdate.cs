@@ -39,6 +39,11 @@ namespace Z.EntityFramework.Plus
     /// <summary>Class to batch delete.</summary>
     public class BatchUpdate
     {
+        public class NullValue
+        {
+            public Type Type;
+        }
+
         /// <summary>The command text template.</summary>
         internal const string CommandTextTemplate = @"
 UPDATE A {Hint}
@@ -380,7 +385,9 @@ SELECT  @totalRowAffected
 
             if (isMySql)
             {
-                tableName = string.Concat("`", store.Table, "`");
+                tableName = string.IsNullOrEmpty(store.Schema) || store.Schema == "dbo" ?
+                    string.Concat("`", store.Table, "`") :
+                    string.Concat("`", store.Schema, ".", store.Table, "`");
             }
             else if (isSqlCe)
             {
@@ -533,12 +540,28 @@ SELECT  @totalRowAffected
 
                 var parameter = command.CreateParameter();
                 parameter.ParameterName = parameterPrefix + "zzz_BatchUpdate_" + i;
-                parameter.Value = values[i].Item2 ?? DBNull.Value;
+
+                var paramValue = values[i].Item2;
+                var paramNullValue = paramValue as NullValue;
+                if (paramNullValue != null)
+                {
+                    parameter.Value = DBNull.Value;
+                }
+                else
+                {
+                    parameter.Value = paramValue ?? DBNull.Value;
+                }
+                
 
                 if (parameter is SqlParameter)
                 {
                     var sqlParameter = (SqlParameter)parameter;
-                    if (sqlParameter.DbType == DbType.DateTime)
+             
+                    if (paramNullValue != null && paramNullValue.Type == typeof(byte[]))
+                    {
+                        sqlParameter.SqlDbType = SqlDbType.VarBinary;
+                    }
+                    else if (sqlParameter.DbType == DbType.DateTime)
                     {
                         sqlParameter.DbType = DbType.DateTime2;
                     }
@@ -816,7 +839,18 @@ SELECT  @totalRowAffected
 
                 var parameter = command.CreateParameter();
                 parameter.ParameterName = "@zzz_BatchUpdate_" + i;
-                parameter.Value = values[i].Item2 ?? DBNull.Value;
+
+                var paramValue = values[i].Item2;
+                var paramNullValue = paramValue as NullValue;
+                if (paramNullValue != null)
+                {
+                    parameter.Value = DBNull.Value;
+                }
+                else
+                {
+                    parameter.Value = paramValue ?? DBNull.Value;
+                }
+
                 command.Parameters.Add(parameter);
             }
 
@@ -1101,6 +1135,11 @@ SELECT  @totalRowAffected
         {
             var dictValues = new Dictionary<string, object>();
             var updateExpressionBody = updateFactory.Body;
+
+            while (updateExpressionBody.NodeType == ExpressionType.Convert || updateExpressionBody.NodeType == ExpressionType.ConvertChecked)
+            {
+                updateExpressionBody = ((UnaryExpression)updateExpressionBody).Operand;
+            }
             var entityType = typeof(T);
 
             // ENSURE: new T() { MemberInitExpression }
@@ -1142,7 +1181,15 @@ SELECT  @totalRowAffected
 
                     if (constantExpression != null)
                     {
-                        value = constantExpression.Value;
+                        if (constantExpression.Value == null)
+                        {
+                            value = new NullValue() {Type = constantExpression.Type};
+                        }
+                        else
+                        {
+                            value = constantExpression.Value;
+                        }
+                        
                     }
                     else
                     {

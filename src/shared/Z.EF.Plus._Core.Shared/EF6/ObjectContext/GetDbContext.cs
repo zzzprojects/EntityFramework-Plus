@@ -5,7 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
-#if FULL || AUDIT || BATCH_DELETE || BATCH_UPDATE || QUERY_FILTER
+#if FULL || AUDIT || BATCH_DELETE || BATCH_UPDATE || QUERY_FILTER || QUERY_FUTURE || QUERY_INCLUDEOPTIMIZED
 #if EF6
 using System.Data.Entity;
 using System.Data.Entity.Core.Objects;

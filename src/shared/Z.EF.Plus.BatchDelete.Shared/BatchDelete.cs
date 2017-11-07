@@ -380,8 +380,8 @@ SELECT  @totalRowAffected
             // GET command
             var command = query.Context.CreateStoreCommand();
 
-            bool isPostgreSql = command.GetType().Name == "NpgsqlCommand";
-            bool isMySql = command.GetType().FullName.Contains("MySql");
+            var isPostgreSql = command.GetType().Name == "NpgsqlCommand";
+            var isMySql = command.GetType().FullName.Contains("MySql");
             var isSqlCe = command.GetType().Name == "SqlCeCommand";
             var isOracle = command.GetType().Namespace.Contains("Oracle");
             var isSQLite = command.GetType().Namespace.Contains("SQLite");
@@ -404,7 +404,9 @@ SELECT  @totalRowAffected
 
             if (isMySql)
             {
-                tableName = string.Concat("`", store.Table, "`");
+                tableName = string.IsNullOrEmpty(store.Schema) || store.Schema == "dbo" ?
+                    string.Concat("`", store.Table, "`") :
+                    string.Concat("`", store.Schema, ".", store.Table, "`");
             }
             else if (isSqlCe)
             {
@@ -419,6 +421,12 @@ SELECT  @totalRowAffected
                 tableName = string.IsNullOrEmpty(store.Schema) || store.Schema == "dbo" ?
 string.Concat("\"", store.Table, "\"") :
 string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
+            }
+            else if (isPostgreSql)
+            {
+                tableName = string.IsNullOrEmpty(store.Schema) ?
+                    string.Concat("\"", store.Table, "\"") :
+                    string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
             }
             else
             {

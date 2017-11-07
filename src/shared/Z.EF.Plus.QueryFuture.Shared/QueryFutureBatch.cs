@@ -106,6 +106,19 @@ namespace Z.EntityFramework.Plus
 
 #if EF5 || EF6
             var connection = (EntityConnection)Context.Connection;
+
+#if EF6
+            if (Context.IsInMemoryEffortQueryContext())
+            {
+                foreach (var query in Queries)
+                {
+                    query.GetResultDirectly();
+                }
+
+                Queries.Clear();
+                return;
+            }
+#endif
 #elif EFCORE
             if (IsInMemory)
             {
