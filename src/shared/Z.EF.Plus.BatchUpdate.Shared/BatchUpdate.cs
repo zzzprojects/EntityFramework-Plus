@@ -15,6 +15,7 @@ using System.Text.RegularExpressions;
 #if EF5
 using System.Data.Objects;
 using System.Data.SqlClient;
+using System.Reflection;
 using Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel;
 
 #elif EF6
@@ -192,6 +193,30 @@ SELECT  @totalRowAffected
             }
 
 #if EF5 || EF6
+            if (BatchUpdateManager.IsInMemoryQuery)
+            {
+                var list = query.ToList();
+                var compiled = updateFactory.Compile();
+                var memberBindings = ((MemberInitExpression)updateFactory.Body).Bindings;
+                var accessors = memberBindings
+                    .Select(x => x.Member.Name)
+                    .Select(x => new PropertyOrFieldAccessor(typeof(T).GetProperty(x, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)))
+                    .ToList();
+
+                foreach (var item in list)
+                {
+                    var newItem = compiled(item);
+
+                    foreach (var accessor in accessors)
+                    {
+                        var value = accessor.GetValue(newItem);
+                        accessor.SetValue(item, value);
+                    }
+                }
+
+                return list.Count;
+            }
+
             var dbContext = query.GetDbContext();
 
 #if EF6
@@ -993,6 +1018,11 @@ SELECT  @totalRowAffected
                     // Add the destination name
                     valueSql = valueSql.Replace("AS [C1]", "");
                     valueSql = valueSql.Replace("AS `C1`", "");
+
+                    if (valueSql.Trim().StartsWith("TOP") && valueSql.IndexOf(")") != -1)
+                    {
+                        valueSql = valueSql.Substring(valueSql.IndexOf(")") + 1);
+                    }
 
                     var listReplace = new List<string>()
                     {
