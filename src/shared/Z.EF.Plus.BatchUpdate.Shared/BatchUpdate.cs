@@ -574,7 +574,14 @@ SELECT  @totalRowAffected
                 }
                 else
                 {
-                    parameter.Value = paramValue ?? DBNull.Value;
+                    if (values[i].Item2.GetType().IsEnum)
+                    {
+                        parameter.Value = (int) paramValue;
+                    }
+                    else
+                    {
+                        parameter.Value = paramValue ?? DBNull.Value;
+                    }
                 }
                 
 
