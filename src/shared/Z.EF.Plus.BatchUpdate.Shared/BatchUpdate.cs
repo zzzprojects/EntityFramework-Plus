@@ -1233,6 +1233,11 @@ SELECT  @totalRowAffected
                         // Compile the expression and get the value.
                         var lambda = Expression.Lambda(memberExpression, null);
                         value = lambda.Compile().DynamicInvoke();
+
+                        if (value == null)
+                        {
+                            value = new NullValue() { Type = lambda.ReturnType };
+                        }
                     }
 
                     dictValues.Add(propertyName, value);
