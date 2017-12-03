@@ -114,36 +114,6 @@ var list = ctx.SelectDynamic(x =>
 }
 </style>
 
-<div class="testimonials">
-{% include layout-angle-begin.html %}
-	<div class="container">
-		<h2>Amazing <span class="text-z">performance</span>, outstanding <span class="text-z">support</span>!</h2>
-		
-		<blockquote class="blockquote text-center wow slideInLeft">
-			<p class="mb-0">We were very, very pleased with the customer support. There was no question, problem or wish that was not answered AND solved within days! We think that’s very unique!</p>
-			<footer class="blockquote-footer">Klemens Stelzmüller, <a href="http://www.beka-software.at/" target="_blank">Beka-software</a></footer>
-		</blockquote>
-		<blockquote class="blockquote text-center wow slideInRight">
-			<p class="mb-0">Your support has been outstanding and your product is amazing!</p>
-			<footer class="blockquote-footer">Raymond White, USA, Maryland, <a href="http://mtagservices.com/" target="_blank">MTAG Services LLC.</a></footer>
-		</blockquote>
-		<blockquote class="blockquote text-center wow slideInLeft">
-			<p class="mb-0">A big thanks for creating a great, useful and easy to use extensions. :)</p>
-			<footer class="blockquote-footer">Brian Bakkebo, <a href="http://dekkpro.no/" target="_blank">DekkPro</a></footer>
-		</blockquote>
-
-		<div class="more">
-			<a href="http://www.zzzprojects.com/testimonials/" target="_blank" class="btn btn-lg btn-z" role="button"
-					onclick="ga('send', 'event', { eventAction: 'testimonials'});">
-				<i class="fa fa-comments"></i>&nbsp;
-				Read More Testimonials
-			</a>
-		</div>
-	</div>
-{% include layout-angle-end.html %}
-</div>
-
-
 <!-- features !-->
 <div class="features">
 

@@ -1,7 +1,7 @@
 highlighter: rouge
 gems:
   - jekyll-sitemap
-ga: "UA-55584370-8"
+ga: "UA-55584370-6"
 defaults:
   -
     scope:
@@ -13,4 +13,4 @@ defaults:
       path: ""
       type: "pages"
     values:
-      last_modified_at: "2017-03-13"
+      last_modified_at: "2017-12-03"

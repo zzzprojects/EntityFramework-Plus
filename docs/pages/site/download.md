@@ -86,15 +86,44 @@ permalink: download
 				</div>
 			</div>
 		</div>
+		
+		<h2>Standalone Version</h2>
+		<h3>EF Core</h3>
+		<ul>
+			<li><a href="https://www.nuget.org/packages/Z.EntityFramework.Plus.Audit.EFCore/" target="_blank">EF+ Audit</a></li>
+			<li><a href="https://www.nuget.org/packages/Z.EntityFramework.Plus.BatchDelete.EFCore/" target="_blank">EF+ Batch Delete</a></li>
+			<li><a href="https://www.nuget.org/packages/Z.EntityFramework.Plus.BatchUpdate.EFCore/" target="_blank">EF+ Batch Update</a></li>
+			<li><a href="https://www.nuget.org/packages/Z.EntityFramework.Plus.QueryCache.EFCore/" target="_blank">EF+ Query Cache</a></li>
+			<li><a href="https://www.nuget.org/packages/Z.EntityFramework.Plus.QueryDeferred.EFCore/" target="_blank">EF+ Query Deferred</a></li>
+			<li><a href="https://www.nuget.org/packages/Z.EntityFramework.Plus.QueryFilter.EFCore/" target="_blank">EF+ Query Filter</a></li>
+			<li><a href="https://www.nuget.org/packages/Z.EntityFramework.Plus.QueryFuture.EFCore/" target="_blank">EF+ Query Future</a></li>
+		</ul>
+		<h3>EF6</h3>
+		<ul>
+			<li><a href="https://www.nuget.org/packages/Z.EntityFramework.Plus.Audit.EF6/" target="_blank">EF+ Audit</a></li>
+			<li><a href="https://www.nuget.org/packages/Z.EntityFramework.Plus.BatchDelete.EF6/" target="_blank">EF+ Batch Delete</a></li>
+			<li><a href="https://www.nuget.org/packages/Z.EntityFramework.Plus.BatchUpdate.EF6/" target="_blank">EF+ Batch Update</a></li>
+			<li><a href="https://www.nuget.org/packages/Z.EntityFramework.Plus.QueryCache.EF6/" target="_blank">EF+ Query Cache</a></li>
+			<li><a href="https://www.nuget.org/packages/Z.EntityFramework.Plus.QueryDeferred.EF6/" target="_blank">EF+ Query Deferred</a></li>
+			<li><a href="https://www.nuget.org/packages/Z.EntityFramework.Plus.QueryFilter.EF6/" target="_blank">EF+ Query Filter</a></li>
+			<li><a href="https://www.nuget.org/packages/Z.EntityFramework.Plus.QueryFuture.EF6/" target="_blank">EF+ Query Future</a></li>
+			<li><a href="https://www.nuget.org/packages/Z.EntityFramework.Plus.QueryIncludeFilter.EF6/" target="_blank">EF+ Query IncludeFilter</a></li>
+			<li><a href="https://www.nuget.org/packages/Z.EntityFramework.Plus.QueryIncludeOptimized.EF6/" target="_blank">EF+ Query IncludeOptimized</a></li>
+		</ul>
+		<h3>EF5</h3>
+		<ul>
+			<li><a href="https://www.nuget.org/packages/Z.EntityFramework.Plus.Audit.EF5/" target="_blank">EF+ Audit</a></li>
+			<li><a href="https://www.nuget.org/packages/Z.EntityFramework.Plus.BatchDelete.EF5/" target="_blank">EF+ Batch Delete</a></li>
+			<li><a href="https://www.nuget.org/packages/Z.EntityFramework.Plus.BatchUpdate.EF5/" target="_blank">EF+ Batch Update</a></li>
+			<li><a href="https://www.nuget.org/packages/Z.EntityFramework.Plus.QueryCache.EF5/" target="_blank">EF+ Query Cache</a></li>
+			<li><a href="https://www.nuget.org/packages/Z.EntityFramework.Plus.QueryDeferred.EF5/" target="_blank">EF+ Query Deferred</a></li>
+			<li><a href="https://www.nuget.org/packages/Z.EntityFramework.Plus.QueryFilter.EF5/" target="_blank">EF+ Query Filter</a></li>
+			<li><a href="https://www.nuget.org/packages/Z.EntityFramework.Plus.QueryFuture.EF5/" target="_blank">EF+ Query Future</a></li>
+			<li><a href="https://www.nuget.org/packages/Z.EntityFramework.Plus.QueryIncludeOptimized.EF5/" target="_blank">EF+ Query IncludeOptimized</a></li>
+		</ul>
 	</div>
 </div>
 
-<div class="container section-faq wow slideInUp">
-	<div markdown="1">
----
-
-</div>
-</div>
 
 <style>
 .page-download-nuget {

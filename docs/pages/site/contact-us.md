@@ -14,7 +14,7 @@ We love to hear from you!
 
 ## I have a question! What should I do?
 
-The best way to ask us questions
+The best way to ask us questions and check existing answer is on [Stack Overflow](https://stackoverflow.com/questions/tagged/entity-framework-plus){:target="_blank"} using the entity-framework-plus tag:
 
 Contact us directly:
 
@@ -23,7 +23,7 @@ Contact us directly:
 - If your message contains private information
 
 ## I think I've found a bug! What should I do?
-The best way to report an issue is using our [Issues Tracker](https://github.com/zzzprojects/EntityFramework-Plus/issues)
+The best way to report an issue is using our [Issues Tracker](https://github.com/zzzprojects/EntityFramework-Plus/issues){:target="_blank"}
 
 Make sure to include:
 - Entity Framework Version
@@ -37,7 +37,7 @@ Contact us directly:
 - If your message contains private information
 
 ## I think I've found a new feature! What should I do?
-The best way to request a new feature is using our [Issues Tracker](https://github.com/zzzprojects/EntityFramework-Plus/issues)
+The best way to request a new feature is using our [Issues Tracker](https://github.com/zzzprojects/EntityFramework-Plus/issues){:target="_blank"}
 
 Contact us directly:
 

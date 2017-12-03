@@ -6,8 +6,6 @@ permalink: tutorial-linq
 
 **LINQ Dynamic** in Entity Framework is supported through the [Eval-Expression.NET](http://eval-expression.net/) Library.
 
-It's free up to 50 characters.
-
 ### Predicate
 
 All LINQ predicate methods are supported. A string expression which return a Boolean function can be used as parameter.
