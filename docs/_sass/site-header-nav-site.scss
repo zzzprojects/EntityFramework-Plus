@@ -1,0 +1,86 @@
+/* top-nav-lg-site */
+.site-header .nav-site .navbar-brand {
+	padding-bottom: 0;
+	padding-top: 0;
+}
+.site-header .nav-site .navbar-nav .nav-item a.nav-link {
+    color: #000;
+    font-size: 18px;
+    font-weight: 300;
+}
+.site-header .nav-site .navbar-nav .nav-item a.nav-link:hover {
+	color: rgba(204, 0, 0, 0.8);
+}
+.site-header .nav-site .navbar-nav .nav-item a .fa {
+	margin-right: 5px;
+}
+.site-header .nav-site .navbar-nav .nav-item a .fa-angle-right{
+	margin-left: 5px;
+	margin-right: 0;
+}
+@media print {
+    .site-header .nav-site  {
+		position:relative;
+	}
+}
+@media (max-width: 991px) {
+	.site-header .nav-site .navbar-brand img {
+	    height: 60px;
+	}
+	.site-header .nav-site .navbar-nav {
+		padding: 1em 0;
+	}
+	.site-header .nav-site .navbar-nav .nav-item {
+		border-top: 1px solid rgba(0, 0, 0, 0.3);
+		text-align: center;
+		padding: 0.5em 1em;
+	}
+	.site-header .nav-site .navbar-nav .nav-item-download {
+		padding-top: 1em;
+	}
+}
+@media (max-width: 575px) {
+	.site-header .nav-site .navbar-brand {
+	    font-size: 0.8rem;
+	}
+	.site-header .nav-site .navbar-brand img {
+	    height: 36px;
+	}
+}
+@media (min-width: 992px) and (max-width: 1199px) {
+	.site-header .nav-site .navbar-nav .nav-item:not(.nav-item-download) i {
+		display: none;
+	}
+}
+@media (min-width: 992px) {
+	.site-header .nav-site  {
+		padding-bottom: 0;
+		padding-top: 0;
+	}
+	.site-header .nav-site .navbar-brand img {
+		height: 80px;
+	}
+	.site-header .nav-site .navbar-nav .nav-item {
+		padding-left: 1em;
+		padding-right: 1em;
+	}	
+	.site-header .nav-site .navbar-nav .nav-item a.nav-link {
+		position: relative;
+		text-decoration: none;
+	}
+	.site-header .nav-site a.nav-link::after {
+		border-bottom: 2px solid #c00;
+		bottom: 0;
+		content: "";
+		left: 0;
+		position: absolute;
+		transition: all 0.5s ease 0s;
+		width: 0;
+	}
+	.site-header .nav-site a.nav-link:hover::after {
+		width: 100%;
+	}
+	.site-header .nav-site .navbar-nav .nav-item {
+		border-left: 1px solid rgba(0, 0, 0, 0.3);
+	}
+}
