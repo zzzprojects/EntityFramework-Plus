@@ -1,0 +1,35 @@
+permalink,title,meta-description,meta-keywords,h1,h2,nagivation,template
+index,Learn how to use Entity Framework Bulk Insert with Tutorials & Examples for Code First & Database First.,Learn how to use Entity Framework Bulk Insert with Tutorials & Examples for Code First & Database First.,,,,,full
+/404.html,Page Moved,Page Moved,,Page Moved,,,container-h1
+download,Download,Download,,Download,,no,full-h1
+pricing,Purchase,Purchase,,Purchase,,no,full-h1
+contact-us,Contact Us,Contact Us,,Contact Us,,no,full-h1
+tutorials,Tutorials,Tutorials,,Tutorials,,,container-h1
+overview,Overview,Overview,,Overview,,,
+requirements,Requirements,Requirements,,Requirements,,,
+installing,Installing,Installing,,Installing,,,
+upgrading,Upgrading,Upgrading,,Upgrading,,,
+licensing,Licensing,Licensing,,Licensing,,,
+tutorial-batch-operations,Batch Operations,Batch Operations,,Batch Operations,,,
+tutorial-linq,LINQ,LINQ,,LINQ,,,
+tutorial-query,Query,Query,,Query,,,
+tutorial-audit,Audit,Audit,,Audit,,,
+api,API,API,,API,,,
+audit,Audit,Audit,,Audit,,,
+batch-update,Batch Update,Batch Update,,Batch Update,,,
+batch-delete,Batch Delete,Batch Delete,,Batch Delete,,,
+linq-dynamic,LINQ Dynamic,LINQ Dynamic,,LINQ Dynamic,,,
+query-cache,Query Cache,Query Cache,,Query Cache,,,
+query-deferred,Query Deferred,Query Deferred,,Query Deferred,,,
+query-db-set-filter,Query DbSetFilter,Query DbSetFilter,,Query DbSetFilter,,,
+query-filter,Query Filter,Query Filter,,Query Filter,,,
+query-future,Query Future,Query Future,,Query Future,,,
+query-include-filter,Query IncludeFilter,Query IncludeFilter,,Query IncludeFilter,,,
+query-include-optimized,Query IncludeOptimized,Query IncludeOptimized,,Query IncludeOptimized,,,
+faq,FAQ,FAQ,,FAQ,,,
+issue-tracker,Issue Tracker,Issue Tracker,,Issue Tracker,,,
+faq-general,FAQ - General,FAQ - General,,FAQ - General,,,
+faq-installation,FAQ - Installation,FAQ - Installation,,FAQ - Installation,,,
+faq-license,FAQ - License,FAQ - License,,FAQ - License,,,
+problems,Problems,Problems,,Problems,,,
+

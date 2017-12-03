@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="msvalidate.01" content="89359D9C492A475C0061398008D105FB" />
+
+		{% include _global_variable.html %}
+		
+		<!-- seo !-->
+		<title>{{ site.data.meta[meta_index].title }}</title>
+		<meta name="description" content="{{ site.data.meta[meta_index].meta-description }}">
+		<meta name="keywords" content="{{ site.data.meta[meta_index].meta-keywords }}">
+		<meta name="author" content="{{ site.data.meta[meta_index].meta-author }}">
+		
+		<!-- icon !-->
+		<link rel="icon" type="image/png" href="{{ site.github.url }}/images/logo.png">
+		
+		<!-- css !-->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+		<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" />
+		<link rel="stylesheet" type="text/css" href="{{ site.github.url }}/css/master.css">
+	</head>
+	
+	<body>
+	  
+{% if site.data.meta[meta_index].template == "full" %} 
+
+	<header class="site-header page">
+		<div class="site-header-inner">
+			{% include site-header-nav-site.html %}
+		</div>
+	</header>
+	
+	{% include site-products.html %}
+	
+	<div class="main">
+	{{ content }}
+	</div>
+{% elsif site.data.meta[meta_index].template == "full-h1"  %}
+	<header class="site-header page">
+		<div class="site-header-inner">
+			{% include site-header-nav-site.html %}
+		</div>
+	</header>
+	
+	 {% include site-products.html %}	 
+	 {% include template-h1.html %}
+	<div class="main">
+	{{ content }}
+	</div>
+{% elsif site.data.meta[meta_index].template == "container-h1"  %}
+	<header class="site-header post">
+		<div class="site-header-inner">
+			{% include site-header-nav-site.html %}
+			{% include site-header-nav-context.html %}
+			{% include site-header-nav-md.html %}
+		</div>		
+	</header>
+	 
+	{% include site-products.html %}
+	{% include template-h1.html %}
+	<div class="main container">
+	{{ content }}
+	</div>
+{% else %}
+
+	<header class="site-header post">
+		<div class="site-header-inner">
+			{% include site-header-nav-site.html %}
+			{% include site-header-nav-context.html %}
+			{% include site-header-nav-md.html %}
+		</div>		
+	</header>
+	 
+	{% include site-products.html %}	 
+	{% include template-h1.html %}
+	<div class="container">			
+		<div class="row">			
+			<div class="col-lg-9">
+				<article style="padding-top: 60px;">
+					{{ content }}
+				</article>
+			</div>
+			<div class="col-lg-3">
+				<aside>
+					{% include aside.html %}
+				</aside>
+			</div>
+		</div>		
+	</div>
+
+{% endif %}
+		
+{% include site-footer.html %}
+
+	<div id="scroll-to-top"><i class="fa fa-angle-up" aria-hidden="true"></i></div>
+	
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
+
+	<script type="text/javascript">
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', '{{site.ga}}', 'auto');
+	  ga('send', 'pageview');
+	</script>
+
+	<script>
+	new WOW().init();
+	$(function() {
+		$("table").addClass("table table-bordered table-hover table-responsive-sm table-striped");
+		$("thead").addClass("thead-dark");
+
+		$('aside a').each(function() {
+			if ($(this).attr('href') == '/{{page.permalink}}' || $(this).attr('href') == '{{ site.github.url }}/{{page.permalink}}')
+			{
+				$(this).addClass('font-weight-bold');
+			}
+		});
+	});
+	</script>
+	
+<script>
+$(window).scroll(function() {
+    if ($(this).scrollTop() >= 600) {
+        $('#scroll-to-top').fadeIn(200);
+    } else {
+        $('#scroll-to-top').fadeOut(200);
+    }
+});
+$('#scroll-to-top').click(function() {
+    $('body,html').animate({
+        scrollTop : 0
+    }, 500);
+});
+</script>
+	</body>
+</html>
+

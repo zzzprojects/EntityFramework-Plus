@@ -1,0 +1,26 @@
+.card-layout-z2 {
+	background: #333;
+	background: -webkit-radial-gradient(circle, #333, #111);
+	background: -o-radial-gradient(circle, #333, #111);
+	background: -moz-radial-gradient(circle, #333, #111);
+	background: radial-gradient(circle, #333, #111);
+	color: #fff;
+	overflow: hidden;
+	border: 0;
+	text-align: center;
+	box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.3);
+}
+
+.card-layout-z2 .card-header {
+	margin-top: 30px;
+	margin-bottom: 50px;
+	background: rgb(204, 0, 0);
+	background: -webkit-radial-gradient(circle, rgb(204, 0, 0), rgb(170, 0, 0), rgb(154, 0, 0));
+	background: -o-radial-gradient(circle, rgb(204, 0, 0), rgb(170, 0, 0), rgb(154, 0, 0));
+	background: -moz-radial-gradient(circle, rgb(204, 0, 0), rgb(170, 0, 0), rgb(154, 0, 0));
+	background: radial-gradient(circle, rgb(204, 0, 0), rgb(170, 0, 0), rgb(154, 0, 0));
+}
+
+.card-layout-z2 .card-header a {
+	color: #fff;
+}

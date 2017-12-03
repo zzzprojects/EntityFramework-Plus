@@ -1,0 +1,16 @@
+<div class="header-angle">
+	<div class="top-triangle wow slideInRight" data-wow-duration="1.5s"></div>
+	<div class="header-angle-inner">
+		<div class="container">
+			<h1>
+			{{site.data.meta[meta_index].h1}}
+			</h1>
+			{% if site.data.meta[meta_index].h2 != null %}
+			  <h2>{{ site.data.meta[meta_index].h2 }}</h2>
+			{% endif %}
+		</div>
+	</div>
+	<div class="bottom-triangle-outer">
+		<div class="bottom-triangle wow slideInLeft" data-wow-duration="1.5s"></div>
+	</div>
+</div>
