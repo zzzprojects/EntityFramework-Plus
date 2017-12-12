@@ -574,9 +574,11 @@ SELECT  @totalRowAffected
                 }
                 else
                 {
-                    if (values[i].Item2.GetType().IsEnum)
+                    Type itemType = values[i].Item2.GetType();
+                    if (itemType.IsEnum)
                     {
-                        parameter.Value = (int) paramValue;
+                        var underlyingType = Enum.GetUnderlyingType(itemType);
+                        parameter.Value = Convert.ChangeType(paramValue, underlyingType);
                     }
                     else
                     {
