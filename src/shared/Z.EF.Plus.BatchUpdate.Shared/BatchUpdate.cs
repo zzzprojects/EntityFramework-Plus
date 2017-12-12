@@ -585,7 +585,6 @@ SELECT  @totalRowAffected
                         parameter.Value = paramValue ?? DBNull.Value;
                     }
                 }
-                
 
                 if (parameter is SqlParameter)
                 {

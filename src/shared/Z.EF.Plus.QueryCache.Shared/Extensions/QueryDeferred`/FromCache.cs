@@ -45,13 +45,8 @@ namespace Z.EntityFramework.Plus
                 item = QueryCacheManager.Cache.AddOrGetExisting(key, item ?? DBNull.Value, policy) ?? item;
                 QueryCacheManager.AddCacheTag(key, tags);
             }
-            else
-            {
-                if (item == DBNull.Value)
-                {
-                    item = null;
-                }    
-            }
+
+            item = item.IfDbNullThenNull();
 
             return (T) item;
         }
@@ -81,13 +76,8 @@ namespace Z.EntityFramework.Plus
                 item = QueryCacheManager.Cache.AddOrGetExisting(key, item ?? DBNull.Value, absoluteExpiration) ?? item;
                 QueryCacheManager.AddCacheTag(key, tags);
             }
-            else
-            {
-                if (item == DBNull.Value)
-                {
-                    item = null;
-                }
-            }
+
+            item = item.IfDbNullThenNull();
 
             return (T) item;
         }
@@ -132,13 +122,8 @@ namespace Z.EntityFramework.Plus
                 item = QueryCacheManager.Cache.Set(key, item ?? DBNull.Value, options);
                 QueryCacheManager.AddCacheTag(key, tags);
             }
-            else
-            {
-                if (item == DBNull.Value)
-                {
-                    item = null;
-                }    
-            }
+
+            item = item.IfDbNullThenNull();
 
             return (T)item;
         }

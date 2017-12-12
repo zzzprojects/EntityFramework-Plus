@@ -221,7 +221,7 @@ namespace Z.EntityFramework.Plus
                     {
                         var objectQuery = dbSet.GetObjectQuery();
 
-                        var stateField = objectQuery.GetType().BaseType.GetField("_state", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                        var stateField = objectQuery.GetType().BaseType.GetField("_state", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, true);
                         var state = stateField.GetValue(objectQuery);
 
                         var cachedPlanField = state.GetType().GetField("_cachedPlan", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);

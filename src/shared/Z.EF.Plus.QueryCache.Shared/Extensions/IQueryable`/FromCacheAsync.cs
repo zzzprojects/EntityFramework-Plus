@@ -53,6 +53,8 @@ namespace Z.EntityFramework.Plus
                     QueryCacheManager.AddCacheTag(key, tags);
                 }
 
+                item = item.IfDbNullThenNull();
+
                 return (IEnumerable<T>) item;
             });
 
@@ -85,6 +87,8 @@ namespace Z.EntityFramework.Plus
                     item = QueryCacheManager.Cache.AddOrGetExisting(key, item, absoluteExpiration) ?? item;
                     QueryCacheManager.AddCacheTag(key, tags);
                 }
+
+                item = item.IfDbNullThenNull();
 
                 return (IEnumerable<T>) item;
             });
@@ -134,6 +138,8 @@ namespace Z.EntityFramework.Plus
                 QueryCacheManager.AddCacheTag(key, tags);
             }
 
+            item = item.IfDbNullThenNull();
+
             return (IEnumerable<T>) item;
         }
 
@@ -179,6 +185,8 @@ namespace Z.EntityFramework.Plus
                 item = QueryCacheManager.Cache.AddOrGetExisting(key, item, absoluteExpiration) ?? item;
                 QueryCacheManager.AddCacheTag(key, tags);
             }
+
+            item = item.IfDbNullThenNull();
 
             return (IEnumerable<T>) item;
         }
@@ -257,6 +265,8 @@ namespace Z.EntityFramework.Plus
                 item = QueryCacheManager.Cache.Set(key, item, options);
                 QueryCacheManager.AddCacheTag(key, tags);
             }
+
+            item = item.IfDbNullThenNull();
 
             return (IEnumerable<T>) item;
         }
