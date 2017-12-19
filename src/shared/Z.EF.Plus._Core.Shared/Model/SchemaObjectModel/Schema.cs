@@ -24,6 +24,16 @@ namespace Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel
         internal EntityContainer EntityContainer { get; set; }
 
         #region XmlDeserialization
+        /// <summary>
+        ///     Please visit the
+        ///     <see href="http://msdn.microsoft.com/en-us/library/vstudio/bb399292(v=vs.100).aspx">
+        ///         Microsoft documentation
+        ///     </see>
+        ///     for more detail.
+        /// </summary>
+        /// <value>The alias.</value>
+        [XmlAttribute("Alias")]
+        public string Alias { get; set; }
 
         /// <summary>
         ///     Please visit the

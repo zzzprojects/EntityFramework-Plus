@@ -64,7 +64,7 @@ namespace Z.EntityFramework.Plus
         public override void UpdateInternalQuery()
         {
             var query = OriginalQuery;
-
+            
             foreach (var filter in Filters)
             {
                 query = filter.ApplyFilter<T>(query);

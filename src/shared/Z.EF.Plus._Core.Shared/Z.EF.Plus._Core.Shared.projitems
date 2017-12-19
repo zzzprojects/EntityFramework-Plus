@@ -77,6 +77,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)LinqExpressionExtensions\PropertyOrFieldAccessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LinqExpressionExtensions\_Internal\ExpressionExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\DbContext.GetModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Extensions\GetTableDefinitions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Extensions\String\String.DeserializeXml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Extensions\String\String.SubstringLastIndexOf.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Extensions\XElement\XElement.RemoveAllNamespaces.cs" />
@@ -106,6 +107,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Model\SchemaObjectModel\Schema.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\SchemaObjectModel\SchemaEntityType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\SchemaObjectModel\SchemaEntityType_Generic.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\TableDefinition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Visitor\ExpressionVisitor.cs" />
   </ItemGroup>
 </Project>
