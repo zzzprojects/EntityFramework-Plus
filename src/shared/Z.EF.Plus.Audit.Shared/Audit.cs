@@ -61,7 +61,7 @@ namespace Z.EntityFramework.Plus
 
         public static object GetRelationshipEntryKey0(ObjectStateEntry entry)
         {
-            var relationshipEntryType = typeof(ObjectStateEntry).Assembly.GetType("System.Data.Entity.Core.Objects.RelationshipEntry");
+            var relationshipEntryType = typeof(ObjectStateEntry).Assembly.GetType("System.Data.Objects.RelationshipEntry");
 
             if (RelationshipEntryKey0 == null)
             {
@@ -82,7 +82,7 @@ namespace Z.EntityFramework.Plus
 
         public static object GetRelationshipEntryKey1(ObjectStateEntry entry)
         {
-            var relationshipEntryType = typeof(ObjectStateEntry).Assembly.GetType("System.Data.Entity.Core.Objects.RelationshipEntry");
+            var relationshipEntryType = typeof(ObjectStateEntry).Assembly.GetType("System.Data.Objects.RelationshipEntry");
 
             if (RelationshipEntryKey1 == null)
             {
