@@ -60,9 +60,13 @@ namespace Z.EntityFramework.Plus
         private static Func<ObjectStateEntry, object> RelationshipEntryKey1;
 
         public static object GetRelationshipEntryKey0(ObjectStateEntry entry)
-        {
-            var relationshipEntryType = typeof(ObjectStateEntry).Assembly.GetType("System.Data.Objects.RelationshipEntry");
+        { 
 
+#if EF5 
+            var relationshipEntryType = typeof(ObjectStateEntry).Assembly.GetType("System.Data.Objects.RelationshipEntry");
+#else
+            var relationshipEntryType = typeof(ObjectStateEntry).Assembly.GetType("System.Data.Entity.Core.Objects.RelationshipEntry");
+#endif
             if (RelationshipEntryKey0 == null)
             {
                 // Parameter
@@ -82,8 +86,11 @@ namespace Z.EntityFramework.Plus
 
         public static object GetRelationshipEntryKey1(ObjectStateEntry entry)
         {
+#if EF5
             var relationshipEntryType = typeof(ObjectStateEntry).Assembly.GetType("System.Data.Objects.RelationshipEntry");
-
+#else
+            var relationshipEntryType = typeof(ObjectStateEntry).Assembly.GetType("System.Data.Entity.Core.Objects.RelationshipEntry");
+#endif
             if (RelationshipEntryKey1 == null)
             {
                 // Parameter
@@ -103,8 +110,8 @@ namespace Z.EntityFramework.Plus
 #endif
 
 
-        /// <summary>Gets or sets the entries.</summary>
-        /// <value>The entries.</value>
+            /// <summary>Gets or sets the entries.</summary>
+            /// <value>The entries.</value>
         public List<AuditEntry> Entries { get; set; }
 
         /// <summary>Gets or sets the  created by username.</summary>
