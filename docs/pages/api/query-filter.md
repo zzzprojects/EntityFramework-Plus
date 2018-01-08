@@ -333,7 +333,7 @@ var list = ctx.Posts.Take(20).ToList();
  - Entity Framework 5
    - Doesn't work with LazyLoading
    - Doesn't work with Include
-- Entity Framework Core:
+- Entity Framework Core
    - Doesn't work with LazyLoading
    - Doesn't work with Include
    - **DO NOT** support filter by inheritance/interface (Will be supported when EntityFramework team will fix this [issue](https://github.com/aspnet/EntityFramework/issues/3736))
