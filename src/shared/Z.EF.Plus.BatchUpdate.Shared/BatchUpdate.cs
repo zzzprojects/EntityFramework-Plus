@@ -582,7 +582,14 @@ SELECT  @totalRowAffected
                     }
                     else
                     {
-                        parameter.Value = paramValue ?? DBNull.Value;
+                        if (isOracle && paramValue is bool)
+                        {
+                            parameter.Value = (Boolean) paramValue ? 1 : 0;
+                        }
+                        else
+                        {
+                            parameter.Value = paramValue ?? DBNull.Value;
+                        }
                     }
                 }
 
