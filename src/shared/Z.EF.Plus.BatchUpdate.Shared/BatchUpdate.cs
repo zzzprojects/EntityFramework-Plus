@@ -54,6 +54,13 @@ INNER JOIN ( {Select}
            ) AS B ON {PrimaryKeys}
 ";
 
+        /// <summary>The command text template.</summary>
+        internal const string CommandTextNoJoinsTemplate = @"
+UPDATE A {Hint}
+SET {SetValue}
+FROM ({Select}) AS A
+";
+
         internal const string CommandTextTemplateSqlCe = @"
 UPDATE {TableName}
 SET {SetValue}
@@ -183,15 +190,15 @@ SELECT  @totalRowAffected
         public int Execute<T>(IQueryable<T> query, Expression<Func<T, T>> updateFactory) where T : class
         {
             // FIX query with visitor
-            {
-                var visitor = new BatchUpdateVisitor();
-                visitor.Visit(query.Expression);
+            
+            var visitor = new BatchUpdateVisitor();
+            visitor.Visit(query.Expression);
 
-                if (visitor.HasOrderBy)
-                {
-                    query = query.Take(int.MaxValue);
-                }
+            if (visitor.HasOrderBy)
+            {
+                query = query.Take(int.MaxValue);
             }
+            
 
             string expression = query.Expression.ToString();
 
@@ -272,7 +279,7 @@ SELECT  @totalRowAffected
             var values = GetInnerValues(query, updateFactory, entity);
 
             // CREATE command
-            var command = CreateCommand(innerObjectQuery, entity, values);
+            var command = CreateCommand(innerObjectQuery, entity, values, visitor);
 
             // WHERE 1 = 0
             if (command == null)
@@ -352,7 +359,7 @@ SELECT  @totalRowAffected
             var values = GetInnerValues(query, updateFactory, entity);
 
             // CREATE command
-            var command = CreateCommand(queryKeys, entity, values);
+            var command = CreateCommand(queryKeys, entity, values, visitor);
 
             // EXECUTE
             var ownConnection = false;
@@ -388,7 +395,7 @@ SELECT  @totalRowAffected
         /// <param name="query">The query.</param>
         /// <param name="entity">The schema entity.</param>
         /// <returns>The new command to execute the batch operation.</returns>
-        internal DbCommand CreateCommand<T>(ObjectQuery query, SchemaEntityType<T> entity, List<Tuple<string, object>> values)
+        internal DbCommand CreateCommand<T>(ObjectQuery query, SchemaEntityType<T> entity, List<Tuple<string, object>> values, BatchUpdateVisitor visitor)
         {
             var objectParameters = values.Where(x => x.Item2 is ObjectParameter);
             values = values.Except(objectParameters).ToList();
@@ -473,11 +480,12 @@ SELECT  @totalRowAffected
                     CommandTextWhileDelayTemplate :
                     CommandTextWhileTemplate :
 #endif
-                isPostgreSQL ? CommandTextTemplate_PostgreSQL : 
+                isPostgreSQL ? CommandTextTemplate_PostgreSQL :
                 isOracle ? CommandTextOracleTemplate :
-                isMySql ? CommandTextTemplate_MySQL : 
+                isMySql ? CommandTextTemplate_MySQL :
                 isSqlCe ? CommandTextTemplateSqlCe :
                 isSQLite ? CommandTextTemplate_SQLite :
+                visitor.IsSimpleQuery ? CommandTextNoJoinsTemplate :
                 CommandTextTemplate;
 
             // GET inner query
@@ -632,7 +640,7 @@ SELECT  @totalRowAffected
             return command;
         }
 #elif EFCORE
-        public DbCommand CreateCommand(IQueryable query, IEntityType entity, List<Tuple<string, object>> values)
+        public DbCommand CreateCommand(IQueryable query, IEntityType entity, List<Tuple<string, object>> values, BatchUpdateVisitor visitor)
         {
             var context = query.GetDbContext();
 
