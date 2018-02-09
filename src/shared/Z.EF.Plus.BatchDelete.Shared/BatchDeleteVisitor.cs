@@ -32,24 +32,22 @@ namespace Z.EntityFramework.Plus
         /// </returns>
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
-            if (node.Method.Name == "OrderBy")
-            {
-                HasOrderBy = true;
-            }
-            else if (node.Method.Name == "Skip")
-            {
-                HasSkip = true;
-            }
-            else if (node.Method.Name == "Take")
-            {
-                HasTake = true;
-            }
-
             switch (node.Method.Name)
             {
+                case "OrderBy":
+                    HasOrderBy = true;
+                    break;
+                case "Skip":
+                    HasSkip = true;
+                    break;
+                case "Take":
+                    HasTake = true;
+                    break;
                 case "Join":
                 case "Select":
+                case "SelectMany":
                 case "Concat":
+                case "Union":
                 case "GroupBy":
                     IsSimpleQuery = false;
                     break;
