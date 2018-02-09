@@ -44,9 +44,15 @@ namespace Z.EntityFramework.Plus
             {
                 HasTake = true;
             }
-            if (node.Method.Name == "Join" || node.Method.Name == "Concat" || node.Method.Name == "GroupBy")
+
+            switch (node.Method.Name)
             {
-                IsSimpleQuery = false;
+                case "Join":
+                case "Select":
+                case "Concat":
+                case "GroupBy":
+                    IsSimpleQuery = false;
+                    break;
             }
             return base.VisitMethodCall(node);
         }
