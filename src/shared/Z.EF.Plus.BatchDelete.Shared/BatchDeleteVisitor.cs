@@ -54,5 +54,15 @@ namespace Z.EntityFramework.Plus
             }
             return base.VisitMethodCall(node);
         }
+
+        protected override Expression VisitMember(MemberExpression node)
+        {
+            if (node.Expression?.GetType().Name == "PropertyExpression")
+            {
+                IsSimpleQuery = false;
+            }
+
+            return base.VisitMember(node);
+        }
     }
 }
