@@ -212,6 +212,8 @@
     <Compile Include="BatchDelete\InMemory\Twenty.cs" />
     <Compile Include="BatchDelete\PrimaryKey\Single.cs" />
     <Compile Include="BatchDelete\PrimaryKey\Many.cs" />
+    <Compile Include="BatchDelete\Visitor\DetectSimpleQuery.cs" />
+    <Compile Include="BatchDelete\Visitor\DetectComplexQuery.cs" />
     <Compile Include="BatchDelete\Visitor\OrderBy.cs" />
     <Compile Include="BatchDelete\Visitor\Skip.cs" />
     <Compile Include="BatchDelete\Visitor\Take.cs" />
