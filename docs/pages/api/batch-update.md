@@ -89,8 +89,6 @@ ctx.Users.Where(x => x.LastLoginDate < date)
 
 ## Limitations
 
-Limitations should all be removed by the end of 2016.
-
  - **DO NOT** support Complex Type
  - **DO NOT** support Enum
  - **DO NOT** support TPC
