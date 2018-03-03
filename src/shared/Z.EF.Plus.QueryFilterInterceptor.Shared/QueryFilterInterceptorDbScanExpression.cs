@@ -98,12 +98,33 @@ namespace Z.EntityFramework.Plus
 
                         if (expression2 != null)
                         {
-                            var visitor = new QueryFilterInterceptorDbProjectExpression();
-                            visitor.DbScanExpression = baseExpression;
-                            visitor.ParameterCollection = QueryFilterManager.DbExpressionParameterByHook[expression2];
+                            var baseExpressionProperty = baseExpression as DbPropertyExpression;
+                            NavigationProperty navProp = null;
 
-                            var filetered = expression2.Accept(visitor);
-                            baseExpression = filetered;
+                            if (baseExpressionProperty != null)
+                            {
+                                navProp = baseExpressionProperty.Property as NavigationProperty;
+                            }
+
+                            if (QueryFilterManager.AllowPropertyFilter && navProp != null && !baseExpression.ResultType.ToString().Contains("Transient.collection["))
+                            {
+                                // Filter property
+                                expression2 = DbExpressionBuilder.Take(expression2, 1);
+                                expression2 = DbExpressionBuilder.Element(expression2);
+
+                                baseExpression = expression2;
+
+                            }
+                            else
+                            {
+                                var visitor = new QueryFilterInterceptorDbProjectExpression();
+                                visitor.DbScanExpression = baseExpression;
+                                visitor.ParameterCollection = QueryFilterManager.DbExpressionParameterByHook[expression2];
+
+                                var filetered = expression2.Accept(visitor);
+
+                                baseExpression = filetered;
+                            }
                         }
                     }
                 }

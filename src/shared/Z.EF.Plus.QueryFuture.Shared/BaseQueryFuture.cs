@@ -310,6 +310,7 @@ namespace Z.EntityFramework.Plus
             var enumerator = (IEnumerator<T>)getEnumerator;
             return enumerator;
 #elif EFCORE
+           
             ((CreateEntityConnection)QueryConnection.DbConnection).OriginalDataReader = reader;
             var queryExecutor = (Func<QueryContext, IEnumerable<T>>) QueryExecutor;
             var queryEnumerable = queryExecutor(QueryContext);

@@ -592,6 +592,7 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
 
             if (isSqlServer)
             {
+                List<Tuple<string, string>> propertyAndColumnName = new List<Tuple<string, string>>();
                 var sqlServer = (IRelationalEntityTypeAnnotations)dynamicProviderEntityType.Invoke(null, new[] { entity });
 
                 // GET mapping
@@ -605,11 +606,14 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
                     var mappingProperty = dynamicProviderProperty.Invoke(null, new[] { propertyKey });
 
                     var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
-                    columnKeys.Add((string)columnNameProperty.GetValue(mappingProperty));
+                    //columnKeys.Add((string)columnNameProperty.GetValue(mappingProperty));
+                    propertyAndColumnName.Add(new Tuple<string, string>(propertyKey.Name, (string)columnNameProperty.GetValue(mappingProperty)));
                 }
 
                 // GET primary key join
-                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.[", x, "] = B.[", x, "]")));
+                primaryKeys = propertyAndColumnName.Count > 1?
+                    string.Join(Environment.NewLine + "AND ", propertyAndColumnName.Select(x => string.Concat("A.[", x.Item2, "] = B.[", x.Item1, "]"))):
+                    string.Join(Environment.NewLine + "AND ", propertyAndColumnName.Select(x => string.Concat("A.[", x.Item2, "] = B.[", x.Item2, "]")));
             }
             else if (isPostgreSQL)
             {

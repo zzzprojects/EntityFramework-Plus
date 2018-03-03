@@ -26,7 +26,15 @@ namespace Z.EntityFramework.Plus
             {
                 return null;
             }
-            return interceptionContext.DbContexts.FirstOrDefault();
+
+            var dbContext = interceptionContext.DbContexts.FirstOrDefault();
+
+            if (dbContext == null)
+            {
+                dbContext = new DbContext(context, false);
+            }
+
+            return dbContext;
         }
     }
 }
