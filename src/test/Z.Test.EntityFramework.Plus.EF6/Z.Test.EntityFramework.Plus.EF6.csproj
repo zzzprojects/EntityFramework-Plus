@@ -327,6 +327,7 @@
     <Compile Include="QueryFilter\DbContext_Filter\WithParameter\SingleFilter_SingleParameter.cs" />
     <Compile Include="QueryFilter\DbContext_Filter\WithParameter\SingleFilter_ManyParameter.cs" />
     <Compile Include="QueryFilter\DbContext_Filter\WithParameter\SingleFilter_NoParameter.cs" />
+    <Compile Include="QueryFuture\FutureValue\ImplicitCastTest.cs" />
     <Compile Include="QueryIncludeOptimized\ByPath\Many_Many_Many_Many.cs" />
     <Compile Include="QueryIncludeOptimized\ByPath\Many_Many_Many_Single.cs" />
     <Compile Include="QueryIncludeOptimized\ByPath\Many_Many_Single_Many.cs" />
