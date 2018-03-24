@@ -56,6 +56,10 @@ namespace Z.EntityFramework.Plus
             CacheWeakFilterQueryable = new ConditionalWeakTable<IQueryable, AliasBaseQueryFilterQueryable>();
             GlobalFilters = new Dictionary<object, AliasBaseQueryFilter>();
             GlobalInitializeFilterActions = new List<Tuple<AliasBaseQueryFilter, Action<AliasBaseQueryFilter>>>();
+
+#if NETSTANDARD2_0
+    ForceCast = true;
+#endif
         }
 
 #if EFCORE

@@ -113,7 +113,6 @@ namespace Z.EntityFramework.Plus
 
                 if (context.IsEFCore2x())
                 {
-                    var type = set.GetType();
                     var field = set.GetType().GetProperty("EntityQueryable", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                     var internalQuery = field.GetValue(set);
 

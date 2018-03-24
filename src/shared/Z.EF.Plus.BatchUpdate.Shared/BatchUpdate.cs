@@ -889,6 +889,10 @@ SELECT  @totalRowAffected
                 else
                 {
                     parameter.Value = paramValue ?? DBNull.Value;
+                    if (isSqlServer && parameter.Value is DateTime)
+                    {
+                        parameter.DbType = DbType.DateTime2;
+                    }
                 }
 
                 command.Parameters.Add(parameter);

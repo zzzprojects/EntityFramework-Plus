@@ -11,7 +11,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-#if NET45
+#if NET45 && !NETSTANDARD2_0
 using System.Data.Entity.Infrastructure;
 
 #endif

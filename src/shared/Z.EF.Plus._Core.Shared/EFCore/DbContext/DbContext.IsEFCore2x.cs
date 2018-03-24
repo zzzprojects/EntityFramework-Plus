@@ -22,9 +22,6 @@ namespace Z.EntityFramework.Plus
 #else
             return false;
 #endif
-            //var assembly = context.Database.GetType().Assembly;
-            //var version = assembly.GetName().Version;
-            //return version.Major >= 2;
         }
     }
 }
