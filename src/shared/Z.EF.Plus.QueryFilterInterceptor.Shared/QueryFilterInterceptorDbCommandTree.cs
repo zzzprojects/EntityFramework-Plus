@@ -11,7 +11,6 @@ namespace Z.EntityFramework.Plus
     public class QueryFilterInterceptorDbCommandTree : IDbCommandTreeInterceptor
     {
         public static ConstructorInfo DbQueryCommandTreeConstructor = typeof(DbQueryCommandTree).GetConstructor(new Type[] { typeof(MetadataWorkspace), typeof(DataSpace), typeof(DbExpression), typeof(bool), typeof(bool) });
-
         /// <summary>
         ///     This method is called after a new
         ///     <see cref="T:System.Data.Entity.Core.Common.CommandTrees.DbCommandTree" /> has been created.
@@ -22,6 +21,7 @@ namespace Z.EntityFramework.Plus
         /// <param name="interceptionContext">Contextual information associated with the call.</param>
         public void TreeCreated(DbCommandTreeInterceptionContext interceptionContext)
         {
+      
             var dbQueryCommandTree = interceptionContext.Result as DbQueryCommandTree;
             if (dbQueryCommandTree != null && interceptionContext.DbContexts.Count() == 1)
             {
@@ -93,6 +93,7 @@ namespace Z.EntityFramework.Plus
                     else
                     {
                         commandTree = new DbQueryCommandTree(dbQueryCommandTree.MetadataWorkspace, dbQueryCommandTree.DataSpace, newQuery, true);
+
                     }
 
                     interceptionContext.Result = commandTree;
