@@ -146,6 +146,11 @@ namespace Z.EntityFramework.Plus
         /// <returns>The result of forcing this lazy value.</returns>
         public static implicit operator TResult(QueryFutureValue<TResult> futureValue)
         {
+            if (futureValue == null)
+            {
+                return default(TResult);
+            }
+
             return futureValue.Value;
         }
     }
