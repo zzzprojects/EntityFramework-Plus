@@ -1,0 +1,32 @@
+//
+// scroll-to-top
+//
+#scroll-to-top {
+    background: $background-black-transparent;
+	border-radius: 35px;
+	bottom: 60px;
+	display: none;
+	height: 50px;
+	position: fixed;    
+    right: 20px;
+    width: 50px;
+	z-index:1;
+}
+#scroll-to-top i {
+	@include transition_ease_slow;
+	color: $color-light;
+	font-size: 1.875rem;  
+    position: relative;
+    text-align: center;
+	top: 7px;
+    width: 100%;
+}
+#scroll-to-top:hover {
+    background: $background-black-transparent-hover;
+}
+@media (max-width: 575px) {
+	#scroll-to-top {
+		bottom: 10px;
+		right: 20px;
+	}
+}

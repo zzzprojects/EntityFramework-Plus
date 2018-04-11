@@ -1,62 +1,63 @@
 ---
 permalink: api
 ---
-
-<div class="card-group">
-	
-		<div class="card">
-			<div class="card-header">
-				<h2>APIs</h2>
-			</div>
-			
-			<div class="card-body">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-sm-6">
-
-<div markdown="1">
-- Batch Operations
-
-   - [Batch Delete](/batch-delete)
-   - [Batch Update](/batch-update)
-
-- LINQ
-	- [LINQ Dynamic](/linq-dynamic)
-	
-- Audit
-	- [Audit](/audit)
-
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">Batch Operations</div>
+            <div class="card-body">
+                <a class="navbar-brand" href="{{ site.github.url }}/batch-delete">
+                    Batch Delete
+                </a>
+                <a class="navbar-brand" href="{{ site.github.url }}/batch-update">
+                    Batch Update
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card">
+            <div class="card-header">LINQ</div>
+            <div class="card-body">
+                <a class="navbar-brand" href="{{ site.github.url }}/linq-dynamic">
+                    LINQ Dynamic
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card">
+            <div class="card-header">Audit</div>
+            <div class="card-body">
+                <a class="navbar-brand" href="{{ site.github.url }}/audit">
+                    Audit
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card">
+            <div class="card-header">Query</div>
+            <div class="card-body">
+              <a class="navbar-brand" href="{{ site.github.url }}/query-cache">
+                  Query Cache
+              </a>
+              <a class="navbar-brand" href="{{ site.github.url }}/query-deferred">
+                  Query Deferred
+              </a>
+              <a class="navbar-brand" href="{{ site.github.url }}/query-db-set-filter">
+                  Query DbSetFilter
+              </a>
+              <a class="navbar-brand" href="{{ site.github.url }}/query-future">
+                  Query Future
+              </a>
+              <a class="navbar-brand" href="{{ site.github.url }}/query-include-filter">
+                  Query IncludeFilter
+              </a>
+              <a class="navbar-brand" href="{{ site.github.url }}/query-include-optimized">
+                  Query IncludeOptimized
+              </a>
+            </div>
+        </div>
+    </div>
 </div>
-                        </div>
-                        <div class="col-sm-6">
-
-<div markdown="1">
-- Query
-
-  - [Query Cache](/query-cache)
-  - [Query Deferred](/query-deferred)
-  - [Query DbSetFilter](/query-db-set-filter)
-  - [Query Filter](/query-filter)
-  - [Query Future](/query-future)
-  - [Query IncludeFilter](/query-include-filter)
-  - [Query IncludeOptimized](/query-include-optimized)
-
-
-</div>
-                        </div>
-		            </div>
-                </div>
-			</div>
-		</div>
-	
-</div>
-
-<style>
-.card-group .card-body {
-	padding-top: 20px;
-}
-
-.card-group .card-body li {
-	padding-top: 5px;
-}
-</style>

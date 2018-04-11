@@ -1,0 +1,49 @@
+//
+// card-box
+//
+.card-box {
+	border-radius: 0;
+}
+.card-box .card-header {
+	border-radius: 0;
+}
+.card-box .card-header {
+	@include background-red;
+	color: #fff;
+}
+.card-box .card-header h2 {
+	padding: 5px 0;
+}
+.card-box .card-header a {
+	color: #fff;
+}
+
+//
+//	card-box-nav 
+//
+.card-box-nav .card-body h3:not(:first-child) {
+	margin-top: 15px;
+}
+.card-box-nav .card-body ul {
+	padding-left: 20px;
+}
+.card-box-nav .card-body li {
+	list-style: none;
+	padding: 5px 0;
+}
+
+//
+//	card-box-light
+//
+.card-box-light {
+	border: $border-dark;
+	box-shadow: $box-shadow-dark;
+}
+
+//
+//	card-box-dark
+//
+.card-box-dark {
+	@include background-black;
+	box-shadow: $box-shadow-dark;
+}

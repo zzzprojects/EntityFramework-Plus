@@ -45,7 +45,7 @@ Choose the Entity Framework version and the Package Manager you want to use to d
 		</div>
 	</div>
 </div>
-<br /><br /><br />
+<br>
 <div class="row">
 	<div class="col-lg-6">
 		<div class="card card-layout-z2 wow slideInLeft">

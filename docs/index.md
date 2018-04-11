@@ -4,19 +4,14 @@ permalink: index
 ---
 
 <!-- hero !-->
-<div class="layout-angle">
-	<div class="top-triangle wow slideInRight" data-wow-duration="1.5s"></div>
-	<div class="layout-angle-inner">
+{% include component-rotator-dark-begin.html %}
 <div class="hero">
 	<div class="container">
 		<div class="row">
-		
 			<div class="col-lg-5 hero-header">
-			
 				<h1>
 					<div class="display-4">Entity Framework Plus</div>
 				</h1>
-				
 				<div class="wow zoomIn">
 					<a class="btn btn-xl btn-z" href="{{ site.github.url }}/download"
 							onclick="ga('send', 'event', { eventAction: 'download'});">
@@ -25,100 +20,79 @@ permalink: index
 						<i class="fa fa-angle-right"></i>
 					</a>
 				</div>
-				
+				<div class="font-italic">
+					*Free monthly trial available
+				</div>
 				<div class="download-count">
 					<div class="item-text">Download Count:</div>
 					<div class="item-image wow lightSpeedIn"><img src="https://zzzprojects.github.io/images/nuget/ef6-full-version-big-d.svg" /></div>
 				</div>
-
-				
 			</div>
-			
 			<div class="col-lg-7 hero-examples">
-			
 				<div class="row hero-examples-1">
-				
-				
 					<div class="col-lg-3 wow slideInUp"> 
-						<h5 class="wow rollIn">EASY TO<br />USE</h5>
+						<h3 class="wow rollIn">EASY TO<br />USE</h3>
 						<div class="hero-arrow hero-arrow-ltr">
 							<img src="images/arrow-down1.png">
 						</div>
 					</div>
-
 					<div class="col-lg-9 wow slideInRight">
-						<div class="card card-code card-code-dark-inverse">
-							<div class="card-header">Extend Entity Framework DbContext</div>
-							<div class="card-body">
-{% highlight csharp %}
+						<div class="card card-code card-code-light">
+    <div class="card-header"><h5>Extend Entity Framework DbContext</h5></div>
+    <div class="card-body">
+    {% highlight csharp %}
 // DELETE all users which are inactive for 2 years
 ctx.Users.Where(x => 
-    x.LastLoginDate < DateTime.Now.AddYears(-2))
-    .Delete();
+x.LastLoginDate < DateTime.Now.AddYears(-2))
+.Delete();
 
 // UPDATE all users which are inactive for 2 years
 ctx.Users.Where(x => 
-    x.LastLoginDate < DateTime.Now.AddYears(-2))
-    .Update(x => new User() { IsSoftDeleted = 1 });
+x.LastLoginDate < DateTime.Now.AddYears(-2))
+.Update(x => new User() { IsSoftDeleted = 1 });
 
 {% endhighlight %}
-							</div>
-						</div>
+    </div>
+</div>
+
 					</div>
 				</div>
-				
 				<div class="row hero-examples-2">
-				
 					<div class="col-lg-3 order-lg-2 wow slideInDown">
-						<h5 class="wow rollIn">EASY TO<br />CUSTOMIZE</h5>
+						<h3 class="wow rollIn">EASY TO<br />CUSTOMIZE</h3>
 						<div class="hero-arrow hero-arrow-rtl">
 							<img src="images/arrow-down1.png">
 						</div>
 					</div>
-					
 					<div class="col-lg-9 order-lg-1 wow slideInLeft">
-						<div class="card card-code card-code-dark-inverse">
-							<div class="card-header">Flexible and feature-rich API</div>
-							<div class="card-body">
+						<div class="card card-code card-code-light">
+    <div class="card-header"><h5>Zero configuration required</h5></div>
+    <div class="card-body">
 {% highlight csharp %}
 // DELETE using a BatchSize
 ctx.Users.Where(x => 
-    x.LastLoginDate < DateTime.Now.AddYears(-2))
-    .Delete(x => x.BatchSize = 1000);
+x.LastLoginDate < DateTime.Now.AddYears(-2))
+.Delete(x => x.BatchSize = 1000);
 
 //LINQ Dynamic
 var list = ctx.SelectDynamic(x => 
-        "new { y = x + 1 }").ToList();
+"new { y = x + 1 }").ToList();
 var list = ctx.SelectDynamic(x => 
-        "new { y = x + 1 }", 
-        new { y = 1 }).ToList();
+"new { y = x + 1 }", 
+new { y = 1 }).ToList();
 {% endhighlight %}
-							</div>
-						</div>
+    </div>
+</div>
 					</div>						
 				</div>
-				
 			</div>
-			
 		</div>
 	</div>	
 </div>
-	</div>
-	<div class="bottom-triangle-outer">
-		<div class="bottom-triangle wow slideInLeft" data-wow-duration="1.5s"></div>
-	</div>
-</div>
-<style>
-.hero {
-	background: transparent;
-}
-</style>
-
+{% include component-rotator-dark-end.html %}
 <!-- features !-->
 <div class="features">
-
 	<div class="container">
-		
 		<!-- Auditing !-->
 		<h2 class="wow slideInUp">Auditing</h2>
 		<div class="row">
@@ -139,8 +113,8 @@ var list = ctx.SelectDynamic(x =>
 				</div>	
 			</div>
 			<div class="col-lg-7 wow slideInRight">
-				<div class="card card-code card-code-light">
-					<div class="card-header">Auditing Example</div>
+				<div class="card card-code card-code-dark">
+					<div class="card-header"><h5>Auditing Example</h5></div>
 					<div class="card-body">
 {% highlight csharp %}
 var audit = new Audit();
@@ -182,8 +156,8 @@ foreach(var entry in entries)
 				</div>	
 			</div>
 			<div class="col-lg-7 wow slideInRight">
-				<div class="card card-code card-code-light">
-					<div class="card-header">Delete Example</div>
+				<div class="card card-code card-code-dark">
+					<div class="card-header"><h5>Delete Example</h5></div>
 					<div class="card-body">
 {% highlight csharp %}
 
@@ -221,8 +195,8 @@ ctx.Users.Where(x => x.LastLoginDate < date)
 				</div>	
 			</div>
 			<div class="col-lg-7 wow slideInRight">
-				<div class="card card-code card-code-light">
-					<div class="card-header">Update Example</div>
+				<div class="card card-code card-code-dark">
+					<div class="card-header"><h5>Update Example</h5></div>
 					<div class="card-body">
 {% highlight csharp %}
 // UPDATE all users inactive for 2 years
@@ -254,8 +228,8 @@ ctx.Users.Where(x => x.LastLoginDate < date)
 				</div>	
 			</div>
 			<div class="col-lg-7 wow slideInRight">
-				<div class="card card-code card-code-light">
-					<div class="card-header">Cache Example</div>
+				<div class="card card-code card-code-dark">
+					<div class="card-header"><h5>Cache Example</h5></div>
 					<div class="card-body">
 {% highlight csharp %}
 // The first call perform a database round trip
@@ -289,8 +263,8 @@ var countries2 = ctx.Countries.FromCache().ToList();
 				</div>	
 			</div>
 			<div class="col-lg-7 wow slideInRight">
-				<div class="card card-code card-code-light">
-					<div class="card-header">Filtering Example</div>
+				<div class="card card-code card-code-dark">
+					<div class="card-header"><h5>Filtering Example</h5></div>
 					<div class="card-body">
 {% highlight csharp %}
 QueryFilterManager.Filter<Post>(q => q.Where(x => !x.IsSoftDeleted));
@@ -327,8 +301,8 @@ var list = ctx.Posts.ToList();
 				</div>	
 			</div>
 			<div class="col-lg-7 wow slideInRight">
-				<div class="card card-code card-code-light">
-					<div class="card-header">FutureValue Example</div>
+				<div class="card card-code card-code-dark">
+					<div class="card-header"><h5>FutureValue Example</h5></div>
 					<div class="card-body">
 {% highlight csharp %}
 // CREATE a pending list of future queries
@@ -367,8 +341,8 @@ var states = futureStates.ToList();
 				</div>	
 			</div>
 			<div class="col-lg-7 wow slideInRight">
-				<div class="card card-code card-code-light">
-					<div class="card-header">Filter Example</div>
+				<div class="card card-code card-code-dark">
+					<div class="card-header"><h5>Filter Example</h5></div>
 					<div class="card-body">
 {% highlight csharp %}
 // LOAD orders and the first 10 active related entities.
@@ -382,13 +356,5 @@ var list = ctx.Orders.IncludeFilter(x => x.Items
 				</div>
 			</div>
 		</div>
-		
-		<!-- more-feature !-->
-		<div class="more">
-			<a href="{{ site.github.url }}/tutorials" class="btn btn-z btn-xl" role="button">
-				<i class="fa fa-book"></i>&nbsp;Read Tutorials
-			</a>
-		</div>
-		
 	</div>
 </div>

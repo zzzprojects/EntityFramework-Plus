@@ -6,7 +6,7 @@ permalink: download
 	<div class="container">
 		<div class="row">
 			<div class="col-lg-6">
-				<div class="card card-layout-z2 wow slideInLeft">
+				<div class="card card-box card-box-dark wow slideInLeft">
 					<div class="card-header wow slideInDown">
 						<h3>
 							<a href="https://www.nuget.org/packages/Z.EntityFramework.Plus.EF6/" target="_blank"
@@ -32,7 +32,7 @@ permalink: download
 				</div>
 			</div>
 			<div class="col-lg-6">
-				<div class="card card-layout-z2 wow slideInRight">
+				<div class="card card-box card-box-dark wow slideInRight">
 					<div class="card-header wow slideInDown">
 						<h3>
 							<a href="https://www.nuget.org/packages/Z.EntityFramework.Plus.EFCore/" target="_blank"
@@ -60,7 +60,7 @@ permalink: download
 		</div>
 		<div class="row">
 			<div class="col-lg-6">
-				<div class="card card-layout-z2 wow slideInLeft">
+				<div class="card card-box card-box-dark wow slideInLeft">
 					<div class="card-header wow slideInDown">
 						<h3>
 							<a href="https://www.nuget.org/packages/Z.EntityFramework.Plus.EF5/" target="_blank"

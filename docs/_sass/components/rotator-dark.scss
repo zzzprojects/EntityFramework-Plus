@@ -1,0 +1,76 @@
+//
+// rotator
+//
+.rotator{
+    h2{
+        color:white!important;
+    }
+}
+@media (max-width: 991px) {
+    .rotator {
+        @include background-black;
+
+        color: #fff;
+        margin-bottom: 30px;
+    }
+}
+
+@media (min-width: 992px) {
+    .rotator .rotator-header {
+        transform: rotate(4deg);
+        position: relative;
+        z-index: 1;
+    }
+
+    .rotator .rotator-header-inner {
+        position: absolute;
+        border-style: solid;
+        border-width: 200px 600px 0 0;
+        width: 600px;
+        border-color: $color-z transparent;
+        left: -5%;
+    }
+
+    .rotator .rotator-body {
+        transform: rotate(4deg);
+        left: -5%;
+        position: relative;
+        width: 110%;
+        overflow:hidden;
+    }
+
+    .rotator .rotator-body-inner {
+        transform: rotate(-4deg);
+    }
+
+    .rotator .rotator-footer {
+        margin-right: 500px;
+        transform: rotate(4deg);
+    }
+
+    .rotator .rotator-footer-inner {
+        left: 105%;
+        top: -217px;
+        border-style: solid;
+        border-width: 0 0 200px 500px;
+        border-style: solid;
+        border-color: $color-z transparent;
+        position: absolute;
+    }
+
+    //
+    // rotator-dark
+    //
+    .rotator-body {
+        background: #222;
+        background: -moz-radial-gradient(circle, #333, #111);
+        background: -webkit-radial-gradient(circle, #333, #111);
+        background: -ms-radial-gradient(circle, #333, #111);
+        background: -o-radial-gradient(circle, #333, #111);
+        background: radial-gradient(circle, #333, #111);
+    }
+
+    .rotator-dark .rotator-body-inner {
+        color: #fff;
+    }
+}
