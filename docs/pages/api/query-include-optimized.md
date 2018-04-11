@@ -113,7 +113,7 @@ When an immediate method is invoked to resolve the query, multiple queries are c
  - Entity Framework Core:
    - Not supported yet.
  - Cannot be mixed with Include (Include doesn't support projection)
- - Cannot be mixed with IncludeOptimized
+ - Cannot be mixed with IncludeFilter
  - Many to Many relation:
    - Not supported yet
  - Relationship:
