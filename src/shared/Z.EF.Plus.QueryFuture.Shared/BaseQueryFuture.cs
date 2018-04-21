@@ -82,6 +82,7 @@ namespace Z.EntityFramework.Plus
         public virtual IRelationalCommand CreateExecutorAndGetCommand(out RelationalQueryContext queryContext)
         {
             bool isEFCore2x = false;
+            bool EFCore_2_1 = false;
 
             var context = Query.GetDbContext();
 
@@ -102,13 +103,38 @@ namespace Z.EntityFramework.Plus
             var queryCompiler = queryCompilerField.GetValue(Query.Provider);
 
             // REFLECTION: Query.Provider.NodeTypeProvider (Use property for nullable logic)
-            var nodeTypeProviderField = queryCompiler.GetType().GetProperty("NodeTypeProvider", BindingFlags.NonPublic | BindingFlags.Instance);
-            var nodeTypeProvider = nodeTypeProviderField.GetValue(queryCompiler);
+            var nodeTypeProviderProperty = queryCompiler.GetType().GetProperty("NodeTypeProvider", BindingFlags.NonPublic | BindingFlags.Instance);
+            object nodeTypeProvider;
+            object QueryModelGenerator = null;
+
+            if (nodeTypeProviderProperty == null)
+            {
+                EFCore_2_1 = true;
+
+                var QueryModelGeneratorField = queryCompiler.GetType().GetField("_queryModelGenerator", BindingFlags.NonPublic | BindingFlags.Instance);
+                QueryModelGenerator = QueryModelGeneratorField.GetValue(queryCompiler);
+
+                var nodeTypeProviderField = QueryModelGenerator.GetType().GetField("_nodeTypeProvider", BindingFlags.NonPublic | BindingFlags.Instance);
+                nodeTypeProvider = nodeTypeProviderField.GetValue(QueryModelGenerator);
+            }
+            else
+            {
+                nodeTypeProvider = nodeTypeProviderProperty.GetValue(queryCompiler);
+            }
 
             // REFLECTION: Query.Provider._queryCompiler.CreateQueryParser();
 #if NETSTANDARD2_0
-            var createQueryParserMethod = queryCompiler.GetType().GetMethod("CreateQueryParser", BindingFlags.NonPublic | BindingFlags.Instance);
-            var createQueryParser = (QueryParser)createQueryParserMethod.Invoke(queryCompiler, new[] { nodeTypeProvider });
+            QueryParser createQueryParser = null;
+            if (EFCore_2_1)
+            {
+                var queryParserMethod = QueryModelGenerator.GetType().GetMethod("CreateQueryParser", BindingFlags.NonPublic | BindingFlags.Instance);
+                createQueryParser = (QueryParser)queryParserMethod.Invoke(QueryModelGenerator, new[] { nodeTypeProvider });
+            }
+            else
+            {
+                var queryParserMethod = queryCompiler.GetType().GetMethod("CreateQueryParser", BindingFlags.NonPublic | BindingFlags.Instance);
+                createQueryParser = (QueryParser)queryParserMethod.Invoke(queryCompiler, new[] { nodeTypeProvider });
+            }
 #else
             var createQueryParserMethod = queryCompiler.GetType().GetMethod("CreateQueryParser", BindingFlags.NonPublic | BindingFlags.Static);
             var createQueryParser = (QueryParser)createQueryParserMethod.Invoke(null, new[] { nodeTypeProvider });
@@ -120,7 +146,16 @@ namespace Z.EntityFramework.Plus
 
             // REFLECTION: Query.Provider._queryCompiler._evaluatableExpressionFilter
 #if NETSTANDARD2_0
-            var evaluatableExpressionFilter = (IEvaluatableExpressionFilter)queryCompiler.GetType().GetField("_evaluatableExpressionFilter", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(queryCompiler);
+            IEvaluatableExpressionFilter evaluatableExpressionFilter = null;
+
+            if (EFCore_2_1)
+            {
+                evaluatableExpressionFilter = (IEvaluatableExpressionFilter)QueryModelGenerator.GetType().GetField("_evaluatableExpressionFilter", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(QueryModelGenerator);
+            }
+            else
+            {
+                evaluatableExpressionFilter = (IEvaluatableExpressionFilter)queryCompiler.GetType().GetField("_evaluatableExpressionFilter", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(queryCompiler);
+            }
 #else
             var evaluatableExpressionFilterField = queryCompiler.GetType().GetField("_evaluatableExpressionFilter", BindingFlags.NonPublic | BindingFlags.Static);
             var evaluatableExpressionFilter = (IEvaluatableExpressionFilter) evaluatableExpressionFilterField.GetValue(null);
@@ -226,17 +261,31 @@ namespace Z.EntityFramework.Plus
             }
 
 
-
             Expression newQuery;
+
 
             if(isEFCore2x)
             {
-                var parameterExtractingExpressionVisitorConstructor = typeof(ParameterExtractingExpressionVisitor).GetConstructors().First(x => x.GetParameters().Length == 5);
+                var parameterExtractingExpressionVisitorConstructors = typeof(ParameterExtractingExpressionVisitor).GetConstructors();
 
-                var parameterExtractingExpressionVisitor = (ParameterExtractingExpressionVisitor)parameterExtractingExpressionVisitorConstructor.Invoke(new object[] {evaluatableExpressionFilter, queryContext, logger, true, false } );
-            
-                // CREATE new query from query visitor
-                newQuery = parameterExtractingExpressionVisitor.ExtractParameters(Query.Expression);
+                if (parameterExtractingExpressionVisitorConstructors.Any(x => x.GetParameters().Length == 5))
+                {
+                    // EF Core 2.1
+                    var parameterExtractingExpressionVisitorConstructor = parameterExtractingExpressionVisitorConstructors.First(x => x.GetParameters().Length == 5);
+                    var parameterExtractingExpressionVisitor = (ParameterExtractingExpressionVisitor)parameterExtractingExpressionVisitorConstructor.Invoke(new object[] { evaluatableExpressionFilter, queryContext, logger, true, false });
+
+                    // CREATE new query from query visitor
+                    newQuery = parameterExtractingExpressionVisitor.ExtractParameters(Query.Expression);
+                }
+                else
+                {
+                    // EF Core 2.1 Preview 2. We pass null for the DbContext, may require something else!
+                    var parameterExtractingExpressionVisitorConstructor = parameterExtractingExpressionVisitorConstructors.First(x => x.GetParameters().Length == 6);
+                    var parameterExtractingExpressionVisitor = (ParameterExtractingExpressionVisitor)parameterExtractingExpressionVisitorConstructor.Invoke(new object[] { evaluatableExpressionFilter, queryContext, logger, null, true, false });
+
+                    // CREATE new query from query visitor
+                    newQuery = parameterExtractingExpressionVisitor.ExtractParameters(Query.Expression);
+                }
             }
             else
             {
