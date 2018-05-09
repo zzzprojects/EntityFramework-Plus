@@ -1,6 +1,4 @@
----
-permalink: soft-delete
----
+# Soft Delete
 
 ## Problem
 You want to soft delete some entities currently in deleted state with BulkSaveChanges.

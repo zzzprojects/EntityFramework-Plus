@@ -1,6 +1,4 @@
----
-permalink: overview
----
+# Overview
 
 ## Definition
 

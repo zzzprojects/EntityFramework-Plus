@@ -1,6 +1,4 @@
----
-permalink: installing
----
+# Installing
 
 **Entity Framework Plus** can be installed through NuGet.
 

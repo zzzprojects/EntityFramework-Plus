@@ -1,6 +1,4 @@
----
-permalink: query-include-filter
----
+# Query IncludeFilter
 
 ## Introduction
 

@@ -1,6 +1,4 @@
----
-permalink: query-cache
----
+# Query Cache
 
 ## Introduction
 

@@ -1,6 +1,4 @@
----
-permalink: query-deferred
----
+# Query Deferred
 
 ## Introduction
 

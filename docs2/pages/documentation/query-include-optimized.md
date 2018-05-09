@@ -1,6 +1,4 @@
----
-permalink: query-include-optimized
----
+# Query IncludeOptimized
 
 ## Introduction
 

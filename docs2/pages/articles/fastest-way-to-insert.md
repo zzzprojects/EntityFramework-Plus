@@ -1,6 +1,4 @@
----
-permalink: fastest-way-to-insert
----
+# Fastest way to insert
 
 ## What’s the FASTEST way to insert in Entity Framework?
 

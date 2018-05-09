@@ -1,5 +1,3 @@
----
-permalink: problems
----
+# Problems
 
 ## Troubleshooting

@@ -1,6 +1,4 @@
----
-permalink: query-future
----
+# Query Future
 
 ## Introduction
 

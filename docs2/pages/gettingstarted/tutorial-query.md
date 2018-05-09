@@ -1,6 +1,4 @@
----
-permalink: tutorial-query
----
+# Query
 
 ## Query Cache
 

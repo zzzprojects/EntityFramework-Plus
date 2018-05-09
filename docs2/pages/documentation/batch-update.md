@@ -1,6 +1,4 @@
----
-permalink: batch-update
----
+# Batch Update
 
 ## Introduction
 

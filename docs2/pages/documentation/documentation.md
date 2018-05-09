@@ -1,6 +1,5 @@
----
-permalink: api
----
+# API
+
 @{
     ViewBag.MarkdownEnabled = false;
 }

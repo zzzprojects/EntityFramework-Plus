@@ -1,6 +1,4 @@
----
-permalink: batch-delete
----
+# Batch Delete
 
 ## Introduction
 

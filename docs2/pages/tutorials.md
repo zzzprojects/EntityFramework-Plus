@@ -1,6 +1,4 @@
----
-permalink: tutorials
----
+# Tutorials
 
 <br />
 

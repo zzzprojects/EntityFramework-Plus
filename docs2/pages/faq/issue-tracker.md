@@ -1,6 +1,4 @@
----
-permalink: issue-tracker
----
+# Issue Tracker
 
 ## Where is your Issue Tracker?
 

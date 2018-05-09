@@ -1,6 +1,4 @@
----
-permalink: upgrading
----
+# Upgrading
 
 All our release are normally backward compatible to make it very easy for you to upgrade.
 

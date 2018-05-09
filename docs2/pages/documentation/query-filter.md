@@ -1,6 +1,4 @@
----
-permalink: query-filter
----
+# Query Filter
 
 ## Introduction
 

@@ -1,6 +1,4 @@
----
-permalink: audit
----
+# Audit
 
 ## Introduction
 

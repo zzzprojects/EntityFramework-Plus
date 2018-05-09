@@ -1,6 +1,4 @@
----
-permalink: query-db-set-filter
----
+# Query DbSetFilter
 
 ## Definition
 

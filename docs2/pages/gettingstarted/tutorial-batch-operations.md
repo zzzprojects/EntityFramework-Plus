@@ -1,6 +1,4 @@
----
-permalink: tutorial-batch-operations
----
+# Batch Operations
 
 ## Batch Delete
 

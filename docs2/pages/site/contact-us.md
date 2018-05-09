@@ -1,6 +1,5 @@
----
-permalink: contact-us
----
+# Contact Us
+
 @{
     ViewBag.MarkdownEnabled = false;
 }

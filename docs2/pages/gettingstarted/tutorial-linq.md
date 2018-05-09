@@ -1,6 +1,4 @@
----
-permalink: tutorial-linq
----
+# LINQ
 
 ## LINQ Dynamic
 

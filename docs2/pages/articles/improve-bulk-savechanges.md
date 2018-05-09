@@ -1,6 +1,4 @@
----
-permalink: improve-bulk-savechanges
----
+# Improve Bulk Changes
 
 ## Introduction
 BulkSaveChanges is already very fast. But you can make it even faster by simply turning off the "EntityFrameworkPropagation" options.

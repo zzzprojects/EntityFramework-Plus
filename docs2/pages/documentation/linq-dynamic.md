@@ -1,6 +1,4 @@
----
-permalink: linq-dynamic
----
+# LINQ Dynamic
 
 ## LINQ Dynamic
 

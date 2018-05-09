@@ -1,6 +1,4 @@
----
-permalink: download
----
+# Download
 @{
     ViewBag.MarkdownEnabled = false;
 }
