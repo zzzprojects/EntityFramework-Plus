@@ -139,7 +139,7 @@
 .page-download-nuget .row .col-lg-6 {
 	margin-bottom: 60px;
 }
-@@media (max-width: 575px) {
+@media (max-width: 575px) {
 	.page-download-nuget .card-z img {
 		width: 90%;
 	}
