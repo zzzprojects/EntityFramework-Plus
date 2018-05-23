@@ -705,7 +705,7 @@ This issue often happen for MVC user. They create a new entity through HttpPost 
 
 We recommend to set the **IgnorePropertyUnchanged **to false to log every property.
 
-Here is an example of this issue: Issues #8
+Here is an example of this issue: [Issues #8](https://github.com/zzzprojects/EntityFramework-Plus/issues/8)
 
 ## Conclusion
 
