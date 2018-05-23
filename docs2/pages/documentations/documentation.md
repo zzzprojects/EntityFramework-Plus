@@ -21,7 +21,7 @@
         <div class="card card-z">
             <div class="card-header">LINQ</div>
             <div class="card-body">
-                <a class="navbar-brand" href="{{ site.github.url }}/linq-dynamic">
+                <a class="navbar-brand" href="/linq-dynamic">
                     LINQ Dynamic
                 </a>
             </div>
@@ -31,7 +31,7 @@
         <div class="card  card-z">
             <div class="card-header">Audit</div>
             <div class="card-body">
-                <a class="navbar-brand" href="{{ site.github.url }}/audit">
+                <a class="navbar-brand" href="/audit">
                     Audit
                 </a>
             </div>
@@ -41,22 +41,25 @@
         <div class="card card-z">
             <div class="card-header">Query</div>
             <div class="card-body">
-                <a class="navbar-brand" href="{{ site.github.url }}/query-cache">
+                <a class="navbar-brand" href="/query-cache">
                     Query Cache
                 </a>
-                <a class="navbar-brand" href="{{ site.github.url }}/query-deferred">
+                <a class="navbar-brand" href="/query-deferred">
                     Query Deferred
                 </a>
-                <a class="navbar-brand" href="{{ site.github.url }}/query-db-set-filter">
+				<a class="navbar-brand" href="/query-filter">
+                    Query Filter
+                </a>
+                <a class="navbar-brand" href="/query-db-set-filter">
                     Query DbSetFilter
                 </a>
-                <a class="navbar-brand" href="{{ site.github.url }}/query-future">
+                <a class="navbar-brand" href="/query-future">
                     Query Future
                 </a>
-                <a class="navbar-brand" href="{{ site.github.url }}/query-include-filter">
+                <a class="navbar-brand" href="/query-include-filter">
                     Query IncludeFilter
                 </a>
-                <a class="navbar-brand" href="{{ site.github.url }}/query-include-optimized">
+                <a class="navbar-brand" href="/query-include-optimized">
                     Query IncludeOptimized
                 </a>
             </div>
