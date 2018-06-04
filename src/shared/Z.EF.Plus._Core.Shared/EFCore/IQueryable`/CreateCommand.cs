@@ -208,9 +208,21 @@ namespace Z.EntityFramework.Plus
                 }
                 else
                 {
-                    // EF Core 2.1 Preview 2. We pass null for the DbContext, may require something else!
+                    // EF Core 2.1 Preview 2. 
                     var parameterExtractingExpressionVisitorConstructor = parameterExtractingExpressionVisitorConstructors.First(x => x.GetParameters().Length == 6);
-                    var parameterExtractingExpressionVisitor = (ParameterExtractingExpressionVisitor)parameterExtractingExpressionVisitorConstructor.Invoke(new object[] { evaluatableExpressionFilter, queryContext, logger, null, true, false });
+                    var _context = queryContext.GetType().GetProperty("Context", BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+                    var context = _context.GetValue(queryContext);
+
+	                ParameterExtractingExpressionVisitor parameterExtractingExpressionVisitor = null; 
+
+					if (parameterExtractingExpressionVisitorConstructor.GetParameters().Where(x => x.ParameterType == typeof(DbContext)).Any())
+	                {
+		                parameterExtractingExpressionVisitor = (ParameterExtractingExpressionVisitor)parameterExtractingExpressionVisitorConstructor.Invoke(new object[] { evaluatableExpressionFilter, queryContext, logger, context, true, false });
+					}
+	                else
+	                {
+						parameterExtractingExpressionVisitor = (ParameterExtractingExpressionVisitor)parameterExtractingExpressionVisitorConstructor.Invoke(new object[] { evaluatableExpressionFilter, queryContext, logger, null, true, false });
+					} 
 
                     // CREATE new query from query visitor
                     newQuery = parameterExtractingExpressionVisitor.ExtractParameters(source.Expression);

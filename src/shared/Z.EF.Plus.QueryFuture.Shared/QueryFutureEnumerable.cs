@@ -135,7 +135,10 @@ namespace Z.EntityFramework.Plus
             
             var enumerator = GetQueryEnumerator<T>(reader);
 
-            SetResult(enumerator);
+            using (enumerator)
+            {
+                SetResult(enumerator);
+            }  
         }
 
         public void SetResult(IEnumerator<T> enumerator)

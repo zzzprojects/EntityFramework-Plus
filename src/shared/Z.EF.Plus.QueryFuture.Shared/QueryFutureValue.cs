@@ -91,11 +91,15 @@ namespace Z.EntityFramework.Plus
             }
   
             var enumerator = GetQueryEnumerator<TResult>(reader);
+            using (enumerator)
+            {
+                enumerator.MoveNext();
+                _result = enumerator.Current;
 
+            }
+           
             // Enumerate on first item only
-            enumerator.MoveNext();
-            _result = enumerator.Current;
-
+          
             HasValue = true;
         }
 

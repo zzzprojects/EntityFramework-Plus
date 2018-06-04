@@ -77,15 +77,20 @@
     <Compile Include="$(MSBuildThisFileDirectory)LinqExpressionExtensions\PropertyOrFieldAccessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LinqExpressionExtensions\_Internal\ExpressionExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\DbContext.GetModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Extensions\Dictionary.GetValueOrNull.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Extensions\GetTableDefinitions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Extensions\Object.To.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Extensions\String\String.DeserializeXml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Extensions\String\String.SubstringLastIndexOf.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Extensions\XElement\XElement.RemoveAllNamespaces.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Infrastructure\DbModelPlus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Mapping\ComplexPropertyMapping.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Mapping\ConditionPropertyMapping.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Mapping\EntityContainerMapping.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Mapping\EntitySetMapping.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Mapping\EntityTypeMapping.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Mapping\MappingFragment.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Mapping\ScalarAccessorMapping.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Mapping\ScalarPropertyMapping.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Mapping\SchemaMapping.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Model\Model.BuildMapping.cs" />
@@ -107,7 +112,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Model\SchemaObjectModel\Schema.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\SchemaObjectModel\SchemaEntityType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\SchemaObjectModel\SchemaEntityType_Generic.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\SchemaObjectModel\SchemaEnumMember.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\SchemaObjectModel\SchemaEnumType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\TableDefinition.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Utility\CreateGetFunc.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Utility\CreateSetFunc.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Visitor\ExpressionVisitor.cs" />
   </ItemGroup>
 </Project>

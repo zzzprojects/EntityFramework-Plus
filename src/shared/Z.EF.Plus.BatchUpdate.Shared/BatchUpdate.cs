@@ -982,11 +982,25 @@ SELECT  @totalRowAffected
 #if EF5 || EF6
                 // FIND the mapped column
                 var column = mapping.ScalarProperties.Find(x => x.Name == value.Key);
-                if (column == null)
-                {
-                    throw new Exception("The destination column could not be found:" + value.Key);
-                }
-                var columnName = column.ColumnName;
+	            string columnName;
+
+				if (column != null)
+				{
+					columnName = column.ColumnName;
+				}
+				else
+				{
+					var accessor = mapping.ScalarAccessors.Find(x => x.AccessorPath == value.Key);
+					if (accessor == null)
+					{
+						throw new Exception("The destination column could not be found:" + value.Key);
+					}
+
+					columnName = accessor.ColumnName;
+				}
+
+	            
+          
 #elif EFCORE
 
                 var property = entity.FindProperty(value.Key);

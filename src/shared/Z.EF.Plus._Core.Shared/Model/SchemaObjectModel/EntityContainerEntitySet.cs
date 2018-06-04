@@ -8,6 +8,7 @@
 #if FULL || BATCH_DELETE || BATCH_UPDATE
 #if EF5 || EF6
 using System.Xml.Serialization;
+using Z.EntityFramework.Plus.Internal.Core.Mapping;
 
 namespace Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel
 {
@@ -25,17 +26,37 @@ namespace Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel
         [XmlIgnore]
         public SchemaEntityType EntityType { get; set; }
 
-#region XmlDeserialization
+	    /// <summary>Gets or sets a value indicating whether this object is tpc.</summary>
+	    /// <value>true if this object is tpc, false if not.</value>
+	    [XmlIgnore]
+	    public bool IsTPC { get; set; }
 
-        /// <summary>
-        ///     Please visit the
-        ///     <see href="http://msdn.microsoft.com/en-us/library/vstudio/bb399292(v=vs.100).aspx">
-        ///         Microsoft documentation
-        ///     </see>
-        ///     for more detail.
-        /// </summary>
-        /// <value>The name.</value>
-        [XmlAttribute("Name")]
+	    /// <summary>Gets or sets a value indicating whether this object is tph.</summary>
+	    /// <value>true if this object is tph, false if not.</value>
+	    [XmlIgnore]
+	    public bool IsTPH { get; set; }
+
+	    /// <summary>Gets or sets a value indicating whether this object is tpt.</summary>
+	    /// <value>true if this object is tpt, false if not.</value>
+	    [XmlIgnore]
+	    public bool IsTPT { get; set; }
+
+	    /// <summary>Gets or sets the entity set mapping.</summary>
+	    /// <value>The entity set mapping.</value>
+	    [XmlIgnore]
+	    public EntitySetMapping EntitySetMapping { get; set; }
+
+		#region XmlDeserialization
+
+		/// <summary>
+		///     Please visit the
+		///     <see href="http://msdn.microsoft.com/en-us/library/vstudio/bb399292(v=vs.100).aspx">
+		///         Microsoft documentation
+		///     </see>
+		///     for more detail.
+		/// </summary>
+		/// <value>The name.</value>
+		[XmlAttribute("Name")]
         public string Name { get; set; }
 
         /// <summary>

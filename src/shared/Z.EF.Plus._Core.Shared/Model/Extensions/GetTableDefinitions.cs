@@ -11,7 +11,7 @@ using Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel;
 
 namespace Z.EF.Plus.BatchUpdate.Shared.Extensions
 {
-    public static class DbModelPlusExtentions
+    public static partial class DbModelPlusExtentions
     {
 	    internal static IEnumerable<TableDefinition> GetTableDefinitions<T>(this DbModelPlus model)
 	    {
@@ -108,20 +108,20 @@ namespace Z.EF.Plus.BatchUpdate.Shared.Extensions
 			    ueEntity.Properties = setEntityType.EntityTypeMapping.MappingFragment.ScalarProperties.ToList();
 
 			    //if there's no base type, stop here
-			    if (string.IsNullOrEmpty(setEntityType.BaseType))
+			    if (string.IsNullOrEmpty(setEntityType.BaseType.ToString()))
 			    {
 				    return lsTableDefinitions;
 			    }
 			}
 
 			//stop here if there's no base type
-		    if (string.IsNullOrEmpty(setEntityType.BaseType))
+		    if (string.IsNullOrEmpty(setEntityType.BaseType.ToString()))
 		    {
 			    return lsTableDefinitions;
 		    }
 
 		    //strip the alias bit
-		    string strBaseType = setEntityType.BaseType.Replace(model.ConceptualModel.Alias + ".", "");
+		    string strBaseType = setEntityType.BaseType.ToString().Replace(model.ConceptualModel.Alias + ".", "");
 
 		    //get the columns for our base class
 		    IEnumerable<TableDefinition> lsBaseTableDefinitions = GetTableDefinitions(model, strBaseType);
