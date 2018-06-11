@@ -74,7 +74,7 @@ namespace Z.EntityFramework.Plus
             // CREATE the query
             var query = OriginalProvider.CreateQuery<TElement>(expression);
 
-            if (typeof (TElement) != typeof (T))
+            if (typeof(TElement) != typeof(T))
             {
                 // CANNOT throw error since used in QueryIncludeOptimizeChild
                 return query;
@@ -129,19 +129,19 @@ namespace Z.EntityFramework.Plus
             // CHECK if the internal expression can be supported
             var isExpressionSupported = false;
 
-            var firstExpression = methodCall.Arguments.FirstOrDefault(x => x.Type.IsSubclassOf(typeof (Expression)));
+            var firstExpression = methodCall.Arguments.FirstOrDefault(x => x.Type.IsSubclassOf(typeof(Expression)));
             if (firstExpression != null && methodCall.Arguments.Count == 2)
             {
-                var quoteExpression = ((UnaryExpression) firstExpression).Operand;
+                var quoteExpression = ((UnaryExpression)firstExpression).Operand;
                 var lambdaExpression = quoteExpression as LambdaExpression;
                 if (lambdaExpression != null)
                 {
-                    if (lambdaExpression.Type == typeof (Func<,>).MakeGenericType(currentQuery.ElementType, typeof (bool)))
+                    if (lambdaExpression.Type == typeof(Func<,>).MakeGenericType(currentQuery.ElementType, typeof(bool)))
                     {
-                        var method = typeof (Queryable).GetMethods().First(x => x.Name == "Where" && x.GetParameters()[1].ParameterType.GetGenericArguments()[0].GetGenericArguments().Length == 2);
+                        var method = typeof(Queryable).GetMethods().First(x => x.Name == "Where" && x.GetParameters()[1].ParameterType.GetGenericArguments()[0].GetGenericArguments().Length == 2);
                         var methodGeneric = method.MakeGenericMethod(currentQuery.ElementType);
-                        currentQuery = (QueryIncludeOptimizedParentQueryable<T>) methodGeneric.Invoke(null, new object[] {currentQuery, lambdaExpression});
-                        currentMethod = typeof (Queryable).GetMethods().FirstOrDefault(x => x.Name == currentMethod.Name && x.GetParameters().Length == 1);
+                        currentQuery = (QueryIncludeOptimizedParentQueryable<T>)methodGeneric.Invoke(null, new object[] { currentQuery, lambdaExpression });
+                        currentMethod = typeof(Queryable).GetMethods().FirstOrDefault(x => x.Name == currentMethod.Name && x.GetParameters().Length == 1);
                         isExpressionSupported = currentMethod != null;
                     }
                 }
@@ -171,13 +171,13 @@ namespace Z.EntityFramework.Plus
 
             // GET provider 
             //  because IQueryable.Provider call : ObjectQueryProvider and now that work for EF5
-            var objectQueryProviderField = typeof (ObjectQuery).GetProperty("System.Linq.IQueryable.Provider", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            var provider = (IQueryProvider) objectQueryProviderField.GetValue(objectQuery, null);
+            var objectQueryProviderField = typeof(ObjectQuery).GetProperty("System.Linq.IQueryable.Provider", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var provider = (IQueryProvider)objectQueryProviderField.GetValue(objectQuery, null);
 
             // CREATE query from the expression
-            var createQueryMethod = provider.GetType().GetMethod("CreateQuery", BindingFlags.NonPublic | BindingFlags.Instance, null, new[] {typeof (Expression)}, null);
-            createQueryMethod = createQueryMethod.MakeGenericMethod(typeof (TResult));
-            var immediateQuery = (ObjectQuery<T>) createQueryMethod.Invoke(provider, new object[] {expression});
+            var createQueryMethod = provider.GetType().GetMethod("CreateQuery", BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(Expression) }, null);
+            createQueryMethod = createQueryMethod.MakeGenericMethod(typeof(TResult));
+            var immediateQuery = (ObjectQuery<T>)createQueryMethod.Invoke(provider, new object[] { expression });
 #elif EFCORE
             var immediateQuery = new EntityQueryable<TResult>((IAsyncQueryProvider)OriginalProvider);
             var expressionProperty = typeof(QueryableBase<>).MakeGenericType(typeof(TResult)).GetProperty("Expression", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
@@ -195,8 +195,7 @@ namespace Z.EntityFramework.Plus
                     // MODIFY query if necessary
 #if EF5 || EF6
                     var objectContext = CurrentQueryable.OriginalQueryable.GetObjectQuery().Context;
-                    var keyMembers = ((dynamic)objectContext).CreateObjectSet<T>().EntitySet.ElementType.KeyMembers;
-                    var keyNames = ((IEnumerable<EdmMember>)keyMembers).Select(x => x.Name).ToArray();
+                    var keyNames = objectContext.GetDbContext().GetKeyNames<T>();
 #elif EFCORE
 
                 var context = currentQuery.OriginalQueryable.GetDbContext();
@@ -255,7 +254,7 @@ namespace Z.EntityFramework.Plus
             // CHECK if a value has been returned
             if (value == null)
             {
-                return (TResult) (object) null;
+                return (TResult)(object)null;
             }
 
 #if EF6
@@ -267,7 +266,7 @@ namespace Z.EntityFramework.Plus
             QueryIncludeOptimizedNullCollection.NullCollectionToEmpty(value, CurrentQueryable.Childs);
 
 #if EF5 || EF6
-            return (TResult) (object) value;
+            return (TResult)(object)value;
 #elif EFCORE
             return (TResult)value;
 #endif

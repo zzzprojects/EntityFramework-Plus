@@ -24,7 +24,7 @@ namespace Z.EntityFramework.Plus
 {
     public static partial class DbContextExtensions
     {
-        public static string[] GetKeyNames<T>(this DbContext context) where T : class
+        public static string[] GetKeyNames<T>(this DbContext context) 
         {
             var set = context.Set(typeof (T));
 
