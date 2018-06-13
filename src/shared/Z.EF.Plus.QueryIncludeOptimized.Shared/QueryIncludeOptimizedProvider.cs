@@ -195,7 +195,7 @@ namespace Z.EntityFramework.Plus
                     // MODIFY query if necessary
 #if EF5 || EF6
                     var objectContext = CurrentQueryable.OriginalQueryable.GetObjectQuery().Context;
-                    var keyMembers = ((dynamic)objectContext).CreateObjectSet<T>().EntitySet.ElementType.KeyMembers;
+                    var keyMembers = objectContext.GetEntitySet<T>().ElementType.KeyMembers;
                     var keyNames = ((IEnumerable<EdmMember>)keyMembers).Select(x => x.Name).ToArray();
 #elif EFCORE
 
