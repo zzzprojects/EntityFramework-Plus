@@ -17,9 +17,3 @@
 - MySQL
 - PostgreSQL
 - SQLite
-
-## Under Development
-
-- Entity Framework Core currently only supports SQL Server 2008+, SQL Azure, PostgreSQL
-- Firebird Provider
-- Entity Framework 4
