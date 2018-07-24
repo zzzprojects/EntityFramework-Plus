@@ -25,14 +25,14 @@
 ## Installing & Upgrading
 Download the <a href="/download">NuGet Package</a>
 
-# Requirements
+## Requirements
 
-## Entity Framework Version
+### Entity Framework Version
 - Entity Framework Core 2.x
 - Entity Framework 6.x
 - Entity Framework 5
 
-## Database Provider
+### Database Provider
 
 - SQL Server 2008+
 - SQL Azure
@@ -42,7 +42,7 @@ Download the <a href="/download">NuGet Package</a>
 - PostgreSQL
 - SQLite
 
-## Under Development
+### Under Development
 
 - Entity Framework Core currently only supports SQL Server 2008+, SQL Azure, PostgreSQL
 - Firebird Provider
