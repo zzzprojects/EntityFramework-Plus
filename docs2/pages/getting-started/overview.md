@@ -22,6 +22,27 @@
 - Audit
   - [Audit](/audit)
 
+## Installing & Upgrading
+Download the <a href="/download">NuGet Package</a>
+
+## Requirements
+
+### Entity Framework Version
+- Entity Framework Core 2.x
+- Entity Framework 6.x
+- Entity Framework 5
+
+### Database Provider
+
+- SQL Server 2008+
+- SQL Azure
+- SQL Compact
+- Oracle
+- MySQL
+- PostgreSQL
+- SQLite
+
+
 ## Batch Operations
 
 Batch Operations method allow to perform **UPDATE** or **DELETE** operation directly in the database using a LINQ Query without loading entities in the context.
