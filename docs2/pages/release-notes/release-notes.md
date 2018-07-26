@@ -5,6 +5,7 @@
     <div class="version">
       v3
       <span>.15.13</span>
+      <p class="content-release-notes">This is the content</p>
     </div>
   </div>
 </div>
