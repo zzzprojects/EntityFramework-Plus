@@ -38,7 +38,7 @@ namespace Z.EntityFramework.Plus
             var typeFullName = type.AssemblyQualifiedName ?? type.FullName;
             var hookId = QueryFilterManager.PrefixHook + contextFullName + ";" + typeFullName + ";" + UniqueKey;
 
-            if (!QueryFilterManager.DbExpressionByHook.ContainsKey(hookId))
+            if (!QueryFilterManager.DbExpressionByHook.ContainsKey(hookId) || !QueryFilterManager.DbExpressionParameterByHook.ContainsKey(QueryFilterManager.DbExpressionByHook[hookId]))
             {
                 // CREATE set
                 var setMethod = typeof(DbContext).GetMethod("Set", new Type[0]).MakeGenericMethod(type);

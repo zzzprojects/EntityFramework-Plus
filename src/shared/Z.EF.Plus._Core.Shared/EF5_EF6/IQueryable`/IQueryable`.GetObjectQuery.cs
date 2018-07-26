@@ -45,6 +45,20 @@ namespace Z.EntityFramework.Plus
 
                 if (internalQueryProperty == null)
                 {
+                    // Check if a InnerQuery on AutoMapper 3erd party library with field Inner.
+                    var innerField = query.GetType().GetField("inner", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.IgnoreCase);
+
+                    if (innerField != null)
+                    {
+                        var innerQuery = innerField.GetValue(query) as IQueryable<T>;
+
+                        if (innerQuery != null && query != innerQuery)
+                        {
+                            var innerObjectQuery = innerQuery.GetObjectQuery();
+                            return innerObjectQuery;
+                        }
+                    }
+
                     // CHECK if a InnerQuery exists
                     var innerQueryProperty = query.GetType().GetProperty("InnerQuery", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 

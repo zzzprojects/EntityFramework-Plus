@@ -191,7 +191,7 @@ SELECT  @totalRowAffected
             var dbContext = query.GetDbContext();
 
 #if EF6
-            if (dbContext.IsInMemoryEffortQueryContext())
+            if (dbContext.IsInMemoryEffortQueryContext() || BatchDeleteManager.IsInMemoryQuery)
             {
                 var context = query.GetDbContext();
 
@@ -637,21 +637,38 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
             }
             else if (isMySqlPomelo)
             {
-                var sqlServer = (IRelationalEntityTypeAnnotations)dynamicProviderEntityType.Invoke(null, new[] { entity });
-
-                // GET mapping
-                tableName = string.Concat("`", sqlServer.TableName, "`");
-
-                // GET keys mappings
-                foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
+                if (dynamicProviderEntityType == null)
                 {
-                    var mappingProperty = dynamicProviderProperty.Invoke(null, new[] { propertyKey });
+                    // GET mapping
+                    tableName = string.Concat("`", entity.Relational().TableName, "`");
 
-                    var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
-                    columnKeys.Add((string)columnNameProperty.GetValue(mappingProperty));
+                    // GET keys mappings
+                    foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
+                    {
+                        columnKeys.Add(propertyKey.Relational().ColumnName);
+                    }
+
+                    primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.`", x, "` = B.`", x, "`")));
                 }
+                else
+                {
+                    var sqlServer = (IRelationalEntityTypeAnnotations)dynamicProviderEntityType.Invoke(null, new[] { entity });
 
-                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.`", x, "` = B.`", x, "`")));
+                    // GET mapping
+                    tableName = string.Concat("`", sqlServer.TableName, "`");
+
+                    // GET keys mappings
+                    foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
+                    {
+                        var mappingProperty = dynamicProviderProperty.Invoke(null, new[] { propertyKey });
+
+                        var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
+                        columnKeys.Add((string)columnNameProperty.GetValue(mappingProperty));
+                    }
+
+                    primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.`", x, "` = B.`", x, "`")));
+                }
+                
             }
             else if (isMySql)
             {

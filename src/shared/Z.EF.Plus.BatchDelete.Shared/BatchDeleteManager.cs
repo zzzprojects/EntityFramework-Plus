@@ -24,6 +24,12 @@ namespace Z.EntityFramework.Plus
         /// <summary>Gets or sets the factory to create an InMemory DbContext.</summary>
         /// <value>The factory to create an InMemory DbContext.</value>
         public static Func<DbContext> InMemoryDbContextFactory { get; set; }
+#else
+        /// <summary>
+        /// Gets or sets a value indicating whether this object is in memory query.
+        /// </summary>
+        /// <value>True if this object is in memory query, false if not.</value>
+        public static bool IsInMemoryQuery { get; set; }
 #endif
     }
 }
