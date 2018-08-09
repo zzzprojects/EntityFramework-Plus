@@ -524,6 +524,7 @@ using (var ctx = new TestContext())
 }
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/ETFLlO' %}
 
 ### Audit, AuditEntry & AuditEntryProperty
 
@@ -600,6 +601,7 @@ audit.Configuration.AuditEntryFactory = args =>
 ctx.SaveChanges(audit);
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/aVIC0C' %}
 
 #### Custom Class
 
@@ -628,6 +630,7 @@ audit.Configuration.AuditEntryPropertyFactory = args =>
 ctx.SaveChanges(audit);
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/xazeGj' %}
 
 #### Custom DbSet with AutoSave
 
@@ -695,6 +698,7 @@ public class CurrentContext : DbContext
 }
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/AREtca' %}
 
 ## Limitations
 
