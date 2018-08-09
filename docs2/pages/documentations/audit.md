@@ -29,7 +29,7 @@ foreach(var entry in entries)
 }
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/MBHlX8' %}
+{% include component-try-it.html href='https://dotnetfiddle.net/AJVhpP' %}
 
 ## AutoSave Audit
 
@@ -65,6 +65,7 @@ audit.CreatedBy = "ZZZ Projects"; // Optional
 ctx.SaveChanges(audit);
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/BfkqWm' %}
 
 ***By using a different context***
 
@@ -95,6 +96,7 @@ audit.CreatedBy = "ZZZ Projects"; // Optional
 oracleContext.SaveChanges(audit);
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/wTwh77' %}
 
 ***Custom AuditEntry & Database First Approach***
 
@@ -104,7 +106,7 @@ oracleContext.SaveChanges(audit);
 AuditManager.DefaultConfiguration.AutoSavePreAction = (context, audit) =>
 {
     // ADD "Where(x => x.AuditEntryID == 0)" to allow multiple SaveChanges with same Audit
-	var customAuditEntries = audit.Entries.Select(x => Import(x));
+	var customAuditEntries = audit.Entries.Select(x => ((EntityContext)context).Import(x));
 	(context as Entities).AuditEntries.AddRange(customAuditEntries);
 };
 
@@ -117,7 +119,7 @@ using (var ctx = new Entities())
     ctx.SaveChanges(audit);
 }
 
-public AuditEntry Import(Z.EntityFramework.Plus.AuditEntry entry)
+public Static AuditEntry Import(Z.EntityFramework.Plus.AuditEntry entry)
 {
     var customAuditEntry = new AuditEntry
     {
@@ -134,7 +136,7 @@ public AuditEntry Import(Z.EntityFramework.Plus.AuditEntry entry)
     return customAuditEntry;
 }
 
-public AuditEntryProperty Import(Z.EntityFramework.Plus.AuditEntryProperty property)
+public Static AuditEntryProperty Import(Z.EntityFramework.Plus.AuditEntryProperty property)
 {
     var customAuditEntry = new AuditEntryProperty
     {
@@ -148,6 +150,7 @@ public AuditEntryProperty Import(Z.EntityFramework.Plus.AuditEntryProperty prope
 }
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/9XjCSM' %}
 
 ***Saving automatically by overriding SaveChanges & SaveChangesAsync***
 
@@ -207,6 +210,7 @@ using(var ctx = new EntityContext())
 }
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/TFf8aj' %}
 
 ***SQL Script (for Database First)***
 
