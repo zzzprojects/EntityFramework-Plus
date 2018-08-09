@@ -289,6 +289,7 @@ public class EntitySimple : IEntitySimple
 }
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/QPcF2a' %}
 
 **Example Enable DataAnnotations**
 
@@ -331,6 +332,7 @@ audit.Configuration.Include<IAuditable>();
 ctx.SaveChanges(audit);
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/8TbEdO' %}
 
 ## Exclude & Include Property
 
@@ -369,6 +371,7 @@ audit.Configuration.ExcludeProperty<IAuditable>(x =>
 ctx.SaveChanges(audit);
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/eHO1fP' %}
 
 ## Format Value
 
@@ -399,6 +402,7 @@ audit.Configuration.Format<OrderItem>(x => x.Price,
 ctx.SaveChanges(audit);
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/Of9Dbz' %}
 
 ## Ignore Events
 
@@ -435,6 +439,7 @@ audit.Configuration.IgnoreRelationshipDeleted = true;
 ctx.SaveChanges(audit);
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/Ya95EQ' %}
 
 ## Property Unchanged
 
@@ -463,6 +468,7 @@ audit.Configuration.IgnorePropertyUnchanged = false;
 ctx.SaveChanges(audit);
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/tYE0YR' %}
 
 ## Soft Add & Soft Delete
 
@@ -495,6 +501,7 @@ audit.Configuration.SoftDeleted<ISoftDelete>(x => x.IsDeleted);
 ctx.SaveChanges(audit);
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/OadxfN' %}
 
 ## Retrieve AuditEntries for specific item
 
