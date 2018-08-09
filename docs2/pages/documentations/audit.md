@@ -106,7 +106,7 @@ oracleContext.SaveChanges(audit);
 AuditManager.DefaultConfiguration.AutoSavePreAction = (context, audit) =>
 {
     // ADD "Where(x => x.AuditEntryID == 0)" to allow multiple SaveChanges with same Audit
-	var customAuditEntries = audit.Entries.Select(x => ((EntityContext)context).Import(x));
+	var customAuditEntries = audit.Entries.Select(x => Import(x));
 	(context as Entities).AuditEntries.AddRange(customAuditEntries);
 };
 
