@@ -29,6 +29,7 @@ foreach(var entry in entries)
 }
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/MBHlX8' %}
 
 ## AutoSave Audit
 
