@@ -653,6 +653,7 @@ audit.CreatedBy = "ZZZ Projects"; // Optional
 ctx.SaveChanges(audit);
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/lC7eWg' %}
 
 ## Audit + Entity Framework Extensions
 
