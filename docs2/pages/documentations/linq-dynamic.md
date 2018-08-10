@@ -31,7 +31,6 @@ var list = ctx.Where(x => "x > 2").ToList();
 var list = ctx.Where(x => "x > y", new { y = 2 }).ToList();
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/R6D5BX' %}
 
 ## Order && Select
 
