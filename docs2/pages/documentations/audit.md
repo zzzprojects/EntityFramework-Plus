@@ -29,6 +29,7 @@ foreach(var entry in entries)
 }
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/AJVhpP' %}
 
 ## AutoSave Audit
 
@@ -64,6 +65,7 @@ audit.CreatedBy = "ZZZ Projects"; // Optional
 ctx.SaveChanges(audit);
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/BfkqWm' %}
 
 ***By using a different context***
 
@@ -94,6 +96,7 @@ audit.CreatedBy = "ZZZ Projects"; // Optional
 oracleContext.SaveChanges(audit);
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/wTwh77' %}
 
 ***Custom AuditEntry & Database First Approach***
 
@@ -116,7 +119,7 @@ using (var ctx = new Entities())
     ctx.SaveChanges(audit);
 }
 
-public AuditEntry Import(Z.EntityFramework.Plus.AuditEntry entry)
+public Static AuditEntry Import(Z.EntityFramework.Plus.AuditEntry entry)
 {
     var customAuditEntry = new AuditEntry
     {
@@ -133,7 +136,7 @@ public AuditEntry Import(Z.EntityFramework.Plus.AuditEntry entry)
     return customAuditEntry;
 }
 
-public AuditEntryProperty Import(Z.EntityFramework.Plus.AuditEntryProperty property)
+public Static AuditEntryProperty Import(Z.EntityFramework.Plus.AuditEntryProperty property)
 {
     var customAuditEntry = new AuditEntryProperty
     {
@@ -147,6 +150,7 @@ public AuditEntryProperty Import(Z.EntityFramework.Plus.AuditEntryProperty prope
 }
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/9XjCSM' %}
 
 ***Saving automatically by overriding SaveChanges & SaveChangesAsync***
 
@@ -206,6 +210,7 @@ using(var ctx = new EntityContext())
 }
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/TFf8aj' %}
 
 ***SQL Script (for Database First)***
 
@@ -284,6 +289,7 @@ public class EntitySimple : IEntitySimple
 }
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/QPcF2a' %}
 
 **Example Enable DataAnnotations**
 
@@ -326,6 +332,7 @@ audit.Configuration.Include<IAuditable>();
 ctx.SaveChanges(audit);
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/8TbEdO' %}
 
 ## Exclude & Include Property
 
@@ -364,6 +371,7 @@ audit.Configuration.ExcludeProperty<IAuditable>(x =>
 ctx.SaveChanges(audit);
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/eHO1fP' %}
 
 ## Format Value
 
@@ -394,6 +402,7 @@ audit.Configuration.Format<OrderItem>(x => x.Price,
 ctx.SaveChanges(audit);
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/Of9Dbz' %}
 
 ## Ignore Events
 
@@ -430,6 +439,7 @@ audit.Configuration.IgnoreRelationshipDeleted = true;
 ctx.SaveChanges(audit);
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/Ya95EQ' %}
 
 ## Property Unchanged
 
@@ -458,6 +468,7 @@ audit.Configuration.IgnorePropertyUnchanged = false;
 ctx.SaveChanges(audit);
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/tYE0YR' %}
 
 ## Soft Add & Soft Delete
 
@@ -490,6 +501,7 @@ audit.Configuration.SoftDeleted<ISoftDelete>(x => x.IsDeleted);
 ctx.SaveChanges(audit);
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/OadxfN' %}
 
 ## Retrieve AuditEntries for specific item
 
@@ -512,6 +524,7 @@ using (var ctx = new TestContext())
 }
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/ETFLlO' %}
 
 ### Audit, AuditEntry & AuditEntryProperty
 
@@ -588,6 +601,7 @@ audit.Configuration.AuditEntryFactory = args =>
 ctx.SaveChanges(audit);
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/aVIC0C' %}
 
 #### Custom Class
 
@@ -616,6 +630,7 @@ audit.Configuration.AuditEntryPropertyFactory = args =>
 ctx.SaveChanges(audit);
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/xazeGj' %}
 
 #### Custom DbSet with AutoSave
 
@@ -683,6 +698,7 @@ public class CurrentContext : DbContext
 }
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/AREtca' %}
 
 ## Limitations
 
