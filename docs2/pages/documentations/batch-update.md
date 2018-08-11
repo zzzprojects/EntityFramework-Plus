@@ -17,6 +17,7 @@ ctx.Users.Where(x => x.LastLoginDate < date)
          .Update(x => new User() { IsSoftDeleted = 1 });
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/uzsdub' %}
 
 ## Batch Update
 
@@ -39,6 +40,7 @@ ctx.Users.Where(x => x.LastLoginDate < date)
          .Update(x => new User() { IsSoftDeleted = 1 });
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/sfMLRj' %}
 
 ## Batch UpdateAsync
 
@@ -61,6 +63,7 @@ ctx.Users.Where(x => x.LastLoginDate < date)
          .UpdateAsync(x => new User() { IsSoftDeleted = 1 });
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/7fHg1g' %}
 
 ## Executing Interceptor
 
@@ -84,6 +87,7 @@ ctx.Users.Where(x => x.LastLoginDate < date)
                  x => { x.Executing = command => commandText = command.CommandText; });
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/a6zJUe' %}
 
 ## Limitations
 
