@@ -94,7 +94,7 @@ Query Deferred supports all Queryable extension methods and overloads.
 
 Tagging the cache lets you expire later on all cached entries with a specific tag by calling the **ExpireTag** method.
 
-By example, the daily countries & states importation has been completed and you need to refresh from the database all queries related to the country table. You can now simply expire the tag **countries** to remove all related cached entries.
+For example, the daily countries & states importation has been completed and you need to refresh from the database all queries related to the country table. You can now simply expire the tag **countries** to remove all related cached entries.
 
 {% include template-example.html %} 
 ```csharp
