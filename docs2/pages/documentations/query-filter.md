@@ -361,7 +361,7 @@ using (var ctx = new EntityContext())
 
 #### Context Filter
 
-Since the QueryCacheManager is global, our library have some limitation with Filter by context (Global Filter doesn't have this issue since it apply the same logic to all query.)
+Since the QueryCacheManager is global, our library have some limitations with Filter by context (Global Filter doesn't have this issue since it apply the same logic to all query.)
 
  - LazyLoading only work with GlobalFilter
  - context.Set only work with GlobalFilter (You can use the method SetFiltered instead)
