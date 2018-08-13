@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Entity Framework saves entities in a database but doesn't let you easily track changes, by example, a history of all modifications and their author in an audit table.
+Entity Framework saves entities in a database but doesn't let you easily track changes, for example, a history of all modifications and their author in an audit table.
 
 **EF+ Audit** easily tracks changes, exclude/include entity or property and auto save audit entries in the database.
 
@@ -377,7 +377,7 @@ ctx.SaveChanges(audit);
 
 ### Problem
 
-You need to format a value with a different string representation by example adding a dollar sign to the money value.
+You need to format a value with a different string representation, for example, adding a dollar sign to the money value.
 
 ### Solution
 
@@ -507,7 +507,7 @@ ctx.SaveChanges(audit);
 
 ### Problem
 
-You want to retrieve all AuditEntry for a specific item
+You want to retrieve all AuditEntry for a specific item.
 
 ### Solution
 
@@ -657,7 +657,7 @@ ctx.SaveChanges(audit);
 
 ## Audit + Entity Framework Extensions
 
-If you are using Entity Framework Extensions, is still possible to use the EF+ Audit features.
+If you are using Entity Framework Extensions, it is still possible to use the EF+ Audit features.
 
 However, it will only work with BulkSaveChanges.
 
@@ -718,15 +718,15 @@ public class CurrentContext : DbContext
 
 Why only my key is added when updating my entity?
 
-This issue often happen for MVC user. They create a new entity through HttpPost values and force the state to "Modified", the context is not aware of the original value and use the current value instead. So every property has the original value == current value and our auditing only log the key since all other values are equals.
+This issue often happens for MVC user. They create a new entity through HttpPost values and force the state to "Modified", the context is not aware of the original value and use the current value instead. So, every property has the original value == current value and our auditing only log the key since all other values are equals.
 
-We recommend to set the **IgnorePropertyUnchanged **to false to log every property.
+We recommend setting the **IgnorePropertyUnchanged **to false to log every property.
 
 Here is an example of this issue: [Issues #8](https://github.com/zzzprojects/EntityFramework-Plus/issues/8)
 
 ## Conclusion
 
-**Auditing** in Entity Framework could not be simpler, there are always some entities in an application where an audit table can be crucial to keep track of what's happening and you now have access to an easy to use library for these situations.
+**Auditing** in Entity Framework could not be simpler, there are always some entities in an application where an audit table can be crucial to keep track of what's happening, and you now have access to an easy to use library for these situations.
 
 Need help getting started? [info@zzzprojects.com](mailto:info@zzzprojects.com)
 

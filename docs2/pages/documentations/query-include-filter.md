@@ -2,7 +2,7 @@
 
 ## Introduction
 
-With Entity Framework, "Include" method is often used to load related entities / child collections. However, the method doesn't let you use LINQ queryable methods like **Where** to filter entities to include which is a major drawback. Excluding soft deleted records or limiting the result is a frequent real life scenario which the "Include" method doesn't support.
+With Entity Framework, "Include" method is often used to load related entities / child collections. However, the method doesn't let you use LINQ queryable methods like **Where** to filter entities to include which is a major drawback. Excluding soft deleted records or limiting the result is a frequent real-life scenario which the "Include" method doesn't support.
 
 **EF+ Query IncludeFilter** lets you filter and perform LINQ queryable methods on related entities.
 
@@ -180,7 +180,7 @@ ctx.Posts.IncludeFilter(q => q.Comments.Take(1)).ToList();
 
 ## Conclusion
 
-Filtering included related entities is one of the most frequently asked questions in forums. **EF+ Query IncludeFilter** now make it possible without any learning curve required for a junior developer to understand what the method does.
+Filtering included related entities is one of the most frequently asked questions in forums. **EF+ Query IncludeFilter** now makes it possible without any learning curve required for a junior developer to understand what the method does.
 
 Need help getting started? [info@zzzprojects.com](mailto:info@zzzprojects.com)
 

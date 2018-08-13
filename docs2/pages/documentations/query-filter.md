@@ -270,7 +270,7 @@ var list = ctx.Categories.ToList();
 
 ### Security Access
 
-Viewing sensible data requires often some permissions. By example, not everyone can see all posts in a forum.
+Viewing sensible data often requires some permissions. For example, not everyone can see all posts in a forum.
 
 *In this example, some posts are only available by role level.*
 
@@ -308,7 +308,7 @@ var list = ctx.Categories.ToList()
 
 ### Include Filtering
 
-Including related entities can be useful. By example, every time you load a post, you want to include all active comments related.
+Including related entities can be useful. For example, every time you load a post, you want to include all active comments related.
 
 **Require:** EF+ Query Include
 
@@ -361,7 +361,7 @@ using (var ctx = new EntityContext())
 
 #### Context Filter
 
-Since the QueryCacheManager is global, our library have some limitation with Filter by context (Global Filter doesn't have this issue since it apply the same logic to all query.
+Since the QueryCacheManager is global, our library have some limitations with Filter by context (Global Filter doesn't have this issue since it apply the same logic to all query.)
 
  - LazyLoading only work with GlobalFilter
  - context.Set only work with GlobalFilter (You can use the method SetFiltered instead)
@@ -383,7 +383,7 @@ For this kind of scenario, we recommend using instead: [EntityFramework.DynamicF
 
 #### Entity Framework Core - Limitations
 
-A **ForceCast** option has been added to support temporary inheritance, but some LINQ method will not be longer work in combination with ForceCast
+A **ForceCast** option has been added to support temporary inheritance, but some LINQ method will no longer be working in combination with ForceCast.
 
 {% include template-example.html %} 
 ```csharp
@@ -392,7 +392,7 @@ QueryFilterManager.ForceCast = true;
 
 ```
 
-Here is a list of known method that doesn't longer work with query filtered with the ForceCast options enabled:
+Here is a list of known method that no longer work with query filtered with the ForceCast options enabled:
 
  - Aggregate
  - Max
