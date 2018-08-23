@@ -38,6 +38,10 @@ namespace Z.EntityFramework.Plus
         /// <returns>The result of the query.</returns>
         public static IEnumerable<T> FromCache<T>(this IQueryable<T> query, CacheItemPolicy policy, params string[] tags) where T : class
         {
+            if (!QueryCacheManager.IsEnabled)
+            {
+                return query.AsNoTracking().ToList();
+            }
             var key = QueryCacheManager.GetCacheKey(query, tags);
 
             var item = QueryCacheManager.Cache.Get(key);
@@ -67,7 +71,12 @@ namespace Z.EntityFramework.Plus
         /// </param>
         /// <returns>The result of the query.</returns>
         public static IEnumerable<T> FromCache<T>(this IQueryable<T> query, DateTimeOffset absoluteExpiration, params string[] tags) where T : class
-        {
+        { 
+            if (!QueryCacheManager.IsEnabled)
+            {
+                return query.AsNoTracking().ToList();
+            }
+
             var key = QueryCacheManager.GetCacheKey(query, tags);
 
             var item = QueryCacheManager.Cache.Get(key);
@@ -114,6 +123,11 @@ namespace Z.EntityFramework.Plus
         /// <returns>The result of the query.</returns>
         public static IEnumerable<T> FromCache<T>(this IQueryable<T> query, MemoryCacheEntryOptions options, params string[] tags) where T : class
         {
+            if (!QueryCacheManager.IsEnabled)
+            {
+                return query.AsNoTracking().ToList();
+            }
+
             var key = QueryCacheManager.GetCacheKey(query, tags);
 
             object item;

@@ -34,6 +34,11 @@ namespace Z.EntityFramework.Plus
         /// <returns>The result of the query.</returns>
         public static T FromCache<T>(this QueryDeferred<T> query, CacheItemPolicy policy, params string[] tags)
         {
+            if (!QueryCacheManager.IsEnabled)
+            {
+                return query.Execute();
+            }
+
             var key = QueryCacheManager.GetCacheKey(query, tags);
 
             var item = QueryCacheManager.Cache.Get(key);
@@ -65,6 +70,11 @@ namespace Z.EntityFramework.Plus
         /// <returns>The result of the query.</returns>
         public static T FromCache<T>(this QueryDeferred<T> query, DateTimeOffset absoluteExpiration, params string[] tags)
         {
+            if (!QueryCacheManager.IsEnabled)
+            {
+                return query.Execute();
+            }
+
             var key = QueryCacheManager.GetCacheKey(query, tags);
 
             var item = QueryCacheManager.Cache.Get(key);
@@ -112,6 +122,11 @@ namespace Z.EntityFramework.Plus
         /// <returns>The result of the query.</returns>
         public static T FromCache<T>(this QueryDeferred<T> query, MemoryCacheEntryOptions options, params string[] tags)
         {
+            if (!QueryCacheManager.IsEnabled)
+            {
+                return query.Execute();
+            }
+
             var key = QueryCacheManager.GetCacheKey(query, tags);
 
             object item;

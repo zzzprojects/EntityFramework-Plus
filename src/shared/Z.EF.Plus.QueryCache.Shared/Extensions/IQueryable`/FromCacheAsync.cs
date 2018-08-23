@@ -40,6 +40,13 @@ namespace Z.EntityFramework.Plus
     /// <returns>The result of the query.</returns>
         public static Task<IEnumerable<T>> FromCacheAsync<T>(this IQueryable<T> query, CacheItemPolicy policy, params string[] tags) where T : class
         {
+            if (!QueryCacheManager.IsEnabled)
+            {
+                return Task.Run(() => {
+                    return (IEnumerable<T>)query.AsNoTracking().ToList();
+                });
+            }
+
             var key = QueryCacheManager.GetCacheKey(query, tags);
 
             var result = Task.Run(() =>
@@ -75,6 +82,13 @@ namespace Z.EntityFramework.Plus
         /// <returns>The result of the query.</returns>
         public static Task<IEnumerable<T>> FromCacheAsync<T>(this IQueryable<T> query, DateTimeOffset absoluteExpiration, params string[] tags) where T : class
         {
+            if (!QueryCacheManager.IsEnabled)
+            {
+                return Task.Run(() => {
+                    return (IEnumerable<T>)query.AsNoTracking().ToList();
+                });
+            }
+
             var key = QueryCacheManager.GetCacheKey(query, tags);
 
             var result = Task.Run(() =>
@@ -127,6 +141,11 @@ namespace Z.EntityFramework.Plus
         /// <returns>The result of the query.</returns>
         public static async Task<IEnumerable<T>> FromCacheAsync<T>(this IQueryable<T> query, CacheItemPolicy policy, CancellationToken cancellationToken = default(CancellationToken), params string[] tags) where T : class
         {
+            if (!QueryCacheManager.IsEnabled)
+            {
+                return await query.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
+            }
+
             var key = QueryCacheManager.GetCacheKey(query, tags);
 
             var item = QueryCacheManager.Cache.Get(key);
@@ -175,6 +194,11 @@ namespace Z.EntityFramework.Plus
         /// <returns>The result of the query.</returns>
         public static async Task<IEnumerable<T>> FromCacheAsync<T>(this IQueryable<T> query, DateTimeOffset absoluteExpiration, CancellationToken cancellationToken = default(CancellationToken), params string[] tags) where T : class
         {
+            if (!QueryCacheManager.IsEnabled)
+            {
+                return await query.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
+            }
+
             var key = QueryCacheManager.GetCacheKey(query, tags);
 
             var item = QueryCacheManager.Cache.Get(key);
@@ -256,6 +280,11 @@ namespace Z.EntityFramework.Plus
         /// <returns>The result of the query.</returns>
         public static async Task<IEnumerable<T>> FromCacheAsync<T>(this IQueryable<T> query, MemoryCacheEntryOptions options, CancellationToken cancellationToken = default(CancellationToken), params string[] tags) where T : class
         {
+            if (!QueryCacheManager.IsEnabled)
+            {
+                return await query.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
+            }
+
             var key = QueryCacheManager.GetCacheKey(query, tags);
 
             object item;

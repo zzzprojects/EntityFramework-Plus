@@ -95,13 +95,14 @@ SET {SetValue}
 #if TODO
     /// <summary>The command text template with WHILE loop.</summary>
         internal const string CommandTextWhileTemplate = @"
+DECLARE @stop int
 DECLARE @rowAffected INT
 DECLARE @totalRowAffected INT
 
+SET @stop = 0
 SET @totalRowAffected = 0
 
-WHILE @rowAffected IS NULL
-    OR @rowAffected > 0
+WHILE @stop=0
     BEGIN
         DELETE TOP ({Top})
         FROM    A
@@ -111,6 +112,9 @@ WHILE @rowAffected IS NULL
 
         SET @rowAffected = @@ROWCOUNT
         SET @totalRowAffected = @totalRowAffected + @rowAffected
+
+		IF @rowAffected < {Top}
+            SET @stop = 1
     END
 
 SELECT  @totalRowAffected
@@ -118,13 +122,14 @@ SELECT  @totalRowAffected
 
         /// <summary>The command text template with DELAY and WHILE loop</summary>
         internal const string CommandTextWhileDelayTemplate = @"
+DECLARE @stop int
 DECLARE @rowAffected INT
 DECLARE @totalRowAffected INT
 
+SET @stop = 0
 SET @totalRowAffected = 0
 
-WHILE @rowAffected IS NULL
-    OR @rowAffected > 0
+WHILE @stop=0
     BEGIN
         IF @rowAffected IS NOT NULL
             BEGIN
@@ -139,6 +144,9 @@ WHILE @rowAffected IS NULL
 
         SET @rowAffected = @@ROWCOUNT
         SET @totalRowAffected = @totalRowAffected + @rowAffected
+
+		IF @rowAffected < {Top}
+            SET @stop = 1
     END
 
 SELECT  @totalRowAffected
@@ -989,14 +997,14 @@ SELECT  @totalRowAffected
 
 #endif
             // GET updateFactory command
-            var values = ResolveUpdateFromQueryDictValues(updateFactory);
+            var values = ResolveUpdateFromQueryDictValues(updateFactory); 
             var destinationValues = new List<Tuple<string, object>>();
 
             int valueI = -1;
             foreach (var value in values)
-            {
+            { 
                 valueI++;
-
+                 
 #if EF5 || EF6
                 // FIND the mapped column
                 var column = mapping.ScalarProperties.Find(x => x.Name == value.Key);
@@ -1133,8 +1141,7 @@ SELECT  @totalRowAffected
 #elif EFCORE
                     RelationalQueryContext queryContext;
                     var command = ((IQueryable)result).CreateCommand(out queryContext);
-                    var commandText = command.CommandText;
-
+                    var commandText = command.CommandText; 
 #if NETSTANDARD1_3
                     // GET the 'value' part
                     var pos = commandText.IndexOf("AS [value]" + Environment.NewLine + "FROM", StringComparison.CurrentCultureIgnoreCase) != -1 ?
@@ -1198,7 +1205,17 @@ SELECT  @totalRowAffected
                 }
                 else
                 {
-                    destinationValues.Add(new Tuple<string, object>(columnName, value.Value ?? DBNull.Value));
+                    var val = value.Value;
+#if NETSTANDARD
+                    var prop = entity.FindProperty(value.Key);
+
+                    if (prop != null && prop.GetAnnotations()
+                            .Any(x => x.Name == "ProviderClrType" && x.Value == typeof(String)))
+                    {
+                        val = val?.ToString();
+                    }
+#endif
+                    destinationValues.Add(new Tuple<string, object>(columnName, val ?? DBNull.Value));
                 }
             }
 

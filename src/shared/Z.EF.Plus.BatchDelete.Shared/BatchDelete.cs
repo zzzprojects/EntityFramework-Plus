@@ -86,13 +86,14 @@ INNER JOIN ( {Select} ) AS B ON {PrimaryKeys}
 
         /// <summary>The command text template with WHILE loop.</summary>
         internal const string CommandTextWhileTemplate = @"
+DECLARE @stop int
 DECLARE @rowAffected INT
 DECLARE @totalRowAffected INT
 
+SET @stop = 0
 SET @totalRowAffected = 0
 
-WHILE @rowAffected IS NULL
-    OR @rowAffected > 0
+WHILE @stop=0
     BEGIN
         DELETE TOP ({Top})
         FROM    A {Hint}
@@ -102,6 +103,9 @@ WHILE @rowAffected IS NULL
 
         SET @rowAffected = @@ROWCOUNT
         SET @totalRowAffected = @totalRowAffected + @rowAffected
+
+        IF @rowAffected < {Top}
+            SET @stop = 1
     END
 
 SELECT  @totalRowAffected
@@ -109,13 +113,14 @@ SELECT  @totalRowAffected
 
         /// <summary>The command text template with DELAY and WHILE loop</summary>
         internal const string CommandTextWhileDelayTemplate = @"
+DECLARE @stop int
 DECLARE @rowAffected INT
 DECLARE @totalRowAffected INT
 
+SET @stop = 0
 SET @totalRowAffected = 0
 
-WHILE @rowAffected IS NULL
-    OR @rowAffected > 0
+WHILE @stop=0
     BEGIN
         IF @rowAffected IS NOT NULL
             BEGIN
@@ -130,6 +135,9 @@ WHILE @rowAffected IS NULL
 
         SET @rowAffected = @@ROWCOUNT
         SET @totalRowAffected = @totalRowAffected + @rowAffected
+
+        IF @rowAffected < {Top}
+            SET @stop = 1
     END
 
 SELECT  @totalRowAffected

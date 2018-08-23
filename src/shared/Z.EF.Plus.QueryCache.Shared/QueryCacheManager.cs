@@ -144,6 +144,12 @@ namespace Z.EntityFramework.Plus
         public static Func<IQueryable, string[], string> CacheKeyFactory { get; set; }
 
         /// <summary>
+        ///     Gets or sets a value indicating whether the Query Cache is enabled
+        /// </summary>
+        /// <value>true if the Query Cache is enabled.</value>
+        public static bool IsEnabled { get; set; } = true;
+
+        /// <summary>
         ///     Gets or sets a value indicating whether the connection in cache key should be included.
         /// </summary>
         /// <value>true if include connection in cache key, false if not.</value>

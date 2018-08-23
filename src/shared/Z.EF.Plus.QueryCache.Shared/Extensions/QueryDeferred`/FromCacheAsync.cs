@@ -36,6 +36,14 @@ namespace Z.EntityFramework.Plus
     /// <returns>The result of the query.</returns>
         public static Task<T> FromCacheAsync<T>(this QueryDeferred<T> query, CacheItemPolicy policy, params string[] tags)
         {
+            if (!QueryCacheManager.IsEnabled)
+            {
+                return Task.Run(() =>
+                {
+                   return query.Execute();
+                });
+            }
+
             var key = QueryCacheManager.GetCacheKey(query, tags);
 
             var result = Task.Run(() =>
@@ -71,6 +79,14 @@ namespace Z.EntityFramework.Plus
         /// <returns>The result of the query.</returns>
         public static Task<T> FromCacheAsync<T>(this QueryDeferred<T> query, DateTimeOffset absoluteExpiration, params string[] tags)
         {
+            if (!QueryCacheManager.IsEnabled)
+            {
+                return Task.Run(() =>
+                {
+                    return query.Execute();
+                });
+            }
+
             var key = QueryCacheManager.GetCacheKey(query, tags);
 
             var result = Task.Run(() =>
@@ -122,7 +138,12 @@ namespace Z.EntityFramework.Plus
         /// </param>
         /// <returns>The result of the query.</returns>
         public static async Task<T> FromCacheAsync<T>(this QueryDeferred<T> query, CacheItemPolicy policy, CancellationToken cancellationToken = default(CancellationToken), params string[] tags)
-        {
+        { 
+            if (!QueryCacheManager.IsEnabled)
+            {
+                return await query.ExecuteAsync(cancellationToken).ConfigureAwait(false);
+            }
+
             var key = QueryCacheManager.GetCacheKey(query, tags);
 
             var item = QueryCacheManager.Cache.Get(key);
@@ -171,6 +192,11 @@ namespace Z.EntityFramework.Plus
         /// <returns>The result of the query.</returns>
         public static async Task<T> FromCacheAsync<T>(this QueryDeferred<T> query, DateTimeOffset absoluteExpiration, CancellationToken cancellationToken = default(CancellationToken), params string[] tags)
         {
+            if (!QueryCacheManager.IsEnabled)
+            {
+                return await query.ExecuteAsync(cancellationToken).ConfigureAwait(false);
+            }
+
             var key = QueryCacheManager.GetCacheKey(query, tags);
 
             var item = QueryCacheManager.Cache.Get(key);
@@ -252,6 +278,11 @@ namespace Z.EntityFramework.Plus
     /// <returns>The result of the query.</returns>
         public static async Task<T> FromCacheAsync<T>(this QueryDeferred<T> query, MemoryCacheEntryOptions options, CancellationToken cancellationToken = default(CancellationToken), params string[] tags)
         {
+            if (!QueryCacheManager.IsEnabled)
+            {
+                return await query.ExecuteAsync(cancellationToken).ConfigureAwait(false);
+            }
+
             var key = QueryCacheManager.GetCacheKey(query, tags);
 
             object item;
