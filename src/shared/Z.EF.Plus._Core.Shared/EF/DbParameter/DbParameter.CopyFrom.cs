@@ -55,6 +55,11 @@ namespace Z.EntityFramework.Plus
                   var property = from.GetType().GetProperty("OracleDbType");
                   property.SetValue(@this, property.GetValue(from, null), new object[0]);
             }
+            else if (fullName.Contains("Npgsql") && from.GetType().GetProperty("NpgsqlDbType") != null)
+            {
+                var property = from.GetType().GetProperty("NpgsqlDbType");
+                property.SetValue(@this, property.GetValue(from, null), new object[0]);
+            }
 #endif
 
             @this.Value = from.Value ?? DBNull.Value;
@@ -88,6 +93,11 @@ namespace Z.EntityFramework.Plus
             if (fullName.Contains("Oracle") && from.GetType().GetProperty("OracleDbType") != null)
             {
                 var property = from.GetType().GetProperty("OracleDbType");
+                property.SetValue(@this, property.GetValue(from, null), new object[0]);
+            }
+            else if (fullName.Contains("Npgsql") && from.GetType().GetProperty("NpgsqlDbType") != null)
+            {
+                var property = from.GetType().GetProperty("NpgsqlDbType");
                 property.SetValue(@this, property.GetValue(from, null), new object[0]);
             }
 #endif
