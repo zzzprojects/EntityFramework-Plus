@@ -54,6 +54,13 @@ INNER JOIN ( {Select}
            ) AS B ON {PrimaryKeys}
 ";
 
+        /// <summary>The command text template.</summary>
+        internal const string CommandTextNoJoinsTemplate = @"
+UPDATE A {Hint}
+SET {SetValue}
+FROM ({Select}) AS A
+";
+
         internal const string CommandTextTemplateSqlCe = @"
 UPDATE {TableName}
 SET {SetValue}
@@ -183,15 +190,15 @@ SELECT  @totalRowAffected
         public int Execute<T>(IQueryable<T> query, Expression<Func<T, T>> updateFactory) where T : class
         {
             // FIX query with visitor
-            {
-                var visitor = new BatchUpdateVisitor();
-                visitor.Visit(query.Expression);
+            
+            var visitor = new BatchUpdateVisitor();
+            visitor.Visit(query.Expression);
 
-                if (visitor.HasOrderBy)
-                {
-                    query = query.Take(int.MaxValue);
-                }
+            if (visitor.HasOrderBy)
+            {
+                query = query.Take(int.MaxValue);
             }
+            
 
             string expression = query.Expression.ToString();
 
@@ -199,6 +206,7 @@ SELECT  @totalRowAffected
             {
                 return 0;
             }
+            var updateFromQueryDictValues = ResolveUpdateFromQueryDictValues(updateFactory);
 
 #if EF5 || EF6
             if (BatchUpdateManager.IsInMemoryQuery)
@@ -226,7 +234,6 @@ SELECT  @totalRowAffected
             }
 
             var dbContext = query.GetDbContext();
-
 #if EF6
             if (dbContext.IsInMemoryEffortQueryContext())
             {
@@ -269,10 +276,11 @@ SELECT  @totalRowAffected
             var innerObjectQuery = objectQuery;
 
             // GET UpdateSetValues
-            var values = GetInnerValues(query, updateFactory, entity);
+            var values = GetInnerValues(query, updateFactory, entity, updateFromQueryDictValues);
 
             // CREATE command
-            var command = CreateCommand(innerObjectQuery, entity, values);
+            bool hasNoExpressionStatements = !updateFromQueryDictValues.Any(p => p.Value is Expression);
+            var command = CreateCommand(innerObjectQuery, entity, values, visitor, hasNoExpressionStatements);
 
             // WHERE 1 = 0
             if (command == null)
@@ -349,10 +357,10 @@ SELECT  @totalRowAffected
             var queryKeys = query;
 
             // GET UpdateSetValues
-            var values = GetInnerValues(query, updateFactory, entity);
+            var values = GetInnerValues(query, updateFactory, entity, updateFromQueryDictValues);
 
             // CREATE command
-            var command = CreateCommand(queryKeys, entity, values);
+            var command = CreateCommand(queryKeys, entity, values, visitor);
 
             // EXECUTE
             var ownConnection = false;
@@ -388,7 +396,7 @@ SELECT  @totalRowAffected
         /// <param name="query">The query.</param>
         /// <param name="entity">The schema entity.</param>
         /// <returns>The new command to execute the batch operation.</returns>
-        internal DbCommand CreateCommand<T>(ObjectQuery query, SchemaEntityType<T> entity, List<Tuple<string, object>> values)
+        internal DbCommand CreateCommand<T>(ObjectQuery query, SchemaEntityType<T> entity, List<Tuple<string, object>> values, BatchUpdateVisitor visitor, bool hasNoExpressionStatements)
         {
             var objectParameters = values.Where(x => x.Item2 is ObjectParameter);
             values = values.Except(objectParameters).ToList();
@@ -463,8 +471,8 @@ SELECT  @totalRowAffected
 
                 columnKeys.Add(mappingProperty.ColumnName);
             }
-
-
+            
+            bool isSimpleQuery = visitor.IsSimpleQuery && hasNoExpressionStatements;
             // GET command text template
             var commandTextTemplate =
 #if TODO
@@ -473,11 +481,12 @@ SELECT  @totalRowAffected
                     CommandTextWhileDelayTemplate :
                     CommandTextWhileTemplate :
 #endif
-                isPostgreSQL ? CommandTextTemplate_PostgreSQL : 
+                isPostgreSQL ? CommandTextTemplate_PostgreSQL :
                 isOracle ? CommandTextOracleTemplate :
-                isMySql ? CommandTextTemplate_MySQL : 
+                isMySql ? CommandTextTemplate_MySQL :
                 isSqlCe ? CommandTextTemplateSqlCe :
                 isSQLite ? CommandTextTemplate_SQLite :
+                isSimpleQuery ? CommandTextNoJoinsTemplate :
                 CommandTextTemplate;
 
             // GET inner query
@@ -632,7 +641,7 @@ SELECT  @totalRowAffected
             return command;
         }
 #elif EFCORE
-        public DbCommand CreateCommand(IQueryable query, IEntityType entity, List<Tuple<string, object>> values)
+        public DbCommand CreateCommand(IQueryable query, IEntityType entity, List<Tuple<string, object>> values, BatchUpdateVisitor visitor)
         {
             var context = query.GetDbContext();
 
@@ -929,9 +938,9 @@ SELECT  @totalRowAffected
 #endif
 
 #if EF5 || EF6
-        internal List<Tuple<string, object>> GetInnerValues<T>(IQueryable<T> query, Expression<Func<T, T>> updateFactory, SchemaEntityType<T> entity) where T : class
+        internal List<Tuple<string, object>> GetInnerValues<T>(IQueryable<T> query, Expression<Func<T, T>> updateFactory, SchemaEntityType<T> entity, Dictionary<string, object> updateFromQueryDictValues) where T : class
 #elif EFCORE
-        public List<Tuple<string, object>> GetInnerValues<T>(IQueryable<T> query, Expression<Func<T, T>> updateFactory, IEntityType entity) where T : class
+        public List<Tuple<string, object>> GetInnerValues<T>(IQueryable<T> query, Expression<Func<T, T>> updateFactory, IEntityType entity, Dictionary<string, object> updateFromQueryDictValues) where T : class
 #endif
         {
 #if EF5 || EF6
@@ -997,7 +1006,7 @@ SELECT  @totalRowAffected
 
 #endif
             // GET updateFactory command
-            var values = ResolveUpdateFromQueryDictValues(updateFactory); 
+            var values = updateFromQueryDictValues;
             var destinationValues = new List<Tuple<string, object>>();
 
             int valueI = -1;

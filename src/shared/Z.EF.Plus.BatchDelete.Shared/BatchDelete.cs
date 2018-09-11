@@ -110,6 +110,26 @@ WHILE @stop=0
 
 SELECT  @totalRowAffected
 ";
+        /// <summary>The command text template with WHILE loop.</summary>
+        internal const string CommandTextWhileNoJoinsTemplate = @"
+DECLARE @rowAffected INT
+DECLARE @totalRowAffected INT
+
+SET @totalRowAffected = 0
+
+WHILE @rowAffected IS NULL
+    OR @rowAffected > 0
+    BEGIN
+        DELETE TOP ({Top})
+        FROM    A {Hint}
+        FROM    ( {Select}
+                           ) A
+        SET @rowAffected = @@ROWCOUNT
+        SET @totalRowAffected = @totalRowAffected + @rowAffected
+    END
+
+SELECT  @totalRowAffected
+";
 
         /// <summary>The command text template with DELAY and WHILE loop</summary>
         internal const string CommandTextWhileDelayTemplate = @"
@@ -172,20 +192,20 @@ SELECT  @totalRowAffected
         public int Execute<T>(IQueryable<T> query) where T : class
         {
             // FIX query with visitor
+
+            var visitor = new BatchDeleteVisitor();
+            visitor.Visit(query.Expression);
+
+            if (visitor.HasOrderBy)
             {
-                var visitor = new BatchDeleteVisitor();
-                visitor.Visit(query.Expression);
-
-                if (visitor.HasOrderBy)
-                {
-                    query = query.Take(int.MaxValue);
-                }
-
-                if (visitor.HasTake || visitor.HasSkip)
-                {
-                    BatchSize = 0;
-                }
+                query = query.Take(int.MaxValue);
             }
+
+            if (visitor.HasTake || visitor.HasSkip)
+            {
+                BatchSize = 0;
+            }
+            
 
             string expression = query.Expression.ToString();
 
@@ -219,7 +239,7 @@ SELECT  @totalRowAffected
             var innerObjectQuery = queryKeys.GetObjectQuery();
              
             // CREATE command
-            var command = CreateCommand(innerObjectQuery, entity);
+            var command = CreateCommand(innerObjectQuery, entity, visitor);
 
             // WHERE 1 = 0
             if (command == null)
@@ -327,7 +347,7 @@ SELECT  @totalRowAffected
             var queryKeys = query.SelectByName(keys.Select(x => x.Name).ToList());
 
             // CREATE command
-            var command = CreateCommand(queryKeys, entity);
+            var command = CreateCommand(queryKeys, entity, visitor);
 
             // EXECUTE
             var ownConnection = false;
@@ -383,7 +403,7 @@ SELECT  @totalRowAffected
         /// <param name="entity">The schema entity.</param>
         /// <param name="visitor">The visitor.</param>
         /// <returns>The new command to execute the batch operation.</returns>
-        internal DbCommand CreateCommand<T>(ObjectQuery query, SchemaEntityType<T> entity)
+        internal DbCommand CreateCommand<T>(ObjectQuery query, SchemaEntityType<T> entity, BatchDeleteVisitor visitor)
         {
             // GET command
             var command = query.Context.CreateStoreCommand();
@@ -469,10 +489,12 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
                             isSQLite ?
                                 CommandTextSQLiteTemplate :
                             BatchSize > 0 ?
-                                BatchDelayInterval > 0 ?
+                                BatchDelayInterval > 0 ? 
                                     CommandTextWhileDelayTemplate :
-                                    CommandTextWhileTemplate :
-                                CommandTextTemplate;
+                                        visitor.IsSimpleQuery ?
+                                            CommandTextWhileNoJoinsTemplate :
+                                                CommandTextWhileTemplate:
+                                    CommandTextTemplate;
 
             // GET inner query
             var customQuery = query.GetCommandTextAndParameters();
@@ -534,7 +556,7 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
             return command;
         }
 #elif EFCORE
-        public DbCommand CreateCommand(IQueryable query, IEntityType entity)
+        public DbCommand CreateCommand(IQueryable query, IEntityType entity, BatchDeleteVisitor visitor)
         {
             var context = query.GetDbContext();
 
@@ -726,7 +748,9 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
                 BatchSize > 0 ?
                 BatchDelayInterval > 0 ?
                     CommandTextWhileDelayTemplate :
-                    CommandTextWhileTemplate :
+                    visitor.IsSimpleQuery ?
+                        CommandTextWhileNoJoinsTemplate :
+                        CommandTextWhileTemplate :
                 CommandTextTemplate;
 
             // GET inner query

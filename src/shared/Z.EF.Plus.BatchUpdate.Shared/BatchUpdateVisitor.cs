@@ -10,6 +10,11 @@ namespace Z.EntityFramework.Plus
         public bool HasOrderBy { get; set; }
 
         /// <summary>
+        /// True if a query is simple and references only one Entity, doesn't include unions etc.
+        /// </summary>
+        public bool IsSimpleQuery { get; set; } = true;
+
+        /// <summary>
         ///     Visits the children of the <see cref="T:System.Linq.Expressions.MethodCallExpression" />.
         /// </summary>
         /// <param name="node">The expression to visit.</param>
@@ -19,12 +24,32 @@ namespace Z.EntityFramework.Plus
         /// </returns>
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
-            if (node.Method.Name == "OrderBy")
+            switch (node.Method.Name)
             {
-                HasOrderBy = true;
+                case "OrderBy":
+                    HasOrderBy = true;
+                    break;
+                case "Join":
+                case "Select":
+                case "SelectMany":
+                case "Concat":
+                case "Union":
+                case "GroupBy":
+                    IsSimpleQuery = false;
+                    break;
             }
 
             return base.VisitMethodCall(node);
+        }
+
+        protected override Expression VisitMember(MemberExpression node)
+        {
+            if (node.Expression?.GetType().Name == "PropertyExpression")
+            {
+                IsSimpleQuery = false;
+            }
+
+            return base.VisitMember(node);
         }
     }
 }
