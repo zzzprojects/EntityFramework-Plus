@@ -1,6 +1,8 @@
 # LINQ Dynamic
 
-## LINQ Dynamic
+> This feature is now available on [Entity Framework Classic - LINQ Dynamic](http://entityframework-classic.net/linq-dynamic). Entity Framework Classic is a supported version from the latest EF6 code base. It supports .NET Framework and .NET Core and overcomes some EF limitations by adding tons of must-haves built-in features.
+
+## Introduction
 
 **LINQ Dynamic** in Entity Framework is supported through the [Eval-Expression.NET](http://eval-expression.net/) Library.
 
