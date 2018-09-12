@@ -1,5 +1,7 @@
 # Batch Update
 
+> This feature is now available on [Entity Framework Classic - Update from Query](http://entityframework-classic.net/update-from-query). Entity Framework Classic is a supported version from the latest EF6 code base. It supports .NET Framework and .NET Core and overcomes some EF limitations by adding tons of must-haves built-in features.
+
 ## Introduction
 
 Updating using Entity Framework can be very slow if you need to update hundreds or thousands of entities with the same expression. Entities are first loaded in the context before being updated which is very bad for the performance and then, they are updated one by one which makes the update operation even worse.
