@@ -1,5 +1,7 @@
 # Query Deferred
 
+> This feature is now available on [Entity Framework Classic - Query Deferred](http://entityframework-classic.net/query-deferred). Entity Framework Classic is a supported version from the latest EF6 code base. It supports .NET Framework and .NET Core and overcomes some EF limitations by adding tons of must-haves built-in features.
+
 ## Introduction
 
 There are two types of IQueryable extension methods:
