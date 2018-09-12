@@ -1,5 +1,7 @@
 # Query Future
 
+> This feature is now available on [Entity Framework Classic - Query Future](http://entityframework-classic.net/query-future). Entity Framework Classic is a supported version from the latest EF6 code base. It supports .NET Framework and .NET Core and overcomes some EF limitations by adding tons of must-haves built-in features.
+
 ## Introduction
 
 Every time an immediate method like **ToList** or **FirstOrDefault** is invoked on a query, a database round trip is made to retrieve data. While most applications don't have performance issues with making multiple round trips, batching multiple queries into one can be critical for some heavy traffic applications for scalability. Major ORM like NHibernate had this feature for a long time but, unfortunately for Entity Framework users, batching queries is only available through third party libraries.
