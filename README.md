@@ -4,9 +4,7 @@ We are currently porting all features on [Entity Framework Classic](http://entit
 
 ---
 
-## Improve Entity Framework performance and overcome limitations with MUST-HAVE features
-
-## Library Powered By
+### Library Powered By
 
 This library is powered by [Entity Framework Extensions](http://entityframework-extensions.net/?z=github&y=entityframework-plus)
 
@@ -15,6 +13,9 @@ This library is powered by [Entity Framework Extensions](http://entityframework-
 <img src="https://zzzprojects.github.io/images/logo/entityframework-extensions-pub.jpg" alt="Entity Framework Extensions" />
 </kbd>
 </a>
+
+# Entity Framework Plus
+Improve Entity Framework performance and overcome limitations with MUST-HAVE features
 
 ## Download
 
