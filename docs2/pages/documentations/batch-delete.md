@@ -1,6 +1,6 @@
 # Batch Delete
 
-> This feature has been ported on [Entity Framework Classic - Delete from Query](http://entityframework-classic.net/delete-from-query. Entity Framework Classic is a supported version from the latest EF6 code base. It supports .NET Framework and .NET Core and overcomes some EF limitations by adding tons of must-haves built-in features.
+> This feature has been ported on [Entity Framework Classic - Delete from Query](http://entityframework-classic.net/delete-from-query). Entity Framework Classic is a supported version from the latest EF6 code base. It supports .NET Framework and .NET Core and overcomes some EF limitations by adding tons of must-haves built-in features.
 
 ## Introduction
 
