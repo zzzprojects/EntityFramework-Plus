@@ -1,4 +1,10 @@
-# Improve Entity Framework performance and overcome limitations with MUST-HAVE features
+We are currently porting all features on [Entity Framework Classic](http://entityframework-classic.net/) 
+
+> Entity Framework Classic is a supported version from the latest EF6 code base. It supports .NET Framework and .NET Core and overcomes some EF limitations by adding tons of must-haves built-in features.
+
+---
+
+## Improve Entity Framework performance and overcome limitations with MUST-HAVE features
 
 ## Library Powered By
 
