@@ -77,11 +77,20 @@ DELETE FROM {TableName} AS A
 USING ( {Select} ) AS B WHERE {PrimaryKeys}
 ";
 
-        /// <summary>The command text postgre SQL template.</summary>
+        /// <summary>The command text MySQL template.</summary>
         internal const string CommandTextTemplate_MySql = @"
 DELETE A
 FROM {TableName} AS A
 INNER JOIN ( {Select} ) AS B ON {PrimaryKeys}
+";
+
+        /// <summary>The command text Hana template.</summary>
+        internal const string CommandTextTemplate_Hana = @"
+DELETE
+FROM    {TableName}
+WHERE EXISTS ( SELECT 1 FROM ({Select}) B
+               WHERE {PrimaryKeys}
+           )
 ";
 
         /// <summary>The command text template with WHILE loop.</summary>
@@ -265,6 +274,11 @@ SELECT  @totalRowAffected
                     int totalRowAffecteds = command.ExecuteNonQuery();
                     return totalRowAffecteds;
                 }
+                else if (command.Connection.GetType().Name.Contains("Hana"))
+                {
+                    int totalRowAffecteds = command.ExecuteNonQuery();
+                    return totalRowAffecteds;
+                }
                 else
                 {
                     var rowAffecteds = (int)command.ExecuteScalar();
@@ -284,7 +298,7 @@ SELECT  @totalRowAffected
                     int totalRowAffecteds = DbInterception.Dispatch.Command.NonQuery(command, interceptionContext);
                     return totalRowAffecteds;
                 }
-                else if (command.Connection.GetType().Name.Contains("Oracle") || command.Connection.GetType().Name.Contains("SQLite"))
+                else if (command.Connection.GetType().Name.Contains("Oracle") || command.Connection.GetType().Name.Contains("SQLite") || command.Connection.GetType().Name.Contains("Hana"))
                 {
                     int totalRowAffecteds = DbInterception.Dispatch.Command.NonQuery(command, interceptionContext);
                     return totalRowAffecteds;
@@ -393,6 +407,7 @@ SELECT  @totalRowAffected
             var isSqlCe = command.GetType().Name == "SqlCeCommand";
             var isOracle = command.GetType().Namespace.Contains("Oracle");
             var isSQLite = command.GetType().Namespace.Contains("SQLite");
+            var isHana = command.GetType().Namespace.Contains("Hana");
 
             // Oracle BindByName
             if (isOracle)
@@ -424,7 +439,7 @@ SELECT  @totalRowAffected
             {
                 tableName = string.Concat("\"", store.Table, "\"");
             }
-            else if (isOracle)
+            else if (isOracle || isHana)
             {
                 tableName = string.IsNullOrEmpty(store.Schema) || store.Schema == "dbo" ?
 string.Concat("\"", store.Table, "\"") :
@@ -458,16 +473,13 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
             }
 
             // GET command text template
-            var commandTextTemplate = isPostgreSql ?
-                CommandTextPostgreSQLTemplate :
-                isOracle ?
-                    CommandTextOracleTemplate :
-                    isMySql ?
-                        CommandTextTemplate_MySql :
-                        isSqlCe ?
-                            CommandTextSqlCeTemplate :
-                            isSQLite ?
-                                CommandTextSQLiteTemplate :
+            var commandTextTemplate = 
+                isPostgreSql ? CommandTextPostgreSQLTemplate :
+                isOracle ? CommandTextOracleTemplate :
+                isMySql ? CommandTextTemplate_MySql :
+                isSqlCe ? CommandTextSqlCeTemplate :
+                isSQLite ? CommandTextSQLiteTemplate :
+                isHana ? CommandTextTemplate_Hana :
                             BatchSize > 0 ?
                                 BatchDelayInterval > 0 ?
                                     CommandTextWhileDelayTemplate :
@@ -491,13 +503,13 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
 
             // GET primary key join
             string primaryKeys;
-            if (isSqlCe || isOracle || isSQLite)
+            if (isSqlCe || isOracle || isSQLite || isHana)
             {
-                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".", EscapeName(x, isMySql, isOracle), " = B.", EscapeName(x, isMySql, isOracle), "")));
+                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".", EscapeName(x, isMySql, isOracle, isHana), " = B.", EscapeName(x, isMySql, isOracle, isHana), "")));
             }
             else
             {
-                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.", EscapeName(x, isMySql, isOracle), " = B.", EscapeName(x, isMySql, isOracle), "")));
+                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.", EscapeName(x, isMySql, isOracle, isHana), " = B.", EscapeName(x, isMySql, isOracle, isHana), "")));
             }
 
             // REPLACE template
@@ -777,10 +789,10 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
             return command;
         }
 #endif
-        public string EscapeName(string name, bool isMySql, bool isOracle)
+        public string EscapeName(string name, bool isMySql, bool isOracle, bool isHana)
         {
             return isMySql ? string.Concat("`", name, "`") :
-                isOracle ? string.Concat("\"", name, "\"") :
+                isOracle || isHana ? string.Concat("\"", name, "\"") :
                     string.Concat("[", name, "]");
         }
     }
