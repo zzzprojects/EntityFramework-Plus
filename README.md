@@ -1,6 +1,6 @@
 ---
 
-We are currently porting all features on [Entity Framework Classic](http://entityframework-classic.net/) 
+We are currently porting all features on [Entity Framework Classic](https://entityframework-classic.net/) 
 
 > Entity Framework Classic is a supported version from the latest EF6 code base. It supports .NET Framework and .NET Core and overcomes some EF limitations by adding tons of must-haves built-in features.
 
@@ -8,9 +8,9 @@ We are currently porting all features on [Entity Framework Classic](http://entit
 
 ### Library Powered By
 
-This library is powered by [Entity Framework Extensions](http://entityframework-extensions.net/?z=github&y=entityframework-plus)
+This library is powered by [Entity Framework Extensions](https://entityframework-extensions.net/?z=github&y=entityframework-plus)
 
-<a href="http://entityframework-extensions.net/?z=github&y=entityframework-plus">
+<a href="https://entityframework-extensions.net/?z=github&y=entityframework-plus">
 <kbd>
 <img src="https://zzzprojects.github.io/images/logo/entityframework-extensions-pub.jpg" alt="Entity Framework Extensions" />
 </kbd>
@@ -311,20 +311,20 @@ A **HUGE THANKS** for your help.
 ## More Projects
 
 **Entity Framework**
-- [EntityFramework Extensions](http://entityframework-extensions.net/)
-- [EntityFramework Plus](http://entityframework-plus.net)
+- [EntityFramework Extensions](https://entityframework-extensions.net/)
+- [EntityFramework Plus](https://entityframework-plus.net)
 
 **Bulk Operations**
-- [Bulk Operations](http://bulk-operations.net/)
-- [Dapper Plus](http://dapper-plus.net/)
+- [Bulk Operations](https://bulk-operations.net/)
+- [Dapper Plus](https://dapper-plus.net/)
 
 **Expression Evaluator**
-- [Eval-SQL.NET](http://eval-sql.net/)
-- [Eval-Expression.NET](http://eval-expression.net/)
+- [Eval-SQL.NET](https://eval-sql.net/)
+- [Eval-Expression.NET](https://eval-expression.net/)
 
 **Utilities**
 - [Extension Methods Library](https://github.com/zzzprojects/Z.ExtensionMethods/)
-- [Html Agility Pack](http://html-agility-pack.net/)
+- [Html Agility Pack](https://html-agility-pack.net/)
 
 **Need more info?** info@zzzprojects.com
 
