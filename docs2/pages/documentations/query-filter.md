@@ -56,7 +56,7 @@ var list = ctx.Posts.Filter(MyEnum.EnumValue).ToList();
 
 Global filter can be used by any context.
 
-Global filter is normally preferred in most scenario over instance filter since the filter code is centralized in one method over being spread in multiple methods.
+Global filter is normally preferred in most scenarios over instance filter since the filter code is centralized in one method over being spread in multiple methods.
 
 {% include template-example.html %} 
 ```csharp
