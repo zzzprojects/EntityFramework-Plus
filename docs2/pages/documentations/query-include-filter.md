@@ -138,7 +138,7 @@ var list = q1.Select(x => new { x, p1 }).ToList().Select(x => x.X);
 
 ```
 
-Entity Framework does already all the job to link related entities to the parent. No future logic is required.
+Entity Framework already does all the job by linking  related entities to the parent. No future logic is required.
 
 ## Limitations
 
