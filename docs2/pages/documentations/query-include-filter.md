@@ -146,7 +146,7 @@ Entity Framework does already all the job to link related entities to the parent
  - Entity Framework Core:
    - Not supported yet.
  - Entity Framework 5:
- - Will never be supported. Use IncludeOptimized instead to filter collections
+   - Will never be supported. Use IncludeOptimized instead to filter collections
  - Cannot be mixed with projection
  - Cannot be mixed with Include (Include doesn't support projection)
  - Cannot be mixed with IncludeOptimized
