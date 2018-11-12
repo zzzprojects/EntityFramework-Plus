@@ -81,7 +81,7 @@ All future queries are stored in a pending list. When the first future query req
 
 ### Query IncludeFilter
 
-Entity Framework already support eager loading however the major drawback is you cannot control what will be included. There is no way to load only active item or load only the first 10 comments.
+Entity Framework already support eager loading. However, the major drawback is you cannot control what will be included. There is no way to load only active items or load only the first 10 comments.
 
 ### Query IncludeOptimized
 

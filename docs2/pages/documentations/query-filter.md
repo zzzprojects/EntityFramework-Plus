@@ -56,7 +56,7 @@ var list = ctx.Posts.Filter(MyEnum.EnumValue).ToList();
 
 Global filter can be used by any context.
 
-Global filter is normally preferred in most scenario over instance filter since the filter code is centralized in one method over being spread in multiple methods.
+Global filter is normally preferred in most scenarios over instance filter since the filter code is centralized in one method over being spread in multiple methods.
 
 {% include template-example.html %} 
 ```csharp
@@ -252,7 +252,7 @@ var list = ctx.Invoices.Where(q => q.Where(x => x.CustomerID = myCustomerID)).To
 
 ### Object State
 
-Removing inactive or soft deleted records is probably the most common scenario. A soft delete is often useful when related data cannot be deleted. By example, the customer cannot be deleted because related orders cannot be deleted instead, he becomes inactive.
+Removing inactive or soft deleted records is probably the most common scenario. A soft delete is often useful when related data cannot be deleted. For example, the customer cannot be deleted because related orders cannot be deleted instead, he becomes inactive.
 
 *In this example, we display only active category.*
 
@@ -361,7 +361,7 @@ using (var ctx = new EntityContext())
 
 #### Context Filter
 
-Since the QueryCacheManager is global, our library have some limitations with Filter by context (Global Filter doesn't have this issue since it apply the same logic to all query.)
+Since the QueryCacheManager is global, our library have some limitations with Filter by context (Global Filter doesn't have this issue since it applies the same logic to all query.)
 
  - LazyLoading only work with GlobalFilter
  - context.Set only work with GlobalFilter (You can use the method SetFiltered instead)

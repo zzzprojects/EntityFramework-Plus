@@ -121,9 +121,9 @@ var customer = ctx.Customers.Filter(CustomEnum.EnumValue).ToList();
 
 ## Query Future
 
-Query Future allow to reduce database roundtrip by batching multiple queries in the same sql command.
+Query Future allow to reduce database roundtrips by batching multiple queries in the same sql command.
 
-All future query are stored in a pending list. When the first future query require a database roundtrip, all query are resolved in the same sql command instead of making a database roundtrip for every sql command.
+All future queries are stored in a pending list.  When the first future query require a database roundtrip, all queries are resolved in the same sql command instead of making a database roundtrip for every sql command.
 
 ### Support:
 
@@ -144,7 +144,7 @@ var countries = futureCountries.ToList();
 
 {% include template-example.html %} 
 ```csharp
-// GET the first active customer and the number of avtive customers
+// GET the first active customer and the number of active customers
 var futureFirstCustomer = db.Customers.Where(x => x.IsActive).DeferredFirstOrDefault().FutureValue();
 var futureCustomerCount = db.Customers.Where(x => x.IsActive).DeferredCount().FutureValue();
 
@@ -178,7 +178,7 @@ var posts = ctx.Post.IncludeFilter(x => x.Comments.Where(x => x.IsActive));
 
 ## Query IncludeOptimized
 
-Improve SQL generate by Include and filter child collections at the same times!
+Improve SQL generate by Include and filter child collections at the same time!
 
 {% include template-example.html %} 
 ```csharp
