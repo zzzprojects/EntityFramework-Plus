@@ -21,5 +21,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\QueryDeferred`\FromCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\QueryDeferred`\FromCacheAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)QueryCacheManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RedisObjectCache.cs" />
   </ItemGroup>
 </Project>

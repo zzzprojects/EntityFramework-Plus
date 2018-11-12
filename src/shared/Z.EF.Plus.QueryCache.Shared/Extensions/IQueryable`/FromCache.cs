@@ -44,16 +44,14 @@ namespace Z.EntityFramework.Plus
             }
             var key = QueryCacheManager.GetCacheKey(query, tags);
 
-            var item = QueryCacheManager.Cache.Get(key);
+            var item = QueryCacheManager.Get<List<T>>(key);       
 
             if (item == null)
             {
                 item = query.AsNoTracking().ToList();
-                item = QueryCacheManager.Cache.AddOrGetExisting(key, item, policy) ?? item;
+                item = QueryCacheManager.AddOrGetExisting(key, item, policy) ?? item;
                 QueryCacheManager.AddCacheTag(key, tags);
             }
-
-            item = item.IfDbNullThenNull();
 
             return (IEnumerable<T>) item;
         }
@@ -79,16 +77,14 @@ namespace Z.EntityFramework.Plus
 
             var key = QueryCacheManager.GetCacheKey(query, tags);
 
-            var item = QueryCacheManager.Cache.Get(key);
+            var item = QueryCacheManager.Get<List<T>>(key);
 
             if (item == null)
             {
                 item = query.AsNoTracking().ToList();
-                item = QueryCacheManager.Cache.AddOrGetExisting(key, item, absoluteExpiration) ?? item;
+                item = QueryCacheManager.AddOrGetExisting(key, item, absoluteExpiration) ?? item;
                 QueryCacheManager.AddCacheTag(key, tags);
             }
-
-            item = item.IfDbNullThenNull();
 
             return (IEnumerable<T>) item;
         }

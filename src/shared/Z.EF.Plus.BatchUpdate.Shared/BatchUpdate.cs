@@ -389,7 +389,7 @@ SELECT  @totalRowAffected
                 }
             }
 #endif
-            }
+        }
 
 #if EF5 || EF6
         /// <summary>Creates a command to execute the batch operation.</summary>
@@ -488,9 +488,9 @@ SELECT  @totalRowAffected
                     CommandTextWhileDelayTemplate :
                     CommandTextWhileTemplate :
 #endif
-                isPostgreSQL ? CommandTextTemplate_PostgreSQL : 
+                isPostgreSQL ? CommandTextTemplate_PostgreSQL :
                 isOracle ? CommandTextOracleTemplate :
-                isMySql ? CommandTextTemplate_MySQL : 
+                isMySql ? CommandTextTemplate_MySQL :
                 isSqlCe ? CommandTextTemplateSqlCe :
                 isSQLite ? CommandTextTemplate_SQLite :
                 isHana ? CommandTextTemplate_Hana :
@@ -515,7 +515,7 @@ SELECT  @totalRowAffected
                 primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".", EscapeName(x, isMySql, isOracle, isPostgreSQL, isHana), " = B.", EscapeName(x, isMySql, isOracle, isPostgreSQL, isHana), "")));
 
                 setValues = string.Join("," + Environment.NewLine, values.Select((x, i) => x.Item2 is ConstantExpression ?
-                    string.Concat(EscapeName(x.Item1, isMySql, isOracle, isPostgreSQL, isHana), " = ", ((ConstantExpression) x.Item2).Value.ToString().Replace("B.[", "[")) :
+                    string.Concat(EscapeName(x.Item1, isMySql, isOracle, isPostgreSQL, isHana), " = ", ((ConstantExpression)x.Item2).Value.ToString().Replace("B.[", "[")) :
                     string.Concat(EscapeName(x.Item1, isMySql, isOracle, isPostgreSQL, isHana), " = @zzz_BatchUpdate_", i)));
             }
             else if (isOracle || isPostgreSQL || isHana)
@@ -542,7 +542,7 @@ SELECT  @totalRowAffected
 
                 // GET updateSetValues
                 setValues = string.Join("," + Environment.NewLine, values.Select((x, i) => x.Item2 is ConstantExpression ?
-                    string.Concat("A.", EscapeName(x.Item1, isMySql, isOracle, isPostgreSQL, isHana), " = ", ((ConstantExpression) x.Item2).Value) :
+                    string.Concat("A.", EscapeName(x.Item1, isMySql, isOracle, isPostgreSQL, isHana), " = ", ((ConstantExpression)x.Item2).Value) :
                     string.Concat("A.", EscapeName(x.Item1, isMySql, isOracle, isPostgreSQL, isHana), " = @zzz_BatchUpdate_", i)));
             }
 
@@ -608,7 +608,7 @@ SELECT  @totalRowAffected
                     {
                         if (isOracle && paramValue is bool)
                         {
-                            parameter.Value = (Boolean) paramValue ? 1 : 0;
+                            parameter.Value = (Boolean)paramValue ? 1 : 0;
                         }
                         else
                         {
@@ -620,7 +620,7 @@ SELECT  @totalRowAffected
                 if (parameter is SqlParameter)
                 {
                     var sqlParameter = (SqlParameter)parameter;
-             
+
                     if (paramNullValue != null && paramNullValue.Type == typeof(byte[]))
                     {
                         sqlParameter.SqlDbType = SqlDbType.VarBinary;
@@ -891,7 +891,18 @@ SELECT  @totalRowAffected
             // ADD Parameter
             foreach (var relationalParameter in relationalCommand.Parameters)
             {
-                var parameter = queryContext.ParameterValues[relationalParameter.InvariantName];
+                object parameter;
+                if (!queryContext.ParameterValues.TryGetValue(relationalParameter.InvariantName, out parameter))
+                {
+                    if (relationalParameter.InvariantName.StartsWith("__ef_filter"))
+                    {
+                        throw new Exception("Please use 'IgnoreQueryFilters()'. The HasQueryFilter is not yet supported.");
+                    }
+                    else
+                    {
+                        throw new Exception("The following parameter could not be found: " + relationalParameter);
+                    }
+                }
 
                 var param = command.CreateParameter();
                 param.CopyFrom(relationalParameter, parameter);
@@ -1013,36 +1024,36 @@ SELECT  @totalRowAffected
 
 #endif
             // GET updateFactory command
-            var values = ResolveUpdateFromQueryDictValues(updateFactory); 
+            var values = ResolveUpdateFromQueryDictValues(updateFactory);
             var destinationValues = new List<Tuple<string, object>>();
 
             int valueI = -1;
             foreach (var value in values)
-            { 
+            {
                 valueI++;
-                 
+
 #if EF5 || EF6
                 // FIND the mapped column
                 var column = mapping.ScalarProperties.Find(x => x.Name == value.Key);
-	            string columnName;
+                string columnName;
 
-				if (column != null)
-				{
-					columnName = column.ColumnName;
-				}
-				else
-				{
-					var accessor = mapping.ScalarAccessors.Find(x => x.AccessorPath == value.Key);
-					if (accessor == null)
-					{
-						throw new Exception("The destination column could not be found:" + value.Key);
-					}
+                if (column != null)
+                {
+                    columnName = column.ColumnName;
+                }
+                else
+                {
+                    var accessor = mapping.ScalarAccessors.Find(x => x.AccessorPath == value.Key);
+                    if (accessor == null)
+                    {
+                        throw new Exception("The destination column could not be found:" + value.Key);
+                    }
 
-					columnName = accessor.ColumnName;
-				}
+                    columnName = accessor.ColumnName;
+                }
 
-	            
-          
+
+
 #elif EFCORE
 
                 var property = entity.FindProperty(value.Key);
@@ -1077,7 +1088,7 @@ SELECT  @totalRowAffected
 #if EF5 || EF6
                     // GET the select command text
                     var commandText = ((IQueryable)result).ToString();
-                    var parameters = ((IQueryable) result).GetObjectQuery().Parameters;
+                    var parameters = ((IQueryable)result).GetObjectQuery().Parameters;
 
                     // GET the 'value' part
                     var pos = commandText.IndexOf("AS [value]" + Environment.NewLine + "FROM", StringComparison.InvariantCultureIgnoreCase) != -1 ?
@@ -1149,7 +1160,7 @@ SELECT  @totalRowAffected
                         valueSql = valueSql.Substring(0, valueSql.LastIndexOf('[') - 4);
                     }
 
-                    if (valueSql.LastIndexOf('`') != -1 && !valueSql.Trim().EndsWith(")", StringComparison.InvariantCulture) &&  valueSql.Substring(0, valueSql.LastIndexOf('`')).EndsWith(" AS ", StringComparison.InvariantCulture))
+                    if (valueSql.LastIndexOf('`') != -1 && !valueSql.Trim().EndsWith(")", StringComparison.InvariantCulture) && valueSql.Substring(0, valueSql.LastIndexOf('`')).EndsWith(" AS ", StringComparison.InvariantCulture))
                     {
                         valueSql = valueSql.Substring(0, valueSql.LastIndexOf('`') - 4);
                     }
@@ -1297,13 +1308,13 @@ SELECT  @totalRowAffected
                     {
                         if (constantExpression.Value == null)
                         {
-                            value = new NullValue() {Type = constantExpression.Type};
+                            value = new NullValue() { Type = constantExpression.Type };
                         }
                         else
                         {
                             value = constantExpression.Value;
                         }
-                        
+
                     }
                     else
                     {

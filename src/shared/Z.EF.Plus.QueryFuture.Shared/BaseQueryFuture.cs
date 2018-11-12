@@ -10,6 +10,13 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Reflection;
 
+
+#if NET45
+using System.Threading;
+using System.Threading.Tasks;
+#endif
+
+
 #if EF5
 using System.Data.Objects;
 
@@ -382,5 +389,13 @@ namespace Z.EntityFramework.Plus
         {
 
         }
-    }
+
+
+#if NET45
+		public virtual Task GetResultDirectlyAsync(CancellationToken cancellationToken)
+	    {
+		    throw new Exception("Not implemented");
+	    }
+#endif
+	}
 }

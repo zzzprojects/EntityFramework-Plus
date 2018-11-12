@@ -202,6 +202,7 @@ namespace Z.EntityFramework.Plus
         {
             // GET DbSet<> properties
             var setProperties = context.GetDbSetProperties();
+            List<PropertyInfo> setPropertyToIgnore = new List<PropertyInfo>();
 
             foreach (var setProperty in setProperties)
             {
@@ -221,7 +222,19 @@ namespace Z.EntityFramework.Plus
                     continue;
                 }
 
-                var entitySet = (EntitySet) entitySetProperty.GetValue(internalQuery, null);
+                EntitySet entitySet;
+
+                try
+                {
+                    entitySet = (EntitySet)entitySetProperty.GetValue(internalQuery, null);
+                }
+                catch (Exception e)
+                {
+                    // may happen if the entity set is ignored
+                    setPropertyToIgnore.Add(setProperty);
+                    continue;
+                }
+
 
                 var elementType = dbSet.ElementType;
                 var entityTypebase = entitySet.ElementType.FullName;
@@ -269,6 +282,11 @@ namespace Z.EntityFramework.Plus
                 // ADD DbSet
                 foreach (var dbSetProperty in setProperties)
                 {
+                    if (setPropertyToIgnore.Contains(dbSetProperty))
+                    {
+                        continue;
+                    }
+
                     FilterSets.Add(new QueryFilterSet(context, dbSetProperty));
                 }
 

@@ -226,7 +226,7 @@ SELECT  @totalRowAffected
             // SELECT keys names
             var queryKeys = query.SelectByName(keys.Select(x => x.Name).ToList());
             var innerObjectQuery = queryKeys.GetObjectQuery();
-             
+
             // CREATE command
             var command = CreateCommand(innerObjectQuery, entity);
 
@@ -387,7 +387,7 @@ SELECT  @totalRowAffected
                 }
             }
 #endif
-            }
+        }
 
 #if EF5 || EF6
         /// <summary>Creates a command to execute the batch operation.</summary>
@@ -473,7 +473,7 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
             }
 
             // GET command text template
-            var commandTextTemplate = 
+            var commandTextTemplate =
                 isPostgreSql ? CommandTextPostgreSQLTemplate :
                 isOracle ? CommandTextOracleTemplate :
                 isMySql ? CommandTextTemplate_MySql :
@@ -767,7 +767,18 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
             // ADD Parameter
             foreach (var relationalParameter in relationalCommand.Parameters)
             {
-                var parameter = queryContext.ParameterValues[relationalParameter.InvariantName];
+                object parameter;
+                if (!queryContext.ParameterValues.TryGetValue(relationalParameter.InvariantName, out parameter))
+                {
+                    if (relationalParameter.InvariantName.StartsWith("__ef_filter"))
+                    {
+                        throw new Exception("Please use 'IgnoreQueryFilters()'. The HasQueryFilter is not yet supported.");
+                    }
+                    else
+                    {
+                        throw new Exception("The following parameter could not be found: " + relationalParameter);
+                    }
+                }
 
                 var param = command.CreateParameter();
                 param.CopyFrom(relationalParameter, parameter);
@@ -775,8 +786,8 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
                 command.Parameters.Add(param);
             }
 #else
-            // ADD Parameter
-            var parameterCollection = relationalCommand.Parameters;
+                // ADD Parameter
+                var parameterCollection = relationalCommand.Parameters;
             foreach (var parameter in parameterCollection)
             {
                 var param = command.CreateParameter();

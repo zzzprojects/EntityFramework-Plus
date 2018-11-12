@@ -6,7 +6,7 @@
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 using System;
-
+using System.Collections.Generic;
 #if EF5 || EF6
 using System.Runtime.Caching;
 
@@ -41,13 +41,13 @@ namespace Z.EntityFramework.Plus
 
             var key = QueryCacheManager.GetCacheKey(query, tags);
 
-            var item = QueryCacheManager.Cache.Get(key);
+            var item = QueryCacheManager.GetDeferred(key);
 
             if (item == null)
             {
                 item = query.Execute();
 
-                item = QueryCacheManager.Cache.AddOrGetExisting(key, item ?? DBNull.Value, policy) ?? item;
+                item = QueryCacheManager.AddOrGetExistingDeferred<T>(key, item ?? DBNull.Value, policy) ?? item;
                 QueryCacheManager.AddCacheTag(key, tags);
             }
 
@@ -77,13 +77,13 @@ namespace Z.EntityFramework.Plus
 
             var key = QueryCacheManager.GetCacheKey(query, tags);
 
-            var item = QueryCacheManager.Cache.Get(key);
+            var item = QueryCacheManager.GetDeferred(key);
 
             if (item == null)
             {
                 item = query.Execute();
 
-                item = QueryCacheManager.Cache.AddOrGetExisting(key, item ?? DBNull.Value, absoluteExpiration) ?? item;
+                item = QueryCacheManager.AddOrGetExistingDeferred<T>(key, item ?? DBNull.Value, absoluteExpiration) ?? item;
                 QueryCacheManager.AddCacheTag(key, tags);
             }
 

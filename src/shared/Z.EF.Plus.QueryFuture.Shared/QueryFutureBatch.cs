@@ -12,6 +12,7 @@ using System.Data.Common;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 #if EF5
 using System.Data.EntityClient;
@@ -199,9 +200,11 @@ namespace Z.EntityFramework.Plus
 
 #if NET45
         /// <summary>Executes deferred query lists.</summary>
-        public async Task ExecuteQueriesAsync()
+        public async Task ExecuteQueriesAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (Queries.Count == 0)
+	        cancellationToken.ThrowIfCancellationRequested();
+
+			if (Queries.Count == 0)
             {
                 // Already all executed
                 return;
@@ -221,7 +224,7 @@ namespace Z.EntityFramework.Plus
 
             if (Queries.Count == 1)
             {
-                Queries[0].GetResultDirectly();
+				await Queries[0].GetResultDirectlyAsync(cancellationToken).ConfigureAwait(false);
                 Queries.Clear();
                 return;
             }
@@ -250,45 +253,45 @@ namespace Z.EntityFramework.Plus
             {
                 if (connection.State != ConnectionState.Open)
                 {
-                    await connection.OpenAsync().ConfigureAwait(false);
+                    await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
                     ownConnection = true;
                 }
 
                 using (command)
                 {
 #if EF5
-                    using (var reader = command.ExecuteReader())
+                    using (var reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false))
                     {
                         foreach (var query in Queries)
                         {
                             query.SetResult(reader);
-                            await reader.NextResultAsync().ConfigureAwait(false);
+                            await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
                         }
-}
+					}
 #elif EF6
-                    var interceptionContext = Context.GetInterceptionContext();
-                    using (var reader = DbInterception.Dispatch.Command.Reader(command, new DbCommandInterceptionContext(interceptionContext)))
+					var interceptionContext = Context.GetInterceptionContext();
+                    using (var reader = await DbInterception.Dispatch.Command.ReaderAsync(command, new DbCommandInterceptionContext(interceptionContext), cancellationToken).ConfigureAwait(false))
                     {
                         foreach (var query in Queries)
                         {
                             query.SetResult(reader);
-                            await reader.NextResultAsync().ConfigureAwait(false);
+                            await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
                         }
                     }
 #elif EFCORE
-                    using (var reader = command.ExecuteReader())
-                    {
-                        var createEntityDataReader = new CreateEntityDataReader(reader);
-                        foreach (var query in Queries)
-                        {
-                            query.SetResult(createEntityDataReader);
-                            await reader.NextResultAsync().ConfigureAwait(false);
-                        }
-                    }
+					using (var reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false))
+					{
+						var createEntityDataReader = new CreateEntityDataReader(reader);
+						foreach (var query in Queries)
+						{
+							query.SetResult(createEntityDataReader);
+							await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
+						}
+					}
 #endif
-                }
+				}
 
-                Queries.Clear();
+				Queries.Clear();
             }
             finally
             {

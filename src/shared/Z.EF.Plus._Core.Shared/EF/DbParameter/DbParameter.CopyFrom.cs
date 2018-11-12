@@ -50,10 +50,10 @@ namespace Z.EntityFramework.Plus
 #endif
 
 #if EF6
-            if(fullName.Contains("Oracle") && from.GetType().GetProperty("OracleDbType") != null)
+            if (fullName.Contains("Oracle") && from.GetType().GetProperty("OracleDbType") != null)
             {
-                  var property = from.GetType().GetProperty("OracleDbType");
-                  property.SetValue(@this, property.GetValue(from, null), new object[0]);
+                var property = from.GetType().GetProperty("OracleDbType");
+                property.SetValue(@this, property.GetValue(from, null), new object[0]);
             }
             else if (fullName.Contains("Npgsql") && from.GetType().GetProperty("NpgsqlDbType") != null)
             {
@@ -81,8 +81,8 @@ namespace Z.EntityFramework.Plus
 #if !EFCORE
             if (from is SqlParameter)
             {
-                var fromSql = (SqlParameter) from;
-                var toSql = (SqlParameter) @this;
+                var fromSql = (SqlParameter)from;
+                var toSql = (SqlParameter)@this;
 
                 toSql.SqlDbType = fromSql.SqlDbType;
                 toSql.UdtTypeName = fromSql.UdtTypeName;

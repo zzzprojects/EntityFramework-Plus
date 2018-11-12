@@ -7,6 +7,7 @@
 
 #if NET45
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 #if EF5 || EF6
@@ -48,12 +49,12 @@ namespace Z.EntityFramework.Plus
 
             var result = Task.Run(() =>
             {
-                var item = QueryCacheManager.Cache.Get(key);
+                var item = QueryCacheManager.GetDeferred(key);
 
                 if (item == null)
                 {
                     item = query.Execute();
-                    item = QueryCacheManager.Cache.AddOrGetExisting(key, item ?? DBNull.Value, policy) ?? item;
+                    item = QueryCacheManager.AddOrGetExistingDeferred<T>(key, item ?? DBNull.Value, policy) ?? item;
                     QueryCacheManager.AddCacheTag(key, tags);
                 }
 
@@ -91,12 +92,12 @@ namespace Z.EntityFramework.Plus
 
             var result = Task.Run(() =>
             {
-                var item = QueryCacheManager.Cache.Get(key);
+                var item = QueryCacheManager.GetDeferred(key);
 
                 if (item == null)
                 {
                     item = query.Execute();
-                    item = QueryCacheManager.Cache.AddOrGetExisting(key, item ?? DBNull.Value, absoluteExpiration) ?? item;
+                    item = QueryCacheManager.AddOrGetExistingDeferred<T>(key, item ?? DBNull.Value, absoluteExpiration) ?? item;
                     QueryCacheManager.AddCacheTag(key, tags);
                 }
 
@@ -146,12 +147,12 @@ namespace Z.EntityFramework.Plus
 
             var key = QueryCacheManager.GetCacheKey(query, tags);
 
-            var item = QueryCacheManager.Cache.Get(key);
+            var item = QueryCacheManager.GetDeferred(key);
 
             if (item == null)
             {
                 item = await query.ExecuteAsync(cancellationToken).ConfigureAwait(false);
-                item = QueryCacheManager.Cache.AddOrGetExisting(key, item ?? DBNull.Value, policy) ?? item;
+                item = QueryCacheManager.AddOrGetExistingDeferred<T>(key, item ?? DBNull.Value, policy) ?? item;
                 QueryCacheManager.AddCacheTag(key, tags);
             }
 
@@ -199,12 +200,12 @@ namespace Z.EntityFramework.Plus
 
             var key = QueryCacheManager.GetCacheKey(query, tags);
 
-            var item = QueryCacheManager.Cache.Get(key);
+            var item = QueryCacheManager.GetDeferred(key);
 
             if (item == null)
             {
                 item = await query.ExecuteAsync(cancellationToken).ConfigureAwait(false);
-                item = QueryCacheManager.Cache.AddOrGetExisting(key, item ?? DBNull.Value, absoluteExpiration) ?? item;
+                item = QueryCacheManager.AddOrGetExistingDeferred<T>(key, item ?? DBNull.Value, absoluteExpiration) ?? item;
                 QueryCacheManager.AddCacheTag(key, tags);
             }
 
@@ -263,19 +264,19 @@ namespace Z.EntityFramework.Plus
             return query.FromCacheAsync(QueryCacheManager.DefaultCacheItemPolicy, cancellationToken, tags);
         }
 #elif EFCORE
-    /// <summary>
-    ///     Return the result of the <paramref name="query" /> from the cache. If the query is not cached
-    ///     yet, the query is materialized and cached before being returned.
-    /// </summary>
-    /// <typeparam name="T">The generic type of the query.</typeparam>
-    /// <param name="query">The query to cache in the QueryCacheManager.</param>
-    /// <param name="options">The cache entry options to use to cache the query.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <param name="tags">
-    ///     A variable-length parameters list containing tags to expire cached
-    ///     entries.
-    /// </param>
-    /// <returns>The result of the query.</returns>
+        /// <summary>
+        ///     Return the result of the <paramref name="query" /> from the cache. If the query is not cached
+        ///     yet, the query is materialized and cached before being returned.
+        /// </summary>
+        /// <typeparam name="T">The generic type of the query.</typeparam>
+        /// <param name="query">The query to cache in the QueryCacheManager.</param>
+        /// <param name="options">The cache entry options to use to cache the query.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="tags">
+        ///     A variable-length parameters list containing tags to expire cached
+        ///     entries.
+        /// </param>
+        /// <returns>The result of the query.</returns>
         public static async Task<T> FromCacheAsync<T>(this QueryDeferred<T> query, MemoryCacheEntryOptions options, CancellationToken cancellationToken = default(CancellationToken), params string[] tags)
         {
             if (!QueryCacheManager.IsEnabled)

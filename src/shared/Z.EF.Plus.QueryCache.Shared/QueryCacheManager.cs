@@ -53,6 +53,46 @@ namespace Z.EntityFramework.Plus
         /// <value>The cache to use for QueryCacheExtensions extension methods.</value>
         public static ObjectCache Cache { get; set; }
 
+        internal static T AddOrGetExisting<T>(string key, T item, CacheItemPolicy policy)
+        {
+            return (T)QueryCacheManager.Cache.AddOrGetExisting(key, item, policy);
+        }
+
+        internal static T AddOrGetExisting<T>(string key, T item, DateTimeOffset absoluteExpiration)
+        {
+            //Mettre le if ici, pour la gestion de Redis vs Memory Cache
+            return (T)QueryCacheManager.Cache.AddOrGetExisting(key, item, absoluteExpiration);
+        }
+
+        internal static object AddOrGetExistingDeferred<T>(string key, object item, CacheItemPolicy policy)
+        {
+            //Mettre le if ici, pour la gestion de Redis vs Memory Cache
+            return QueryCacheManager.Cache.AddOrGetExisting(key, item ?? DBNull.Value, policy) ?? item;
+        }
+
+        internal static object AddOrGetExistingDeferred<T>(string key, object item, DateTimeOffset absoluteExpiration)
+        {
+            //Mettre le if ici, pour la gestion de Redis vs Memory Cache
+            return QueryCacheManager.Cache.AddOrGetExisting(key, item ?? DBNull.Value, absoluteExpiration);
+        }
+
+        internal static object Get<T>(string key)
+        {
+            return Cache is RedisObjectCacheBeta redisCache ? (T)redisCache.Get(key, typeof(T)) : (T)QueryCacheManager.Cache.Get(key);
+        }
+
+        /// <summary>Gets a deferred.</summary>
+        /// <param name="key">The key.</param>
+        /// <returns>The deferred.</returns>
+        internal static object GetDeferred(string key)
+        {
+            var item = QueryCacheManager.Cache.Get(key);
+
+            item = item?.IfDbNullThenNull();
+
+            return item;
+        }
+
         /// <summary>The default cache item policy.</summary>
         private static CacheItemPolicy _defaultCacheItemPolicy;
 
@@ -92,8 +132,8 @@ namespace Z.EntityFramework.Plus
         }
 
 #elif EFCORE
-    /// <summary>Gets or sets the cache to use for the QueryCacheExtensions extension methods.</summary>
-    /// <value>The cache to use for the QueryCacheExtensions extension methods.</value>
+        /// <summary>Gets or sets the cache to use for the QueryCacheExtensions extension methods.</summary>
+        /// <value>The cache to use for the QueryCacheExtensions extension methods.</value>
         public static IMemoryCache Cache { get; set; }
 
         /// <summary>The default memory cache entry options.</summary>
