@@ -38,7 +38,7 @@ namespace Z.EntityFramework.Plus
 
             if (CreatedDate == DateTime.MinValue)
             {
-                CreatedDate = (parent.Configuration.UseCoordinatedUniversalTime) ? DateTime.UtcNow : DateTime.Now;
+                CreatedDate = parent.CurrentOrDefaultConfiguration.UseUtcDateTime ? DateTime.UtcNow : DateTime.Now;
             }
 
             if (Entry == null)

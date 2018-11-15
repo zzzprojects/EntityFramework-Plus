@@ -427,7 +427,7 @@ SELECT  @totalRowAffected
 
             if (isMySql)
             {
-                tableName = string.IsNullOrEmpty(store.Schema) || store.Schema == "dbo" ?
+                tableName = string.IsNullOrEmpty(store.Schema) || store.Schema == "dbo" || store.Table.StartsWith(store.Schema + ".") ?
                     string.Concat("`", store.Table, "`") :
                     string.Concat("`", store.Schema, ".", store.Table, "`");
             }

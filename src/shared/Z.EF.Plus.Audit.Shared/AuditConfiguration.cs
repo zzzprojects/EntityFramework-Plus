@@ -42,7 +42,7 @@ namespace Z.EntityFramework.Plus
             IsAuditedDictionary = new ConcurrentDictionary<string, bool>();
             ValueFormatterDictionary = new ConcurrentDictionary<string, Func<object, object>>();
 
-            UseCoordinatedUniversalTime = false;
+
 #if EF5 || EF6
             UseNullForDBNullValue = true;
 #endif
@@ -131,7 +131,7 @@ namespace Z.EntityFramework.Plus
 
         /// <summary>Gets or sets a value determining if Coordinated Universal Time (UTC) should be used instead of local time.</summary>
         /// <value>true if UTC, false if local</value>
-        public bool UseCoordinatedUniversalTime { get; set; }
+        public bool UseUtcDateTime { get; set; }
 
 #if EF5 || EF6
         /// <summary>
@@ -167,7 +167,7 @@ namespace Z.EntityFramework.Plus
                 SoftAddedPredicates = new List<Func<object, bool>>(SoftAddedPredicates),
                 SoftDeletedPredicates = new List<Func<object, bool>>(SoftDeletedPredicates),
                 ExcludeRelationshipIfOneExcluded = ExcludeRelationshipIfOneExcluded,
-                UseCoordinatedUniversalTime = UseCoordinatedUniversalTime,
+                UseUtcDateTime = UseUtcDateTime,
 #if EF5 || EF6
                 UseNullForDBNullValue = UseNullForDBNullValue
 #endif
