@@ -78,7 +78,7 @@ namespace Z.EntityFramework.Plus
 
         internal static object Get<T>(string key)
         {
-            return Cache is RedisObjectCacheBeta redisCache ? (T)redisCache.Get(key, typeof(T)) : (T)QueryCacheManager.Cache.Get(key);
+            return Cache is RedisObjectCache redisCache ? (T)redisCache.Get(key, typeof(T)) : (T)QueryCacheManager.Cache.Get(key);
         }
 
         /// <summary>Gets a deferred.</summary>

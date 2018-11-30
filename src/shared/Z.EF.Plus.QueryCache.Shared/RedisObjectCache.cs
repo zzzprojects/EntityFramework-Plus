@@ -7,7 +7,7 @@ using System.Runtime.Caching;
 namespace Z.EntityFramework.Plus
 {
     /// <summary>The redis object cache.</summary>
-    public class RedisObjectCacheBeta : ObjectCache
+    public class RedisObjectCache : ObjectCache
     {
         #region Field
         /// <summary>The deserialize cached object.</summary>
@@ -25,7 +25,7 @@ namespace Z.EntityFramework.Plus
         /// <param name="redisDatabase">The redis database.</param>
         /// <param name="serializeCachedObject">The serialize cached object.</param>
         /// <param name="deserializeCachedObject">The deserialize cached object.</param>
-        public RedisObjectCacheBeta(object redisDatabase, Func<object, string> serializeCachedObject, Func<Type, string, object> deserializeCachedObject)
+        public RedisObjectCache(object redisDatabase, Func<object, string> serializeCachedObject, Func<Type, string, object> deserializeCachedObject)
         {
             _redisDatabase = redisDatabase;
             _serializeCachedObject = serializeCachedObject;
