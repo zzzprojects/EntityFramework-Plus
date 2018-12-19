@@ -94,10 +94,11 @@ ctx.Users.Where(x => x.LastLoginDate < date)
 ## Limitations
 
  - **DO NOT** support Complex Type
- - **DO NOT** support Enum
  - **DO NOT** support TPC
  - **DO NOT** support TPH
  - **DO NOT** support TPT
+ 
+  If you need to use one of this feature, you need to use the library [Entity Framework Extensions](https://entityframework-extensions.net/)
 
 ## Requirements
 
