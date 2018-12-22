@@ -783,7 +783,20 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
                 var param = command.CreateParameter();
                 param.CopyFrom(relationalParameter, parameter);
 
-                command.Parameters.Add(param);
+#if !NETSTANDARD1_3
+                if (isPostgreSQL)
+                {
+	                Type itemType = param.Value.GetType();
+
+                    if (itemType.IsEnum)
+	                {
+		                var underlyingType = Enum.GetUnderlyingType(itemType);
+		                param.Value = Convert.ChangeType(param.Value, underlyingType);
+	                } 
+				}
+#endif
+
+				command.Parameters.Add(param);
             }
 #else
                 // ADD Parameter

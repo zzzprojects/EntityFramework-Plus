@@ -16,6 +16,8 @@
     <Import_RootNamespace>Z.EF.Plus.QueryCache.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\DbRawSqlQuery\FromCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\DbSqlQuery\FromCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`\FromCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`\FromCacheAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\QueryDeferred`\FromCache.cs" />

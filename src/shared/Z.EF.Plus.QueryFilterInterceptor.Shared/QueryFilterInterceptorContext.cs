@@ -211,11 +211,20 @@ namespace Z.EntityFramework.Plus
 
                 // DbSet<>.InternalQuery
                 var internalQueryProperty = typeof (DbQuery<>).MakeGenericType(dbSet.ElementType).GetProperty("InternalQuery", BindingFlags.NonPublic | BindingFlags.Instance);
+                if (internalQueryProperty == null)
+                {
+                    // May happen on filter override (FilterInterceptor and DbSetFilter)
+                    continue;
+                }
+
                 var internalQuery = internalQueryProperty.GetValue(dbSet, null);
+                if (internalQuery == null)
+                {
+                    continue;
+                }
 
                 // DbSet<>.InternalQuery.EntitySet
                 var entitySetProperty = internalQuery.GetType().GetProperty("EntitySet", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-
                 if(entitySetProperty == null)
                 {
                     // May happen on filter override (FilterInterceptor and DbSetFilter)
@@ -237,13 +246,13 @@ namespace Z.EntityFramework.Plus
 
 
                 var elementType = dbSet.ElementType;
-                var entityTypebase = entitySet.ElementType.FullName;
+                var entityTypeBase = entitySet.ElementType.FullName;
 
                 // TypeByEntitySetBase
                 {
-                    if (!TypeByEntitySetBase.ContainsKey(entityTypebase))
+                    if (!TypeByEntitySetBase.ContainsKey(entityTypeBase))
                     {
-                        TypeByEntitySetBase.Add(entityTypebase, elementType);
+                        TypeByEntitySetBase.Add(entityTypeBase, elementType);
                     }
                 }
 
@@ -266,12 +275,12 @@ namespace Z.EntityFramework.Plus
                         baseType = baseType.BaseType;
                     }
 
-                    // ENSURE all discting
+                    // ENSURE all distinct
                     types = types.Distinct().ToList();
 
-                    if (!TypeByDbSet.ContainsKey(entityTypebase))
+                    if (!TypeByDbSet.ContainsKey(entityTypeBase))
                     {
-                        TypeByDbSet.Add(entityTypebase, types);
+                        TypeByDbSet.Add(entityTypeBase, types);
                     }
                 }
             }
@@ -325,9 +334,15 @@ namespace Z.EntityFramework.Plus
             {
                 var typeField = entityType.GetType().GetField("_type", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 
-                if (typeField != null)
+                if (typeField == null)
                 {
-                    var type = (Type)typeField.GetValue(entityType);
+                    continue;
+                }
+
+                var type = (Type)typeField.GetValue(entityType);
+
+                if (type != null)
+                {
                     TryRegisterType(context, type);
                 }
             }
