@@ -3,7 +3,7 @@
 // Forum & Issues: https://github.com/zzzprojects/EntityFramework-Plus/issues
 // License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
 // More projects: http://www.zzzprojects.com/
-// Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
+// Copyright Â© ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 #if FULL || BATCH_DELETE || BATCH_UPDATE
 #if EF5 || EF6
@@ -52,9 +52,9 @@ namespace Z.EntityFramework.Plus.Internal
             }
 
             var rn = asm.GetManifestResourceNames();
-            var ssdl = rn.SingleOrDefault(x => x.EndsWith(".ssdl"));
-            var csdl = rn.SingleOrDefault(x => x.EndsWith(".csdl"));
-            var msl = rn.SingleOrDefault(x => x.EndsWith(".msl"));
+            var ssdl = rn.FirstOrDefault(x => x.EndsWith(".ssdl"));
+            var csdl = rn.FirstOrDefault(x => x.EndsWith(".csdl"));
+            var msl = rn.FirstOrDefault(x => x.EndsWith(".msl"));
 
                 
 
