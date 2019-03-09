@@ -17,7 +17,7 @@ Or provide a project/solution that we can run to reproduce the issue.
 - Make sure to provide only what's required for the issue, not the whole project
 - Private code can be send here: info@zzzprojects.com
 
-_Note: If you are not able to provide code that reproduce the issue, we will not be able either._
+_Note: If you are not able to provide code that reproduce the issue, we will not be able to reproduce it either._
 
 ### Further technical details
 - EF version:
