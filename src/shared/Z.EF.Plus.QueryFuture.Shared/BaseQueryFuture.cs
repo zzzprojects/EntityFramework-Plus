@@ -10,6 +10,13 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Reflection;
 
+
+#if NET45
+using System.Threading;
+using System.Threading.Tasks;
+#endif
+
+
 #if EF5
 using System.Data.Objects;
 
@@ -70,6 +77,8 @@ namespace Z.EntityFramework.Plus
         /// <value>The query connection.</value>
         internal IRelationalConnection QueryConnection { get; set; }
 
+        internal Action RestoreConnection { get;set;}
+
         public virtual void ExecuteInMemory()
         {
             
@@ -80,12 +89,17 @@ namespace Z.EntityFramework.Plus
         public virtual IRelationalCommand CreateExecutorAndGetCommand(out RelationalQueryContext queryContext)
         {
             bool isEFCore2x = false;
+            bool EFCore_2_1 = false;
 
             var context = Query.GetDbContext();
 
             // REFLECTION: Query._context.StateManager
+#if NETSTANDARD2_0
+            var stateManager = context.ChangeTracker.GetStateManager();
+#else
             var stateManagerProperty = typeof(DbContext).GetProperty("StateManager", BindingFlags.NonPublic | BindingFlags.Instance);
             var stateManager = (StateManager)stateManagerProperty.GetValue(context);
+#endif
 
             // REFLECTION: Query._context.StateManager._concurrencyDetector
             var concurrencyDetectorField = typeof(StateManager).GetField("_concurrencyDetector", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -96,20 +110,63 @@ namespace Z.EntityFramework.Plus
             var queryCompiler = queryCompilerField.GetValue(Query.Provider);
 
             // REFLECTION: Query.Provider.NodeTypeProvider (Use property for nullable logic)
-            var nodeTypeProviderField = queryCompiler.GetType().GetProperty("NodeTypeProvider", BindingFlags.NonPublic | BindingFlags.Instance);
-            var nodeTypeProvider = nodeTypeProviderField.GetValue(queryCompiler);
+            var nodeTypeProviderProperty = queryCompiler.GetType().GetProperty("NodeTypeProvider", BindingFlags.NonPublic | BindingFlags.Instance);
+            object nodeTypeProvider;
+            object QueryModelGenerator = null;
+
+            if (nodeTypeProviderProperty == null)
+            {
+                EFCore_2_1 = true;
+
+                var QueryModelGeneratorField = queryCompiler.GetType().GetField("_queryModelGenerator", BindingFlags.NonPublic | BindingFlags.Instance);
+                QueryModelGenerator = QueryModelGeneratorField.GetValue(queryCompiler);
+
+                var nodeTypeProviderField = QueryModelGenerator.GetType().GetField("_nodeTypeProvider", BindingFlags.NonPublic | BindingFlags.Instance);
+                nodeTypeProvider = nodeTypeProviderField.GetValue(QueryModelGenerator);
+            }
+            else
+            {
+                nodeTypeProvider = nodeTypeProviderProperty.GetValue(queryCompiler);
+            }
 
             // REFLECTION: Query.Provider._queryCompiler.CreateQueryParser();
+#if NETSTANDARD2_0
+            QueryParser createQueryParser = null;
+            if (EFCore_2_1)
+            {
+                var queryParserMethod = QueryModelGenerator.GetType().GetMethod("CreateQueryParser", BindingFlags.NonPublic | BindingFlags.Instance);
+                createQueryParser = (QueryParser)queryParserMethod.Invoke(QueryModelGenerator, new[] { nodeTypeProvider });
+            }
+            else
+            {
+                var queryParserMethod = queryCompiler.GetType().GetMethod("CreateQueryParser", BindingFlags.NonPublic | BindingFlags.Instance);
+                createQueryParser = (QueryParser)queryParserMethod.Invoke(queryCompiler, new[] { nodeTypeProvider });
+            }
+#else
             var createQueryParserMethod = queryCompiler.GetType().GetMethod("CreateQueryParser", BindingFlags.NonPublic | BindingFlags.Static);
             var createQueryParser = (QueryParser)createQueryParserMethod.Invoke(null, new[] { nodeTypeProvider });
+#endif
 
             // REFLECTION: Query.Provider._queryCompiler._database
             var databaseField = queryCompiler.GetType().GetField("_database", BindingFlags.NonPublic | BindingFlags.Instance);
             var database = (IDatabase) databaseField.GetValue(queryCompiler);
 
             // REFLECTION: Query.Provider._queryCompiler._evaluatableExpressionFilter
+#if NETSTANDARD2_0
+            IEvaluatableExpressionFilter evaluatableExpressionFilter = null;
+
+            if (EFCore_2_1)
+            {
+                evaluatableExpressionFilter = (IEvaluatableExpressionFilter)QueryModelGenerator.GetType().GetField("_evaluatableExpressionFilter", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(QueryModelGenerator);
+            }
+            else
+            {
+                evaluatableExpressionFilter = (IEvaluatableExpressionFilter)queryCompiler.GetType().GetField("_evaluatableExpressionFilter", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(queryCompiler);
+            }
+#else
             var evaluatableExpressionFilterField = queryCompiler.GetType().GetField("_evaluatableExpressionFilter", BindingFlags.NonPublic | BindingFlags.Static);
             var evaluatableExpressionFilter = (IEvaluatableExpressionFilter) evaluatableExpressionFilterField.GetValue(null);
+#endif
 
             // REFLECTION: Query.Provider._queryCompiler._queryContextFactory
             var queryContextFactoryField = queryCompiler.GetType().GetField("_queryContextFactory", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -160,12 +217,18 @@ namespace Z.EntityFramework.Plus
                 logger = loggerField.GetValue(queryCompilationContextFactory);
             }
 
+
             // CREATE connection
             {
                 QueryConnection = context.Database.GetService<IRelationalConnection>();
+               
                 var innerConnection = new CreateEntityConnection(QueryConnection.DbConnection, null);
                 var innerConnectionField = typeof(RelationalConnection).GetField("_connection", BindingFlags.NonPublic | BindingFlags.Instance);
+                var initalConnection = innerConnectionField.GetValue(QueryConnection);
+
                 innerConnectionField.SetValue(QueryConnection, new Microsoft.EntityFrameworkCore.Internal.LazyRef<DbConnection>(() => innerConnection));
+
+                RestoreConnection = () => innerConnectionField.SetValue(QueryConnection, initalConnection);
             }
 
 
@@ -205,17 +268,42 @@ namespace Z.EntityFramework.Plus
             }
 
 
-
             Expression newQuery;
+
 
             if(isEFCore2x)
             {
-                var parameterExtractingExpressionVisitorConstructor = typeof(ParameterExtractingExpressionVisitor).GetConstructors().First(x => x.GetParameters().Length == 5);
+                var parameterExtractingExpressionVisitorConstructors = typeof(ParameterExtractingExpressionVisitor).GetConstructors();
 
-                var parameterExtractingExpressionVisitor = (ParameterExtractingExpressionVisitor)parameterExtractingExpressionVisitorConstructor.Invoke(new object[] {evaluatableExpressionFilter, queryContext, logger, false, false} );
-            
-                // CREATE new query from query visitor
-                newQuery = parameterExtractingExpressionVisitor.ExtractParameters(Query.Expression);
+                if (parameterExtractingExpressionVisitorConstructors.Any(x => x.GetParameters().Length == 5))
+                {
+                    // EF Core 2.1
+                    var parameterExtractingExpressionVisitorConstructor = parameterExtractingExpressionVisitorConstructors.First(x => x.GetParameters().Length == 5);
+                    var parameterExtractingExpressionVisitor = (ParameterExtractingExpressionVisitor)parameterExtractingExpressionVisitorConstructor.Invoke(new object[] { evaluatableExpressionFilter, queryContext, logger, true, false });
+
+                    // CREATE new query from query visitor
+                    newQuery = parameterExtractingExpressionVisitor.ExtractParameters(Query.Expression);
+                }
+                else
+                {
+
+	                var parameterExtractingExpressionVisitorConstructor = parameterExtractingExpressionVisitorConstructors.First(x => x.GetParameters().Length == 6);
+
+					ParameterExtractingExpressionVisitor parameterExtractingExpressionVisitor = null; 
+
+	                // EF Core 2.1   
+					if (parameterExtractingExpressionVisitorConstructor.GetParameters().Where(x => x.ParameterType == typeof(DbContext)).Any())
+					{
+						parameterExtractingExpressionVisitor = (ParameterExtractingExpressionVisitor)parameterExtractingExpressionVisitorConstructor.Invoke(new object[] { evaluatableExpressionFilter, queryContext, logger, context, true, false });
+					}
+					else
+					{
+						parameterExtractingExpressionVisitor = (ParameterExtractingExpressionVisitor)parameterExtractingExpressionVisitorConstructor.Invoke(new object[] { evaluatableExpressionFilter, queryContext, logger, null, true, false });
+					} 
+
+                    // CREATE new query from query visitor
+                    newQuery = parameterExtractingExpressionVisitor.ExtractParameters(Query.Expression);
+                }
             }
             else
             {
@@ -246,8 +334,8 @@ namespace Z.EntityFramework.Plus
         }
 #endif
 
-        /// <summary>Sets the result of the query deferred.</summary>
-        /// <param name="reader">The reader returned from the query execution.</param>
+            /// <summary>Sets the result of the query deferred.</summary>
+            /// <param name="reader">The reader returned from the query execution.</param>
         public virtual void SetResult(DbDataReader reader)
         {
         }
@@ -289,6 +377,7 @@ namespace Z.EntityFramework.Plus
             var enumerator = (IEnumerator<T>)getEnumerator;
             return enumerator;
 #elif EFCORE
+           
             ((CreateEntityConnection)QueryConnection.DbConnection).OriginalDataReader = reader;
             var queryExecutor = (Func<QueryContext, IEnumerable<T>>) QueryExecutor;
             var queryEnumerable = queryExecutor(QueryContext);
@@ -300,5 +389,13 @@ namespace Z.EntityFramework.Plus
         {
 
         }
-    }
+
+
+#if NET45
+		public virtual Task GetResultDirectlyAsync(CancellationToken cancellationToken)
+	    {
+		    throw new Exception("Not implemented");
+	    }
+#endif
+	}
 }

@@ -1,0 +1,18 @@
+{% if site.data.meta[meta_index].h1 != null %}
+
+<div>
+{% include component-rotator-dark-begin.html %}
+
+<div class="section-header">
+	<h1>{{site.data.meta[meta_index].h1}}</h1>
+	{% if site.data.meta[meta_index].h2 != null %}
+	  <div class="h2-outer">
+		<h2>{{ site.data.meta[meta_index].h2 }}</h2>
+	  </div>
+	{% endif %}
+</div>
+
+{% include component-rotator-dark-end.html %}
+</div>
+
+{% endif %}

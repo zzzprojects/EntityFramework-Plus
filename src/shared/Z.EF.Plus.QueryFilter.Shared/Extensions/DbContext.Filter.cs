@@ -5,7 +5,6 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
-#if !EF6
 using System;
 using System.Linq;
 
@@ -17,17 +16,41 @@ using Microsoft.EntityFrameworkCore;
 
 #endif
 
+#if EF6
+using AliasBaseQueryFilter = Z.EntityFramework.Plus.BaseQueryDbSetFilter;
+using AliasBaseQueryFilterQueryable = Z.EntityFramework.Plus.BaseQueryDbSetFilterQueryable;
+using AliasQueryFilterContext = Z.EntityFramework.Plus.QueryDbSetFilterContext;
+using AliasQueryFilterManager = Z.EntityFramework.Plus.QueryDbSetFilterManager;
+using AliasQueryFilterSet = Z.EntityFramework.Plus.QueryDbSetFilterSet;
+#else
+using AliasBaseQueryFilter = Z.EntityFramework.Plus.BaseQueryFilter;
+using AliasBaseQueryFilterQueryable = Z.EntityFramework.Plus.BaseQueryFilterQueryable;
+using AliasQueryFilterContext = Z.EntityFramework.Plus.QueryFilterContext;
+using AliasQueryFilterManager = Z.EntityFramework.Plus.QueryFilterManager;
+using AliasQueryFilterSet = Z.EntityFramework.Plus.QueryFilterSet;
+#endif
+
 namespace Z.EntityFramework.Plus
 {
+#if EF6
+    public static partial class QueryDbSetFilterExtensions
+#else
     public static partial class QueryFilterExtensions
+#endif
     {
         /// <summary>Gets the filter associated with the specified key from the context.</summary>
         /// <param name="context">The context filtered.</param>
         /// <param name="key">The filter key associated to the filter.</param>
         /// <returns>The filter associated with the specified key from the context.</returns>
-        public static BaseQueryFilter Filter(this DbContext context, object key)
+#if EF6
+        public static AliasBaseQueryFilter DbSetFilter(this DbContext context, object key)
+#else
+        public static AliasBaseQueryFilter Filter(this DbContext context, object key)
+#endif
+
         {
-            var filterContext = QueryFilterManager.AddOrGetFilterContext(context);
+            var filterContext = AliasQueryFilterManager.AddOrGetFilterContext(context);
+
             return filterContext.GetFilter(key);
         }
 
@@ -39,9 +62,18 @@ namespace Z.EntityFramework.Plus
         /// <param name="queryFilter">The query filter to apply to the the context.</param>
         /// <param name="isEnabled">true if the filter is enabled.</param>
         /// <returns>The filter created and added to the the context.</returns>
-        public static BaseQueryFilter Filter<T>(this DbContext context, Func<IQueryable<T>, IQueryable<T>> queryFilter, bool isEnabled = true)
+#if EF6
+        public static AliasBaseQueryFilter DbSetFilter<T>(this DbContext context, Func<IQueryable<T>, IQueryable<T>> queryFilter, bool isEnabled = true)
+#else
+        public static AliasBaseQueryFilter Filter<T>(this DbContext context, Func<IQueryable<T>, IQueryable<T>> queryFilter, bool isEnabled = true)
+#endif
         {
+#if EF6
+            return context.DbSetFilter(Guid.NewGuid(), queryFilter, isEnabled);
+
+#else
             return context.Filter(Guid.NewGuid(), queryFilter, isEnabled);
+#endif
         }
 
         /// <summary>
@@ -53,9 +85,14 @@ namespace Z.EntityFramework.Plus
         /// <param name="queryFilter">The query filter to apply to the the context.</param>
         /// <param name="isEnabled">true if the filter is enabled.</param>
         /// <returns>The filter created and added to the the context.</returns>
-        public static BaseQueryFilter Filter<T>(this DbContext context, object key, Func<IQueryable<T>, IQueryable<T>> queryFilter, bool isEnabled = true)
+#if EF6
+        public static AliasBaseQueryFilter DbSetFilter<T>(this DbContext context, object key, Func<IQueryable<T>, IQueryable<T>> queryFilter, bool isEnabled = true)
+#else
+        public static AliasBaseQueryFilter Filter<T>(this DbContext context, object key, Func<IQueryable<T>, IQueryable<T>> queryFilter, bool isEnabled = true)
+#endif
         {
-            var filterContext = QueryFilterManager.AddOrGetFilterContext(context);
+            var filterContext = AliasQueryFilterManager.AddOrGetFilterContext(context);
+
             var filter = filterContext.AddFilter(key, queryFilter);
 
             if (isEnabled)
@@ -67,4 +104,3 @@ namespace Z.EntityFramework.Plus
         }
     }
 }
-#endif

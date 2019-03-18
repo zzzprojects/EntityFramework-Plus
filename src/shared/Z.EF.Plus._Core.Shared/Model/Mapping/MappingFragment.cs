@@ -9,6 +9,7 @@
 #if EF5 || EF6
 using System.Collections.Generic;
 using System.Xml.Serialization;
+using Z.EntityFramework.Extensions.Core.Mapping;
 using Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel;
 
 namespace Z.EntityFramework.Plus.Internal.Core.Mapping
@@ -22,22 +23,33 @@ namespace Z.EntityFramework.Plus.Internal.Core.Mapping
     /// </summary>
     public class MappingFragment
     {
-        /// <summary>Gets or sets the set the store entity belongs to.</summary>
-        /// <value>The store entity set.</value>
-        [XmlIgnore]
+	    /// <summary>Default constructor.</summary>
+	    public MappingFragment()
+	    {
+		    ScalarAccessors = new List<ScalarAccessorMapping>();
+	    }
+
+		/// <summary>Gets or sets the set the store entity belongs to.</summary>
+		/// <value>The store entity set.</value>
+		[XmlIgnore]
         public EntityContainerEntitySet StoreEntitySet { get; set; }
 
-#region XmlDeserialization
+	    /// <summary>Gets or sets the scalar accessors.</summary>
+	    /// <value>The scalar accessors.</value>
+	    [XmlIgnore]
+	    public List<ScalarAccessorMapping> ScalarAccessors { get; set; }
 
-        /// <summary>
-        ///     Please visit the
-        ///     <see href="http://msdn.microsoft.com/en-us/library/vstudio/bb399202(v=vs.100).aspx">
-        ///         Microsoft documentation
-        ///     </see>
-        ///     for more detail.
-        /// </summary>
-        /// <value>The name of the store entity set.</value>
-        [XmlAttribute("StoreEntitySet")]
+		#region XmlDeserialization
+
+		/// <summary>
+		///     Please visit the
+		///     <see href="http://msdn.microsoft.com/en-us/library/vstudio/bb399202(v=vs.100).aspx">
+		///         Microsoft documentation
+		///     </see>
+		///     for more detail.
+		/// </summary>
+		/// <value>The name of the store entity set.</value>
+		[XmlAttribute("StoreEntitySet")]
         public string StoreEntitySetName { get; set; }
 
         /// <summary>
@@ -51,8 +63,30 @@ namespace Z.EntityFramework.Plus.Internal.Core.Mapping
         [XmlElement("ScalarProperty")]
         public List<ScalarPropertyMapping> ScalarProperties { get; set; }
 
-#endregion
-    }
+	    /// <summary>
+	    ///     Please visit the
+	    ///     <see href="http://msdn.microsoft.com/en-us/library/vstudio/bb399202(v=vs.100).aspx">
+	    ///         Microsoft documentation
+	    ///     </see>
+	    ///     for more detail.
+	    /// </summary>
+	    /// <value>The complex properties.</value>
+	    [XmlElement("ComplexProperty")]
+	    public List<ComplexPropertyMapping> ComplexProperties { get; set; }
+
+	    /// <summary>
+	    ///     Please visit the
+	    ///     <see href="http://msdn.microsoft.com/en-us/library/vstudio/bb399202(v=vs.100).aspx">
+	    ///         Microsoft documentation
+	    ///     </see>
+	    ///     for more detail.
+	    /// </summary>
+	    /// <value>The conditions.</value>
+	    [XmlElement("Condition")]
+	    public List<ConditionPropertyMapping> Conditions { get; set; }
+
+		#endregion
+	}
 }
 
 #endif

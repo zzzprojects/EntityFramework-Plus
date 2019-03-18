@@ -5,7 +5,6 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
-#if !EF6
 using System.Collections.Generic;
 using System.Linq;
 #if EF5
@@ -21,20 +20,42 @@ using Microsoft.EntityFrameworkCore;
 
 #endif
 
+#if EF6
+using AliasBaseQueryFilter = Z.EntityFramework.Plus.BaseQueryDbSetFilter;
+using AliasBaseQueryFilterQueryable = Z.EntityFramework.Plus.BaseQueryDbSetFilterQueryable;
+using AliasQueryFilterContext = Z.EntityFramework.Plus.QueryDbSetFilterContext;
+using AliasQueryFilterManager = Z.EntityFramework.Plus.QueryDbSetFilterManager;
+using AliasQueryFilterSet = Z.EntityFramework.Plus.QueryDbSetFilterSet;
+#else
+using AliasBaseQueryFilter = Z.EntityFramework.Plus.BaseQueryFilter;
+using AliasBaseQueryFilterQueryable = Z.EntityFramework.Plus.BaseQueryFilterQueryable;
+using AliasQueryFilterContext = Z.EntityFramework.Plus.QueryFilterContext;
+using AliasQueryFilterManager = Z.EntityFramework.Plus.QueryFilterManager;
+using AliasQueryFilterSet = Z.EntityFramework.Plus.QueryFilterSet;
+#endif
+
 namespace Z.EntityFramework.Plus
 {
     /// <summary>A class for query filter queryable.</summary>
     /// <typeparam name="T">The type of elements of the filter queryable.</typeparam>
+#if EF6
+    public class QueryDbSetFilterQueryable<T> : BaseQueryDbSetFilterQueryable
+#else
     public class QueryFilterQueryable<T> : BaseQueryFilterQueryable
+#endif
     {
         /// <summary>Constructor.</summary>
         /// <param name="context">The context associated to the filter queryable.</param>
         /// <param name="filterSet">The filter set associated with the filter queryable.</param>
         /// <param name="originalQuery">The original query.</param>
-        public QueryFilterQueryable(DbContext context, QueryFilterSet filterSet, IQueryable<T> originalQuery)
+#if EF6
+        public QueryDbSetFilterQueryable(DbContext context, AliasQueryFilterSet filterSet, IQueryable<T> originalQuery)
+#else
+        public QueryFilterQueryable(DbContext context, AliasQueryFilterSet filterSet, IQueryable<T> originalQuery)
+#endif
         {
             Context = context;
-            Filters = new List<BaseQueryFilter>();
+            Filters = new List<AliasBaseQueryFilter>();
             FilterSet = filterSet;
             OriginalQuery = originalQuery;
         }
@@ -43,7 +64,7 @@ namespace Z.EntityFramework.Plus
         public override void UpdateInternalQuery()
         {
             var query = OriginalQuery;
-
+            
             foreach (var filter in Filters)
             {
                 query = filter.ApplyFilter<T>(query);
@@ -61,4 +82,3 @@ namespace Z.EntityFramework.Plus
         }
     }
 }
-#endif

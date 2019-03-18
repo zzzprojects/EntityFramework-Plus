@@ -24,7 +24,7 @@ namespace Z.EntityFramework.Plus.QueryInterceptorFilter
             var baseExpression = base.Visit(expression);
             var baseDbProject = baseExpression as DbProjectExpression;
 
-            if (baseDbProject != null)
+            if (baseDbProject != null && !baseDbProject.ResultType.ToString().StartsWith("Transient.collection[Edm.Int32("))
             {
                 return baseDbProject.Input.Expression;
             }
@@ -32,6 +32,7 @@ namespace Z.EntityFramework.Plus.QueryInterceptorFilter
 
             // This situation may happen when another user-defined interceptor is used
             // The library may not be compatible in this situation
+            // Could also happen when some filter require sum
             return baseExpression;
         }
 

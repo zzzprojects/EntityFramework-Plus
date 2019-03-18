@@ -13,8 +13,26 @@ namespace Z.EntityFramework.Plus
     {
         public AuditConfiguration FormatType<T>(Func<T, object> formatter)
         {
-            Func<object, object> func = o => formatter((T) o);
+#if !NETSTANDARD1_3
+            Func<object, object> func = o =>
+            {
+                T obj;
+                try
+                {
+                    obj = (T)o;
+                }
+                catch (Exception e)
+                {
+                    // Return initial object in case the cast doesn't work (such as null object)
+                    return o;
+                }
 
+                return formatter(obj);
+
+            };
+#else
+            Func<object, object> func = o => formatter((T) o);
+#endif
             EntityValueFormatters.Add((x, s, v) => v != null && v.GetType() == typeof(T) ? func : null);
 
             return this;

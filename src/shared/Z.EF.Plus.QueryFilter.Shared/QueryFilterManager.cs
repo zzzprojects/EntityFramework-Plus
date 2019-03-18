@@ -5,7 +5,6 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
-#if !EF6
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,22 +18,48 @@ using Microsoft.EntityFrameworkCore;
 
 #endif
 
+#if EF6
+using AliasBaseQueryFilter = Z.EntityFramework.Plus.BaseQueryDbSetFilter;
+using AliasBaseQueryFilterQueryable = Z.EntityFramework.Plus.BaseQueryDbSetFilterQueryable;
+using AliasQueryFilterContext = Z.EntityFramework.Plus.QueryDbSetFilterContext;
+using AliasQueryFilterManager = Z.EntityFramework.Plus.QueryDbSetFilterManager;
+using AliasQueryFilterSet = Z.EntityFramework.Plus.QueryDbSetFilterSet;
+#else
+using AliasBaseQueryFilter = Z.EntityFramework.Plus.BaseQueryFilter;
+using AliasBaseQueryFilterQueryable = Z.EntityFramework.Plus.BaseQueryFilterQueryable;
+using AliasQueryFilterContext = Z.EntityFramework.Plus.QueryFilterContext;
+using AliasQueryFilterManager = Z.EntityFramework.Plus.QueryFilterManager;
+using AliasQueryFilterSet = Z.EntityFramework.Plus.QueryFilterSet;
+#endif
+
 namespace Z.EntityFramework.Plus
 {
     /// <summary>A class to manage query filter options.</summary>
+#if EF6
+    public static class QueryDbSetFilterManager
+#else
     public static class QueryFilterManager
+#endif
     {
         /// <summary>The generic filter context lock.</summary>
         private static readonly object GenericFilterContextLock = new object();
 
         /// <summary>Static constructor.</summary>
+#if EF6
+        static QueryDbSetFilterManager()
+#else
         static QueryFilterManager()
+#endif
         {
-            CacheGenericFilterContext = new Dictionary<string, QueryFilterContext>();
-            CacheWeakFilterContext = new ConditionalWeakTable<DbContext, QueryFilterContext>();
-            CacheWeakFilterQueryable = new ConditionalWeakTable<IQueryable, BaseQueryFilterQueryable>();
-            GlobalFilters = new Dictionary<object, BaseQueryFilter>();
-            GlobalInitializeFilterActions = new List<Tuple<BaseQueryFilter, Action<BaseQueryFilter>>>();
+            CacheGenericFilterContext = new Dictionary<string, AliasQueryFilterContext>();
+            CacheWeakFilterContext = new ConditionalWeakTable<DbContext, AliasQueryFilterContext>();
+            CacheWeakFilterQueryable = new ConditionalWeakTable<IQueryable, AliasBaseQueryFilterQueryable>();
+            GlobalFilters = new Dictionary<object, AliasBaseQueryFilter>();
+            GlobalInitializeFilterActions = new List<Tuple<AliasBaseQueryFilter, Action<AliasBaseQueryFilter>>>();
+
+#if NETSTANDARD2_0
+    ForceCast = true;
+#endif
         }
 
 #if EFCORE
@@ -45,31 +70,31 @@ namespace Z.EntityFramework.Plus
 
         /// <summary>Gets the global filters.</summary>
         /// <value>The global filters.</value>
-        public static Dictionary<object, BaseQueryFilter> GlobalFilters { get; }
+        public static Dictionary<object, AliasBaseQueryFilter> GlobalFilters { get; }
 
         /// <summary>Gets or sets the global initialize filter actions.</summary>
         /// <value>The global initialize filter actions.</value>
-        public static List<Tuple<BaseQueryFilter, Action<BaseQueryFilter>>> GlobalInitializeFilterActions { get; set; }
+        public static List<Tuple<AliasBaseQueryFilter, Action<AliasBaseQueryFilter>>> GlobalInitializeFilterActions { get; set; }
 
         /// <summary>Gets or sets the dictionary containing generic filter context information for a DbContext.FullName.</summary>
         /// <value>The dictionary containing generic filter context information for a DbContext.FullName.</value>
-        public static Dictionary<string, QueryFilterContext> CacheGenericFilterContext { get; set; }
+        public static Dictionary<string, AliasQueryFilterContext> CacheGenericFilterContext { get; set; }
 
         /// <summary>Gets or sets the weak table containing filter context for a specified context.</summary>
         /// <value>The weak table containing filter context for a specified context.</value>
-        public static ConditionalWeakTable<DbContext, QueryFilterContext> CacheWeakFilterContext { get; set; }
+        public static ConditionalWeakTable<DbContext, AliasQueryFilterContext> CacheWeakFilterContext { get; set; }
 
         /// <summary>Gets or sets the weak table containing filter queryable for a specified query.</summary>
         /// <value>The weak table containing filter queryable for a specified query.</value>
-        public static ConditionalWeakTable<IQueryable, BaseQueryFilterQueryable> CacheWeakFilterQueryable { get; set; }
+        public static ConditionalWeakTable<IQueryable, AliasBaseQueryFilterQueryable> CacheWeakFilterQueryable { get; set; }
 
         /// <summary>Adds or gets the generic filter context associated with the context.</summary>
         /// <param name="context">The context associated to the filter context.</param>
         /// <returns>The generic filter context associated with the context.</returns>
-        public static QueryFilterContext AddOrGetGenericFilterContext(DbContext context)
+        public static AliasQueryFilterContext AddOrGetGenericFilterContext(DbContext context)
         {
             var key = context.GetType().FullName;
-            QueryFilterContext filterContext;
+            AliasQueryFilterContext filterContext;
 
             if (!CacheGenericFilterContext.TryGetValue(key, out filterContext))
             {
@@ -77,7 +102,7 @@ namespace Z.EntityFramework.Plus
                 {
                     if (!CacheGenericFilterContext.TryGetValue(key, out filterContext))
                     {
-                        filterContext = new QueryFilterContext(context, true);
+                        filterContext = new AliasQueryFilterContext(context, true);
                         CacheGenericFilterContext.Add(key, filterContext);
                     }
                 }
@@ -89,13 +114,13 @@ namespace Z.EntityFramework.Plus
         /// <summary>Adds or get the filter context associated with the context.</summary>
         /// <param name="context">The context associated with the filter context.</param>
         /// <returns>The filter context associated with the context.</returns>
-        public static QueryFilterContext AddOrGetFilterContext(DbContext context)
+        public static AliasQueryFilterContext AddOrGetFilterContext(DbContext context)
         {
-            QueryFilterContext filterContext;
+            AliasQueryFilterContext filterContext;
 
             if (!CacheWeakFilterContext.TryGetValue(context, out filterContext))
             {
-                filterContext = new QueryFilterContext(context);
+                filterContext = new AliasQueryFilterContext(context);
                 CacheWeakFilterContext.Add(context, filterContext);
             }
 
@@ -105,9 +130,9 @@ namespace Z.EntityFramework.Plus
         /// <summary>Gets the filter queryable associated with the query.</summary>
         /// <param name="query">The query associated with the filter queryable.</param>
         /// <returns>The filter queryable associated with the query.</returns>
-        public static BaseQueryFilterQueryable GetFilterQueryable(IQueryable query)
+        public static AliasBaseQueryFilterQueryable GetFilterQueryable(IQueryable query)
         {
-            BaseQueryFilterQueryable filterQueryable;
+            AliasBaseQueryFilterQueryable filterQueryable;
             CacheWeakFilterQueryable.TryGetValue(query, out filterQueryable);
             return filterQueryable;
         }
@@ -115,9 +140,9 @@ namespace Z.EntityFramework.Plus
         /// <summary>Gets the filter associated with the specified key from the context.</summary>
         /// <param name="key">The filter key associated to the filter.</param>
         /// <returns>The filter associated with the specified key from the context.</returns>
-        public static BaseQueryFilter Filter(object key)
+        public static AliasBaseQueryFilter Filter(object key)
         {
-            BaseQueryFilter filter;
+            AliasBaseQueryFilter filter;
             GlobalFilters.TryGetValue(key, out filter);
 
             return filter;
@@ -130,7 +155,7 @@ namespace Z.EntityFramework.Plus
         /// <param name="queryFilter">The query filter to apply to the the context.</param>
         /// <param name="isEnabled">true if the filter is enabled.</param>
         /// <returns>The filter created and added to the the context.</returns>
-        public static BaseQueryFilter Filter<T>(Func<IQueryable<T>, IQueryable<T>> queryFilter, bool isEnabled = true)
+        public static AliasBaseQueryFilter Filter<T>(Func<IQueryable<T>, IQueryable<T>> queryFilter, bool isEnabled = true)
         {
             return Filter(Guid.NewGuid(), queryFilter, isEnabled);
         }
@@ -143,12 +168,16 @@ namespace Z.EntityFramework.Plus
         /// <param name="queryFilter">The query filter to apply to the the context.</param>
         /// <param name="isEnabled">true if the filter is enabled.</param>
         /// <returns>The filter created and added to the the context.</returns>
-        public static BaseQueryFilter Filter<T>(object key, Func<IQueryable<T>, IQueryable<T>> queryFilter, bool isEnabled = true)
+        public static AliasBaseQueryFilter Filter<T>(object key, Func<IQueryable<T>, IQueryable<T>> queryFilter, bool isEnabled = true)
         {
-            BaseQueryFilter filter;
+            AliasBaseQueryFilter filter;
             if (!GlobalFilters.TryGetValue(key, out filter))
             {
+#if EF6
+                filter = new QueryDbSetFilter<T>(null, queryFilter) { IsDefaultEnabled = isEnabled };
+#else
                 filter = new QueryFilter<T>(null, queryFilter) { IsDefaultEnabled = isEnabled };
+#endif
                 GlobalFilters.Add(key, filter);
             }
 
@@ -159,7 +188,7 @@ namespace Z.EntityFramework.Plus
         /// <param name="context">The context to initialize global filter on.</param>
         public static void InitilizeGlobalFilter(DbContext context)
         {
-            var cloneDictionary = new Dictionary<BaseQueryFilter, BaseQueryFilter>();
+            var cloneDictionary = new Dictionary<AliasBaseQueryFilter, AliasBaseQueryFilter>();
 
             var filterContext = AddOrGetFilterContext(context);
 
@@ -182,4 +211,3 @@ namespace Z.EntityFramework.Plus
         }
     }
 }
-#endif

@@ -7,14 +7,20 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 #if EF5
 using System.Data.Objects;
 
 #elif EF6
 using System.Data.Entity.Core.Objects;
+#if NET45 
+using System.Data.Entity.Infrastructure;
+#endif
 
 #elif EFCORE
 using System.Linq;
@@ -65,8 +71,34 @@ namespace Z.EntityFramework.Plus
             }
         }
 
-        /// <summary>Sets the result of the query deferred.</summary>
-        /// <param name="reader">The reader returned from the query execution.</param>
+#if NET45 
+        /// <summary>Gets the value of the future query.</summary>
+        /// <value>The value of the future query.</value>
+        public async Task<TResult> ValueAsync(CancellationToken cancellationToken = default(CancellationToken))
+        {
+	        cancellationToken.ThrowIfCancellationRequested();
+			if (!HasValue)
+            {
+#if EF6
+                if (Query.Context.IsInMemoryEffortQueryContext())
+                {
+                    OwnerBatch.ExecuteQueries();
+                }
+                else
+                {
+                    await OwnerBatch.ExecuteQueriesAsync(cancellationToken).ConfigureAwait(false);
+                }
+#else
+                await OwnerBatch.ExecuteQueriesAsync(cancellationToken).ConfigureAwait(false);
+#endif
+			}
+
+			return _result;
+        }
+#endif
+
+                /// <summary>Sets the result of the query deferred.</summary>
+                /// <param name="reader">The reader returned from the query execution.</param>
         public override void SetResult(DbDataReader reader)
         {
             if (reader.GetType().FullName.Contains("Oracle"))
@@ -76,11 +108,15 @@ namespace Z.EntityFramework.Plus
             }
   
             var enumerator = GetQueryEnumerator<TResult>(reader);
+            using (enumerator)
+            {
+                enumerator.MoveNext();
+                _result = enumerator.Current;
 
+            }
+           
             // Enumerate on first item only
-            enumerator.MoveNext();
-            _result = enumerator.Current;
-
+          
             HasValue = true;
         }
 
@@ -116,6 +152,39 @@ namespace Z.EntityFramework.Plus
             HasValue = true;
         }
 
+#if NET45
+
+#if EF6
+        public override async Task GetResultDirectlyAsync(CancellationToken cancellationToken)
+#else
+        public override Task GetResultDirectlyAsync(CancellationToken cancellationToken)
+#endif
+        {
+		    cancellationToken.ThrowIfCancellationRequested();
+
+#if EF6
+			var query = (IQueryable<TResult>)Query;
+			var value = await ((IDbAsyncQueryProvider)query.Provider).ExecuteAsync<TResult>(query.Expression, cancellationToken).ConfigureAwait(false);
+	
+			_result = value;
+		    HasValue = true;
+#else
+		    GetResultDirectly();
+            return Task.FromResult(0);
+#endif
+
+	    }
+#endif
+
+
+        internal void GetResultDirectly(IQueryable<TResult> query)
+        {
+            var value = query.Provider.Execute<TResult>(query.Expression);
+
+            _result = value;
+            HasValue = true;
+        }
+
         /// <summary>
         /// Performs an implicit conversion from QueryFutureValue to TResult.
         /// </summary>
@@ -123,6 +192,11 @@ namespace Z.EntityFramework.Plus
         /// <returns>The result of forcing this lazy value.</returns>
         public static implicit operator TResult(QueryFutureValue<TResult> futureValue)
         {
+            if (futureValue == null)
+            {
+                return default(TResult);
+            }
+
             return futureValue.Value;
         }
     }

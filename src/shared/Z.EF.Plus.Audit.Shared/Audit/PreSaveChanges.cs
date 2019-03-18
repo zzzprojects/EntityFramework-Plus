@@ -46,6 +46,25 @@ namespace Z.EntityFramework.Plus
                 // Relationship
                 if (objectStateEntry.IsRelationship)
                 {
+                    var leftKey = GetRelationshipEntryKey0(objectStateEntry);
+                    var rightKey = GetRelationshipEntryKey1(objectStateEntry);
+
+                    var leftEntity = objectContext.ObjectStateManager.GetObjectStateEntry(leftKey);
+                    var rightEntity = objectContext.ObjectStateManager.GetObjectStateEntry(rightKey);
+
+                    var leftIsAudited = audit.CurrentOrDefaultConfiguration.IsAuditedEntity(leftEntity);
+                    var rightIsAudited = audit.CurrentOrDefaultConfiguration.IsAuditedEntity(rightEntity);
+
+                    if(audit.CurrentOrDefaultConfiguration.ExcludeRelationshipIfOneExcluded
+                        && (!leftIsAudited || !rightIsAudited))
+                    {
+                        continue;
+                    }
+                    else if(!leftIsAudited && !rightIsAudited)
+                    {
+                        continue;
+                    }
+
                     // Relationship Added
                     if (objectStateEntry.State == EntityState.Added
                         && !audit.CurrentOrDefaultConfiguration.IgnoreRelationshipAdded)

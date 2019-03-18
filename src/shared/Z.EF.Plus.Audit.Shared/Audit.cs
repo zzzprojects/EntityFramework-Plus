@@ -7,9 +7,16 @@
 
 using System;
 using System.Collections.Generic;
-#if EF5 || EF6
+#if EF5 
 using System.Data.Entity;
-
+using System.Data.Objects;
+using System.Reflection;
+using System.Linq.Expressions;
+#elif EF6
+using System.Data.Entity;
+using System.Data.Entity.Core.Objects;
+using System.Reflection;
+using System.Linq.Expressions;
 #elif EFCORE
 using Microsoft.EntityFrameworkCore;
 
@@ -47,8 +54,64 @@ namespace Z.EntityFramework.Plus
             }
         }
 
-        /// <summary>Gets or sets the entries.</summary>
-        /// <value>The entries.</value>
+#if EF5 || EF6
+
+        private static Func<ObjectStateEntry, object> RelationshipEntryKey0;
+        private static Func<ObjectStateEntry, object> RelationshipEntryKey1;
+
+        public static object GetRelationshipEntryKey0(ObjectStateEntry entry)
+        { 
+
+#if EF5 
+            var relationshipEntryType = typeof(ObjectStateEntry).Assembly.GetType("System.Data.Objects.RelationshipEntry");
+#else
+            var relationshipEntryType = typeof(ObjectStateEntry).Assembly.GetType("System.Data.Entity.Core.Objects.RelationshipEntry");
+#endif
+            if (RelationshipEntryKey0 == null)
+            {
+                // Parameter
+                var parameter = Expression.Parameter(typeof(ObjectStateEntry));
+
+                // Convert
+                var parameterConvert = Expression.Convert(parameter, relationshipEntryType);
+
+                var key0Property = entry.GetType().GetProperty("Key0", BindingFlags.NonPublic | BindingFlags.Instance);
+                var getKey0 = Expression.Property(parameterConvert, key0Property);
+
+                RelationshipEntryKey0 = Expression.Lambda<Func<ObjectStateEntry, object>>(getKey0, parameter).Compile();
+            }
+
+            return RelationshipEntryKey0(entry);
+        }
+
+        public static object GetRelationshipEntryKey1(ObjectStateEntry entry)
+        {
+#if EF5
+            var relationshipEntryType = typeof(ObjectStateEntry).Assembly.GetType("System.Data.Objects.RelationshipEntry");
+#else
+            var relationshipEntryType = typeof(ObjectStateEntry).Assembly.GetType("System.Data.Entity.Core.Objects.RelationshipEntry");
+#endif
+            if (RelationshipEntryKey1 == null)
+            {
+                // Parameter
+                var parameter = Expression.Parameter(typeof(ObjectStateEntry));
+
+                // Convert
+                var parameterConvert = Expression.Convert(parameter, relationshipEntryType);
+
+                var key0Property = entry.GetType().GetProperty("Key1", BindingFlags.NonPublic | BindingFlags.Instance);
+                var getKey0 = Expression.Property(parameterConvert, key0Property);
+
+                RelationshipEntryKey1 = Expression.Lambda<Func<ObjectStateEntry, object>>(getKey0, parameter).Compile();
+            }
+
+            return RelationshipEntryKey1(entry);
+        }
+#endif
+
+
+            /// <summary>Gets or sets the entries.</summary>
+            /// <value>The entries.</value>
         public List<AuditEntry> Entries { get; set; }
 
         /// <summary>Gets or sets the  created by username.</summary>

@@ -17,13 +17,35 @@ using Microsoft.EntityFrameworkCore;
 
 #endif
 
+#if EF6
+using AliasBaseQueryFilter = Z.EntityFramework.Plus.BaseQueryDbSetFilter;
+using AliasBaseQueryFilterQueryable = Z.EntityFramework.Plus.BaseQueryDbSetFilterQueryable;
+using AliasQueryFilterContext = Z.EntityFramework.Plus.QueryDbSetFilterContext;
+using AliasQueryFilterManager = Z.EntityFramework.Plus.QueryDbSetFilterManager;
+using AliasQueryFilterSet = Z.EntityFramework.Plus.QueryDbSetFilterSet;
+#else
+using AliasBaseQueryFilter = Z.EntityFramework.Plus.BaseQueryFilter;
+using AliasBaseQueryFilterQueryable = Z.EntityFramework.Plus.BaseQueryFilterQueryable;
+using AliasQueryFilterContext = Z.EntityFramework.Plus.QueryFilterContext;
+using AliasQueryFilterManager = Z.EntityFramework.Plus.QueryFilterManager;
+using AliasQueryFilterSet = Z.EntityFramework.Plus.QueryFilterSet;
+#endif
+
 namespace Z.EntityFramework.Plus
 {
+#if EF6
+    public static partial class QueryDbSetFilterExtensions
+#else
     public static partial class QueryFilterExtensions
+#endif
     {
+#if EF6
+        public static IQueryable<T> WithDbSetFiltered<T>(this DbContext context) where T : class
+#else
         public static IQueryable<T> SetFiltered<T>(this DbContext context) where T : class
+#endif
         {
-            var filterContext = QueryFilterManager.AddOrGetFilterContext(context);
+            var filterContext = AliasQueryFilterManager.AddOrGetFilterContext(context);
 
             if (filterContext.FilterSetByType.ContainsKey(typeof(T)))
             {

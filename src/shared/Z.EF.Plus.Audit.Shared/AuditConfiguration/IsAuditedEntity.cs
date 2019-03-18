@@ -29,7 +29,7 @@ namespace Z.EntityFramework.Plus
         public bool IsAuditedEntity(EntityEntry entry)
 #endif
         {
-            if (ExcludeIncludeEntityPredicates.Count == 0)
+            if (ExcludeIncludeEntityPredicates.Count == 0 || entry.Entity == null)
             {
                 return true;
             }

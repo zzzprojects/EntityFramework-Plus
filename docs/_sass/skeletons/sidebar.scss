@@ -1,0 +1,43 @@
+.section-nav {
+    @include background-toright-dark;
+
+    border-right: 3px solid $color-z;
+    box-shadow: $box-shadow-right;
+    padding: 0;
+
+    h3 {
+        padding: 0 10px;
+    }
+}
+.section-nav .card {
+    background: transparent;
+    border: 0;
+    color: #fff;
+}
+
+.section-nav .card .card-body {
+    padding-left: 0;
+    padding-right: 0;
+}
+.section-nav .card {
+    ul {
+        padding: 0;
+        li {
+            padding: 5px 20px;
+            &:hover {
+                background-color: $color-z;
+                a {
+                    color: white;
+                }
+            }
+            a {
+                display: block;
+                color: rgba(255, 255, 255, 0.5);
+                &.active {
+                    color: rgba(255, 255, 255, 1);
+                    font-weight: 700;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,22 @@
+.site-header.page {
+	margin-top: 100px;
+}
+.site-header .site-header-inner {
+	background-color: white;
+	box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.3);
+	position:fixed;
+	top:0;
+	right:0;
+	left:0;
+	z-index: 1030;
+}
+@media (max-width: 991px) {
+	.site-header.post  {
+		height: 80px;
+	}
+}
+@media (min-width: 992px) {
+	.site-header.post  {
+		height: 140px;
+	}
+}

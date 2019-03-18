@@ -22,9 +22,24 @@ namespace Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel
     /// </summary>
     public class SchemaEntityType
     {
-        /// <summary>Gets or sets the name of the index properties.</summary>
-        /// <value>The name of the index properties.</value>
-        [XmlIgnore]
+	    /// <summary>Gets or sets a value indicating whether this object is tpc.</summary>
+	    /// <value>true if this object is tpc, false if not.</value>
+	    [XmlIgnore]
+	    public bool IsTPC { get; set; }
+
+	    /// <summary>Gets or sets a value indicating whether this object is tpt.</summary>
+	    /// <value>true if this object is tpt, false if not.</value>
+	    [XmlIgnore]
+	    public bool IsTPT { get; set; }
+
+	    /// <summary>Gets or sets a value indicating whether this object is tph.</summary>
+	    /// <value>true if this object is tph, false if not.</value>
+	    [XmlIgnore]
+	    public bool IsTPH { get; set; }
+
+		/// <summary>Gets or sets the name of the index properties.</summary>
+		/// <value>The name of the index properties.</value>
+		[XmlIgnore]
         internal Dictionary<string, Property> Index_Properties_Name { get; set; }
 
         /// <summary>Gets or sets the entity type mapping.</summary>
@@ -55,15 +70,20 @@ namespace Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel
         [XmlAttribute("Name")]
         public string Name { get; set; }
 
-        /// <summary>
-        ///     Please visit the
-        ///     <see href="http://msdn.microsoft.com/en-us/library/vstudio/bb399292(v=vs.100).aspx">
-        ///         Microsoft documentation
-        ///     </see>
-        ///     for more detail.
-        /// </summary>
-        /// <value>The key.</value>
-        [XmlElement("Key")]
+	    /// <summary>Gets or sets the type of the base.</summary>
+	    /// <value>The type of the base.</value>
+	    [XmlIgnore]
+	    public SchemaEntityType BaseType { get; set; }
+
+		/// <summary>
+		///     Please visit the
+		///     <see href="http://msdn.microsoft.com/en-us/library/vstudio/bb399292(v=vs.100).aspx">
+		///         Microsoft documentation
+		///     </see>
+		///     for more detail.
+		/// </summary>
+		/// <value>The key.</value>
+		[XmlElement("Key")]
         public EntityKeyElement Key { get; set; }
 
         /// <summary>
@@ -77,8 +97,19 @@ namespace Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel
         [XmlElement("Property")]
         public List<Property> Properties { get; set; }
 
-#endregion
-    }
+	    /// <summary>
+	    ///     Please visit the
+	    ///     <see href="http://msdn.microsoft.com/en-us/library/vstudio/bb399292(v=vs.100).aspx">
+	    ///         Microsoft documentation
+	    ///     </see>
+	    ///     for more detail.
+	    /// </summary>
+	    /// <value>The name of the base type.</value>
+	    [XmlAttribute("BaseType")]
+	    public string BaseTypeName { get; set; }
+
+		#endregion
+	}
 }
 
 #endif

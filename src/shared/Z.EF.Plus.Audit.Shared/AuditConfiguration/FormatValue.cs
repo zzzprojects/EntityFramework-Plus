@@ -36,7 +36,7 @@ namespace Z.EntityFramework.Plus
         public string FormatValue(object entity, string propertyName, object currentValue)
 #endif
         {
-            if (EntityValueFormatters.Count > 0)
+            if (entity != null && EntityValueFormatters.Count > 0)
             {
                 var type = entity.GetType();
                 var key = string.Concat(type.FullName, ";", propertyName);

@@ -38,8 +38,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)EF5_EF6\ObjectContext\CreateStoreCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EF5_EF6\ObjectContext\GetEntitySet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EF5_EF6\Object\Object.GetObjectQuery.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF6\DbContext\IsInMemoryEffortQueryContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF6\IQueryable`\IsInMemoryEffortQueryContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EF6\ObjectContext\GetDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EF6\ObjectContext\GetInterceptionContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF6\ObjectContext\IsInMemoryEffortQueryContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EF6\ObjectQuery\GetCommandTextAndParameters.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EFCore\CreateEntity\CreateEntityCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EFCore\CreateEntity\CreateEntityConnection.cs" />
@@ -64,7 +67,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)EF\IQueryable`\IQueryable.OrderByDescending.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EF\IQueryable`\IQueryable.ThenBy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EF\IQueryable`\IQueryable.ThenByDescending.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF\Object\Object.NullIfDbNull.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EF\Type\Type.GetDbSetElementType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EF\Type\Type.GetField.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\List`\List`.GetVersion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LazyAsyncEnumerator\LazyAsyncEnumerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LinqExpressionExtensions\LambdaExpression\LambdaExpression.GetPropertyOrFieldAccessor.cs" />
@@ -72,14 +77,19 @@
     <Compile Include="$(MSBuildThisFileDirectory)LinqExpressionExtensions\PropertyOrFieldAccessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LinqExpressionExtensions\_Internal\ExpressionExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\DbContext.GetModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Extensions\Dictionary.GetValueOrNull.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Extensions\Object.To.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Extensions\String\String.DeserializeXml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Extensions\String\String.SubstringLastIndexOf.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Extensions\XElement\XElement.RemoveAllNamespaces.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Infrastructure\DbModelPlus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Mapping\ComplexPropertyMapping.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Mapping\ConditionPropertyMapping.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Mapping\EntityContainerMapping.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Mapping\EntitySetMapping.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Mapping\EntityTypeMapping.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Mapping\MappingFragment.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Mapping\ScalarAccessorMapping.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Mapping\ScalarPropertyMapping.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Mapping\SchemaMapping.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Model\Model.BuildMapping.cs" />
@@ -101,6 +111,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Model\SchemaObjectModel\Schema.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\SchemaObjectModel\SchemaEntityType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\SchemaObjectModel\SchemaEntityType_Generic.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\SchemaObjectModel\SchemaEnumMember.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\SchemaObjectModel\SchemaEnumType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Utility\CreateGetFunc.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Utility\CreateSetFunc.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Visitor\ExpressionVisitor.cs" />
   </ItemGroup>
 </Project>

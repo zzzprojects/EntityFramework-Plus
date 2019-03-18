@@ -5,7 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
-#if FULL
+#if FULL || QUERY_FUTURE
 #if EFCORE
 using System.Reflection;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -17,8 +17,13 @@ namespace Z.EntityFramework.Plus
     {
         internal static StateManager GetStateManager(this ChangeTracker changeTracker)
         {
+#if NETSTANDARD2_0
+            var _stateManagerField = changeTracker.GetType().GetProperty("StateManager", BindingFlags.NonPublic | BindingFlags.Instance);
+            return (StateManager)_stateManagerField.GetValue(changeTracker);
+#else
             var _stateManagerField = changeTracker.GetType().GetField("_stateManager", BindingFlags.NonPublic | BindingFlags.Instance);
             return (StateManager)_stateManagerField.GetValue(changeTracker);
+#endif
         }
     }
 }

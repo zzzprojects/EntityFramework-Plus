@@ -202,6 +202,7 @@ namespace Z.EntityFramework.Plus
         {
             // GET DbSet<> properties
             var setProperties = context.GetDbSetProperties();
+            List<PropertyInfo> setPropertyToIgnore = new List<PropertyInfo>();
 
             foreach (var setProperty in setProperties)
             {
@@ -210,20 +211,48 @@ namespace Z.EntityFramework.Plus
 
                 // DbSet<>.InternalQuery
                 var internalQueryProperty = typeof (DbQuery<>).MakeGenericType(dbSet.ElementType).GetProperty("InternalQuery", BindingFlags.NonPublic | BindingFlags.Instance);
+                if (internalQueryProperty == null)
+                {
+                    // May happen on filter override (FilterInterceptor and DbSetFilter)
+                    continue;
+                }
+
                 var internalQuery = internalQueryProperty.GetValue(dbSet, null);
+                if (internalQuery == null)
+                {
+                    continue;
+                }
 
                 // DbSet<>.InternalQuery.EntitySet
                 var entitySetProperty = internalQuery.GetType().GetProperty("EntitySet", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                var entitySet = (EntitySet) entitySetProperty.GetValue(internalQuery, null);
+                if(entitySetProperty == null)
+                {
+                    // May happen on filter override (FilterInterceptor and DbSetFilter)
+                    continue;
+                }
+
+                EntitySet entitySet;
+
+                try
+                {
+                    entitySet = (EntitySet)entitySetProperty.GetValue(internalQuery, null);
+                }
+                catch (Exception e)
+                {
+                    // may happen if the entity set is ignored
+                    setPropertyToIgnore.Add(setProperty);
+                    continue;
+                }
+
 
                 var elementType = dbSet.ElementType;
-                var entityTypebase = entitySet.ElementType.FullName;
+                var entityTypeBase = entitySet.ElementType.FullName;
 
                 // TypeByEntitySetBase
                 {
-                    if (!TypeByEntitySetBase.ContainsKey(entityTypebase))
+                    if (!TypeByEntitySetBase.ContainsKey(entityTypeBase))
                     {
-                        TypeByEntitySetBase.Add(entityTypebase, elementType);
+                        TypeByEntitySetBase.Add(entityTypeBase, elementType);
                     }
                 }
 
@@ -246,12 +275,12 @@ namespace Z.EntityFramework.Plus
                         baseType = baseType.BaseType;
                     }
 
-                    // ENSURE all discting
+                    // ENSURE all distinct
                     types = types.Distinct().ToList();
 
-                    if (!TypeByDbSet.ContainsKey(entityTypebase))
+                    if (!TypeByDbSet.ContainsKey(entityTypeBase))
                     {
-                        TypeByDbSet.Add(entityTypebase, types);
+                        TypeByDbSet.Add(entityTypeBase, types);
                     }
                 }
             }
@@ -262,6 +291,11 @@ namespace Z.EntityFramework.Plus
                 // ADD DbSet
                 foreach (var dbSetProperty in setProperties)
                 {
+                    if (setPropertyToIgnore.Contains(dbSetProperty))
+                    {
+                        continue;
+                    }
+
                     FilterSets.Add(new QueryFilterSet(context, dbSetProperty));
                 }
 
@@ -291,68 +325,94 @@ namespace Z.EntityFramework.Plus
                     }
                 }
             }
-           
+
+
+            var entityTypes = context.GetObjectContext().MetadataWorkspace.GetItemCollection(DataSpace.OSpace)
+                .Where(x => x.BuiltInTypeKind == BuiltInTypeKind.EntityType);
+
+            foreach (var entityType in entityTypes)
+            {
+                var typeField = entityType.GetType().GetField("_type", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+                if (typeField == null)
+                {
+                    continue;
+                }
+
+                var type = (Type)typeField.GetValue(entityType);
+
+                if (type != null)
+                {
+                    TryRegisterType(context, type);
+                }
+            }
+
             foreach (var type in QueryFilterManager.Types)
             {
-                var setMethod = context.GetType().GetMethod("Set", new Type[0]);
-                var dbSet = setMethod.MakeGenericMethod(type).Invoke(context, null);
+                TryRegisterType(context, type);
+            }
+        }
 
-                Type elementType = type;
+        private void TryRegisterType(DbContext context, Type type)
+        {
+            var setMethod = context.GetType().GetMethod("Set", new Type[0]);
+            var dbSet = setMethod.MakeGenericMethod(type).Invoke(context, null);
 
-                // DbSet<>.InternalQuery
-                var internalQueryProperty = typeof(DbQuery<>).MakeGenericType(elementType).GetProperty("InternalQuery", BindingFlags.NonPublic | BindingFlags.Instance);
-                var internalQuery = internalQueryProperty.GetValue(dbSet, null);
+            Type elementType = type;
 
-                var entityTypebase = type.FullName;
+            // DbSet<>.InternalQuery
+            var internalQueryProperty = typeof(DbQuery<>).MakeGenericType(elementType).GetProperty("InternalQuery", BindingFlags.NonPublic | BindingFlags.Instance);
+            var internalQuery = internalQueryProperty.GetValue(dbSet, null);
 
-                try
+            var entityTypebase = type.FullName;
+
+            try
+            {
+                // DbSet<>.InternalQuery.EntitySet
+                var entitySetProperty = internalQuery.GetType().GetProperty("EntitySet", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                var entitySet = (EntitySet)entitySetProperty.GetValue(internalQuery, null);
+
+                entityTypebase = entitySet.ElementType.FullName;
+            }
+            catch
+            {
+                // Silence catch, it's k... it doesn't always exist!
+
+            }
+
+            // TypeByEntitySetBase
+            {
+                if (!TypeByEntitySetBase.ContainsKey(entityTypebase))
                 {
-                    // DbSet<>.InternalQuery.EntitySet
-                    var entitySetProperty = internalQuery.GetType().GetProperty("EntitySet", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                    var entitySet = (EntitySet)entitySetProperty.GetValue(internalQuery, null);
-
-                    entityTypebase = entitySet.ElementType.FullName;
+                    TypeByEntitySetBase.Add(entityTypebase, elementType);
                 }
-                catch
+            }
+
+            // TypeByDbSet
+            {
+                var baseType = elementType;
+
+                var types = new List<Type>();
+                while (baseType != null && baseType != typeof(object))
                 {
-                    // Silence catch, it's k... it doesn't always exist!
-                   
+                    types.Add(baseType);
+
+                    // LINK interface
+                    var interfaces = baseType.GetInterfaces();
+                    foreach (var @interface in interfaces)
+                    {
+                        types.Add(@interface);
+                    }
+
+                    baseType = baseType.BaseType;
                 }
 
-                // TypeByEntitySetBase
+                // ENSURE all discting
+                types = types.Distinct().ToList();
+
+                if (!TypeByDbSet.ContainsKey(entityTypebase))
                 {
-                    if (!TypeByEntitySetBase.ContainsKey(entityTypebase))
-                    {
-                        TypeByEntitySetBase.Add(entityTypebase, elementType);
-                    }
-                }
-
-                // TypeByDbSet
-                {
-                    var baseType = elementType;
-
-                    var types = new List<Type>();
-                    while (baseType != null && baseType != typeof(object))
-                    {
-                        types.Add(baseType);
-
-                        // LINK interface
-                        var interfaces = baseType.GetInterfaces();
-                        foreach (var @interface in interfaces)
-                        {
-                            types.Add(@interface);
-                        }
-
-                        baseType = baseType.BaseType;
-                    }
-
-                    // ENSURE all discting
-                    types = types.Distinct().ToList();
-
-                    if (!TypeByDbSet.ContainsKey(entityTypebase))
-                    {
-                        TypeByDbSet.Add(entityTypebase, types);
-                    }
+                    TypeByDbSet.Add(entityTypebase, types);
                 }
             }
         }

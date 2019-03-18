@@ -52,7 +52,7 @@ namespace Z.EntityFramework.Plus
 #endif
         {
             var values = objectStateEntry.CurrentValues;
-
+          
             var leftKeys = (EntityKey) values.GetValue(0);
             var rightKeys = (EntityKey) values.GetValue(1);
 

@@ -1,0 +1,21 @@
+{% if page.path contains "tutorials.md" %}
+	{% assign is_context_home = true; %}
+	{% assign is_context_home_css_active = "active"; %}
+{% elsif page.path contains "/tutorials/" %}
+	{% assign is_context_tutorials = true; %}
+	{% assign is_context_tutorials_css_active = "active"; %}
+{% elsif page.path contains "/api/" %}
+	{% assign is_context_api = true; %}
+	{% assign is_context_api_css_active = "active"; %}
+{% elsif page.path contains "/faq/" %}
+	{% assign is_context_faq = true; %}
+	{% assign is_context_faq_css_active = "active"; %}
+{% elsif page.path contains "/problems/" %}
+	{% assign is_context_problems = true; %}
+	{% assign is_context_problems_css_active = "active"; %}
+{% endif %}
+{% for num in (0..site.data.meta.size) %}	
+	{% if site.data.meta[num].permalink == page.permalink %}
+		{% assign meta_index = num %}
+	{% endif %}
+{% endfor %}

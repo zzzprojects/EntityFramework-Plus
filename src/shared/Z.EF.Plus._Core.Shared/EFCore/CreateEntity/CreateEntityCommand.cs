@@ -98,7 +98,7 @@ namespace Z.EntityFramework.Plus
 
         protected override DbDataReader ExecuteDbDataReader(CommandBehavior behavior)
         {
-            return OriginalDataReader;
+            return OriginalDataReader == null || OriginalDataReader.IsClosed ? OriginalCommand.ExecuteReader(behavior) : OriginalDataReader;
         }
     }
 }

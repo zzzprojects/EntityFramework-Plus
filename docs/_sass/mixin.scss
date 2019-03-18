@@ -1,0 +1,42 @@
+@mixin background-toright-dark {
+    background: #222;
+    background: linear-gradient(to right, #333, #292929);
+}
+
+@mixin background-black { 
+	background: #222;
+	background: -moz-radial-gradient(circle, #333, #292929);
+    background: -webkit-radial-gradient(circle, #333, #292929);
+    background: -ms-radial-gradient(circle, #333, #292929);
+    background: -o-radial-gradient(circle, #333, #292929);
+    background: radial-gradient(circle, #333, #292929);
+}
+
+@mixin background-black-light { 
+	background: #333;
+}
+
+@mixin background-red { 
+	background: rgb(204, 0, 0);
+	background: -webkit-radial-gradient(circle, rgb(204, 0, 0), rgb(170, 0, 0), rgb(154, 0, 0));
+	background: -o-radial-gradient(circle, rgb(204, 0, 0), rgb(170, 0, 0), rgb(154, 0, 0));
+	background: -moz-radial-gradient(circle, rgb(204, 0, 0), rgb(170, 0, 0), rgb(154, 0, 0));
+	background: radial-gradient(circle, rgb(204, 0, 0), rgb(170, 0, 0), rgb(154, 0, 0));
+}
+
+@mixin background-light {
+	background: #fff;
+	background: -webkit-radial-gradient(circle, #fff, #fff, #ccc);
+	background: -o-radial-gradient(circle, #fff, #fff, #ccc);
+	background: -moz-radial-gradient(circle, #fff, #fff, #ccc);
+	background: radial-gradient(circle, #fff, #fff, #ccc);
+}
+
+	
+@mixin transition_ease_slow { 
+    -webkit-transition: all 0.3s linear;
+    -moz-transition: all 0.3s ease;
+    -ms-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+}

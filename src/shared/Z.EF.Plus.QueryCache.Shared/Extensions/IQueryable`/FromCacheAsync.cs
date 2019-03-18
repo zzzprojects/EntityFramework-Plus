@@ -40,16 +40,23 @@ namespace Z.EntityFramework.Plus
     /// <returns>The result of the query.</returns>
         public static Task<IEnumerable<T>> FromCacheAsync<T>(this IQueryable<T> query, CacheItemPolicy policy, params string[] tags) where T : class
         {
+            if (!QueryCacheManager.IsEnabled)
+            {
+                return Task.Run(() => {
+                    return (IEnumerable<T>)query.AsNoTracking().ToList();
+                });
+            }
+
             var key = QueryCacheManager.GetCacheKey(query, tags);
 
             var result = Task.Run(() =>
             {
-                var item = QueryCacheManager.Cache.Get(key);
+                var item = QueryCacheManager.Get<List<T>>(key);
 
                 if (item == null)
                 {
                     item = query.AsNoTracking().ToList();
-                    item = QueryCacheManager.Cache.AddOrGetExisting(key, item, policy) ?? item;
+                    item = QueryCacheManager.AddOrGetExisting(key, item, policy) ?? item;
                     QueryCacheManager.AddCacheTag(key, tags);
                 }
 
@@ -73,16 +80,23 @@ namespace Z.EntityFramework.Plus
         /// <returns>The result of the query.</returns>
         public static Task<IEnumerable<T>> FromCacheAsync<T>(this IQueryable<T> query, DateTimeOffset absoluteExpiration, params string[] tags) where T : class
         {
+            if (!QueryCacheManager.IsEnabled)
+            {
+                return Task.Run(() => {
+                    return (IEnumerable<T>)query.AsNoTracking().ToList();
+                });
+            }
+
             var key = QueryCacheManager.GetCacheKey(query, tags);
 
             var result = Task.Run(() =>
             {
-                var item = QueryCacheManager.Cache.Get(key);
+                var item = QueryCacheManager.Get<List<T>>(key);
 
                 if (item == null)
                 {
                     item = query.AsNoTracking().ToList();
-                    item = QueryCacheManager.Cache.AddOrGetExisting(key, item, absoluteExpiration) ?? item;
+                    item = QueryCacheManager.AddOrGetExisting(key, item, absoluteExpiration) ?? item;
                     QueryCacheManager.AddCacheTag(key, tags);
                 }
 
@@ -123,14 +137,19 @@ namespace Z.EntityFramework.Plus
         /// <returns>The result of the query.</returns>
         public static async Task<IEnumerable<T>> FromCacheAsync<T>(this IQueryable<T> query, CacheItemPolicy policy, CancellationToken cancellationToken = default(CancellationToken), params string[] tags) where T : class
         {
+            if (!QueryCacheManager.IsEnabled)
+            {
+                return await query.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
+            }
+
             var key = QueryCacheManager.GetCacheKey(query, tags);
 
-            var item = QueryCacheManager.Cache.Get(key);
+            var item = QueryCacheManager.Get<List<T>>(key);
 
             if (item == null)
             {
                 item = await query.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
-                item = QueryCacheManager.Cache.AddOrGetExisting(key, item, policy) ?? item;
+                item = QueryCacheManager.AddOrGetExisting(key, item, policy) ?? item;
                 QueryCacheManager.AddCacheTag(key, tags);
             }
 
@@ -169,14 +188,19 @@ namespace Z.EntityFramework.Plus
         /// <returns>The result of the query.</returns>
         public static async Task<IEnumerable<T>> FromCacheAsync<T>(this IQueryable<T> query, DateTimeOffset absoluteExpiration, CancellationToken cancellationToken = default(CancellationToken), params string[] tags) where T : class
         {
+            if (!QueryCacheManager.IsEnabled)
+            {
+                return await query.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
+            }
+
             var key = QueryCacheManager.GetCacheKey(query, tags);
 
-            var item = QueryCacheManager.Cache.Get(key);
+            var item = QueryCacheManager.Get<List<T>>(key);
 
             if (item == null)
             {
                 item = await query.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
-                item = QueryCacheManager.Cache.AddOrGetExisting(key, item, absoluteExpiration) ?? item;
+                item = QueryCacheManager.AddOrGetExisting(key, item, absoluteExpiration) ?? item;
                 QueryCacheManager.AddCacheTag(key, tags);
             }
 
@@ -248,6 +272,11 @@ namespace Z.EntityFramework.Plus
         /// <returns>The result of the query.</returns>
         public static async Task<IEnumerable<T>> FromCacheAsync<T>(this IQueryable<T> query, MemoryCacheEntryOptions options, CancellationToken cancellationToken = default(CancellationToken), params string[] tags) where T : class
         {
+            if (!QueryCacheManager.IsEnabled)
+            {
+                return await query.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
+            }
+
             var key = QueryCacheManager.GetCacheKey(query, tags);
 
             object item;
@@ -257,6 +286,8 @@ namespace Z.EntityFramework.Plus
                 item = QueryCacheManager.Cache.Set(key, item, options);
                 QueryCacheManager.AddCacheTag(key, tags);
             }
+
+            item = item.IfDbNullThenNull();
 
             return (IEnumerable<T>) item;
         }

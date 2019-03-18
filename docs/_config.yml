@@ -1,0 +1,21 @@
+port: 4004
+highlighter: rouge
+gems:
+  - jekyll-sitemap
+ga: "UA-55584370-6"
+
+includes:
+- _includes_custom
+
+defaults:
+  -
+    scope:
+      path: ""
+    values:
+      layout: "default"
+  -
+    scope:
+      path: ""
+      type: "pages"
+    values:
+      last_modified_at: "2018-04-11"

@@ -16,7 +16,7 @@ namespace Z.EntityFramework.Plus
         /// <typeparam name="T">The type of elements of the query.</typeparam>
         /// <param name="query">The filtered query from which the original query should be retrieved.</param>
         /// <returns>The orginal query before the context was filtered.</returns>
-        public static IQueryable<T> AsNoFilter<T>(this IDbSet<T> query) where T : class
+        public static IQueryable<T> AsNoFilter<T>(this IQueryable<T> query) where T : class
         {
             return QueryFilterManager.HookFilter(query, QueryFilterManager.DisableAllFilter);
         }

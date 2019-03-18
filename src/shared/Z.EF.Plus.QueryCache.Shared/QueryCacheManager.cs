@@ -19,6 +19,7 @@ using System.Data.SqlClient;
 
 #elif EF6
 using System.Data.Entity.Core.EntityClient;
+using System.Data.Entity.Infrastructure;
 using System.Runtime.Caching;
 
 #elif EFCORE
@@ -52,6 +53,46 @@ namespace Z.EntityFramework.Plus
         /// <summary>Gets or sets the cache to use for QueryCacheExtensions extension methods.</summary>
         /// <value>The cache to use for QueryCacheExtensions extension methods.</value>
         public static ObjectCache Cache { get; set; }
+
+        internal static T AddOrGetExisting<T>(string key, T item, CacheItemPolicy policy)
+        {
+            return (T)QueryCacheManager.Cache.AddOrGetExisting(key, item, policy);
+        }
+
+        internal static T AddOrGetExisting<T>(string key, T item, DateTimeOffset absoluteExpiration)
+        {
+            //Mettre le if ici, pour la gestion de Redis vs Memory Cache
+            return (T)QueryCacheManager.Cache.AddOrGetExisting(key, item, absoluteExpiration);
+        }
+
+        internal static object AddOrGetExistingDeferred<T>(string key, object item, CacheItemPolicy policy)
+        {
+            //Mettre le if ici, pour la gestion de Redis vs Memory Cache
+            return QueryCacheManager.Cache.AddOrGetExisting(key, item ?? DBNull.Value, policy) ?? item;
+        }
+
+        internal static object AddOrGetExistingDeferred<T>(string key, object item, DateTimeOffset absoluteExpiration)
+        {
+            //Mettre le if ici, pour la gestion de Redis vs Memory Cache
+            return QueryCacheManager.Cache.AddOrGetExisting(key, item ?? DBNull.Value, absoluteExpiration);
+        }
+
+        internal static object Get<T>(string key)
+        {
+            return Cache is RedisObjectCache redisCache ? (T)redisCache.Get(key, typeof(T)) : (T)QueryCacheManager.Cache.Get(key);
+        }
+
+        /// <summary>Gets a deferred.</summary>
+        /// <param name="key">The key.</param>
+        /// <returns>The deferred.</returns>
+        internal static object GetDeferred(string key)
+        {
+            var item = QueryCacheManager.Cache.Get(key);
+
+            item = item?.IfDbNullThenNull();
+
+            return item;
+        }
 
         /// <summary>The default cache item policy.</summary>
         private static CacheItemPolicy _defaultCacheItemPolicy;
@@ -92,8 +133,8 @@ namespace Z.EntityFramework.Plus
         }
 
 #elif EFCORE
-    /// <summary>Gets or sets the cache to use for the QueryCacheExtensions extension methods.</summary>
-    /// <value>The cache to use for the QueryCacheExtensions extension methods.</value>
+        /// <summary>Gets or sets the cache to use for the QueryCacheExtensions extension methods.</summary>
+        /// <value>The cache to use for the QueryCacheExtensions extension methods.</value>
         public static IMemoryCache Cache { get; set; }
 
         /// <summary>The default memory cache entry options.</summary>
@@ -142,6 +183,12 @@ namespace Z.EntityFramework.Plus
         /// <summary>Gets or sets the cache key factory.</summary>
         /// <value>The cache key factory.</value>
         public static Func<IQueryable, string[], string> CacheKeyFactory { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether the Query Cache is enabled
+        /// </summary>
+        /// <value>true if the Query Cache is enabled.</value>
+        public static bool IsEnabled { get; set; } = true;
 
         /// <summary>
         ///     Gets or sets a value indicating whether the connection in cache key should be included.
@@ -360,6 +407,160 @@ namespace Z.EntityFramework.Plus
 
             return sb.ToString();
         }
+
+#if EF6
+        public static string GetCacheKey<T>(DbSqlQuery<T> query, string[] tags) where T : class
+        {
+            var sb = new StringBuilder();
+
+            var queryCacheUniqueKeyMethod = query.GetType().GetMethod("GetQueryCacheUniqueKey", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+            if (queryCacheUniqueKeyMethod != null)
+            {
+                var queryCacheUniqueKey = (string)queryCacheUniqueKeyMethod.Invoke(query, new object[] { tags });
+
+                if (!string.IsNullOrEmpty(queryCacheUniqueKey))
+                {
+                    return queryCacheUniqueKey;
+                }
+            }
+
+            if (IsCommandInfoOptionalForCacheKey && !UseFirstTagAsCacheKey && !UseTagsAsCacheKey)
+            {
+                throw new Exception(ExceptionMessage.QueryCache_IsCommandInfoOptionalForCacheKey_Invalid);
+            }
+
+            sb.AppendLine(CachePrefix);
+            sb.AppendLine(query.GetType().Name + ";");
+
+            var internalQueryProperty = query.GetType().BaseType.GetProperty("InternalQuery", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var internalQuery = internalQueryProperty.GetValue(query, null);
+
+            var sqlProperty = internalQuery.GetType().GetProperty("Sql", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var parametersProperty = internalQuery.GetType().GetProperty("Parameters", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+            var sql = (string)sqlProperty.GetValue(internalQuery, null);
+            var parameters = (object[])parametersProperty.GetValue(internalQuery, null);
+
+            sb.Append(sql);
+            foreach (DbParameter parameter in parameters)
+            {
+                sb.Append(parameter.ParameterName);
+                sb.Append(";");
+                sb.Append(parameter.Value);
+                sb.AppendLine(";");
+            }
+
+            //var objectQuery = IsCommandInfoOptionalForCacheKey ? query.GetObjectQuerySafe() : query.GetObjectQuery();
+
+            //if (IncludeConnectionInCacheKey && objectQuery != null)
+            //{
+            //    sb.AppendLine(GetConnectionStringForCacheKey(query));
+            //}
+
+            if (UseFirstTagAsCacheKey)
+            {
+                if (tags == null || tags.Length == 0 || string.IsNullOrEmpty(tags[0]))
+                {
+                    throw new Exception(ExceptionMessage.QueryCache_FirstTagNullOrEmpty);
+                }
+
+                sb.AppendLine(tags[0]);
+                return sb.ToString();
+            }
+
+            if (UseTagsAsCacheKey)
+            {
+                if (tags == null || tags.Length == 0 || tags.Any(string.IsNullOrEmpty))
+                {
+                    throw new Exception(ExceptionMessage.QueryCache_UseTagsNullOrEmpty);
+                }
+
+                sb.AppendLine(string.Join(";", tags));
+                return sb.ToString();
+            }
+
+            sb.AppendLine(string.Join(";", tags));
+
+            return sb.ToString();
+        }
+
+        public static string GetCacheKey<T>(DbRawSqlQuery<T> query, string[] tags) where T : class
+        {
+            var sb = new StringBuilder();
+
+            var queryCacheUniqueKeyMethod = query.GetType().GetMethod("GetQueryCacheUniqueKey", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+            if (queryCacheUniqueKeyMethod != null)
+            {
+                var queryCacheUniqueKey = (string)queryCacheUniqueKeyMethod.Invoke(query, new object[] { tags });
+
+                if (!string.IsNullOrEmpty(queryCacheUniqueKey))
+                {
+                    return queryCacheUniqueKey;
+                }
+            }
+
+            if (IsCommandInfoOptionalForCacheKey && !UseFirstTagAsCacheKey && !UseTagsAsCacheKey)
+            {
+                throw new Exception(ExceptionMessage.QueryCache_IsCommandInfoOptionalForCacheKey_Invalid);
+            }
+
+            sb.AppendLine(CachePrefix);
+            sb.AppendLine(query.GetType().Name + ";");
+
+            var internalQueryProperty = query.GetType().GetProperty("InternalQuery", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var internalQuery = internalQueryProperty.GetValue(query, null);
+
+            var sqlProperty = internalQuery.GetType().GetProperty("Sql", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var parametersProperty = internalQuery.GetType().GetProperty("Parameters", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+            var sql = (string)sqlProperty.GetValue(internalQuery, null);
+            var parameters = (object[])parametersProperty.GetValue(internalQuery, null);
+
+            sb.Append(sql);
+            foreach (DbParameter parameter in parameters)
+            {
+                sb.Append(parameter.ParameterName);
+                sb.Append(";");
+                sb.Append(parameter.Value);
+                sb.AppendLine(";");
+            }
+
+            //var objectQuery = IsCommandInfoOptionalForCacheKey ? query.GetObjectQuerySafe() : query.GetObjectQuery();
+
+            //if (IncludeConnectionInCacheKey && objectQuery != null)
+            //{
+            //    sb.AppendLine(GetConnectionStringForCacheKey(query));
+            //}
+
+            if (UseFirstTagAsCacheKey)
+            {
+                if (tags == null || tags.Length == 0 || string.IsNullOrEmpty(tags[0]))
+                {
+                    throw new Exception(ExceptionMessage.QueryCache_FirstTagNullOrEmpty);
+                }
+
+                sb.AppendLine(tags[0]);
+                return sb.ToString();
+            }
+
+            if (UseTagsAsCacheKey)
+            {
+                if (tags == null || tags.Length == 0 || tags.Any(string.IsNullOrEmpty))
+                {
+                    throw new Exception(ExceptionMessage.QueryCache_UseTagsNullOrEmpty);
+                }
+
+                sb.AppendLine(string.Join(";", tags));
+                return sb.ToString();
+            }
+
+            sb.AppendLine(string.Join(";", tags));
+
+            return sb.ToString();
+        }
+#endif
 
         public static string GetConnectionStringForCacheKey(IQueryable query)
         {

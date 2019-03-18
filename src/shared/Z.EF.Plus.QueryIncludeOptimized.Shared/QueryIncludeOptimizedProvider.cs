@@ -168,9 +168,10 @@ namespace Z.EntityFramework.Plus
             // RESOLE parent queries using .FutureValue();
 #if EF5 || EF6
             var objectQuery = CurrentQueryable.OriginalQueryable.GetObjectQuery();
-         
-            // GET provider
-            var objectQueryProviderField = typeof (ObjectQuery).GetProperty("ObjectQueryProvider", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+            // GET provider 
+            //  because IQueryable.Provider call : ObjectQueryProvider and now that work for EF5
+            var objectQueryProviderField = typeof (ObjectQuery).GetProperty("System.Linq.IQueryable.Provider", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             var provider = (IQueryProvider) objectQueryProviderField.GetValue(objectQuery, null);
 
             // CREATE query from the expression
@@ -194,7 +195,7 @@ namespace Z.EntityFramework.Plus
                     // MODIFY query if necessary
 #if EF5 || EF6
                     var objectContext = CurrentQueryable.OriginalQueryable.GetObjectQuery().Context;
-                    var keyMembers = ((dynamic)objectContext).CreateObjectSet<T>().EntitySet.ElementType.KeyMembers;
+                    var keyMembers = objectContext.GetEntitySet<T>().ElementType.KeyMembers;
                     var keyNames = ((IEnumerable<EdmMember>)keyMembers).Select(x => x.Name).ToArray();
 #elif EFCORE
 

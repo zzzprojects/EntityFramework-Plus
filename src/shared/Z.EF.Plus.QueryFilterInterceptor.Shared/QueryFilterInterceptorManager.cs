@@ -53,6 +53,9 @@ namespace Z.EntityFramework.Plus
             RegisterType(types);
         }
 
+        /// <summary>Gets or sets a value indicating whether we allow property to be filtering.</summary>
+        /// <value>True if allow property filtering, false if not.</value>
+        public static bool AllowPropertyFilter { get; set; }
 
         /// <summary>Gets the database expression by hook.</summary>
         /// <value>The database expression by hook.</value>
@@ -218,7 +221,7 @@ namespace Z.EntityFramework.Plus
                     {
                         var objectQuery = dbSet.GetObjectQuery();
 
-                        var stateField = objectQuery.GetType().BaseType.GetField("_state", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                        var stateField = objectQuery.GetType().BaseType.GetField("_state", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, true);
                         var state = stateField.GetValue(objectQuery);
 
                         var cachedPlanField = state.GetType().GetField("_cachedPlan", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);

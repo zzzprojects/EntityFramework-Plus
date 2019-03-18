@@ -21,7 +21,7 @@ namespace Z.EntityFramework.Plus
     {
         public static Tuple<string, DbParameterCollection> GetCommandTextAndParameters(this ObjectQuery objectQuery)
         {
-            var stateField = objectQuery.GetType().BaseType.GetField("_state", BindingFlags.NonPublic | BindingFlags.Instance);
+            var stateField = objectQuery.GetType().BaseType.GetField("_state", BindingFlags.NonPublic | BindingFlags.Instance, true);
             var state = stateField.GetValue(objectQuery);
             var getExecutionPlanMethod = state.GetType().GetMethod("GetExecutionPlan", BindingFlags.NonPublic | BindingFlags.Instance);
             var getExecutionPlan = getExecutionPlanMethod.Invoke(state, new object[] {null});

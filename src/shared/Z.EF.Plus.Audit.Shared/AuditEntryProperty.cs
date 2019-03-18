@@ -127,11 +127,11 @@ namespace Z.EntityFramework.Plus
             if (PropertyName == null)
             {
 #if EF5 || EF6
-                PropertyName = parent.Parent.CurrentOrDefaultConfiguration.PropertyNameFactory != null ?
+                PropertyName = parent.Parent.CurrentOrDefaultConfiguration.PropertyNameFactory != null && parent.Entry.Entity != null ?
                     parent.Parent.CurrentOrDefaultConfiguration.PropertyNameFactory(ObjectContext.GetObjectType(parent.Entry.Entity.GetType()), propertyName) :
                     propertyName;
 #elif EFCORE
-                PropertyName = parent.Parent.CurrentOrDefaultConfiguration.PropertyNameFactory != null ?
+                PropertyName = parent.Parent.CurrentOrDefaultConfiguration.PropertyNameFactory != null && parent.Entry.Entity != null ?
                     parent.Parent.CurrentOrDefaultConfiguration.PropertyNameFactory(parent.Entry.Entity.GetType(), propertyName) :
                     propertyName;
 #endif

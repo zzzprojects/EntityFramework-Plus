@@ -12,7 +12,8 @@ using System.Data.Common;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-
+using System.Threading;
+using System.Threading.Tasks;
 #if EF5
 using System.Data.EntityClient;
 using System.Data.Objects;
@@ -25,6 +26,7 @@ using System.Data.Entity.Infrastructure.Interception;
 #elif EFCORE
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.EntityFrameworkCore.Storage;
 
 #endif
 
@@ -92,8 +94,32 @@ namespace Z.EntityFramework.Plus
                 return;
             }
 
+            if (!QueryFutureManager.AllowQueryBatch)
+            {
+                foreach (var query in Queries)
+                {
+                    query.GetResultDirectly();
+                }
+
+                Queries.Clear();
+                return;
+            }
+
 #if EF5 || EF6
             var connection = (EntityConnection)Context.Connection;
+
+#if EF6
+            if (Context.IsInMemoryEffortQueryContext())
+            {
+                foreach (var query in Queries)
+                {
+                    query.GetResultDirectly();
+                }
+
+                Queries.Clear();
+                return;
+            }
+#endif
 #elif EFCORE
             if (IsInMemory)
             {
@@ -105,6 +131,8 @@ namespace Z.EntityFramework.Plus
             }
 
             var connection = Context.Database.GetDbConnection();
+
+            var firstQuery = Queries[0];
 #endif
             var command = CreateCommandCombined();
 
@@ -161,14 +189,133 @@ namespace Z.EntityFramework.Plus
                     connection.Close();
                 }
             }
+
+#if EFCORE
+            if(firstQuery.RestoreConnection != null)
+            {
+                firstQuery.RestoreConnection();
+            }
+#endif
         }
+
+#if NET45
+        /// <summary>Executes deferred query lists.</summary>
+        public async Task ExecuteQueriesAsync(CancellationToken cancellationToken = default(CancellationToken))
+        {
+	        cancellationToken.ThrowIfCancellationRequested();
+
+			if (Queries.Count == 0)
+            {
+                // Already all executed
+                return;
+            }
+
+#if EFCORE
+            if (IsInMemory)
+            {
+                foreach (var query in Queries)
+                {
+                    query.ExecuteInMemory();
+                }
+                Queries.Clear();
+                return;
+            }
+#endif
+
+            if (Queries.Count == 1)
+            {
+				await Queries[0].GetResultDirectlyAsync(cancellationToken).ConfigureAwait(false);
+                Queries.Clear();
+                return;
+            }
+
+#if EF5 || EF6
+            var connection = (EntityConnection)Context.Connection;
+#elif EFCORE
+            if (IsInMemory)
+            {
+                foreach (var query in Queries)
+                {
+                    query.ExecuteInMemory();
+                }
+                return;
+            }
+
+            var connection = Context.Database.GetDbConnection();
+
+            var firstQuery = Queries[0];
+#endif
+            var command = CreateCommandCombined();
+
+            var ownConnection = false;
+
+            try
+            {
+                if (connection.State != ConnectionState.Open)
+                {
+                    await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+                    ownConnection = true;
+                }
+
+                using (command)
+                {
+#if EF5
+                    using (var reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false))
+                    {
+                        foreach (var query in Queries)
+                        {
+                            query.SetResult(reader);
+                            await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
+                        }
+					}
+#elif EF6
+					var interceptionContext = Context.GetInterceptionContext();
+                    using (var reader = await DbInterception.Dispatch.Command.ReaderAsync(command, new DbCommandInterceptionContext(interceptionContext), cancellationToken).ConfigureAwait(false))
+                    {
+                        foreach (var query in Queries)
+                        {
+                            query.SetResult(reader);
+                            await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
+                        }
+                    }
+#elif EFCORE
+					using (var reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false))
+					{
+						var createEntityDataReader = new CreateEntityDataReader(reader);
+						foreach (var query in Queries)
+						{
+							query.SetResult(createEntityDataReader);
+							await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
+						}
+					}
+#endif
+				}
+
+				Queries.Clear();
+            }
+            finally
+            {
+                if (ownConnection)
+                {
+                    connection.Close();
+                }
+            }
+
+#if EFCORE
+            if (firstQuery.RestoreConnection != null)
+            {
+                firstQuery.RestoreConnection();
+            }
+#endif
+        }
+#endif
 
         /// <summary>Creates a new command combining deferred queries.</summary>
         /// <returns>The combined command created from deferred queries.</returns>
         protected DbCommand CreateCommandCombined()
         {
             var command = Context.CreateStoreCommand();
-
+         
             var sb = new StringBuilder();
             var queryCount = 1;
 
@@ -232,7 +379,7 @@ namespace Z.EntityFramework.Plus
                     }
                 }
 #elif EFCORE
-
+         
                 RelationalQueryContext queryContext;
                 var queryCommand = query.CreateExecutorAndGetCommand(out queryContext);
                 var sql = queryCommand.CommandText;

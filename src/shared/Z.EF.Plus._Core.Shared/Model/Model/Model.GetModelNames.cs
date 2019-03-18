@@ -41,10 +41,22 @@ namespace Z.EntityFramework.Plus.Internal
                     if (sourceLocationProperty != null)
                     {
                         var sourceLocation = (string)sourceLocationProperty.GetValue(workspace, null);
+                        if (sourceLocation != null)
+                        {
+                            if (sourceLocation.Contains(@"\") && !sourceLocation.Contains("Version=") && !sourceLocation.Contains("PublicKeyToken="))
+                            {
+                                var lastIndex = sourceLocation.LastIndexOf(@"\");
+                                sourceLocation = sourceLocation.Substring(0, lastIndex + 1) + sourceLocation.Substring(lastIndex + 1).Replace(".msl", "");
 
-                        var lastIndex = sourceLocation.LastIndexOf("/");
-                        sourceLocation = sourceLocation.Substring(lastIndex + 1).Replace(".msl", "");
-                        list.Add(sourceLocation);
+                                list.Add(sourceLocation);
+                            }
+                            else
+                            {
+                                var lastIndex = sourceLocation.LastIndexOf("/");
+                                sourceLocation = sourceLocation.Substring(lastIndex + 1).Replace(".msl", "");
+                                list.Add(sourceLocation);
+                            }
+                        }
                     }
                 }
             }

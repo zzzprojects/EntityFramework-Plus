@@ -1,0 +1,120 @@
+//
+// default
+//
+
+a {
+    color: $link-color;
+}
+
+a:hover {
+    color: $link-color;
+    text-decoration: none;
+}
+
+body {
+    overflow-x: hidden;
+    margin-top: 120px;
+}
+
+hr {
+    background-color: $color-z;
+}
+
+input.form-control:focus {
+    outline: none;
+    border-color: $color-z;
+    box-shadow: 0 0 10px $color-z;
+}
+
+.card-header {
+    h2 {
+        color: white !important;
+    }
+}
+
+@media (max-width: 991px) {
+    body {
+        margin-top: 76px;
+    }
+}
+
+//
+// container
+//
+.container-page {
+    padding-bottom: 80px;
+}
+
+//
+// bootstrap hidden restore
+//
+@media (max-width: 575px) {
+    .hidden-xs-down, .hidden-sm-down, .hidden-md-down, .hidden-lg-down, .hidden-xl-down,
+    .hidden-xs-up,
+    .hidden-unless-sm, .hidden-unless-md, .hidden-unless-lg, .hidden-unless-xl {
+        display: none !important;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 767px) {
+    .hidden-sm-down, .hidden-md-down, .hidden-lg-down, .hidden-xl-down,
+    .hidden-xs-up, .hidden-sm-up,
+    .hidden-unless-xs, .hidden-unless-md, .hidden-unless-lg, .hidden-unless-xl {
+        display: none !important;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .hidden-md-down, .hidden-lg-down, .hidden-xl-down,
+    .hidden-xs-up, .hidden-sm-up, .hidden-md-up,
+    .hidden-unless-xs, .hidden-unless-sm, .hidden-unless-lg, .hidden-unless-xl {
+        display: none !important;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+    .hidden-lg-down, .hidden-xl-down,
+    .hidden-xs-up, .hidden-sm-up, .hidden-md-up, .hidden-lg-up,
+    .hidden-unless-xs, .hidden-unless-sm, .hidden-unless-md, .hidden-unless-xl {
+        display: none !important;
+    }
+}
+
+@media (min-width: 1200px) {
+    .hidden-xl-down,
+    .hidden-xs-up, .hidden-sm-up, .hidden-md-up, .hidden-lg-up, .hidden-xl-up,
+    .hidden-unless-xs, .hidden-unless-sm, .hidden-unless-md, .hidden-unless-lg {
+        display: none !important;
+    }
+}
+
+/*
+@media (min-width: 1400px)
+{
+    .container {
+		max-width: 1340px;
+	}
+}
+
+@media (min-width: 1600px)
+{
+    .container {
+		max-width: 1540px;
+	}
+}
+
+@media (min-width: 1800px)
+{
+    .container {
+		max-width: 1740px;
+	}
+}
+*/
+
+//
+// Bootstrap
+//
+.bg-danger {
+    background-color: #c00;
+    color: #fff;
+}

@@ -9,14 +9,19 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
 #if EF5
 using System.Data.Objects;
 
 #elif EF6
 using System.Data.Entity.Core.Objects;
+using System.Data.Entity.Infrastructure;
 
 #elif EFCORE
 using System.Linq;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 
 #endif
 
@@ -74,10 +79,84 @@ namespace Z.EntityFramework.Plus
             return GetEnumerator();
         }
 
+#if NET45 
+        public async Task<List<T>> ToListAsync(CancellationToken cancellationToken = default(CancellationToken))
+        {
+	        cancellationToken.ThrowIfCancellationRequested();
+			if (!HasValue)
+            {
+#if EF6
+                if (Query.Context.IsInMemoryEffortQueryContext())
+                {
+                    OwnerBatch.ExecuteQueries();
+                }
+                else
+                {
+                    await OwnerBatch.ExecuteQueriesAsync(cancellationToken).ConfigureAwait(false);
+                }
+#else
+                await OwnerBatch.ExecuteQueriesAsync(cancellationToken).ConfigureAwait(false);
+#endif
+			}
 
-        /// <summary>Sets the result of the query deferred.</summary>
-        /// <param name="reader">The reader returned from the query execution.</param>
-        public override void SetResult(DbDataReader reader)
+			if (_result == null)
+            {
+                return new List<T>();
+            }
+
+            using (var enumerator = _result.GetEnumerator())
+            {
+                var list = new List<T>();
+                while (enumerator.MoveNext())
+                {
+                    list.Add(enumerator.Current);
+                }
+                return list;
+            }
+        }
+
+#if NET45
+		public async Task<T[]> ToArrayAsync(CancellationToken cancellationToken = default(CancellationToken))
+        {
+	        cancellationToken.ThrowIfCancellationRequested();
+			if (!HasValue)
+            {
+#if EF6
+                if (Query.Context.IsInMemoryEffortQueryContext())
+                {
+                    OwnerBatch.ExecuteQueries();
+                }
+                else
+                {
+                    await OwnerBatch.ExecuteQueriesAsync(cancellationToken).ConfigureAwait(false);
+                }
+#else
+                await OwnerBatch.ExecuteQueriesAsync(cancellationToken ).ConfigureAwait(false);
+#endif
+
+			}
+
+			if (_result == null)
+            {
+                return new T[0];
+            }
+
+            using (var enumerator = _result.GetEnumerator())
+            {
+                var list = new List<T>();
+                while (enumerator.MoveNext())
+                {
+                    list.Add(enumerator.Current);
+                }
+                return list.ToArray();
+            }
+        }
+#endif
+#endif
+
+		/// <summary>Sets the result of the query deferred.</summary>
+		/// <param name="reader">The reader returned from the query execution.</param>
+		public override void SetResult(DbDataReader reader)
         {
             if (reader.GetType().FullName.Contains("Oracle"))
             {
@@ -87,7 +166,10 @@ namespace Z.EntityFramework.Plus
             
             var enumerator = GetQueryEnumerator<T>(reader);
 
-            SetResult(enumerator);
+            using (enumerator)
+            {
+                SetResult(enumerator);
+            }  
         }
 
         public void SetResult(IEnumerator<T> enumerator)
@@ -101,10 +183,10 @@ namespace Z.EntityFramework.Plus
             _result = list;
 
             HasValue = true;
-        }
+        } 
 
 #if EFCORE
-        public override void ExecuteInMemory()
+		public override void ExecuteInMemory()
         {
             HasValue = true;
             _result = ((IQueryable<T>) Query).ToList();
@@ -113,9 +195,29 @@ namespace Z.EntityFramework.Plus
         public override void GetResultDirectly()
         {
             var query = ((IQueryable<T>)Query);
-            var enumerator = query.GetEnumerator();
 
-            SetResult(enumerator);
+            GetResultDirectly(query);
         }
-    }
+
+
+#if   NET45
+		public override Task GetResultDirectlyAsync(CancellationToken cancellationToken)
+	    {
+		    cancellationToken.ThrowIfCancellationRequested();
+ 
+		    var query = ((IQueryable<T>)Query);
+			GetResultDirectly(query);
+
+	        return Task.FromResult(0);
+	    }
+#endif
+
+		internal void GetResultDirectly(IQueryable<T> query)
+        {
+            using (var enumerator = query.GetEnumerator())
+            {
+                SetResult(enumerator);
+            }
+        } 
+	}
 }

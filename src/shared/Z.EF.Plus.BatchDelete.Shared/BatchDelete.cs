@@ -20,6 +20,7 @@ using Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel;
 
 #elif EF6
 using System.Data.Entity.Core.Objects;
+using System.Data.Entity.Infrastructure.Interception;
 using Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel;
 
 #elif EFCORE
@@ -27,6 +28,8 @@ using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 
 #endif
 
@@ -38,7 +41,7 @@ namespace Z.EntityFramework.Plus
         /// <summary>The command text template.</summary>
         internal const string CommandTextTemplate = @"
 DELETE
-FROM    A
+FROM    A {Hint}
 FROM    {TableName} AS A
         INNER JOIN ( {Select}
                     ) AS B ON {PrimaryKeys}
@@ -60,37 +63,58 @@ WHERE EXISTS ( SELECT 1 FROM ({Select}) B
            )
 ";
 
+        internal const string CommandTextSQLiteTemplate = @"
+DELETE
+FROM    {TableName}
+WHERE EXISTS ( SELECT 1 FROM ({Select}) B
+               WHERE {PrimaryKeys}
+           )
+";
+
         /// <summary>The command text postgre SQL template.</summary>
         internal const string CommandTextPostgreSQLTemplate = @"
 DELETE FROM {TableName} AS A
 USING ( {Select} ) AS B WHERE {PrimaryKeys}
 ";
 
-        /// <summary>The command text postgre SQL template.</summary>
+        /// <summary>The command text MySQL template.</summary>
         internal const string CommandTextTemplate_MySql = @"
 DELETE A
 FROM {TableName} AS A
 INNER JOIN ( {Select} ) AS B ON {PrimaryKeys}
 ";
 
+        /// <summary>The command text Hana template.</summary>
+        internal const string CommandTextTemplate_Hana = @"
+DELETE
+FROM    {TableName}
+WHERE EXISTS ( SELECT 1 FROM ({Select}) B
+               WHERE {PrimaryKeys}
+           )
+";
+
         /// <summary>The command text template with WHILE loop.</summary>
         internal const string CommandTextWhileTemplate = @"
+DECLARE @stop int
 DECLARE @rowAffected INT
 DECLARE @totalRowAffected INT
 
+SET @stop = 0
 SET @totalRowAffected = 0
 
-WHILE @rowAffected IS NULL
-    OR @rowAffected > 0
+WHILE @stop=0
     BEGIN
         DELETE TOP ({Top})
-        FROM    A
+        FROM    A {Hint}
         FROM    {TableName} AS A
                 INNER JOIN ( {Select}
                            ) AS B ON {PrimaryKeys}
 
         SET @rowAffected = @@ROWCOUNT
         SET @totalRowAffected = @totalRowAffected + @rowAffected
+
+        IF @rowAffected < {Top}
+            SET @stop = 1
     END
 
 SELECT  @totalRowAffected
@@ -98,13 +122,14 @@ SELECT  @totalRowAffected
 
         /// <summary>The command text template with DELAY and WHILE loop</summary>
         internal const string CommandTextWhileDelayTemplate = @"
+DECLARE @stop int
 DECLARE @rowAffected INT
 DECLARE @totalRowAffected INT
 
+SET @stop = 0
 SET @totalRowAffected = 0
 
-WHILE @rowAffected IS NULL
-    OR @rowAffected > 0
+WHILE @stop=0
     BEGIN
         IF @rowAffected IS NOT NULL
             BEGIN
@@ -112,13 +137,16 @@ WHILE @rowAffected IS NULL
             END
 
         DELETE TOP ({Top})
-        FROM    A
+        FROM    A {Hint}
         FROM    {TableName} AS A
                 INNER JOIN ( {Select}
                            ) AS B ON {PrimaryKeys}
 
         SET @rowAffected = @@ROWCOUNT
         SET @totalRowAffected = @totalRowAffected + @rowAffected
+
+        IF @rowAffected < {Top}
+            SET @stop = 1
     END
 
 SELECT  @totalRowAffected
@@ -137,6 +165,10 @@ SELECT  @totalRowAffected
         /// <summary>Gets or sets the batch delay interval in milliseconds (The wait time between batch).</summary>
         /// <value>The batch delay interval in milliseconds (The wait time between batch).</value>
         public int BatchDelayInterval { get; set; }
+
+        /// <summary>Gets or sets a value indicating whether the query use table lock.</summary>
+        /// <value>True if use table lock, false if not.</value>
+        public bool UseTableLock { get; set; }
 
         /// <summary>Gets or sets the DbCommand before being executed.</summary>
         /// <value>The DbCommand before being executed.</value>
@@ -170,17 +202,31 @@ SELECT  @totalRowAffected
             {
                 return 0;
             }
-         
+
             // GET model and info
 #if EF5 || EF6
-            var model = query.GetModel();
+            var dbContext = query.GetDbContext();
+
+#if EF6
+            if (dbContext.IsInMemoryEffortQueryContext() || BatchDeleteManager.IsInMemoryQuery)
+            {
+                var context = query.GetDbContext();
+
+                var list = query.ToList();
+                context.Set<T>().RemoveRange(list);
+                context.SaveChanges();
+                return list.Count;
+            }
+#endif
+
+            var model = dbContext.GetModel();
             var entity = model.Entity<T>();
             var keys = entity.Info.Key.PropertyRefs;
 
             // SELECT keys names
             var queryKeys = query.SelectByName(keys.Select(x => x.Name).ToList());
             var innerObjectQuery = queryKeys.GetObjectQuery();
-             
+
             // CREATE command
             var command = CreateCommand(innerObjectQuery, entity);
 
@@ -201,6 +247,12 @@ SELECT  @totalRowAffected
                     innerObjectQuery.Context.Connection.Open();
                 }
 
+                if (Executing != null)
+                {
+                    Executing(command);
+                }
+
+#if EF5
                 if (command.GetType().Name == "NpgsqlCommand")
                 {
                     command.CommandText = command.CommandText.Replace("[", "\"").Replace("]", "\"");
@@ -222,16 +274,46 @@ SELECT  @totalRowAffected
                     int totalRowAffecteds = command.ExecuteNonQuery();
                     return totalRowAffecteds;
                 }
+                else if (command.Connection.GetType().Name.Contains("Hana"))
+                {
+                    int totalRowAffecteds = command.ExecuteNonQuery();
+                    return totalRowAffecteds;
+                }
                 else
                 {
-                    if (Executing != null)
-                    {
-                        Executing(command);
-                    }
-
                     var rowAffecteds = (int)command.ExecuteScalar();
                     return rowAffecteds;
                 }
+#elif EF6
+                var interceptionContext = new DbCommandInterceptionContext(dbContext.GetObjectContext().GetInterceptionContext());
+
+                if (command.GetType().Name == "NpgsqlCommand")
+                {
+                    command.CommandText = command.CommandText.Replace("[", "\"").Replace("]", "\"");
+                    int totalRowAffecteds = DbInterception.Dispatch.Command.NonQuery(command, interceptionContext);
+                    return totalRowAffecteds;
+                }
+                else if (command.Connection.GetType().Name.Contains("MySql"))
+                {
+                    int totalRowAffecteds = DbInterception.Dispatch.Command.NonQuery(command, interceptionContext);
+                    return totalRowAffecteds;
+                }
+                else if (command.Connection.GetType().Name.Contains("Oracle") || command.Connection.GetType().Name.Contains("SQLite") || command.Connection.GetType().Name.Contains("Hana"))
+                {
+                    int totalRowAffecteds = DbInterception.Dispatch.Command.NonQuery(command, interceptionContext);
+                    return totalRowAffecteds;
+                }
+                else if (command.GetType().Name == "SqlCeCommand")
+                {
+                    int totalRowAffecteds = DbInterception.Dispatch.Command.NonQuery(command, interceptionContext);
+                    return totalRowAffecteds;
+                }
+                else
+                {
+                    var rowAffecteds = (int)DbInterception.Dispatch.Command.Scalar(command, interceptionContext);
+                    return rowAffecteds;
+                }
+#endif
 
             }
             finally
@@ -272,6 +354,11 @@ SELECT  @totalRowAffected
                     dbContext.Database.OpenConnection();
                 }
 
+                if (Executing != null)
+                {
+                    Executing(command);
+                }
+
                 if (command.GetType().Name == "NpgsqlCommand")
                 {
                     command.CommandText = command.CommandText.Replace("[", "\"").Replace("]", "\"");
@@ -283,12 +370,10 @@ SELECT  @totalRowAffected
                     int totalRowAffecteds = command.ExecuteNonQuery();
                     return totalRowAffecteds;
                 }
-                else
+                else if (command.GetType().Name.Contains("Sqlite"))
                 {
-                    if (Executing != null)
-                    {
-                        Executing(command);
-                    }
+                    int totalRowAffecteds = command.ExecuteNonQuery();
+                    return totalRowAffecteds;
                 }
 
                 var rowAffecteds = (int)command.ExecuteScalar();
@@ -317,9 +402,12 @@ SELECT  @totalRowAffected
             // GET command
             var command = query.Context.CreateStoreCommand();
 
-            bool isMySql = command.GetType().FullName.Contains("MySql");
+            var isPostgreSql = command.GetType().Name == "NpgsqlCommand";
+            var isMySql = command.GetType().FullName.Contains("MySql");
             var isSqlCe = command.GetType().Name == "SqlCeCommand";
             var isOracle = command.GetType().Namespace.Contains("Oracle");
+            var isSQLite = command.GetType().Namespace.Contains("SQLite");
+            var isHana = command.GetType().Namespace.Contains("Hana");
 
             // Oracle BindByName
             if (isOracle)
@@ -339,17 +427,29 @@ SELECT  @totalRowAffected
 
             if (isMySql)
             {
-                tableName = string.Concat("`", store.Table, "`");
+                tableName = string.IsNullOrEmpty(store.Schema) || store.Schema == "dbo" || store.Table.StartsWith(store.Schema + ".")?
+                    string.Concat("`", store.Table, "`") :
+                    string.Concat("`", store.Schema, ".", store.Table, "`");
             }
             else if (isSqlCe)
             {
                 tableName = string.Concat("[", store.Table, "]");
             }
-            else if (isOracle)
+            else if (isSQLite)
+            {
+                tableName = string.Concat("\"", store.Table, "\"");
+            }
+            else if (isOracle || isHana)
             {
                 tableName = string.IsNullOrEmpty(store.Schema) || store.Schema == "dbo" ?
 string.Concat("\"", store.Table, "\"") :
 string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
+            }
+            else if (isPostgreSql)
+            {
+                tableName = string.IsNullOrEmpty(store.Schema) ?
+                    string.Concat("\"", store.Table, "\"") :
+                    string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
             }
             else
             {
@@ -373,14 +473,13 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
             }
 
             // GET command text template
-            var commandTextTemplate = command.GetType().Name == "NpgsqlCommand" ?
-                CommandTextPostgreSQLTemplate :
-                isOracle ?
-                    CommandTextOracleTemplate :
-                    isMySql ?
-                        CommandTextTemplate_MySql :
-                        isSqlCe ?
-                            CommandTextSqlCeTemplate :
+            var commandTextTemplate =
+                isPostgreSql ? CommandTextPostgreSQLTemplate :
+                isOracle ? CommandTextOracleTemplate :
+                isMySql ? CommandTextTemplate_MySql :
+                isSqlCe ? CommandTextSqlCeTemplate :
+                isSQLite ? CommandTextSQLiteTemplate :
+                isHana ? CommandTextTemplate_Hana :
                             BatchSize > 0 ?
                                 BatchDelayInterval > 0 ?
                                     CommandTextWhileDelayTemplate :
@@ -395,17 +494,22 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
                 return null;
             }
 
+            if (isPostgreSql && customQuery.Item1.EndsWith("WHERE TRUE = FALSE", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return null;
+            }
+
             var querySelect = customQuery.Item1;
 
             // GET primary key join
             string primaryKeys;
-            if (isSqlCe || isOracle)
+            if (isSqlCe || isOracle || isSQLite || isHana)
             {
-                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".", EscapeName(x, isMySql, isOracle), " = B.", EscapeName(x, isMySql, isOracle), "")));
+                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".", EscapeName(x, isMySql, isOracle, isHana), " = B.", EscapeName(x, isMySql, isOracle, isHana), "")));
             }
             else
             {
-                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.", EscapeName(x, isMySql, isOracle), " = B.", EscapeName(x, isMySql, isOracle), "")));
+                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.", EscapeName(x, isMySql, isOracle, isHana), " = B.", EscapeName(x, isMySql, isOracle, isHana), "")));
             }
 
             // REPLACE template
@@ -413,7 +517,8 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
                 .Replace("{Select}", querySelect)
                 .Replace("{PrimaryKeys}", primaryKeys)
                 .Replace("{Top}", BatchSize.ToString())
-                .Replace("{Delay}", TimeSpan.FromMilliseconds(BatchDelayInterval).ToString(@"hh\:mm\:ss\:fff"));
+                .Replace("{Delay}", TimeSpan.FromMilliseconds(BatchDelayInterval).ToString(@"hh\:mm\:ss\:fff"))
+                .Replace("{Hint}", UseTableLock ? "WITH ( TABLOCK )" : "");
 
             // CREATE command
             command.CommandText = commandTextTemplate;
@@ -443,107 +548,131 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
 #elif EFCORE
         public DbCommand CreateCommand(IQueryable query, IEntityType entity)
         {
-#if NETSTANDARD1_3
-            Assembly assembly = null;
-            Assembly postgreSqlAssembly = null;
-            Assembly mySqlPomelo = null;
-            Assembly mySql = null;
+            var context = query.GetDbContext();
 
-            try
+            var databaseCreator = context.Database.GetService<IDatabaseCreator>();
+
+            var assembly = databaseCreator.GetType().GetTypeInfo().Assembly;
+            var assemblyName = assembly.GetName().Name;
+
+            MethodInfo dynamicProviderEntityType = null;
+            MethodInfo dynamicProviderProperty = null;
+
+            bool isSqlServer = false;
+            bool isPostgreSQL = false;
+            bool isMySql = false;
+            bool isMySqlPomelo = false;
+            bool isSQLite = false;
+
+            if (assemblyName == "Microsoft.EntityFrameworkCore.SqlServer")
             {
-                assembly = Assembly.Load(new AssemblyName("Microsoft.EntityFrameworkCore.SqlServer"));
+                isSqlServer = true;
+                var type = assembly.GetType("Microsoft.EntityFrameworkCore.SqlServerMetadataExtensions");
+                dynamicProviderEntityType = type.GetMethod("SqlServer", new[] { typeof(IEntityType) });
+                dynamicProviderProperty = type.GetMethod("SqlServer", new[] { typeof(IProperty) });
             }
-            catch (Exception ex)
+            else if (assemblyName == "Npgsql.EntityFrameworkCore.PostgreSQL")
             {
-                try
-                {
-                    postgreSqlAssembly = Assembly.Load(new AssemblyName("Npgsql.EntityFrameworkCore.PostgreSQL"));
-                }
-                catch
-                {
-                    try
-                    {
-                        mySql = Assembly.Load(new AssemblyName("MySql.Data.EntityFrameworkCore"));
-                    }
-                    catch
-                    {
-                        try
-                        {
-                            mySqlPomelo = Assembly.Load(new AssemblyName("Pomelo.EntityFrameworkCore.MySql"));
-                        }
-                        catch
-                        {
-                            throw new Exception(ExceptionMessage.BatchOperations_AssemblyNotFound);
-                        }
-                    }
-                }
+                isPostgreSQL = true;
+                var type = assembly.GetType("Microsoft.EntityFrameworkCore.NpgsqlMetadataExtensions");
+                dynamicProviderEntityType = type.GetMethod("Npgsql", new[] { typeof(IEntityType) });
+                dynamicProviderProperty = type.GetMethod("Npgsql", new[] { typeof(IProperty) });
             }
-#else
-
-            var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName.StartsWith("Microsoft.EntityFrameworkCore.SqlServer", StringComparison.InvariantCulture));
-            var postgreSqlAssembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName.StartsWith("Npgsql.EntityFrameworkCore.PostgreSQL", StringComparison.InvariantCulture));
-            var mySqlPomelo = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName.StartsWith("Pomelo.EntityFrameworkCore.MySql", StringComparison.InvariantCulture));
-            var mySql = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName.StartsWith("MySql.Data.EntityFrameworkCore", StringComparison.InvariantCulture));
-#endif
-            if (assembly != null || postgreSqlAssembly != null || mySqlPomelo != null || mySql != null)
+            else if (assemblyName == "MySql.Data.EntityFrameworkCore")
             {
-                string tableName = "";
-                var columnKeys = new List<string>();
-                string primaryKeys = "";
+                isMySql = true;
+                var type = assembly.GetType("MySQL.Data.EntityFrameworkCore.MySQLMetadataExtensions");
+                dynamicProviderEntityType = type.GetMethod("MySQL", new[] { typeof(IEntityType) });
+                dynamicProviderProperty = type.GetMethod("MySQL", new[] { typeof(IProperty) });
+            }
+            else if (assemblyName == "Pomelo.EntityFrameworkCore.MySql")
+            {
+                isMySqlPomelo = true;
+                var type = assembly.GetType("Microsoft.EntityFrameworkCore.MySqlMetadataExtensions");
+                dynamicProviderEntityType = type.GetMethod("MySql", new[] { typeof(IEntityType) });
+                dynamicProviderProperty = type.GetMethod("MySql", new[] { typeof(IProperty) });
+            }
+            else if (assemblyName == "Microsoft.EntityFrameworkCore.Sqlite")
+            {
+                isSQLite = true;
 
-                if (assembly != null)
+                // CHANGE all for this one?
+                dynamicProviderEntityType = typeof(RelationalMetadataExtensions).GetMethod("Relational", new[] { typeof(IEntityType) });
+                dynamicProviderProperty = typeof(RelationalMetadataExtensions).GetMethod("Relational", new[] { typeof(IProperty) });
+            }
+            else
+            {
+                throw new Exception(string.Format(ExceptionMessage.Unsupported_Provider, assemblyName));
+            }
+
+            
+            string tableName = "";
+            var columnKeys = new List<string>();
+            string primaryKeys = "";
+
+            if (isSqlServer)
+            {
+                List<Tuple<string, string>> propertyAndColumnName = new List<Tuple<string, string>>();
+                var sqlServer = (IRelationalEntityTypeAnnotations)dynamicProviderEntityType.Invoke(null, new[] { entity });
+
+                // GET mapping
+                tableName = string.IsNullOrEmpty(sqlServer.Schema) ?
+                    string.Concat("[", sqlServer.TableName, "]") :
+                    string.Concat("[", sqlServer.Schema, "].[", sqlServer.TableName, "]");
+
+                // GET keys mappings
+                foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
                 {
-                    var type = assembly.GetType("Microsoft.EntityFrameworkCore.SqlServerMetadataExtensions");
-                    var sqlServerEntityTypeMethod = type.GetMethod("SqlServer", new[] { typeof(IEntityType) });
-                    var sqlServerPropertyMethod = type.GetMethod("SqlServer", new[] { typeof(IProperty) });
-                    var sqlServer = (IRelationalEntityTypeAnnotations)sqlServerEntityTypeMethod.Invoke(null, new[] { entity });
+                    var mappingProperty = dynamicProviderProperty.Invoke(null, new[] { propertyKey });
 
+                    var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
+                    //columnKeys.Add((string)columnNameProperty.GetValue(mappingProperty));
+                    propertyAndColumnName.Add(new Tuple<string, string>(propertyKey.Name, (string)columnNameProperty.GetValue(mappingProperty)));
+                }
+
+                // GET primary key join
+                primaryKeys = propertyAndColumnName.Count > 1?
+                    string.Join(Environment.NewLine + "AND ", propertyAndColumnName.Select(x => string.Concat("A.[", x.Item2, "] = B.[", x.Item1, "]"))):
+                    string.Join(Environment.NewLine + "AND ", propertyAndColumnName.Select(x => string.Concat("A.[", x.Item2, "] = B.[", x.Item2, "]")));
+            }
+            else if (isPostgreSQL)
+            {
+                var sqlServer = (IRelationalEntityTypeAnnotations)dynamicProviderEntityType.Invoke(null, new[] { entity });
+
+                // GET mapping
+                tableName = string.IsNullOrEmpty(sqlServer.Schema) ?
+                    string.Concat("\"", sqlServer.TableName, "\"") :
+                    string.Concat("\"", sqlServer.Schema, "\".\"", sqlServer.TableName, "\"");
+
+                // GET keys mappings
+                foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
+                {
+                    var mappingProperty = dynamicProviderProperty.Invoke(null, new[] { propertyKey });
+
+                    var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
+                    columnKeys.Add((string)columnNameProperty.GetValue(mappingProperty));
+                }
+
+                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.\"", x, "\" = B.\"", x, "\"")));
+            }
+            else if (isMySqlPomelo)
+            {
+                if (dynamicProviderEntityType == null)
+                {
                     // GET mapping
-                    tableName = string.IsNullOrEmpty(sqlServer.Schema) ?
-                        string.Concat("[", sqlServer.TableName, "]") :
-                        string.Concat("[", sqlServer.Schema, "].[", sqlServer.TableName, "]");
+                    tableName = string.Concat("`", entity.Relational().TableName, "`");
 
                     // GET keys mappings
                     foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
                     {
-                        var mappingProperty = sqlServerPropertyMethod.Invoke(null, new[] { propertyKey });
-
-                        var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
-                        columnKeys.Add((string)columnNameProperty.GetValue(mappingProperty));
+                        columnKeys.Add(propertyKey.Relational().ColumnName);
                     }
 
-                    // GET primary key join
-                    primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.[", x, "] = B.[", x, "]")));
+                    primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.`", x, "` = B.`", x, "`")));
                 }
-                else if (postgreSqlAssembly != null)
+                else
                 {
-                    var type = postgreSqlAssembly.GetType("Microsoft.EntityFrameworkCore.NpgsqlMetadataExtensions");
-                    var sqlServerEntityTypeMethod = type.GetMethod("Npgsql", new[] { typeof(IEntityType) });
-                    var sqlServerPropertyMethod = type.GetMethod("Npgsql", new[] { typeof(IProperty) });
-                    var sqlServer = (IRelationalEntityTypeAnnotations)sqlServerEntityTypeMethod.Invoke(null, new[] { entity });
-
-                    // GET mapping
-                    tableName = string.IsNullOrEmpty(sqlServer.Schema) ?
-                        string.Concat("\"", sqlServer.TableName, "\"") :
-                        string.Concat("\"", sqlServer.Schema, "\".\"", sqlServer.TableName, "\"");
-
-                    // GET keys mappings
-                    foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
-                    {
-                        var mappingProperty = sqlServerPropertyMethod.Invoke(null, new[] { propertyKey });
-
-                        var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
-                        columnKeys.Add((string)columnNameProperty.GetValue(mappingProperty));
-                    }
-
-                    primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.\"", x, "\" = B.\"", x, "\"")));
-                }
-                else if (mySqlPomelo != null)
-                {
-                    var type = mySqlPomelo.GetType("Microsoft.EntityFrameworkCore.MySqlMetadataExtensions");
-                    var sqlServerEntityTypeMethod = type.GetMethod("MySql", new[] { typeof(IEntityType) });
-                    var sqlServerPropertyMethod = type.GetMethod("MySql", new[] { typeof(IProperty) });
-                    var sqlServer = (IRelationalEntityTypeAnnotations)sqlServerEntityTypeMethod.Invoke(null, new[] { entity });
+                    var sqlServer = (IRelationalEntityTypeAnnotations)dynamicProviderEntityType.Invoke(null, new[] { entity });
 
                     // GET mapping
                     tableName = string.Concat("`", sqlServer.TableName, "`");
@@ -551,7 +680,7 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
                     // GET keys mappings
                     foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
                     {
-                        var mappingProperty = sqlServerPropertyMethod.Invoke(null, new[] { propertyKey });
+                        var mappingProperty = dynamicProviderProperty.Invoke(null, new[] { propertyKey });
 
                         var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
                         columnKeys.Add((string)columnNameProperty.GetValue(mappingProperty));
@@ -559,93 +688,135 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
 
                     primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.`", x, "` = B.`", x, "`")));
                 }
-                else if (mySql != null)
+                
+            }
+            else if (isMySql)
+            {
+                var sqlServer = (IRelationalEntityTypeAnnotations)dynamicProviderEntityType.Invoke(null, new[] { entity });
+
+                // GET mapping
+                tableName = string.Concat("`", sqlServer.TableName, "`");
+
+                // GET keys mappings
+                foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
                 {
-                    var type = mySql.GetType("MySQL.Data.EntityFrameworkCore.MySQLMetadataExtensions");
-                    var sqlServerEntityTypeMethod = type.GetMethod("MySQL", new[] { typeof(IEntityType) });
-                    var sqlServerPropertyMethod = type.GetMethod("MySQL", new[] { typeof(IProperty) });
-                    var sqlServer = (IRelationalEntityTypeAnnotations)sqlServerEntityTypeMethod.Invoke(null, new[] { entity });
+                    var mappingProperty = dynamicProviderProperty.Invoke(null, new[] { propertyKey });
 
-                    // GET mapping
-                    tableName = string.Concat("`", sqlServer.TableName, "`");
-
-                    // GET keys mappings
-                    foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
-                    {
-                        var mappingProperty = sqlServerPropertyMethod.Invoke(null, new[] { propertyKey });
-
-                        var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
-                        columnKeys.Add((string)columnNameProperty.GetValue(mappingProperty));
-                    }
-
-                    primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.`", x, "` = B.`", x, "`")));
+                    var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
+                    columnKeys.Add((string)columnNameProperty.GetValue(mappingProperty));
                 }
 
+                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.`", x, "` = B.`", x, "`")));
+            }
+            else if (isSQLite)
+            {
+                var sqlServer = (IRelationalEntityTypeAnnotations)dynamicProviderEntityType.Invoke(null, new[] { entity });
 
-                // GET command text template
-                var commandTextTemplate = assembly == null && postgreSqlAssembly != null ?
-                    CommandTextPostgreSQLTemplate :
-                    mySqlPomelo != null || mySql != null ? 
-                    CommandTextTemplate_MySql :
-                    BatchSize > 0 ?
-                    BatchDelayInterval > 0 ?
-                        CommandTextWhileDelayTemplate :
-                        CommandTextWhileTemplate :
-                    CommandTextTemplate;
+                // GET mapping
+                tableName = string.Concat("\"", sqlServer.TableName, "\"");
 
-                // GET inner query
+                // GET keys mappings
+                foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
+                {
+                    var mappingProperty = dynamicProviderProperty.Invoke(null, new[] { propertyKey });
+
+                    var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
+                    columnKeys.Add((string)columnNameProperty.GetValue(mappingProperty));
+                }
+
+                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + "." + "\"" + x + "\"", " = B.\"", x, "\"")));
+            }
+
+
+            // GET command text template
+            var commandTextTemplate = isPostgreSQL ?
+                CommandTextPostgreSQLTemplate :
+                isMySql || isMySqlPomelo ? 
+                CommandTextTemplate_MySql :
+                isSQLite ?
+                CommandTextSQLiteTemplate :
+                BatchSize > 0 ?
+                BatchDelayInterval > 0 ?
+                    CommandTextWhileDelayTemplate :
+                    CommandTextWhileTemplate :
+                CommandTextTemplate;
+
+            // GET inner query
 #if EFCORE
-                RelationalQueryContext queryContext;
-                var relationalCommand = query.CreateCommand(out queryContext);
+            RelationalQueryContext queryContext;
+            var relationalCommand = query.CreateCommand(out queryContext);
 #else
-                var relationalCommand = query.CreateCommand();
+            var relationalCommand = query.CreateCommand();
 #endif
-                var querySelect = relationalCommand.CommandText;
+            var querySelect = relationalCommand.CommandText;
 
 
-                // REPLACE template
-                commandTextTemplate = commandTextTemplate.Replace("{TableName}", tableName)
-                    .Replace("{Select}", querySelect)
-                    .Replace("{PrimaryKeys}", primaryKeys)
-                    .Replace("{Top}", BatchSize.ToString())
-                    .Replace("{Delay}", TimeSpan.FromMilliseconds(BatchDelayInterval).ToString(@"hh\:mm\:ss\:fff"));
+            // REPLACE template
+            commandTextTemplate = commandTextTemplate.Replace("{TableName}", tableName)
+                .Replace("{Select}", querySelect)
+                .Replace("{PrimaryKeys}", primaryKeys)
+                .Replace("{Top}", BatchSize.ToString())
+                .Replace("{Delay}", TimeSpan.FromMilliseconds(BatchDelayInterval).ToString(@"hh\:mm\:ss\:fff"))
+                .Replace("{Hint}", UseTableLock ? "WITH ( TABLOCK )" : "");
 
-                // CREATE command
-                var command = query.GetDbContext().CreateStoreCommand();
-                command.CommandText = commandTextTemplate;
+            // CREATE command
+            var command = query.GetDbContext().CreateStoreCommand();
+            command.CommandText = commandTextTemplate;
 
 #if EFCORE
-                // ADD Parameter
-                foreach (var relationalParameter in relationalCommand.Parameters)
+            // ADD Parameter
+            foreach (var relationalParameter in relationalCommand.Parameters)
+            {
+                object parameter;
+                if (!queryContext.ParameterValues.TryGetValue(relationalParameter.InvariantName, out parameter))
                 {
-                    var parameter = queryContext.ParameterValues[relationalParameter.InvariantName];
-
-                    var param = command.CreateParameter();
-                    param.CopyFrom(relationalParameter, parameter);
-
-                    command.Parameters.Add(param);
+                    if (relationalParameter.InvariantName.StartsWith("__ef_filter"))
+                    {
+                        throw new Exception("Please use 'IgnoreQueryFilters()'. The HasQueryFilter is not yet supported.");
+                    }
+                    else
+                    {
+                        throw new Exception("The following parameter could not be found: " + relationalParameter);
+                    }
                 }
+
+                var param = command.CreateParameter();
+                param.CopyFrom(relationalParameter, parameter);
+
+#if !NETSTANDARD1_3
+                if (isPostgreSQL)
+                {
+	                Type itemType = param.Value.GetType();
+
+                    if (itemType.IsEnum)
+	                {
+		                var underlyingType = Enum.GetUnderlyingType(itemType);
+		                param.Value = Convert.ChangeType(param.Value, underlyingType);
+	                } 
+				}
+#endif
+
+				command.Parameters.Add(param);
+            }
 #else
                 // ADD Parameter
                 var parameterCollection = relationalCommand.Parameters;
-                foreach (var parameter in parameterCollection)
-                {
-                    var param = command.CreateParameter();
-                    param.CopyFrom(parameter);
+            foreach (var parameter in parameterCollection)
+            {
+                var param = command.CreateParameter();
+                param.CopyFrom(parameter);
 
-                    command.Parameters.Add(param);
-                }
+                command.Parameters.Add(param);
+            }
 #endif
 
-                return command;
-            }
-            return null;
+            return command;
         }
 #endif
-        public string EscapeName(string name, bool isMySql, bool isOracle)
+        public string EscapeName(string name, bool isMySql, bool isOracle, bool isHana)
         {
             return isMySql ? string.Concat("`", name, "`") :
-                isOracle ? string.Concat("\"", name, "\"") :
+                isOracle || isHana ? string.Concat("\"", name, "\"") :
                     string.Concat("[", name, "]");
         }
     }

@@ -7,51 +7,69 @@
 
 #if FULL || BATCH_DELETE || BATCH_UPDATE
 #if EF5 || EF6
+using System;
+using System.Linq;
+using Z.EF.Plus.BatchUpdate.Shared.Extensions;
 using Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel;
 
 namespace Z.EntityFramework.Plus.Internal
 {
     internal static partial class Model
     {
-        internal static void BuildSchema(Schema schema, bool isStorage = false)
-        {
-            // Index Schema
-            SchemaAddIndex(schema);
+		internal static void BuildSchema(Schema schema, bool isStorage = false)
+		{
+			// Index Schema
+			SchemaAddIndex(schema);
 
-            BuildSchema_EntityType(schema, isStorage);
-            BuildSchema_EntitySet(schema, isStorage);
-        }
+			BuildSchema_EntityType(schema, isStorage);
+			BuildSchema_EntitySet(schema, isStorage);
+		}
 
-        internal static void BuildSchema_EntityType(Schema schema, bool isStorage = false)
-        {
-            schema.EntityTypes.ForEach(x =>
-            {
-                // SET Primary Key
-                if (x.Key != null)
-                {
-                    x.Key.PropertyRefs.ForEach(y => y.Property = x.Index_Properties_Name[y.Name]);
-                }
-            });
-        }
 
-        internal static void BuildSchema_EntitySet(Schema schema, bool isStorage = false)
-        {
-            // SET Entity Type
-            schema.EntityContainer.EntitySets.ForEach(x =>
-            {
-                var typeName = x.EntityTypeName.SubstringLastIndexOf(".");
-                var entityType = schema.Index_EntityTypes_Name[typeName];
-                x.EntityType = entityType;
-                entityType.EntitySet = x;
-            });
+		internal static void BuildSchema_EntityType(Schema schema, bool isStorage = false)
+		{
+			schema.EntityTypes.ForEach(x =>
+			{
+				// SET Parent
+				x.Properties.ForEach(y => y.ParentEntity = x);
+				x.Properties.ForEach(y => y.IsComputed = y.StoreGeneratedPattern == "Computed");
+				x.Properties.ForEach(y => y.IsConcurrency = y.ConcurrencyMode == "Fixed");
 
-            // Database First doesn't map by default the table name because it's always equal to the entity set.
-            if (isStorage)
-            {
-                schema.EntityContainer.EntitySets.ForEach(x => { x.Table = string.IsNullOrEmpty(x.Table) ? x.Name : x.Table; });
-            }
-        }
-    }
+				// SET Primary Key
+				if (x.Key != null)
+				{
+					x.Key.PropertyRefs.ForEach(y => y.Property = x.Index_Properties_Name[y.Name]);
+					x.Key.PropertyRefs.ForEach(y => y.Property.IsPrimaryKey = true);
+				}
+
+				// SET Base Type
+				if (!string.IsNullOrEmpty(x.BaseTypeName))
+				{
+					var typeName = x.BaseTypeName.SubstringLastIndexOf(".");
+					var baseType = schema.Index_EntityTypes_Name[typeName];
+					x.BaseType = baseType;
+				}
+			});
+		}
+		
+		internal static void BuildSchema_EntitySet(Schema schema, bool isStorage = false)
+		{
+			// SET Entity Type
+			schema.EntityContainer.EntitySets.ForEach(x =>
+			{
+				var typeName = x.EntityTypeName.SubstringLastIndexOf(".");
+				var entityType = schema.Index_EntityTypes_Name[typeName];
+				x.EntityType = entityType;
+				entityType.EntitySet = x;
+			});
+
+			// Database First doesn't map by default the table name because it's always equal to the entity set.
+			if (isStorage)
+			{
+				schema.EntityContainer.EntitySets.ForEach(x => { x.Table = string.IsNullOrEmpty(x.Table) ? x.Name : x.Table; });
+			}
+		}
+	}
 }
 
 #endif

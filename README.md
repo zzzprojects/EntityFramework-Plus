@@ -1,14 +1,25 @@
-# Improve Entity Framework performance and overcome limitations with MUST-HAVE features
+---
 
-## Library Powered By
+We are currently porting all features on [Entity Framework Classic](https://entityframework-classic.net/) 
 
-This library is powered by [Entity Framework Extensions](http://entityframework-extensions.net/?z=github&y=entityframework-plus)
+> Entity Framework Classic is a supported version from the latest EF6 code base. It supports .NET Framework and .NET Core and overcomes some EF limitations by adding tons of must-haves built-in features.
 
-<a href="http://entityframework-extensions.net/?z=github&y=entityframework-plus">
+---
+
+### Library Powered By
+
+This library is powered by [Entity Framework Extensions](https://entityframework-extensions.net/?z=github&y=entityframework-plus)
+
+<a href="https://entityframework-extensions.net/?z=github&y=entityframework-plus">
 <kbd>
 <img src="https://zzzprojects.github.io/images/logo/entityframework-extensions-pub.jpg" alt="Entity Framework Extensions" />
 </kbd>
 </a>
+
+---
+
+# Entity Framework Plus
+Improve Entity Framework performance and overcome limitations with MUST-HAVE features
 
 ## Download
 
@@ -20,11 +31,6 @@ Z.EntityFramework.Plus.EF5 | <a href="https://www.nuget.org/packages/Z.EntityFra
 
 <a href="https://github.com/zzzprojects/EntityFramework-Plus/wiki/Downloads">More download options (Full and Standalone Version)</a>
 
-Stay updated with latest changes
-
-<a href="https://twitter.com/zzzprojects" target="_blank"><img src="http://www.zzzprojects.com/images/twitter_follow.png" alt="Twitter Follow" height="24" /></a>
-<a href="https://www.facebook.com/zzzprojects/" target="_blank"><img src="http://www.zzzprojects.com/images/facebook_like.png" alt="Facebook Like" height="24" /></a>
-
 ## Features
 - Batch Operations
     - [Batch Delete](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Batch-Delete-%7C-Entity-Framework-Batch-Delete-Objects-Without-Loading-Them)
@@ -34,6 +40,7 @@ Stay updated with latest changes
 - Query
     - [Query Cache](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Cache-%7C-Entity-Framework-Second-Level-Caching)  
     - [Query Deferred](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Deferred-%7C-Entity-Framework-deferring-immediate-LINQ-query-execution)
+    - [Query DbSetFilter](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-DbSetFilter)
     - [Query Filter](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Filter-%7C-Entity-Framework-Dynamic-Instance-and-Global-Filters)
     - [Query Future](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Future-%7C-Entity-Framework-Combine-and-Execute-Multiple-SQL-Command)
     - [Query IncludeFilter](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-IncludeFilter-%7C-Entity-Framework-Include-Related-Entities-using-Where-Filter)
@@ -304,20 +311,20 @@ A **HUGE THANKS** for your help.
 ## More Projects
 
 **Entity Framework**
-- [EntityFramework Extensions](http://entityframework-extensions.net/)
-- [EntityFramework Plus](http://entityframework-plus.net)
+- [EntityFramework Extensions](https://entityframework-extensions.net/)
+- [EntityFramework Plus](https://entityframework-plus.net)
 
 **Bulk Operations**
-- [Bulk Operations](http://bulk-operations.net/)
-- [Dapper Plus](http://dapper-plus.net/)
+- [Bulk Operations](https://bulk-operations.net/)
+- [Dapper Plus](https://dapper-plus.net/)
 
 **Expression Evaluator**
-- [Eval-SQL.NET](http://eval-sql.net/)
-- [Eval-Expression.NET](http://eval-expression.net/)
+- [Eval-SQL.NET](https://eval-sql.net/)
+- [Eval-Expression.NET](https://eval-expression.net/)
 
 **Utilities**
 - [Extension Methods Library](https://github.com/zzzprojects/Z.ExtensionMethods/)
-- [Html Agility Pack](http://html-agility-pack.net/)
+- [Html Agility Pack](https://html-agility-pack.net/)
 
 **Need more info?** info@zzzprojects.com
 

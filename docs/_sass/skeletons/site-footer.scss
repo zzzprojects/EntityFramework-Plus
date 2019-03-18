@@ -1,0 +1,42 @@
+//
+// site-footer
+//
+.site-footer {
+    @include background-black;
+    color: $color-light;
+    font-size: $font-size-xl;
+}
+
+.site-footer input {
+    margin: 0 15px;
+}
+
+.newletter {
+    background-color: #191919;
+    input[type="email"] {
+        border-radius: 0;
+        border: 0;
+    }
+}
+
+.site-footer {
+    .section-free {
+        padding: 7px 0;
+        a {
+            &:hover {
+                color: $color-z;
+            }
+        }
+    }
+    .section-premium {
+        padding-bottom: 15px;
+        background-color: $color-gray-darkest;
+    }
+    .card-header {
+        h3 {
+            a {
+                padding-right: 24px;
+            }
+        }
+    }
+}
