@@ -41,6 +41,7 @@ QueryDbSetFilterManager.InitilizeGlobalFilter(ctx);
 var list = ctx.Customers.ToList();
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/HijoZX' %}
 
 ***Use entities context constructor to initialize global filter by default.***
 
@@ -60,6 +61,7 @@ ctx.DbSetFilter<Customer>(q => q.Where(x => x.IsActive));
 var list = ctx.Customers.ToList();
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/3Xz39f' %}
 
 ***Use entities context constructor to make some filter "global" to all context.***
 
@@ -76,10 +78,11 @@ var ctx = new EntitiesContext();
 // CREATE a disabled filter
 ctx.DbSetFilter<Customer>(MyEnum.EnumValue, q => q.Where(x => x.IsActive), false);
 
-// SELECT * FROM Customer WHERE IsActive = true
+// SELECT * FROM Customer
 var list = ctx.Customers.DbSetFilter(MyEnum.EnumValue).ToList();
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/XmtVWN' %}
 
 ## EF+ Query Filter By Inheritance/Interface
 
@@ -97,13 +100,14 @@ ctx.DbSetFilter<BaseDog>(q => q.Where(x => !x.IsDangerous));
 // CREATE filter by interface
 ctx.DbSetFilter<IAnimal>(q => q.Where(x => x.IsDomestic));
 
-// SELECT * FROM Cat WHERE IsDomestic = true
+// SELECT * FROM Cat WHERE IsDomestic = 1
 var cats = ctx.Cats.ToList();
 
-// SELECT * FROM Dog WHERE IsDomestic = true AND IsDangerous = false
+// SELECT * FROM Dog WHERE IsDomestic = 1 AND IsDangerous = 0
 var dogs = ctx.Dogs.ToList();
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/flFnBf' %}
 
 ## EF+ Query Filter Enable/Disable
 
@@ -151,3 +155,4 @@ var list = ctx.Customers.ToList();
 var list = ctx.Customers.AsNoDbSetFilter().ToList();
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/ZIA1kt' %}
