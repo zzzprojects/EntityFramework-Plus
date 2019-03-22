@@ -122,19 +122,20 @@ var ctx = new EntitiesContext();
 // CREATE filter by interface
 ctx.DbSetFilter<IAnimal>(MyEnum.EnumValue, q => q.Where(x => x.IsDomestic))
 
-// DISABLE filter only for class inheriting from BaseDog
-ctx.DbSetFilter<BaseDog>(MyEnum.EnumValue).Disable();
+// DISABLE filter
+ctx.DbSetFilter(MyEnum.EnumValue).Disable();
 
 // SELECT * FROM Dog
-var dogs = ctx.Dogs.ToList();
+var dogs = ctx.Dogs.ToList(); 
 
 // ENABLE filter
-ctx.DbSetFilter<BaseDog>(MyEnum.EnumValue).Enable();
+ctx.DbSetFilter(MyEnum.EnumValue).Enable();
 
 // SELECT * FROM Dog WHERE IsDomestic = true
 var dogs = ctx.Dogs.ToList();
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/girbYB' %}
 
 ## EF+ Query Filter AsNoFilter
 
