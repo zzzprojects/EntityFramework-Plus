@@ -120,7 +120,7 @@ When an immediate method is invoked to resolve the query, the initial query is m
 {% include template-example.html %} 
 ```csharp
 
-var list = ctx.Orders.IncludeFilter(x => x.OrderItems.Where(y => !y.IsSoftDeleted)
+var list = ctx.Orders.IncludeFilter(x => x.OrderItems.Where(y => !y.IsSoftDeleted))
                      .Take(10)
                      .ToList();
 
