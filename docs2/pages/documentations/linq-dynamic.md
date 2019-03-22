@@ -33,6 +33,7 @@ var list = ctx.Where(x => "x > 2").ToList();
 var list = ctx.Where(x => "x > y", new { y = 2 }).ToList();
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/Otm0Aa' %}
 
 ## Order && Select
 
@@ -48,14 +49,11 @@ All LINQ selector and order are supported. Most of them require the "Dynamic" su
 {% include template-example.html %} 
 ```csharp
 
-var list = ctx.SelectDynamic(x => "new { y = x + 1 }").ToList();
-var list = ctx.SelectDynamic(x => "new { y = x + 1 }", new { y = 1 }).ToList();
-var list = new List<int>() { 5, 2, 4, 1, 3 };
-
-var list2 = list.OrderByDynamic(x => "x + 1");
-var list3 = list.OrderByDynamic(x => "x + y", new { y = 1 });
+var list = context.Customers.OrderByDescendingDynamic(x => "x.Name").ToList();
+var list = context.Customers.SelectDynamic(x => "x.Name").ToList();
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/OJjBgK' %}
 
 ## Execute
 
@@ -71,3 +69,4 @@ var list = ctx.Execute<IEnumerable<int>>("Where(x => x > 2)");
 var list3 = ctx.Execute("Where(x => x > y).OrderBy(x => x).ToList()", new { y = 2 });
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/mwTqW7' %}
