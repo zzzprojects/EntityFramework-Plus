@@ -139,6 +139,7 @@ var options = new MemoryCacheEntryOptions() { SlidingExpiration = TimeSpan.FromH
 var states = ctx.States.FromCache(options);
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/f57ZoI' %}
 
 ## EF Query Cache Control
 
@@ -156,6 +157,7 @@ QueryCacheManager.Cache = MemoryCache.Default;
 QueryCacheManager.Cache = new MemoryCache(new MemoryCacheOptions());
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/mIhcff' %}
 
 You can set default policy
 
@@ -171,6 +173,7 @@ var options = new MemoryCacheEntryOptions() { SlidingExpiration = TimeSpan.FromH
 QueryCacheManager.DefaultMemoryCacheEntryOptions = options;
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/7JptcT' %}
 
 ## Real Life Scenarios
 
