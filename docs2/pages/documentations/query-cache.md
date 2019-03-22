@@ -25,6 +25,7 @@ var countries1 = ctx.Countries.FromCache().ToList();
 var countries2 = ctx.Countries.FromCache().ToList();
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/nx9A2H' %}
 
 ## EF+ Query Cache
 
@@ -43,6 +44,7 @@ var countries = ctx.Countries.Where(x => x.IsActive).FromCache();
 var states = ctx.States.Where(x => x.IsActive).FromCache(DateTime.Now.AddHours(2));
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/BcScGT' %}
 
 ## EF+ Query Cache Async
 
@@ -77,6 +79,7 @@ var count = ctx.Customers.Count();
 // Oops! All customers are cached instead of customer count.
 var count = ctx.Customers.FromCache().Count();
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/SOjxeY' %}
 
 **EF+ Query Deferred** has been created to resolve this issue, the resolution is now deferred instead of being immediate which lets us cache the expected result.
 
@@ -89,6 +92,7 @@ var ctx = new EntitiesContext();
 var count = ctx.Customers.DeferredCount().FromCache();
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/4MUlef' %}
 
 Query Deferred supports all Queryable extension methods and overloads.
 
@@ -113,6 +117,7 @@ QueryCacheManager.ExpireTag("countries");
 :bulb: Use Enum instead of hard-coding string for tag name.
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/RScINk' %}
 
 ## EF+ Query Cache Expiration
 
