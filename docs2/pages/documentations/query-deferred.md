@@ -22,6 +22,7 @@ var count = ctx.Customers.Count();
 var count = ctx.Customers.FromCache().Count();
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/WgpFfH' %}
 
 Here comes in play the deferred query which acts exactly like deferred methods, by modifying the query expression without resolving it.
 
@@ -35,6 +36,7 @@ var ctx = new EntitiesContext();
 var count = ctx.Customers.DeferredCount().FromCache();
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/ZChhmD' %}
 
 #### All LINQ IQueryable extension methods and overloads are supported:
 
@@ -75,6 +77,7 @@ ctx.Customers.DeferredCount().FromCache();
 ctx.Customers.DeferredCount().FutureValue();
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/5KcNj3' %}
 
 ## EF+ Query Deferred Execute
 
@@ -90,6 +93,7 @@ var countDeferred = ctx.Customers.DeferredCount();
 var count = countDeferred.Execute();
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/sXOfNB' %}
 
 ## EF+ Query Deferred Execute Async
 
