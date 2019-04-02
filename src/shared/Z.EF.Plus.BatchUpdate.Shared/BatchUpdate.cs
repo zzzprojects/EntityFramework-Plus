@@ -1183,6 +1183,15 @@ SELECT  @totalRowAffected
 						"[Extent7]",
 						"[Extent8]",
 						"[Extent9]",
+						"[Join1]",
+						"[Join2]",
+						"[Join3]",
+						"[Join4]",
+						"[Join5]",
+						"[Join6]",
+						"[Join7]",
+						"[Join8]",
+						"[Join9]",
 						"[Filter1]",
 						"[Filter2]",
 						"[Filter3]",
@@ -1198,6 +1207,15 @@ SELECT  @totalRowAffected
 						"`Extent7`",
 						"`Extent8`",
 						"`Extent9`",
+						"`Join1`",
+						"`Join2`",
+						"`Join3`",
+						"`Join4`",
+						"`Join5`",
+						"`Join6`",
+						"`Join7`",
+						"`Join8`",
+						"`Join9`",
 						"`Filter1`",
 						"`Filter2`",
 						"`Filter3`",
@@ -1213,7 +1231,16 @@ SELECT  @totalRowAffected
                         "\"Extent7\"",
                         "\"Extent8\"",
                         "\"Extent9\"",
-                        "\"Filter1\"",
+						"\"Join1\"",
+						"\"Join2\"",
+						"\"Join3\"",
+						"\"Join4\"",
+						"\"Join5\"",
+						"\"Join6\"",
+						"\"Join7\"",
+						"\"Join8\"",
+						"\"Join9\"",
+						"\"Filter1\"",
                         "\"Filter2\"",
                         "\"Filter3\"",
                         "\"Filter4\"",
@@ -1221,13 +1248,12 @@ SELECT  @totalRowAffected
                         "\"Filter6\"",
                     };
 
-					// Replace the first value found only!
+					// Before we were replacing only the first value, we might have added an issue here by removing the break.
 					foreach (var itemReplace in listReplace)
 					{
 						if (valueSql.Contains(itemReplace))
 						{
-							valueSql = valueSql.Replace(itemReplace, "B");
-							break;
+							valueSql = valueSql.Replace(itemReplace, "B"); 
 						}
 					}
 

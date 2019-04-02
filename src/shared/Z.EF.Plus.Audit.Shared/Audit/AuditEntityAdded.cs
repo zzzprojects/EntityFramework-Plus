@@ -68,7 +68,7 @@ namespace Z.EntityFramework.Plus
                     // Complex Type
                     AuditEntityAdded(auditEntry, objectStateEntry, valueRecord, string.Concat(prefix, name, "."));
                 }
-                else if (objectStateEntry.EntitySet.ElementType.KeyMembers.Any(x => x.Name == name) || auditEntry.Parent.CurrentOrDefaultConfiguration.IsAuditedProperty(auditEntry.Entry, name))
+                else if (objectStateEntry.EntitySet.ElementType.KeyMembers.Any(x => x.Name == name) || auditEntry.Parent.CurrentOrDefaultConfiguration.IsAuditedProperty(auditEntry.Entry, string.Concat(prefix, name)))
                 {
                     var auditEntryProperty = auditEntry.Parent.Configuration.AuditEntryPropertyFactory != null ?
                         auditEntry.Parent.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(auditEntry, objectStateEntry, string.Concat(prefix, name), null, value)) :

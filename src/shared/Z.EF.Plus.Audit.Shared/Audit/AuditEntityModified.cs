@@ -81,8 +81,8 @@ new AuditEntry();
                     AuditEntityModified(audit, entry, objectStateEntry, valueRecord, currentValue as DbUpdatableDataRecord, string.Concat(prefix, name, "."));
                 }
 
-                else if (objectStateEntry.EntityKey.EntityKeyValues.Any(x => x.Key == name)
-                         || entry.Parent.CurrentOrDefaultConfiguration.IsAuditedProperty(entry.Entry, name))
+				else if (objectStateEntry.EntityKey.EntityKeyValues.Any(x => x.Key == name)
+                         || entry.Parent.CurrentOrDefaultConfiguration.IsAuditedProperty(entry.Entry, string.Concat(prefix, name)))
                 {
                     if (!audit.Configuration.IgnorePropertyUnchanged
                         || objectStateEntry.EntityKey.EntityKeyValues.Any(x => x.Key == name)

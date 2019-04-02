@@ -9,8 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Reflection;
-
-
 #if NET45
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,6 +34,8 @@ using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
 using Remotion.Linq.Parsing.ExpressionVisitors.TreeEvaluation;
 using Remotion.Linq.Parsing.Structure;
+using Microsoft.EntityFrameworkCore.Query.Expressions;
+using Remotion.Linq.Clauses;
 
 #endif
 
@@ -326,16 +326,34 @@ namespace Z.EntityFramework.Plus
             // SET value
             QueryExecutor = queryExecutor;
             QueryContext = queryContext;
+            SelectExpression sqlQuery = null;
+
+            if (queryModelVisitor.Queries.Count == 0)
+            {
+                var _subQueryModelVisitorsBySource = queryModelVisitor.GetType().GetField("_subQueryModelVisitorsBySource", BindingFlags.NonPublic | BindingFlags.Instance);
+                var subQueryModelVisitorsBySources = (Dictionary<IQuerySource, RelationalQueryModelVisitor>)_subQueryModelVisitorsBySource.GetValue(queryModelVisitor);
+                if (subQueryModelVisitorsBySources.Count == 1)
+                {
+                    sqlQuery = subQueryModelVisitorsBySources.First().Value.Queries.First();
+                }
+                else
+                {
+                    throw new Exception("More than one query has been found inside the same query.");
+                }
+            }
+            else
+            {
+                sqlQuery = queryModelVisitor.Queries.First();
+            }
 
             // RETURN the IRealationCommand
-            var sqlQuery = queryModelVisitor.Queries.First();
             var relationalCommand = sqlQuery.CreateDefaultQuerySqlGenerator().GenerateSql(queryContext.ParameterValues);
             return relationalCommand;
         }
 #endif
 
-            /// <summary>Sets the result of the query deferred.</summary>
-            /// <param name="reader">The reader returned from the query execution.</param>
+        /// <summary>Sets the result of the query deferred.</summary>
+        /// <param name="reader">The reader returned from the query execution.</param>
         public virtual void SetResult(DbDataReader reader)
         {
         }

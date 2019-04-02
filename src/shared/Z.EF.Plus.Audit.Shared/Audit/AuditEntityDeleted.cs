@@ -72,7 +72,7 @@ namespace Z.EntityFramework.Plus
                     // Complex Type
                     AuditEntityDeleted(entry, objectStateEntry, valueRecord, string.Concat(prefix, name, "."));
                 }
-                else if (objectStateEntry.EntityKey.EntityKeyValues.Any(x => x.Key == name) || entry.Parent.CurrentOrDefaultConfiguration.IsAuditedProperty(entry.Entry, name))
+                else if (objectStateEntry.EntityKey.EntityKeyValues.Any(x => x.Key == name) || entry.Parent.CurrentOrDefaultConfiguration.IsAuditedProperty(entry.Entry, string.Concat(prefix, name)))
                 {
                     var auditEntryProperty = entry.Parent.Configuration.AuditEntryPropertyFactory != null ?
                         entry.Parent.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(entry, objectStateEntry, string.Concat(prefix, name), value, null)) :

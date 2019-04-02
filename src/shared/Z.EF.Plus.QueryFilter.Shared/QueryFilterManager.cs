@@ -57,7 +57,7 @@ namespace Z.EntityFramework.Plus
             GlobalFilters = new Dictionary<object, AliasBaseQueryFilter>();
             GlobalInitializeFilterActions = new List<Tuple<AliasBaseQueryFilter, Action<AliasBaseQueryFilter>>>();
 
-#if NETSTANDARD2_0
+#if NETSTANDARD2_0 && !EFCLASSIC
     ForceCast = true;
 #endif
         }
