@@ -35,6 +35,7 @@ foreach(var entry in entries)
 }
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/89tii1' %}
 
 AutoSave audit in your database
 
@@ -44,6 +45,7 @@ AuditManager.DefaultConfiguration.AutoSavePreAction = (context, audit) =>
     (context as EntityContext).AuditEntries.AddRange(audit.Entries);
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/rRORzM' %}
 
 ***Support:** EF5, EF6, EF Core*
 
