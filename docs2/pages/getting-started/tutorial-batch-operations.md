@@ -19,7 +19,6 @@ ctx.Users.Where(x => x.LastLoginDate < date)
          .Delete(x => x.BatchSize = 1000);
 
 ```
-
 {% include component-try-it.html href='https://dotnetfiddle.net/asjI4U' %}
 
 ***Support:** EF5, EF6, EF Core*
@@ -40,7 +39,6 @@ ctx.Users.Where(x => x.LastLoginDate < date)
          .Update(x => new User() { IsSoftDeleted = 1 });
 
 ```
-
 {% include component-try-it.html href='https://dotnetfiddle.net/cV3IHD' %}
 
 ***Support:** EF5, EF6, EF Core*
