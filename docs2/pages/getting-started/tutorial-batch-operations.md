@@ -8,15 +8,19 @@ Deletes multiples rows in a single database roundtrip and without loading entiti
 ```csharp
 // using Z.EntityFramework.Plus; // Don't forget to include this.
 
-// DELETE all users which has been inactive for 2 years
-ctx.Users.Where(x => x.LastLoginDate < DateTime.Now.AddYears(-2))
+// DELETE all users inactive for 2 years
+var date = DateTime.Now.AddYears(-2);
+ctx.Users.Where(x => x.LastLoginDate < date)
          .Delete();
 
 // DELETE using a BatchSize
-ctx.Users.Where(x => x.LastLoginDate < DateTime.Now.AddYears(-2))
+var date = DateTime.Now.AddYears(-2);
+ctx.Users.Where(x => x.LastLoginDate < date)
          .Delete(x => x.BatchSize = 1000);
 
 ```
+
+{% include component-try-it.html href='https://dotnetfiddle.net/asjI4U' %}
 
 ***Support:** EF5, EF6, EF Core*
 
@@ -30,11 +34,14 @@ Updates multiples rows using an expression in a single database roundtrip and wi
 ```csharp
 // using Z.EntityFramework.Plus; // Don't forget to include this.
 
-// UPDATE all users which has been inactive for 2 years
-ctx.Users.Where(x => x.LastLoginDate < DateTime.Now.AddYears(-2))
+// UPDATE all users inactive for 2 years
+var date = DateTime.Now.AddYears(-2);
+ctx.Users.Where(x => x.LastLoginDate < date)
          .Update(x => new User() { IsSoftDeleted = 1 });
 
 ```
+
+{% include component-try-it.html href='https://dotnetfiddle.net/cV3IHD' %}
 
 ***Support:** EF5, EF6, EF Core*
 
