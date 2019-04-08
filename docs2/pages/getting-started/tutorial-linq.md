@@ -32,5 +32,6 @@ var list = ctx.Where(x => "x > 2").ToList();
 var list = ctx.Where(x => "x > y", new { y = 2 }).ToList();
 
 ```
+{% include component-try-it.html href='https://dotnetfiddle.net/iSnS3l' %}
 
 [Learn more](/linq-dynamic)
