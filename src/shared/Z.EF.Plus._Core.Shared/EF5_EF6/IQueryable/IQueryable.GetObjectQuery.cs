@@ -22,12 +22,12 @@ using System.Data.Entity.Core.Objects;
 
 namespace Z.EntityFramework.Plus
 {
-    internal static partial class InternalExtensions
+    public static partial class PublicInternalExtensions
     {
         /// <summary>An IQueryable&lt;TEntity&gt; extension method that get the ObjectQuery from the query.</summary>
         /// <param name="query">The query to get the ObjectQuery from.</param>
         /// <returns>The ObjectQuery from the query.</returns>
-        internal static ObjectQuery GetObjectQuery(this IQueryable query)
+        public static ObjectQuery GetObjectQuery(this IQueryable query)
         {
             // CHECK ObjectQuery
             var objectQuery = query as ObjectQuery;

@@ -9,6 +9,7 @@
 #if EFCORE
 
 using System.Data.Common;
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -22,8 +23,26 @@ namespace Z.EntityFramework.Plus
         /// <returns>The new store command from the DbContext.</returns>
         public static DbCommand CreateStoreCommand(this DbContext context)
         {
+            DbCommand command = null;
+#if NETSTANDARD2_0
+            if (context.Database.ProviderName == "Devart.Data.Oracle.Entity.EFCore")
+            {
+                var oracleRelationalDatabaseFacadeExtensions = context.Database.GetDbConnection().GetType().Assembly
+                    .GetType("Microsoft.EntityFrameworkCore.OracleRelationalDatabaseFacadeExtensions");
+                var getOracleConnectionMethod = oracleRelationalDatabaseFacadeExtensions.GetMethod("GetOracleConnection", BindingFlags.Static | BindingFlags.Public);
+                var entityConnection = getOracleConnectionMethod.Invoke(oracleRelationalDatabaseFacadeExtensions, new []{ context.Database });
+                command = ((dynamic) entityConnection).CreateCommand();
+            }
+            else
+            {  
+#endif 
             var entityConnection = context.Database.GetDbConnection();
-            var command = entityConnection.CreateCommand();
+            command = entityConnection.CreateCommand();
+
+#if NETSTANDARD2_0
+            }
+#endif
+
             var entityTransaction = context.Database.GetService<IRelationalConnection>().CurrentTransaction;
             if (entityTransaction != null)
             {

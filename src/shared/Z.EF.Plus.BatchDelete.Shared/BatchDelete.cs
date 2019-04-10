@@ -375,6 +375,11 @@ SELECT  @totalRowAffected
                     int totalRowAffecteds = command.ExecuteNonQuery();
                     return totalRowAffecteds;
                 }
+                else if (command.GetType().Name.Contains("Oracle"))
+                {
+                    int totalRowAffecteds = command.ExecuteNonQuery();
+                    return totalRowAffecteds;
+                }
 
                 var rowAffecteds = (int)command.ExecuteScalar();
                 return rowAffecteds;
@@ -387,7 +392,7 @@ SELECT  @totalRowAffected
                 }
             }
 #endif
-        }
+            }
 
 #if EF5 || EF6
         /// <summary>Creates a command to execute the batch operation.</summary>
@@ -563,6 +568,8 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
             bool isMySql = false;
             bool isMySqlPomelo = false;
             bool isSQLite = false;
+            bool isOracle = false;
+            bool isDevOracle = false;
 
             if (assemblyName == "Microsoft.EntityFrameworkCore.SqlServer")
             {
@@ -595,6 +602,22 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
             else if (assemblyName == "Microsoft.EntityFrameworkCore.Sqlite")
             {
                 isSQLite = true;
+
+                // CHANGE all for this one?
+                dynamicProviderEntityType = typeof(RelationalMetadataExtensions).GetMethod("Relational", new[] { typeof(IEntityType) });
+                dynamicProviderProperty = typeof(RelationalMetadataExtensions).GetMethod("Relational", new[] { typeof(IProperty) });
+            }
+            else if (assemblyName == "Oracle.EntityFrameworkCore" )
+            {
+                isOracle = true;
+
+                // CHANGE all for this one?
+                dynamicProviderEntityType = typeof(RelationalMetadataExtensions).GetMethod("Relational", new[] { typeof(IEntityType) });
+                dynamicProviderProperty = typeof(RelationalMetadataExtensions).GetMethod("Relational", new[] { typeof(IProperty) });
+            }
+            else if (assemblyName == "Devart.Data.Oracle.Entity.EFCore")
+            {
+                isDevOracle = true;
 
                 // CHANGE all for this one?
                 dynamicProviderEntityType = typeof(RelationalMetadataExtensions).GetMethod("Relational", new[] { typeof(IEntityType) });
@@ -726,7 +749,25 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
 
                 primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + "." + "\"" + x + "\"", " = B.\"", x, "\"")));
             }
+            else if (isOracle || isDevOracle)
+            {
+                var sqlServer = (IRelationalEntityTypeAnnotations)dynamicProviderEntityType.Invoke(null, new[] { entity });
 
+                // GET mapping
+                tableName = string.IsNullOrEmpty(sqlServer.Schema) ? string.Concat("\"", sqlServer.TableName, "\"") : string.Concat("\"", sqlServer.Schema, "\".\"", sqlServer.TableName, "\"");
+
+                // GET keys mappings
+                foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
+                {
+                    var mappingProperty = dynamicProviderProperty.Invoke(null, new[] { propertyKey });
+
+                    var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
+                    columnKeys.Add((string)columnNameProperty.GetValue(mappingProperty));
+                }
+
+                // GET primary key join
+                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".\"", x, "\" = B.\"", x, "\"")));
+            }
 
             // GET command text template
             var commandTextTemplate = isPostgreSQL ?
@@ -735,6 +776,8 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
                 CommandTextTemplate_MySql :
                 isSQLite ?
                 CommandTextSQLiteTemplate :
+                ( isOracle || isDevOracle) ?
+                    CommandTextOracleTemplate :
                 BatchSize > 0 ?
                 BatchDelayInterval > 0 ?
                     CommandTextWhileDelayTemplate :
@@ -768,6 +811,21 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
             foreach (var relationalParameter in relationalCommand.Parameters)
             {
                 object parameter;
+                string name = "";
+
+#if NETSTANDARD2_0
+                if (isOracle || isDevOracle)
+                {
+                    name = ((dynamic)relationalParameter).Name;
+                }
+                else
+                {
+#endif 
+                    name = relationalParameter.InvariantName;
+#if NETSTANDARD2_0
+                }
+#endif
+                 
                 if (!queryContext.ParameterValues.TryGetValue(relationalParameter.InvariantName, out parameter))
                 {
                     if (relationalParameter.InvariantName.StartsWith("__ef_filter"))
@@ -781,7 +839,7 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
                 }
 
                 var param = command.CreateParameter();
-                param.CopyFrom(relationalParameter, parameter);
+                param.CopyFrom(relationalParameter, parameter, name);
 
 #if !NETSTANDARD1_3
                 if (isPostgreSQL)

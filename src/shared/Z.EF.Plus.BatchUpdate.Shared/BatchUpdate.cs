@@ -386,7 +386,14 @@ SELECT  @totalRowAffected
                 {
                     Executing(command);
                 }
+#if NETSTANDARD2_0
+                if (command.GetType().Name.Contains("Oracle"))
+                {
+                    var bindByNameProperty = command.GetType().GetProperty("BindByName") ?? command.GetType().GetProperty("PassParametersByName");
 
+                    bindByNameProperty.SetValue(command, true, null);
+                }
+#endif
                 var rowAffecteds = command.ExecuteNonQuery();
                 return rowAffecteds;
             }
@@ -701,6 +708,8 @@ SELECT  @totalRowAffected
             bool isMySql = false;
             bool isMySqlPomelo = false;
             bool isSQLite = false;
+            bool isOracle = false;
+            bool isDevOracle = false;
 
             if (assemblyName == "Microsoft.EntityFrameworkCore.SqlServer")
             {
@@ -733,6 +742,22 @@ SELECT  @totalRowAffected
             else if (assemblyName == "Microsoft.EntityFrameworkCore.Sqlite")
             {
                 isSQLite = true;
+
+                // CHANGE all for this one?
+                dynamicProviderEntityType = typeof(RelationalMetadataExtensions).GetMethod("Relational", new[] { typeof(IEntityType) });
+                dynamicProviderProperty = typeof(RelationalMetadataExtensions).GetMethod("Relational", new[] { typeof(IProperty) });
+            }
+            else if (assemblyName == "Oracle.EntityFrameworkCore")
+            {
+                isOracle = true;
+
+                // CHANGE all for this one?
+                dynamicProviderEntityType = typeof(RelationalMetadataExtensions).GetMethod("Relational", new[] { typeof(IEntityType) });
+                dynamicProviderProperty = typeof(RelationalMetadataExtensions).GetMethod("Relational", new[] { typeof(IProperty) });
+            }
+            else if (assemblyName == "Devart.Data.Oracle.Entity.EFCore")
+            {
+                isDevOracle = true;
 
                 // CHANGE all for this one?
                 dynamicProviderEntityType = typeof(RelationalMetadataExtensions).GetMethod("Relational", new[] { typeof(IEntityType) });
@@ -865,6 +890,26 @@ SELECT  @totalRowAffected
                 // GET primary key join
                 primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".\"", x, "\" = B.\"", x, "\"")));
             }
+            else if (isOracle || isDevOracle)
+            {
+                var sqlServer = (IRelationalEntityTypeAnnotations)dynamicProviderEntityType.Invoke(null, new[] { entity });
+
+                // GET mapping
+                tableName = string.IsNullOrEmpty(sqlServer.Schema) ? string.Concat("\"", sqlServer.TableName, "\"") : string.Concat("\"", sqlServer.Schema, "\".\"", sqlServer.TableName, "\"");
+
+                // GET keys mappings
+                var columnKeys = new List<string>();
+                foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
+                {
+                    var mappingProperty = dynamicProviderProperty.Invoke(null, new[] { propertyKey });
+
+                    var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
+                    columnKeys.Add((string)columnNameProperty.GetValue(mappingProperty));
+                }
+
+                // GET primary key join
+                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".\"", x, "\" = B.\"", x, "\"")));
+            }
 
             // GET command text template
             var commandTextTemplate =
@@ -874,11 +919,10 @@ SELECT  @totalRowAffected
                 CommandTextWhileDelayTemplate :
                 CommandTextWhileTemplate :
 #endif
-                isPostgreSQL? CommandTextTemplate_PostgreSQL : 
-                isMySql || isMySqlPomelo ?
-                CommandTextTemplate_MySQL :
-                isSQLite ?
-                CommandTextTemplate_SQLite :
+                isPostgreSQL ? CommandTextTemplate_PostgreSQL :
+                isMySql || isMySqlPomelo ? CommandTextTemplate_MySQL :
+                isSQLite ? CommandTextTemplate_SQLite :
+                (isOracle || isDevOracle) ? CommandTextOracleTemplate2 :
                 CommandTextTemplate;
 
             // GET inner query
@@ -894,6 +938,7 @@ SELECT  @totalRowAffected
 
             // GET updateSetValues
             var setValues = "";
+            var setColumns = "";
 
             if (isSqlServer)
             {
@@ -911,11 +956,17 @@ SELECT  @totalRowAffected
             {
                 setValues = string.Join("," + Environment.NewLine, values.Select((x, i) => x.Item2 is ConstantExpression ? string.Concat("\"", x.Item1, "\" = ", ((ConstantExpression)x.Item2).Value) : string.Concat("\"", x.Item1, "\" = @zzz_BatchUpdate_", i)));
             }
+            else if(isOracle || isDevOracle)
+            {
+                setColumns = string.Join("," + Environment.NewLine, values.Select((x) => string.Concat(EscapeName(x.Item1, isMySql, true, isPostgreSQL, false))));
+                setValues = string.Join("," + Environment.NewLine, values.Select((x, i) => x.Item2 is ConstantExpression ? string.Concat(((ConstantExpression)x.Item2).Value) : string.Concat(":zzz_BatchUpdate_", i)));
+            }
 
             // REPLACE template
             commandTextTemplate = commandTextTemplate.Replace("{TableName}", tableName)
                 .Replace("{Select}", querySelect)
                 .Replace("{PrimaryKeys}", primaryKeys)
+                .Replace("{setColumn}", setColumns)
                 .Replace("{SetValue}", setValues)
                 .Replace("{Hint}", UseTableLock ? "WITH ( TABLOCK )" : "");
 
@@ -928,6 +979,21 @@ SELECT  @totalRowAffected
             foreach (var relationalParameter in relationalCommand.Parameters)
             {
                 object parameter;
+                string name = "";
+
+#if NETSTANDARD2_0
+                if (isOracle || isDevOracle)
+                {
+                    name = ((dynamic)relationalParameter).Name;
+                }
+                else
+                {
+#endif 
+                    name = relationalParameter.InvariantName;
+#if NETSTANDARD2_0
+                }
+#endif
+
                 if (!queryContext.ParameterValues.TryGetValue(relationalParameter.InvariantName, out parameter))
                 {
                     if (relationalParameter.InvariantName.StartsWith("__ef_filter"))
@@ -941,7 +1007,7 @@ SELECT  @totalRowAffected
                 }
 
                 var param = command.CreateParameter();
-                param.CopyFrom(relationalParameter, parameter);
+                param.CopyFrom(relationalParameter, parameter, name);
 
 #if !NETSTANDARD1_3
                 if (isPostgreSQL)
@@ -980,7 +1046,15 @@ SELECT  @totalRowAffected
                 }
 
                 var parameter = command.CreateParameter();
-                parameter.ParameterName = "@zzz_BatchUpdate_" + i;
+
+                if (isOracle || isDevOracle)
+                {
+                    parameter.ParameterName = "zzz_BatchUpdate_" + i;
+                }
+                else
+                {
+                    parameter.ParameterName = "@zzz_BatchUpdate_" + i;
+                }
 
                 var paramValue = values[i].Item2;
                 var paramNullValue = paramValue as NullValue;     
@@ -1042,6 +1116,8 @@ SELECT  @totalRowAffected
             bool isMySql = false;
             bool isMySqlPomelo = false;
             bool isSQLite = false;
+            bool isOracle = false;
+            bool isDevOracle = false;
 
             if (assemblyName == "Microsoft.EntityFrameworkCore.SqlServer")
             {
@@ -1074,6 +1150,22 @@ SELECT  @totalRowAffected
             else if (assemblyName == "Microsoft.EntityFrameworkCore.Sqlite")
             {
                 isSQLite = true;
+
+                // CHANGE all for this one?
+                dynamicProviderEntityType = typeof(RelationalMetadataExtensions).GetMethod("Relational", new[] { typeof(IEntityType) });
+                dynamicProviderProperty = typeof(RelationalMetadataExtensions).GetMethod("Relational", new[] { typeof(IProperty) });
+            }
+            else if (assemblyName == "Oracle.EntityFrameworkCore")
+            { 
+                isOracle = true;
+
+                // CHANGE all for this one?
+                dynamicProviderEntityType = typeof(RelationalMetadataExtensions).GetMethod("Relational", new[] { typeof(IEntityType) });
+                dynamicProviderProperty = typeof(RelationalMetadataExtensions).GetMethod("Relational", new[] { typeof(IProperty) });
+            }
+            else if (assemblyName == "Devart.Data.Oracle.Entity.EFCore")
+            {
+                isDevOracle = true;
 
                 // CHANGE all for this one?
                 dynamicProviderEntityType = typeof(RelationalMetadataExtensions).GetMethod("Relational", new[] { typeof(IEntityType) });
@@ -1248,12 +1340,19 @@ SELECT  @totalRowAffected
                         "\"Filter6\"",
                     };
 
-					// Before we were replacing only the first value, we might have added an issue here by removing the break.
+					var isSelect = valueSql.Contains("SELECT");
 					foreach (var itemReplace in listReplace)
 					{
 						if (valueSql.Contains(itemReplace))
 						{
-							valueSql = valueSql.Replace(itemReplace, "B"); 
+							valueSql = valueSql.Replace(itemReplace, "B");
+
+							// If the value has a select, we break on the first item to replace found
+							// The fix is not perfect, but enough good for now
+							if (isSelect)
+							{
+								break;
+							}
 						}
 					}
 
