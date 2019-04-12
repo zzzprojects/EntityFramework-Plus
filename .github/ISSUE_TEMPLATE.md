@@ -10,7 +10,7 @@ Stack trace:
 ```
 
 ### Fiddle or Project
-Create a Fiddle that reproduces the issue: https://dotnetfiddle.net/zB4SGA
+Create a Fiddle that reproduce the issue: https://dotnetfiddle.net/zB4SGA
 
 Or provide a project/solution that we can run to reproduce the issue.
 - Make sure the project compile
