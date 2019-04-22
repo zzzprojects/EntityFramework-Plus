@@ -188,7 +188,6 @@ _context.Foos.Delete();
 ## Requirements
 
 - **EF+ Batch Delete:** Full version or Standalone version
-- **Database Provider:** SQL Server, SQL Azure (More provider will be added in a close future)
 - **Entity Framework Version:** EF5, EF6, EFCore
 - **Minimum Framework Version:** .NET Framework 4
 
