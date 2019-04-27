@@ -51,6 +51,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)EFCore\DbContext\CreateStoreCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EFCore\DbContext\DbContext.IsEFCore2x.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EFCore\DbContext\DbContext.GetKeyNames.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EFCore\DbContext\IsInMemory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EFCore\DbSet`\GetDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EFCore\GetStateManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EFCore\IQueryable`\CreateCommand.cs" />

@@ -6,7 +6,7 @@
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 using System;
-
+using System.Reflection;
 #if EFCORE
 using Microsoft.EntityFrameworkCore;
 #endif
@@ -25,6 +25,57 @@ namespace Z.EntityFramework.Plus
         /// <summary>Gets or sets the factory to create an InMemory DbContext.</summary>
         /// <value>The factory to create an InMemory DbContext.</value>
         public static Func<DbContext> InMemoryDbContextFactory { get; set; }
+
+	    internal static DbContext CreateFactoryContext(DbContext context)
+	    {
+		    if (InMemoryDbContextFactory != null)
+		    {
+			    var newContext = InMemoryDbContextFactory();
+
+			    if (newContext != null)
+			    {
+				    if (newContext.GetType() == context.GetType())
+				    {
+					    var optionsField = typeof(DbContext).GetField("_options",
+						    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+					    var originalOptions = optionsField.GetValue(context);
+					    optionsField.SetValue(newContext, originalOptions);
+				    }
+
+				    EnsureContextSimilar(context, newContext);
+				    return newContext;
+			    }
+		    }
+
+		    var type = context.GetType();
+		    var emtptyConstructor = type.GetConstructor(new Type[0]);
+
+		    if (emtptyConstructor != null)
+		    {
+			    var newContext = (DbContext)emtptyConstructor.Invoke(new object[0]);
+
+			    var optionsField = typeof(DbContext).GetField("_options",
+				    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+			    var originalOptions = optionsField.GetValue(context);
+			    optionsField.SetValue(newContext, originalOptions);
+
+			    EnsureContextSimilar(context, newContext);
+			    return newContext;
+		    }
+
+		    throw new Exception(
+			    "A default DbContext context must exist, or a context factory must be provided (BatchDeleteManager.BatchDeleteBuilder). This setting is required for some additional features. Read more: http://entityframework-extensions.net/context-factory");
+	    }
+
+	    internal static void EnsureContextSimilar(DbContext originalContext, DbContext newContext)
+	    {
+		    if (originalContext.IsInMemory() && !newContext.IsInMemory())
+		    {
+			    throw new Exception(
+				    "Oops! The original context was an “InMemory” provider. Make sure that the method BatchDeleteManager.BatchDeleteBuilder returns an InMemory provider.");
+		    }
+	    }
+
 #else
         /// <summary>
         /// Gets or sets a value indicating whether this object is in memory query.

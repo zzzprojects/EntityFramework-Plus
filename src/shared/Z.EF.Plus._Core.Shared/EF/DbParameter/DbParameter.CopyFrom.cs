@@ -123,25 +123,8 @@ namespace Z.EntityFramework.Plus
 #if EFCORE
         public static void CopyFrom(this DbParameter @this, IRelationalParameter from, object value)
         {
-            @this.ParameterName = from.InvariantName;
-
-            if (from is TypeMappedRelationalParameter)
-            {
-                var relationalTypeMappingProperty = typeof(TypeMappedRelationalParameter).GetProperty("RelationalTypeMapping", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-
-                if (relationalTypeMappingProperty != null)
-                {
-                    var relationalTypeMapping = (RelationalTypeMapping)relationalTypeMappingProperty.GetValue(from);
-
-                    if (relationalTypeMapping.DbType.HasValue)
-                    {
-                        @this.DbType = relationalTypeMapping.DbType.Value;
-                    }
-                }
-            }
-
-            @this.Value = value ?? DBNull.Value;
-        }
+			CopyFrom(@this, from, value, from.InvariantName);
+		}
 
         public static void CopyFrom(this DbParameter @this, IRelationalParameter from, object value, string newParameterName)
         {

@@ -19,44 +19,50 @@ namespace Z.EntityFramework.Plus
     internal static partial class InternalExtensions
     {
         public static DbContext GetInMemoryContext<T>(this IQueryable<T> source)
-        {
-            var compilerField = typeof (EntityQueryProvider).GetField("_queryCompiler", BindingFlags.NonPublic | BindingFlags.Instance);
-            var compiler = (QueryCompiler) compilerField.GetValue(source.Provider);
+		{
+			var compilerField = typeof(EntityQueryProvider).GetField("_queryCompiler", BindingFlags.NonPublic | BindingFlags.Instance);
+			var compiler = (QueryCompiler)compilerField.GetValue(source.Provider);
 
-            var queryContextFactoryField = compiler.GetType().GetField("_queryContextFactory", BindingFlags.NonPublic | BindingFlags.Instance);
-            var queryContextFactory = queryContextFactoryField.GetValue(compiler);
+			var queryContextFactoryField = compiler.GetType().GetField("_queryContextFactory", BindingFlags.NonPublic | BindingFlags.Instance);
+			var queryContextFactory = queryContextFactoryField.GetValue(compiler);
 
-#if EFCORE
-#if NETSTANDARD2_0
-            var dependenciesProperty = typeof(QueryContextFactory).GetProperty("Dependencies", BindingFlags.NonPublic | BindingFlags.Instance);
-            var dependencies = dependenciesProperty.GetValue(queryContextFactory);
+			object stateManagerDynamic;
 
-            var stateManagerField = dependencies.GetType().GetProperty("StateManager", BindingFlags.Public | BindingFlags.Instance);
-            var stateManagerDynamic = stateManagerField.GetValue(dependencies);
+			var dependenciesProperty = queryContextFactory.GetType().GetProperty("Dependencies", BindingFlags.NonPublic | BindingFlags.Instance);
+			if (dependenciesProperty != null)
+			{
+				// EFCore 2.x
+				var dependencies = dependenciesProperty.GetValue(queryContextFactory);
 
-            IStateManager stateManager = stateManagerDynamic as IStateManager;
-            if (stateManager == null)
-            {
-                stateManager = ((dynamic)stateManagerDynamic).Value;
-            }
-#else
-            var stateManagerField = typeof(QueryContextFactory).GetProperty("StateManager", BindingFlags.NonPublic | BindingFlags.Instance);
-            var stateManagerDynamic = stateManagerField.GetValue(queryContextFactory);
+				var stateManagerField = typeof(DbContext).GetTypeFromAssembly_Core("Microsoft.EntityFrameworkCore.Query.QueryContextDependencies").GetProperty("StateManager", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+				stateManagerDynamic = stateManagerField.GetValue(dependencies);
+			}
+			else
+			{
+				// EFCore 1.x
+				var stateManagerField = typeof(QueryContextFactory).GetProperty("StateManager", BindingFlags.NonPublic | BindingFlags.Instance);
+				stateManagerDynamic = stateManagerField.GetValue(queryContextFactory);
+			}
 
-            IStateManager stateManager = stateManagerDynamic as IStateManager;
-            if (stateManager == null)
-            {
-                stateManager = ((dynamic) stateManagerDynamic).Value;
-            }
-#endif
-#else
-            var stateManagerField = typeof (QueryContextFactory).GetField("_stateManager", BindingFlags.NonPublic | BindingFlags.Instance);
-            var stateManager = (IStateManager) stateManagerField.GetValue(queryContextFactory);
-#endif
+			IStateManager stateManager = stateManagerDynamic as IStateManager;
 
-            return stateManager.Context;
-        }
-    }
+			if (stateManager == null)
+			{
+				Microsoft.EntityFrameworkCore.Internal.LazyRef<IStateManager> lazyStateManager = stateManagerDynamic as Microsoft.EntityFrameworkCore.Internal.LazyRef<IStateManager>;
+				if (lazyStateManager != null)
+				{
+					stateManager = lazyStateManager.Value;
+				}
+			}
+
+			if (stateManager == null)
+			{
+				stateManager = ((dynamic)stateManagerDynamic).Value;
+			}
+
+			return stateManager.Context;
+		}
+	}
 }
 
 #endif

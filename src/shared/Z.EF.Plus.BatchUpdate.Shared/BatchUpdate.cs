@@ -192,6 +192,10 @@ SELECT  @totalRowAffected
 		/// <value>True if use table lock, false if not.</value>
 		public bool UseTableLock { get; set; }
 
+		/// <summary>Gets or sets a value indicating whether this object use row lock.</summary>
+		/// <value>True if use row lock, false if not.</value>
+		public bool UseRowLock { get; set; }
+
 		/// <summary>Executes the batch delete operation.</summary>
 		/// <typeparam name="T">The type of elements of the query.</typeparam>
 		/// <param name="query">The query used to execute the batch operation.</param>
@@ -329,11 +333,14 @@ SELECT  @totalRowAffected
 				}
 			}
 #elif EFCORE
-            if (BatchUpdateManager.InMemoryDbContextFactory != null && query.IsInMemoryQueryContext())
-            {
-                var context = BatchUpdateManager.InMemoryDbContextFactory();
+			if (query.IsInMemoryQueryContext())
+			{
+				var queryContext = query.GetInMemoryContext();
 
-                var list = query.ToList();
+				var context = BatchUpdateManager.CreateFactoryContext(queryContext);
+
+
+				var list = query.ToList();
                 var compiled = updateFactory.Compile();
                 var memberBindings = ((MemberInitExpression)updateFactory.Body).Bindings;
                 var accessors = memberBindings
@@ -350,7 +357,10 @@ SELECT  @totalRowAffected
                         var value = accessor.GetValue(newItem);
                         accessor.SetValue(item, value);
                     }
-                }
+
+	                var entityAttached = context.Attach(item);
+	                entityAttached.State = EntityState.Modified;
+				}
 
                 context.SaveChanges();
                 return list.Count;
@@ -968,10 +978,10 @@ SELECT  @totalRowAffected
                 .Replace("{PrimaryKeys}", primaryKeys)
                 .Replace("{setColumn}", setColumns)
                 .Replace("{SetValue}", setValues)
-                .Replace("{Hint}", UseTableLock ? "WITH ( TABLOCK )" : "");
+				.Replace("{Hint}", UseTableLock ? "WITH ( TABLOCK )" : UseRowLock ? "WITH ( ROWLOCK )" : "");
 
-            // CREATE command
-            var command = query.GetDbContext().CreateStoreCommand();
+			// CREATE command
+			var command = query.GetDbContext().CreateStoreCommand();
             command.CommandText = commandTextTemplate;
 
 #if EFCORE

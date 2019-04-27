@@ -203,7 +203,7 @@ SELECT  @totalRowAffected
                 return 0;
             }
 
-            // GET model and info
+			// GET model and info
 #if EF5 || EF6
             var dbContext = query.GetDbContext();
 
@@ -324,17 +324,19 @@ SELECT  @totalRowAffected
                 }
             }
 #elif EFCORE
-            if (BatchDeleteManager.InMemoryDbContextFactory != null && query.IsInMemoryQueryContext())
-            {
-                var context = BatchDeleteManager.InMemoryDbContextFactory();
+			if (query.IsInMemoryQueryContext())
+			{
+				var queryContext = query.GetInMemoryContext();
 
-                var list = query.ToList();
-                context.RemoveRange(list);
-                context.SaveChanges();
-                return list.Count;
-            }
+				var context = BatchDeleteManager.CreateFactoryContext(queryContext);
 
-            var dbContext = query.GetDbContext();
+				var list = query.ToList();
+				context.RemoveRange(list);
+				context.SaveChanges();
+				return list.Count;
+			}
+
+			var dbContext = query.GetDbContext();
             var entity = dbContext.Model.FindEntityType(typeof(T));
             var keys = entity.GetKeys().ToList()[0].Properties;
 
@@ -660,6 +662,7 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
             }
             else if (isPostgreSQL)
             {
+                List<Tuple<string, string>> propertyAndColumnName = new List<Tuple<string, string>>();
                 var sqlServer = (IRelationalEntityTypeAnnotations)dynamicProviderEntityType.Invoke(null, new[] { entity });
 
                 // GET mapping
@@ -673,10 +676,11 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
                     var mappingProperty = dynamicProviderProperty.Invoke(null, new[] { propertyKey });
 
                     var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
-                    columnKeys.Add((string)columnNameProperty.GetValue(mappingProperty));
+                    //columnKeys.Add((string)columnNameProperty.GetValue(mappingProperty));
+                    propertyAndColumnName.Add(new Tuple<string, string>(propertyKey.Name, (string)columnNameProperty.GetValue(mappingProperty)));
                 }
 
-                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.\"", x, "\" = B.\"", x, "\"")));
+                primaryKeys = string.Join(Environment.NewLine + "AND ", propertyAndColumnName.Select(x => string.Concat("A.\"", x.Item2, "\" = B.\"", x.Item1, "\"")));
             }
             else if (isMySqlPomelo)
             {
