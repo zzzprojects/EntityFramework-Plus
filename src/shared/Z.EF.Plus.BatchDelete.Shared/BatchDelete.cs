@@ -657,7 +657,7 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
 
                 // GET primary key join
                 primaryKeys = propertyAndColumnName.Count > 1?
-                    string.Join(Environment.NewLine + "AND ", propertyAndColumnName.Select(x => string.Concat("A.[", x.Item2, "] = B.[", x.Item1, "]"))):
+                    string.Join(Environment.NewLine + "AND ", propertyAndColumnName.Select(x => string.Concat("A.[", x.Item2, "] = B.[", x.Item2, "]"))):
                     string.Join(Environment.NewLine + "AND ", propertyAndColumnName.Select(x => string.Concat("A.[", x.Item2, "] = B.[", x.Item2, "]")));
             }
             else if (isPostgreSQL)
@@ -680,7 +680,7 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
                     propertyAndColumnName.Add(new Tuple<string, string>(propertyKey.Name, (string)columnNameProperty.GetValue(mappingProperty)));
                 }
 
-                primaryKeys = string.Join(Environment.NewLine + "AND ", propertyAndColumnName.Select(x => string.Concat("A.\"", x.Item2, "\" = B.\"", x.Item1, "\"")));
+                primaryKeys = string.Join(Environment.NewLine + "AND ", propertyAndColumnName.Select(x => string.Concat("A.\"", x.Item2, "\" = B.\"", x.Item2, "\"")));
             }
             else if (isMySqlPomelo)
             {
