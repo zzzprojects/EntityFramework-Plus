@@ -48,9 +48,18 @@ namespace Z.EntityFramework.Plus
             var createQueryMethod = provider.GetType().GetMethod("CreateQuery", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(Expression), typeof(Type) }, null);
             Query = (IQueryable<TResult>)createQueryMethod.Invoke(provider, new object[] { expression, typeof(TResult) });
 #elif EFCORE
-            Query = new EntityQueryable<TResult>((IAsyncQueryProvider)query.Provider);
-            var expressionProperty = typeof(QueryableBase<>).MakeGenericType(typeof(TResult)).GetProperty("Expression", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            expressionProperty.SetValue(Query, expression);
+            if (EFCoreHelper.IsVersion3x)
+            {
+                // EF Core 3.x
+                Query = new EntityQueryable<TResult>((IAsyncQueryProvider)query.Provider, Expression);
+            }
+            else
+            {
+                // EF Core 2.x
+                Query = new EntityQueryable<TResult>((IAsyncQueryProvider)query.Provider);
+                var expressionProperty = typeof(QueryableBase<>).MakeGenericType(typeof(TResult)).GetProperty("Expression", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                expressionProperty.SetValue((QueryableBase<TResult>)Query, expression);
+            }
 #endif
         }
 

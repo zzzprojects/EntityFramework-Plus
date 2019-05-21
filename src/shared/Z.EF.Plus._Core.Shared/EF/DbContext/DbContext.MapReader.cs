@@ -149,8 +149,8 @@ namespace Z.EntityFramework.Plus
                     // REFLECTION: Query.Provider._queryCompiler._queryContextFactory.ExecutionStrategyFactory
                     var executionStrategyFactoryField = queryContextFactory.GetType().GetProperty("ExecutionStrategyFactory", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
                     var executionStrategyFactory = executionStrategyFactoryField.GetValue(queryContextFactory);
-
-                    var lazyRefStateManager = new LazyRef<IStateManager>(() => stateManager);
+                    
+                    var lazyRefStateManager = LazyHelper.NewLazy(() => stateManager);
 
                     queryContext = (RelationalQueryContext)relationalQueryContextConstructor.Invoke(new object[] { createQueryBufferDelegate, connection, lazyRefStateManager, concurrencyDetector, executionStrategyFactory });
                 }

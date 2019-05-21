@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal;
 using Microsoft.EntityFrameworkCore.Query.Internal;
+using Microsoft.EntityFrameworkCore.Query.Sql;
 using Microsoft.EntityFrameworkCore.Storage;
 using Remotion.Linq.Parsing.ExpressionVisitors.TreeEvaluation;
 using Remotion.Linq.Parsing.Structure;
@@ -117,6 +118,9 @@ namespace Z.EntityFramework.Plus
         public static IRelationalCommand CreateCommand(this IQueryable source, out RelationalQueryContext queryContext)
         {
             bool EFCore_2_1 = false;
+#if EFCORE
+            bool isEFCore3x = EFCoreHelper.IsVersion3x;
+#endif
 
             var compilerField = typeof(EntityQueryProvider).GetField("_queryCompiler", BindingFlags.NonPublic | BindingFlags.Instance);
             var compiler = compilerField.GetValue(source.Provider);
@@ -158,14 +162,18 @@ namespace Z.EntityFramework.Plus
 #if NETSTANDARD2_0
            IEvaluatableExpressionFilter evaluatableExpressionFilter = null;
 
-            if (EFCore_2_1)
+           if (isEFCore3x)
+           {
+               evaluatableExpressionFilter = (RelationalEvaluatableExpressionFilter)QueryModelGenerator.GetType().GetProperty("EvaluatableExpressionFilter", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).GetValue(QueryModelGenerator);
+           }
+            else if (EFCore_2_1)
             {
                 evaluatableExpressionFilter = (IEvaluatableExpressionFilter)QueryModelGenerator.GetType().GetField("_evaluatableExpressionFilter", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(QueryModelGenerator);
             }
-            else
-            {
-                evaluatableExpressionFilter = (IEvaluatableExpressionFilter)compiler.GetType().GetField("_evaluatableExpressionFilter", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(queryCompiler);
-            }
+           else
+           {
+               evaluatableExpressionFilter = (IEvaluatableExpressionFilter) compiler.GetType().GetField("_evaluatableExpressionFilter", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(queryCompiler);
+           }
 #else
             var evalutableExpressionFilterField = compiler.GetType().GetField("_evaluatableExpressionFilter", BindingFlags.NonPublic | BindingFlags.Static);
             var evalutableExpressionFilter = (IEvaluatableExpressionFilter)evalutableExpressionFilterField.GetValue(null);
@@ -197,7 +205,16 @@ namespace Z.EntityFramework.Plus
 
                 var parameterExtractingExpressionVisitorConstructors = typeof(ParameterExtractingExpressionVisitor).GetConstructors();
 
-                if (parameterExtractingExpressionVisitorConstructors.Any(x => x.GetParameters().Length == 5))
+                if (isEFCore3x)
+                {
+                    var parameterExtractingExpressionVisitorConstructor = typeof(ParameterExtractingExpressionVisitor).GetConstructors().First(x => x.GetParameters().Length == 6);
+
+                    var parameterExtractingExpressionVisitor = (ParameterExtractingExpressionVisitor)parameterExtractingExpressionVisitorConstructor.Invoke(new object[] { evaluatableExpressionFilter, queryContext, queryContext.GetType(), logger, true, false });
+
+                    // CREATE new query from query visitor
+                    newQuery = parameterExtractingExpressionVisitor.ExtractParameters(source.Expression);
+                }
+                else if (parameterExtractingExpressionVisitorConstructors.Any(x => x.GetParameters().Length == 5))
                 {
                     // EF Core 2.1
                     var parameterExtractingExpressionVisitorConstructor = parameterExtractingExpressionVisitorConstructors.First(x => x.GetParameters().Length == 5);
@@ -273,10 +290,21 @@ namespace Z.EntityFramework.Plus
             var queries = queryModelVisitor.Queries;
             var sqlQuery = queries.ToList()[0];
 
+            IRelationalCommand relationalCommand = null;
+            var dynamicSqlGenerator = (dynamic)sqlQuery.CreateDefaultQuerySqlGenerator();
 
-            var command = sqlQuery.CreateDefaultQuerySqlGenerator().GenerateSql(queryContext.ParameterValues);
+            if (isEFCore3x)
+            {
+                var commandBuilderFactory = queryContext.Context.Database.GetService<IRelationalCommandBuilderFactory>();
+                // TODO: Fix null for DbLogger
+                relationalCommand = (IRelationalCommand)dynamicSqlGenerator.GenerateSql(commandBuilderFactory, queryContext.ParameterValues, null);
+            }
+            else
+            {
+                relationalCommand = (IRelationalCommand)dynamicSqlGenerator.GenerateSql(queryContext.ParameterValues);
+            }
 
-            return command;
+            return relationalCommand;
         }
     }
 }

@@ -36,6 +36,7 @@ using Remotion.Linq.Parsing.ExpressionVisitors.TreeEvaluation;
 using Remotion.Linq.Parsing.Structure;
 using Microsoft.EntityFrameworkCore.Query.Expressions;
 using Remotion.Linq.Clauses;
+using Microsoft.EntityFrameworkCore.Query.Sql;
 
 #endif
 
@@ -90,6 +91,9 @@ namespace Z.EntityFramework.Plus
         {
             bool isEFCore2x = false;
             bool EFCore_2_1 = false;
+#if EFCORE
+            bool isEFCore3x = EFCoreHelper.IsVersion3x;
+#endif
 
             var context = Query.GetDbContext();
 
@@ -155,7 +159,11 @@ namespace Z.EntityFramework.Plus
 #if NETSTANDARD2_0
             IEvaluatableExpressionFilter evaluatableExpressionFilter = null;
 
-            if (EFCore_2_1)
+            if (isEFCore3x)
+            {
+                evaluatableExpressionFilter = (RelationalEvaluatableExpressionFilter)QueryModelGenerator.GetType().GetProperty("EvaluatableExpressionFilter", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).GetValue(QueryModelGenerator);
+            }
+            else if (EFCore_2_1)
             {
                 evaluatableExpressionFilter = (IEvaluatableExpressionFilter)QueryModelGenerator.GetType().GetField("_evaluatableExpressionFilter", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(QueryModelGenerator);
             }
@@ -226,7 +234,15 @@ namespace Z.EntityFramework.Plus
                 var innerConnectionField = typeof(RelationalConnection).GetField("_connection", BindingFlags.NonPublic | BindingFlags.Instance);
                 var initalConnection = innerConnectionField.GetValue(QueryConnection);
 
-                innerConnectionField.SetValue(QueryConnection, new Microsoft.EntityFrameworkCore.Internal.LazyRef<DbConnection>(() => innerConnection));
+                if (EFCoreHelper.IsVersion3xPreview5)
+                {
+                    innerConnectionField.SetValue(QueryConnection, innerConnection);
+                }
+                else
+                {
+                    innerConnectionField.SetValue(QueryConnection, LazyHelper.NewLazy<DbConnection>(() => innerConnection));
+                }
+                
 
                 RestoreConnection = () => innerConnectionField.SetValue(QueryConnection, initalConnection);
             }
@@ -244,7 +260,7 @@ namespace Z.EntityFramework.Plus
                     var executionStrategyFactoryField = queryContextFactory.GetType().GetProperty("ExecutionStrategyFactory", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
                     var executionStrategyFactory = executionStrategyFactoryField.GetValue(queryContextFactory);
 
-                    var lazyRefStateManager = new LazyRef<IStateManager>(() => stateManager);
+                    var lazyRefStateManager = LazyHelper.NewLazy(() => stateManager);
 
                     queryContext = (RelationalQueryContext)relationalQueryContextConstructor.Invoke(new object[] { createQueryBufferDelegate, QueryConnection, lazyRefStateManager, concurrencyDetector, executionStrategyFactory });
                 }
@@ -254,7 +270,7 @@ namespace Z.EntityFramework.Plus
                     var executionStrategyFactoryField = queryContextFactory.GetType().GetProperty("ExecutionStrategyFactory", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
                     var executionStrategyFactory = executionStrategyFactoryField.GetValue(queryContextFactory);
 
-                    var lazyRefStateManager = new LazyRef<IStateManager>(() => stateManager);
+                    var lazyRefStateManager = LazyHelper.NewLazy(() => stateManager);
 
                     var dependenciesProperty3 = typeof(RelationalQueryContextFactory).GetProperty("Dependencies", BindingFlags.NonPublic | BindingFlags.Instance);
                     var dependencies3 = dependenciesProperty3.GetValue(queryContextFactory);
@@ -270,8 +286,16 @@ namespace Z.EntityFramework.Plus
 
             Expression newQuery;
 
+            if (isEFCore3x)
+            {
+                var parameterExtractingExpressionVisitorConstructor = typeof(ParameterExtractingExpressionVisitor).GetConstructors().First(x => x.GetParameters().Length == 6);
 
-            if(isEFCore2x)
+                var parameterExtractingExpressionVisitor = (ParameterExtractingExpressionVisitor)parameterExtractingExpressionVisitorConstructor.Invoke(new object[] { evaluatableExpressionFilter, queryContext, queryContext.GetType(), logger, true, false });
+
+                // CREATE new query from query visitor
+                newQuery = parameterExtractingExpressionVisitor.ExtractParameters(Query.Expression);
+            }
+            else if(isEFCore2x)
             {
                 var parameterExtractingExpressionVisitorConstructors = typeof(ParameterExtractingExpressionVisitor).GetConstructors();
 
@@ -289,10 +313,9 @@ namespace Z.EntityFramework.Plus
 
 	                var parameterExtractingExpressionVisitorConstructor = parameterExtractingExpressionVisitorConstructors.First(x => x.GetParameters().Length == 6);
 
-					ParameterExtractingExpressionVisitor parameterExtractingExpressionVisitor = null; 
+					ParameterExtractingExpressionVisitor parameterExtractingExpressionVisitor = null;
 
-	                // EF Core 2.1   
-					if (parameterExtractingExpressionVisitorConstructor.GetParameters().Where(x => x.ParameterType == typeof(DbContext)).Any())
+                    if (parameterExtractingExpressionVisitorConstructor.GetParameters().Where(x => x.ParameterType == typeof(DbContext)).Any())
 					{
 						parameterExtractingExpressionVisitor = (ParameterExtractingExpressionVisitor)parameterExtractingExpressionVisitorConstructor.Invoke(new object[] { evaluatableExpressionFilter, queryContext, logger, context, true, false });
 					}
@@ -346,14 +369,33 @@ namespace Z.EntityFramework.Plus
                 sqlQuery = queryModelVisitor.Queries.First();
             }
 
-            // RETURN the IRealationCommand
+            // RETURN the IRelationalCommand
+#if EFCORE
+            IRelationalCommand relationalCommand = null;
+            var dynamicSqlGenerator = (dynamic)sqlQuery.CreateDefaultQuerySqlGenerator();
+
+            if (isEFCore3x)
+            {
+                var commandBuilderFactory = context.Database.GetService<IRelationalCommandBuilderFactory>();
+                
+                // TODO: Fix null for DbLogger
+                relationalCommand = (IRelationalCommand)dynamicSqlGenerator.GenerateSql(commandBuilderFactory, queryContext.ParameterValues, null);
+            }
+            else
+            {
+                relationalCommand = (IRelationalCommand)dynamicSqlGenerator.GenerateSql(queryContext.ParameterValues);
+            }
+            
+#else
             var relationalCommand = sqlQuery.CreateDefaultQuerySqlGenerator().GenerateSql(queryContext.ParameterValues);
+#endif
+
             return relationalCommand;
         }
 #endif
 
-        /// <summary>Sets the result of the query deferred.</summary>
-        /// <param name="reader">The reader returned from the query execution.</param>
+            /// <summary>Sets the result of the query deferred.</summary>
+            /// <param name="reader">The reader returned from the query execution.</param>
         public virtual void SetResult(DbDataReader reader)
         {
         }
