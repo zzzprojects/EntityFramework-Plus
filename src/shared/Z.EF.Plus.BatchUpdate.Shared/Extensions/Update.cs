@@ -23,7 +23,7 @@ namespace Z.EntityFramework.Plus
         /// <returns>The number of rows affected.</returns>
         public static int Update<T>(this IQueryable<T> query, Expression<Func<T, T>> updateFactory) where T : class
         {
-            return query.Update(updateFactory, null);
+			return query.Update(updateFactory, null);
         }
 
         /// <summary>

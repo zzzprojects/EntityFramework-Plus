@@ -434,9 +434,16 @@ SELECT  @totalRowAffected
 
             if (isMySql)
             {
-                tableName = string.IsNullOrEmpty(store.Schema) || store.Schema == "dbo" || store.Table.StartsWith(store.Schema + ".")?
-                    string.Concat("`", store.Table, "`") :
-                    string.Concat("`", store.Schema, ".", store.Table, "`");
+	            if (BatchDeleteManager.UseMySqlSchema)
+				{
+					tableName = string.IsNullOrEmpty(store.Schema) || store.Schema == "dbo" || store.Table.StartsWith(store.Schema + ".") ?
+						string.Concat("`", store.Table, "`") :
+						string.Concat("`", store.Schema, ".", store.Table, "`"); 
+				}
+	            else
+	            {
+		            tableName = string.Concat("`", store.Table, "`");
+	            }
             }
             else if (isSqlCe)
             {

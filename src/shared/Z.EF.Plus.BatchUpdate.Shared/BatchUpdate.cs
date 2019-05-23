@@ -453,9 +453,16 @@ SELECT  @totalRowAffected
 
 			if (isMySql)
 			{
-				tableName = string.IsNullOrEmpty(store.Schema) || store.Schema == "dbo" || store.Table.StartsWith(store.Schema + ".") ?
-					string.Concat("`", store.Table, "`") :
-					string.Concat("`", store.Schema, ".", store.Table, "`");
+				if (BatchUpdateManager.UseMySqlSchema)
+				{
+					tableName = string.IsNullOrEmpty(store.Schema) || store.Schema == "dbo" || store.Table.StartsWith(store.Schema + ".") ?
+						string.Concat("`", store.Table, "`") :
+						string.Concat("`", store.Schema, ".", store.Table, "`");
+				}
+				else
+				{
+					tableName = string.Concat("`", store.Table, "`");
+				}
 			}
 			else if (isSqlCe)
 			{
@@ -1407,8 +1414,13 @@ SELECT  @totalRowAffected
 
                     valueSql = valueSql.Trim();
 
-                    // Add the destination name
-                    valueSql = valueSql.Replace("[x]", "B");
+					if (updateFactory.Parameters != null && updateFactory.Parameters.Count == 1)
+					{ 
+						valueSql = valueSql.Replace("[" +updateFactory.Parameters.First().Name +"]", "B");
+					}
+					 
+					// Add the destination name
+					valueSql = valueSql.Replace("[x]", "B");
                     valueSql = valueSql.Replace("[c]", "B");
 
                     if (valueSql.Length > 0 

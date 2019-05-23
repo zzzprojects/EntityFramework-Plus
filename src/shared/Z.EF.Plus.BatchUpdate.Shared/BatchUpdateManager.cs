@@ -20,6 +20,9 @@ namespace Z.EntityFramework.Plus
         /// <value>The batch update builder to change default configuration.</value>
         public static Action<BatchUpdate> BatchUpdateBuilder { get; set; }
 
+        /// <summary>Gets or sets a value indicating whether this object use schema for MySQL provider.</summary>
+        /// <value>True if use schema for MySQL provider, false if not.</value>
+        public static bool UseMySqlSchema { get; set; } = true;
 #if EFCORE
 
         /// <summary>Gets or sets the factory to create an InMemory DbContext.</summary>
@@ -77,11 +80,11 @@ namespace Z.EntityFramework.Plus
 	    }
 
 #else
-        /// <summary>
-        /// Gets or sets a value indicating whether this object is in memory query.
-        /// </summary>
-        /// <value>True if this object is in memory query, false if not.</value>
-        public static bool IsInMemoryQuery { get; set; }
+		/// <summary>
+		/// Gets or sets a value indicating whether this object is in memory query.
+		/// </summary>
+		/// <value>True if this object is in memory query, false if not.</value>
+		public static bool IsInMemoryQuery { get; set; }
 #endif
     }
 }
