@@ -63,6 +63,14 @@ WHERE EXISTS ( SELECT 1 FROM ({Select}) B
            )
 ";
 
+        internal const string CommandTextOracleTemplateCore = @"
+DELETE
+FROM    {TableName} A
+WHERE EXISTS ( SELECT 1 FROM ({Select}) B
+               WHERE {PrimaryKeys}
+           )
+";
+
         internal const string CommandTextSQLiteTemplate = @"
 DELETE
 FROM    {TableName}
@@ -579,6 +587,7 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
             bool isSQLite = false;
             bool isOracle = false;
             bool isDevOracle = false;
+            bool devOracleDisableQuoting = false;
 
             if (assemblyName == "Microsoft.EntityFrameworkCore.SqlServer")
             {
@@ -597,10 +606,14 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
             else if (assemblyName == "MySql.Data.EntityFrameworkCore")
             {
                 isMySql = true;
-                var type = assembly.GetType("MySQL.Data.EntityFrameworkCore.MySQLMetadataExtensions");
-                dynamicProviderEntityType = type.GetMethod("MySQL", new[] { typeof(IEntityType) });
-                dynamicProviderProperty = type.GetMethod("MySQL", new[] { typeof(IProperty) });
-            }
+	            //var type = assembly.GetType("MySQL.Data.EntityFrameworkCore.MySQLMetadataExtensions");
+	            //dynamicProviderEntityType = type.GetMethod("MySQL", new[] { typeof(IEntityType) });
+	            //dynamicProviderProperty = type.GetMethod("MySQL", new[] { typeof(IProperty) });
+
+
+	            dynamicProviderEntityType = typeof(RelationalMetadataExtensions).GetMethod("Relational", new[] { typeof(IEntityType) });
+	            dynamicProviderProperty = typeof(RelationalMetadataExtensions).GetMethod("Relational", new[] { typeof(IProperty) });
+			}
             else if (assemblyName == "Pomelo.EntityFrameworkCore.MySql")
             {
                 isMySqlPomelo = true;
@@ -627,6 +640,15 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
             else if (assemblyName == "Devart.Data.Oracle.Entity.EFCore")
             {
                 isDevOracle = true;
+
+                var config = assembly.GetType("Devart.Data.Oracle.Entity.Configuration.OracleEntityProviderConfig");
+
+                if (config != null)
+                {
+                    var instanceProperty = config.GetProperty("Instance", BindingFlags.Static | BindingFlags.Public);
+                    var instance = instanceProperty.GetValue(config);
+                    devOracleDisableQuoting = (bool)((dynamic)instance).Workarounds.DisableQuoting;
+                }
 
                 // CHANGE all for this one?
                 dynamicProviderEntityType = typeof(RelationalMetadataExtensions).GetMethod("Relational", new[] { typeof(IEntityType) });
@@ -687,98 +709,176 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
                     propertyAndColumnName.Add(new Tuple<string, string>(propertyKey.Name, (string)columnNameProperty.GetValue(mappingProperty)));
                 }
 
-                primaryKeys = string.Join(Environment.NewLine + "AND ", propertyAndColumnName.Select(x => string.Concat("A.\"", x.Item2, "\" = B.\"", x.Item1, "\"")));
+	            primaryKeys = propertyAndColumnName.Count > 1 ? 
+		            string.Join(Environment.NewLine + "AND ", propertyAndColumnName.Select(x => string.Concat("A.\"", x.Item2, "\" = B.\"", x.Item1, "\""))):
+		            string.Join(Environment.NewLine + "AND ", propertyAndColumnName.Select(x => string.Concat("A.\"", x.Item2, "\" = B.\"", x.Item2, "\"")));
             }
-            else if (isMySqlPomelo)
-            {
-                if (dynamicProviderEntityType == null)
+			else if (isMySqlPomelo)
+			{
+				if (dynamicProviderEntityType == null)
+				{
+					// GET mapping
+					tableName = string.Concat("`", entity.Relational().TableName, "`");
+
+					if (dynamicProviderProperty != null)
+					{
+						List<Tuple<string, string>> propertyAndColumnName = new List<Tuple<string, string>>();
+
+						// GET keys mappings
+						foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
+						{
+							var mappingProperty = dynamicProviderProperty.Invoke(null, new[] { propertyKey });
+
+							var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
+							//columnKeys.Add((string)columnNameProperty.GetValue(mappingProperty));
+							propertyAndColumnName.Add(new Tuple<string, string>(propertyKey.Name, (string)columnNameProperty.GetValue(mappingProperty)));
+						}
+
+						primaryKeys = propertyAndColumnName.Count > 1 ?
+							string.Join(Environment.NewLine + "AND ", propertyAndColumnName.Select(x => string.Concat("A.`", x.Item2, "` = B.`", x.Item1, "`"))) :
+							string.Join(Environment.NewLine + "AND ", propertyAndColumnName.Select(x => string.Concat("A.`", x.Item2, "` = B.`", x.Item2, "`")));
+					}
+					else
+					{ 
+						// GET keys mappings
+						foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
+						{
+							columnKeys.Add(propertyKey.Relational().ColumnName);
+						}
+
+						primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.`", x, "` = B.`", x, "`")));
+					}
+				}
+				else
+				{
+					var sqlServer = (IRelationalEntityTypeAnnotations)dynamicProviderEntityType.Invoke(null, new[] { entity });
+
+					// GET mapping
+					tableName = string.Concat("`", sqlServer.TableName, "`");
+
+					if (dynamicProviderProperty != null)
+					{
+						List<Tuple<string, string>> propertyAndColumnName = new List<Tuple<string, string>>();
+
+						// GET keys mappings
+						foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
+						{
+							var mappingProperty = dynamicProviderProperty.Invoke(null, new[] { propertyKey });
+
+							var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
+							//columnKeys.Add((string)columnNameProperty.GetValue(mappingProperty));
+							propertyAndColumnName.Add(new Tuple<string, string>(propertyKey.Name, (string)columnNameProperty.GetValue(mappingProperty)));
+						}
+
+						primaryKeys = propertyAndColumnName.Count > 1 ?
+							string.Join(Environment.NewLine + "AND ", propertyAndColumnName.Select(x => string.Concat("A.`", x.Item2, "` = B.`", x.Item1, "`"))) :
+							string.Join(Environment.NewLine + "AND ", propertyAndColumnName.Select(x => string.Concat("A.`", x.Item2, "` = B.`", x.Item2, "`")));
+					}
+					else
+					{
+
+						// GET keys mappings
+						foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
+						{
+							var mappingProperty = dynamicProviderProperty.Invoke(null, new[] {propertyKey});
+
+							var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
+							columnKeys.Add((string) columnNameProperty.GetValue(mappingProperty));
+						}
+
+						primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.`", x, "` = B.`", x, "`")));
+					}
+				}
+			}
+			else if (isMySql)
+			{
+				var sqlServer = (IRelationalEntityTypeAnnotations)dynamicProviderEntityType.Invoke(null, new[] { entity });
+
+				// GET mapping
+				tableName = string.Concat("`", sqlServer.TableName, "`");
+
+				List<Tuple<string, string>> propertyAndColumnName = new List<Tuple<string, string>>();
+
+				// GET keys mappings
+				foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
+				{
+					var mappingProperty = dynamicProviderProperty.Invoke(null, new[] { propertyKey });
+
+					var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
+					//columnKeys.Add((string)columnNameProperty.GetValue(mappingProperty));
+					propertyAndColumnName.Add(new Tuple<string, string>(propertyKey.Name, (string)columnNameProperty.GetValue(mappingProperty)));
+				}
+
+				primaryKeys = propertyAndColumnName.Count > 1 ?
+					string.Join(Environment.NewLine + "AND ", propertyAndColumnName.Select(x => string.Concat("A.`", x.Item2, "` = B.`", x.Item1, "`"))) :
+					string.Join(Environment.NewLine + "AND ", propertyAndColumnName.Select(x => string.Concat("A.`", x.Item2, "` = B.`", x.Item2, "`")));
+			}
+			else if (isSQLite)
+			{
+				var sqlServer = (IRelationalEntityTypeAnnotations)dynamicProviderEntityType.Invoke(null, new[] { entity });
+
+				// GET mapping
+				tableName = string.Concat("\"", sqlServer.TableName, "\"");
+
+				List<Tuple<string, string>> propertyAndColumnName = new List<Tuple<string, string>>();
+
+				// GET keys mappings
+				foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
+				{
+					var mappingProperty = dynamicProviderProperty.Invoke(null, new[] { propertyKey });
+
+					var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
+					//columnKeys.Add((string)columnNameProperty.GetValue(mappingProperty));
+					propertyAndColumnName.Add(new Tuple<string, string>(propertyKey.Name, (string)columnNameProperty.GetValue(mappingProperty)));
+				}
+
+				primaryKeys = propertyAndColumnName.Count > 1 ?
+					string.Join(Environment.NewLine + "AND ", propertyAndColumnName.Select(x => string.Concat("\"", x.Item2, "\" = B.\"", x.Item1, "\""))):
+					string.Join(Environment.NewLine + "AND ", propertyAndColumnName.Select(x => string.Concat("\"", x.Item2, "\" = B.\"", x.Item2, "\"")));
+			}
+			else if (isOracle || isDevOracle)
+			{
+				var sqlServer = (IRelationalEntityTypeAnnotations)dynamicProviderEntityType.Invoke(null, new[] { entity });
+
+                if (devOracleDisableQuoting)
                 {
                     // GET mapping
-                    tableName = string.Concat("`", entity.Relational().TableName, "`");
-
-                    // GET keys mappings
-                    foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
-                    {
-                        columnKeys.Add(propertyKey.Relational().ColumnName);
-                    }
-
-                    primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.`", x, "` = B.`", x, "`")));
+                    tableName = string.IsNullOrEmpty(sqlServer.Schema) ? sqlServer.TableName : string.Concat(sqlServer.Schema, ".", sqlServer.TableName);
                 }
                 else
                 {
-                    var sqlServer = (IRelationalEntityTypeAnnotations)dynamicProviderEntityType.Invoke(null, new[] { entity });
-
                     // GET mapping
-                    tableName = string.Concat("`", sqlServer.TableName, "`");
-
-                    // GET keys mappings
-                    foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
-                    {
-                        var mappingProperty = dynamicProviderProperty.Invoke(null, new[] { propertyKey });
-
-                        var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
-                        columnKeys.Add((string)columnNameProperty.GetValue(mappingProperty));
-                    }
-
-                    primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.`", x, "` = B.`", x, "`")));
+                    tableName = string.IsNullOrEmpty(sqlServer.Schema) ? string.Concat("\"", sqlServer.TableName, "\"") : string.Concat("\"", sqlServer.Schema, "\".\"", sqlServer.TableName, "\"");
                 }
-                
-            }
-            else if (isMySql)
-            {
-                var sqlServer = (IRelationalEntityTypeAnnotations)dynamicProviderEntityType.Invoke(null, new[] { entity });
 
-                // GET mapping
-                tableName = string.Concat("`", sqlServer.TableName, "`");
 
-                // GET keys mappings
-                foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
+				List<Tuple<string, string>> propertyAndColumnName = new List<Tuple<string, string>>();
+
+				// GET keys mappings
+				foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
+				{
+					var mappingProperty = dynamicProviderProperty.Invoke(null, new[] { propertyKey });
+
+					var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
+					//columnKeys.Add((string)columnNameProperty.GetValue(mappingProperty));
+					propertyAndColumnName.Add(new Tuple<string, string>(propertyKey.Name, (string)columnNameProperty.GetValue(mappingProperty)));
+				}
+
+                if (devOracleDisableQuoting)
                 {
-                    var mappingProperty = dynamicProviderProperty.Invoke(null, new[] { propertyKey });
-
-                    var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
-                    columnKeys.Add((string)columnNameProperty.GetValue(mappingProperty));
+                    // GET primary key join
+                    primaryKeys = propertyAndColumnName.Count > 1 ?
+                        string.Join(Environment.NewLine + "AND ", propertyAndColumnName.Select(x => string.Concat("A.", x.Item2, " = B.", x.Item1))) :
+                        string.Join(Environment.NewLine + "AND ", propertyAndColumnName.Select(x => string.Concat("A.", x.Item2, " = B.", x.Item2)));
                 }
-
-                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat("A.`", x, "` = B.`", x, "`")));
-            }
-            else if (isSQLite)
-            {
-                var sqlServer = (IRelationalEntityTypeAnnotations)dynamicProviderEntityType.Invoke(null, new[] { entity });
-
-                // GET mapping
-                tableName = string.Concat("\"", sqlServer.TableName, "\"");
-
-                // GET keys mappings
-                foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
+                else
                 {
-                    var mappingProperty = dynamicProviderProperty.Invoke(null, new[] { propertyKey });
-
-                    var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
-                    columnKeys.Add((string)columnNameProperty.GetValue(mappingProperty));
-                }
-
-                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + "." + "\"" + x + "\"", " = B.\"", x, "\"")));
-            }
-            else if (isOracle || isDevOracle)
-            {
-                var sqlServer = (IRelationalEntityTypeAnnotations)dynamicProviderEntityType.Invoke(null, new[] { entity });
-
-                // GET mapping
-                tableName = string.IsNullOrEmpty(sqlServer.Schema) ? string.Concat("\"", sqlServer.TableName, "\"") : string.Concat("\"", sqlServer.Schema, "\".\"", sqlServer.TableName, "\"");
-
-                // GET keys mappings
-                foreach (var propertyKey in entity.GetKeys().ToList()[0].Properties)
-                {
-                    var mappingProperty = dynamicProviderProperty.Invoke(null, new[] { propertyKey });
-
-                    var columnNameProperty = mappingProperty.GetType().GetProperty("ColumnName", BindingFlags.Public | BindingFlags.Instance);
-                    columnKeys.Add((string)columnNameProperty.GetValue(mappingProperty));
-                }
-
-                // GET primary key join
-                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".\"", x, "\" = B.\"", x, "\"")));
-            }
+                    // GET primary key join
+                    primaryKeys = propertyAndColumnName.Count > 1 ?
+                        string.Join(Environment.NewLine + "AND ", propertyAndColumnName.Select(x => string.Concat("A.\"", x.Item2, "\" = B.\"", x.Item1, "\""))) :
+                        string.Join(Environment.NewLine + "AND ", propertyAndColumnName.Select(x => string.Concat("A.\"", x.Item2, "\" = B.\"", x.Item2, "\"")));
+                } 
+			}
 
             // GET command text template
             var commandTextTemplate = isPostgreSQL ?
@@ -788,7 +888,7 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
                 isSQLite ?
                 CommandTextSQLiteTemplate :
                 ( isOracle || isDevOracle) ?
-                    CommandTextOracleTemplate :
+                    CommandTextOracleTemplateCore :
                 BatchSize > 0 ?
                 BatchDelayInterval > 0 ?
                     CommandTextWhileDelayTemplate :
@@ -831,7 +931,7 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
                 }
                 else
                 {
-#endif 
+#endif
                     name = relationalParameter.InvariantName;
 #if NETSTANDARD2_0
                 }
@@ -882,7 +982,7 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
             return command;
         }
 #endif
-        public string EscapeName(string name, bool isMySql, bool isOracle, bool isHana)
+		public string EscapeName(string name, bool isMySql, bool isOracle, bool isHana)
         {
             return isMySql ? string.Concat("`", name, "`") :
                 isOracle || isHana ? string.Concat("\"", name, "\"") :

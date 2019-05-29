@@ -727,6 +727,7 @@ SELECT  @totalRowAffected
             bool isSQLite = false;
             bool isOracle = false;
             bool isDevOracle = false;
+            bool devOracleDisableQuoting = false;
 
             if (assemblyName == "Microsoft.EntityFrameworkCore.SqlServer")
             {
@@ -745,10 +746,14 @@ SELECT  @totalRowAffected
             else if (assemblyName == "MySql.Data.EntityFrameworkCore")
             {
                 isMySql = true;
-                var type = assembly.GetType("MySQL.Data.EntityFrameworkCore.MySQLMetadataExtensions");
-                dynamicProviderEntityType = type.GetMethod("MySQL", new[] { typeof(IEntityType) });
-                dynamicProviderProperty = type.GetMethod("MySQL", new[] { typeof(IProperty) });
-            }
+	            //var type = assembly.GetType("MySQL.Data.EntityFrameworkCore.MySQLMetadataExtensions");
+	            //dynamicProviderEntityType = type.GetMethod("MySQL", new[] { typeof(IEntityType) });
+	            //dynamicProviderProperty = type.GetMethod("MySQL", new[] { typeof(IProperty) });
+
+
+	            dynamicProviderEntityType = typeof(RelationalMetadataExtensions).GetMethod("Relational", new[] { typeof(IEntityType) });
+	            dynamicProviderProperty = typeof(RelationalMetadataExtensions).GetMethod("Relational", new[] { typeof(IProperty) });
+			}
             else if (assemblyName == "Pomelo.EntityFrameworkCore.MySql")
             {
                 isMySqlPomelo = true;
@@ -774,7 +779,17 @@ SELECT  @totalRowAffected
             }
             else if (assemblyName == "Devart.Data.Oracle.Entity.EFCore")
             {
+
                 isDevOracle = true;
+                var config = assembly.GetType("Devart.Data.Oracle.Entity.Configuration.OracleEntityProviderConfig");
+
+                if (config != null)
+                {
+                    var instanceProperty = config.GetProperty("Instance", BindingFlags.Static | BindingFlags.Public);
+                    var instance = instanceProperty.GetValue(config);
+                    devOracleDisableQuoting = (bool)((dynamic) instance).Workarounds.DisableQuoting;
+                }
+
 
                 // CHANGE all for this one?
                 dynamicProviderEntityType = typeof(RelationalMetadataExtensions).GetMethod("Relational", new[] { typeof(IEntityType) });
@@ -911,8 +926,17 @@ SELECT  @totalRowAffected
             {
                 var sqlServer = (IRelationalEntityTypeAnnotations)dynamicProviderEntityType.Invoke(null, new[] { entity });
 
-                // GET mapping
-                tableName = string.IsNullOrEmpty(sqlServer.Schema) ? string.Concat("\"", sqlServer.TableName, "\"") : string.Concat("\"", sqlServer.Schema, "\".\"", sqlServer.TableName, "\"");
+                if (devOracleDisableQuoting)
+                {
+                    // GET mapping
+                    tableName = string.IsNullOrEmpty(sqlServer.Schema) ? sqlServer.TableName : string.Concat(sqlServer.Schema, ".", sqlServer.TableName);
+                }
+                else
+                {
+                    // GET mapping
+                    tableName = string.IsNullOrEmpty(sqlServer.Schema) ? string.Concat("\"", sqlServer.TableName, "\"") : string.Concat("\"", sqlServer.Schema, "\".\"", sqlServer.TableName, "\"");
+                }
+
 
                 // GET keys mappings
                 var columnKeys = new List<string>();
@@ -924,8 +948,16 @@ SELECT  @totalRowAffected
                     columnKeys.Add((string)columnNameProperty.GetValue(mappingProperty));
                 }
 
-                // GET primary key join
-                primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".\"", x, "\" = B.\"", x, "\"")));
+                if (devOracleDisableQuoting)
+                {
+                    // GET primary key join
+                    primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".", x, " = B.", x)));
+                }
+                else
+                { 
+                    // GET primary key join
+                    primaryKeys = string.Join(Environment.NewLine + "AND ", columnKeys.Select(x => string.Concat(tableName + ".\"", x, "\" = B.\"", x, "\"")));
+                }
             }
 
             // GET command text template
@@ -975,7 +1007,15 @@ SELECT  @totalRowAffected
             }
             else if(isOracle || isDevOracle)
             {
-                setColumns = string.Join("," + Environment.NewLine, values.Select((x) => string.Concat(EscapeName(x.Item1, isMySql, true, isPostgreSQL, false))));
+                if (devOracleDisableQuoting)
+                {
+                    setColumns = string.Join("," + Environment.NewLine, values.Select((x) => string.Concat(x.Item1)));
+                }
+                else
+                {
+                    setColumns = string.Join("," + Environment.NewLine, values.Select((x) => string.Concat(EscapeName(x.Item1, isMySql, true, isPostgreSQL, false))));
+                }
+                
                 setValues = string.Join("," + Environment.NewLine, values.Select((x, i) => x.Item2 is ConstantExpression ? string.Concat(((ConstantExpression)x.Item2).Value) : string.Concat(":zzz_BatchUpdate_", i)));
             }
 
@@ -1153,10 +1193,14 @@ SELECT  @totalRowAffected
             else if (assemblyName == "MySql.Data.EntityFrameworkCore")
             {
                 isMySql = true;
-                var type = assembly.GetType("MySQL.Data.EntityFrameworkCore.MySQLMetadataExtensions");
-                dynamicProviderEntityType = type.GetMethod("MySQL", new[] { typeof(IEntityType) });
-                dynamicProviderProperty = type.GetMethod("MySQL", new[] { typeof(IProperty) });
-            }
+	            //var type = assembly.GetType("MySQL.Data.EntityFrameworkCore.MySQLMetadataExtensions");
+	            //dynamicProviderEntityType = type.GetMethod("MySQL", new[] { typeof(IEntityType) });
+	            //dynamicProviderProperty = type.GetMethod("MySQL", new[] { typeof(IProperty) });
+
+
+	            dynamicProviderEntityType = typeof(RelationalMetadataExtensions).GetMethod("Relational", new[] { typeof(IEntityType) });
+	            dynamicProviderProperty = typeof(RelationalMetadataExtensions).GetMethod("Relational", new[] { typeof(IProperty) });
+			}
             else if (assemblyName == "Pomelo.EntityFrameworkCore.MySql")
             {
                 isMySqlPomelo = true;
