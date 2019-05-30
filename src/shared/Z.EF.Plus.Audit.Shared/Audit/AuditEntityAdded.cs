@@ -16,6 +16,7 @@ using System.Data.Entity.Core.Objects;
 using System.Linq;
 
 #elif EFCORE
+using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -56,8 +57,9 @@ namespace Z.EntityFramework.Plus
             {
                 var name = record.GetName(i);
                 var value = record.GetValue(i);
+	            var type = record.GetFieldType(i);
 
-                if (auditEntry.Parent.Configuration.UseNullForDBNullValue && value == DBNull.Value)
+				if (auditEntry.Parent.Configuration.UseNullForDBNullValue && value == DBNull.Value)
                 {
                     value = null;
                 }
@@ -74,14 +76,26 @@ namespace Z.EntityFramework.Plus
                         auditEntry.Parent.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(auditEntry, objectStateEntry, string.Concat(prefix, name), null, value)) :
                         new AuditEntryProperty();
 
-                    auditEntryProperty.Build(auditEntry, string.Concat(prefix, name), null, value);
+	                if (auditEntry.Parent.CurrentOrDefaultConfiguration.IgnoreEntityAddedDefaultValue && type != typeof(object) && value != null)
+	                {
+		                var checkDefaultValue = DefaultValue(type);
+						if (checkDefaultValue != null && checkDefaultValue.Equals(value))
+		                {
+			                value = null;
+		                } 
+					}
+
+					auditEntryProperty.Build(auditEntry, string.Concat(prefix, name), null, value);
                     auditEntry.Properties.Add(auditEntryProperty);
                 }
             }
         }
+
+
+
 #elif EFCORE
-    /// <summary>Audit entity added.</summary>
-    /// <param name="objectStateEntry">The object state entry.</param>
+        /// <summary>Audit entity added.</summary>
+        /// <param name="objectStateEntry">The object state entry.</param>
         public static void AuditEntityAdded(AuditEntry entry, EntityEntry objectStateEntry)
         {
             foreach (var propertyEntry in objectStateEntry.Metadata.GetProperties())
@@ -92,13 +106,33 @@ namespace Z.EntityFramework.Plus
                 {
                     var auditEntryProperty = entry.Parent.Configuration.AuditEntryPropertyFactory != null ?
                         entry.Parent.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(entry, objectStateEntry, propertyEntry.Name, null, property.CurrentValue)) :
-                        new AuditEntryProperty();
+                        new AuditEntryProperty(); 
 
-                    auditEntryProperty.Build(entry, propertyEntry.Name, null, property.CurrentValue);
+	                var value = property.CurrentValue;
+
+					if (entry.Parent.CurrentOrDefaultConfiguration.IgnoreEntityAddedDefaultValue && property.Metadata.FieldInfo != null &&  property.Metadata.FieldInfo.FieldType != typeof(object) && property.CurrentValue != null)
+	                {
+		                var checkDefaultValue = DefaultValue(property.Metadata.FieldInfo.FieldType);
+		                if (checkDefaultValue != null && checkDefaultValue.Equals(property.CurrentValue))
+		                {
+			                value = null;
+		                }
+	                } 
+
+					auditEntryProperty.Build(entry, propertyEntry.Name, null, value);
                     entry.Properties.Add(auditEntryProperty);
                 }
             }
         }
 #endif
-    }
+
+	    // https://stackoverflow.com/questions/2490244/default-value-of-a-type-at-runtime
+	    internal static object DefaultValue(Type type)
+	    {
+		    if (type.IsValueType)
+			    return Activator.CreateInstance(type);
+
+		    return null;
+	    }
+	}
 }

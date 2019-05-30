@@ -49,11 +49,11 @@ namespace Z.EntityFramework.Plus
         }
 
         internal Func<Type, string> EntityNameFactory { get; set; } 
-        internal Func<Type, string, string> PropertyNameFactory { get; set; } 
+        internal Func<Type, string, string> PropertyNameFactory { get; set; }
 
-        /// <summary>Gets or sets the audit entry factory.</summary>
-        /// <value>The audit entry factory.</value>
-        public Func<AuditEntryFactoryArgs, AuditEntry> AuditEntryFactory { get; set; }
+	    /// <summary>Gets or sets the audit entry factory.</summary>
+		/// <value>The audit entry factory.</value>
+		public Func<AuditEntryFactoryArgs, AuditEntry> AuditEntryFactory { get; set; }
 
         /// <summary>Gets or sets the audit entry property factory.</summary>
         /// <value>The audit entry property factory.</value>
@@ -95,9 +95,13 @@ namespace Z.EntityFramework.Plus
         /// <value>true if ignore entity soft deleted, false if not.</value>
         public bool IgnoreEntitySoftDeleted { get; set; }
 
-        /// <summary>Gets or sets a value indicating whether the association with Added state are audited.</summary>
-        /// <value>true if association with Added state are audited, false if not.</value>
-        public bool IgnoreRelationshipAdded { get; set; }
+        /// <summary>Gets or sets if default value should be considered as null.</summary>
+        /// <value>true if default value should be considered as null.</value>
+        public bool IgnoreEntityAddedDefaultValue { get; set; }
+
+		/// <summary>Gets or sets a value indicating whether the association with Added state are audited.</summary>
+		/// <value>true if association with Added state are audited, false if not.</value>
+		public bool IgnoreRelationshipAdded { get; set; }
 
         /// <summary>Gets or sets a value indicating whether the association with Deleted state are audited.</summary>
         /// <value>true if association with Deleted state are audited, false if not.</value>
@@ -156,6 +160,7 @@ namespace Z.EntityFramework.Plus
                 IgnoreEntityAdded = IgnoreEntityAdded,
                 IgnoreEntityModified = IgnoreEntityModified,
                 IgnoreEntityDeleted = IgnoreEntityDeleted,
+				IgnoreEntityAddedDefaultValue = IgnoreEntityAddedDefaultValue,
                 IgnoreEntitySoftAdded = IgnoreEntitySoftAdded,
                 IgnoreEntitySoftDeleted = IgnoreEntitySoftDeleted,
                 IgnorePropertyUnchanged = IgnorePropertyUnchanged,
