@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="SharedProjectFile_SccProperties">
+    <SharedProjectFile_ProjectGuid>{484e4a79-ba9c-46ef-8e3e-c7bfde200430}</SharedProjectFile_ProjectGuid>
+    <SharedProjectFile_SccProjectName>SAK</SharedProjectFile_SccProjectName>
+    <SharedProjectFile_SccAuxPath>SAK</SharedProjectFile_SccAuxPath>
+    <SharedProjectFile_SccLocalPath>SAK</SharedProjectFile_SccLocalPath>
+    <SharedProjectFile_SccProvider>SAK</SharedProjectFile_SccProvider>
+  </PropertyGroup>
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>23bfa108-fe19-4a8e-886a-74f86728fbc9</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Z.EF.Plus.QueryIncludeFilterCore.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)BaseQueryIncludeFilterChild.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`.IncludeFilterByPath.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`.IncludeFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeFilterByPath.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeFilterChild`2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeFilterExpressionReduceVisitor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeFilterExpressionToReduceVisitor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeFilterIncludeSubPath.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeFilterManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeFilterParentQueryable`.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeFilterPathVisitor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeFilterProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeFilterNullCollection.cs" />
+  </ItemGroup>
+</Project>

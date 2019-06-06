@@ -74,6 +74,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)EF\Type\Type.GetDbSetElementType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EF\Type\Type.GetField.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\List`\List`.GetVersion.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LazyAsyncEnumerator\LazyAsyncEnumeratorCore.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LazyAsyncEnumerator\LazyAsyncEnumerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LinqExpressionExtensions\LambdaExpression\LambdaExpression.GetPropertyOrFieldAccessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LinqExpressionExtensions\LambdaExpression\LambdaExpression.GetPropertyOrFieldAccessors.cs" />
