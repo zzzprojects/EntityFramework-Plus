@@ -175,7 +175,7 @@ ctx.Posts.IncludeFilter(q => q.Comments.Take(1)).ToList();
 
  - **EF+ Query IncludeFilter:** Full version or Standalone version
  - **Database Provider:** All supported
- - **Entity Framework Version:** EF6
+ - **Entity Framework Version:** EF6, EF Core
  - **Minimum Framework Version:** .NET Framework 4
 
 ## Conclusion
