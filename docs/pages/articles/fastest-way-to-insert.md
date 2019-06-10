@@ -24,7 +24,7 @@ To solve the performance problem, you need to reduce the number of database roun
 
 -	[BulkSaveChanges](#ef-bulksavechanges)
 -	[BulkInsert](#ef-bulkinsert)
--	[BullUpdate](#ef-bulkupdate)
+-	[BulkUpdate](#ef-bulkupdate)
 -	[BulkDelete](#ef-bulkdelete)
 -	[BulkMerge](#ef-bulkmerge)
 
