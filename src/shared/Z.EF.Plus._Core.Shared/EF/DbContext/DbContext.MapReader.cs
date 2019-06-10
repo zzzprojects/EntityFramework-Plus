@@ -36,6 +36,10 @@ using Remotion.Linq.Parsing.Structure;
 
 #endif
 
+#if EFCORE_3X
+using IEvaluatableExpressionFilter = Microsoft.EntityFrameworkCore.Query.Internal.IEvaluatableExpressionFilter;
+#endif
+
 namespace Z.EntityFramework.Plus
 {
     internal static partial class InternalExtensions
@@ -135,10 +139,15 @@ namespace Z.EntityFramework.Plus
             var innerConnection = new CreateEntityConnection(queryConnection.DbConnection, null);
             //QueryConnection.DbConnection = innerConnection;
             var innerConnectionField = typeof(RelationalConnection).GetField("_connection", BindingFlags.NonPublic | BindingFlags.Instance);
-            innerConnectionField.SetValue(queryConnection, new Microsoft.EntityFrameworkCore.Internal.LazyRef<DbConnection>(() => innerConnection));
+
+#if EFCORE_3X
+            innerConnectionField.SetValue(queryConnection, innerConnection);
+#else
+            innerConnectionField.SetValue(queryConnection, LazyHelper.NewLazy<DbConnection>(() => innerConnection));
+#endif
 
             // CREATE query context
-            RelationalQueryContext queryContext;
+            RelationalQueryContext queryContext = null;
             {
                 var relationalQueryContextType = typeof(RelationalQueryContext);
                 var relationalQueryContextConstructor = relationalQueryContextType.GetConstructors()[0];
@@ -146,6 +155,7 @@ namespace Z.EntityFramework.Plus
                 // EF Core 1.1 preview
                 if (relationalQueryContextConstructor.GetParameters().Length == 5)
                 {
+#if !EFCORE_3X
                     // REFLECTION: Query.Provider._queryCompiler._queryContextFactory.ExecutionStrategyFactory
                     var executionStrategyFactoryField = queryContextFactory.GetType().GetProperty("ExecutionStrategyFactory", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
                     var executionStrategyFactory = executionStrategyFactoryField.GetValue(queryContextFactory);
@@ -153,6 +163,7 @@ namespace Z.EntityFramework.Plus
                     var lazyRefStateManager = LazyHelper.NewLazy(() => stateManager);
 
                     queryContext = (RelationalQueryContext)relationalQueryContextConstructor.Invoke(new object[] { createQueryBufferDelegate, connection, lazyRefStateManager, concurrencyDetector, executionStrategyFactory });
+#endif
                 }
                 else
                 {
@@ -200,7 +211,7 @@ namespace Z.EntityFramework.Plus
             }
             return list;
 #endif
-        }
+                }
     }
 }
 #endif

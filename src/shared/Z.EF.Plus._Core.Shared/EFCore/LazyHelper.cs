@@ -1,4 +1,4 @@
-﻿#if EFCORE
+﻿#if EFCORE && !EFCORE_3X
 using Microsoft.EntityFrameworkCore;
 using System;
 using Microsoft.EntityFrameworkCore.Internal;

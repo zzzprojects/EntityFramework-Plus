@@ -145,10 +145,15 @@ namespace Z.EntityFramework.Plus
                 arguments.RemoveAt(1);
             }
 
+#if EFCORE_3X
+            // RESOLE parent queries using .FutureValue();
+            var immediateQuery = new EntityQueryable<TResult>((IAsyncQueryProvider)OriginalProvider, expression);
+#else
             // RESOLE parent queries using .FutureValue();
             var immediateQuery = new EntityQueryable<TResult>((IAsyncQueryProvider)OriginalProvider);
             var expressionProperty = typeof(QueryableBase<>).MakeGenericType(typeof(TResult)).GetProperty("Expression", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             expressionProperty.SetValue(immediateQuery, expression);
+#endif
 
             object value = null;
 
@@ -219,46 +224,23 @@ namespace Z.EntityFramework.Plus
             return (TResult)value;
         }
 
+#if EFCORE_3X
+        public TResult ExecuteAsync<TResult>(Expression expression)
+        {
+            throw new Exception(ExceptionMessage.GeneralException);
+        }
+#else
         public IAsyncEnumerable<TResult> ExecuteAsync<TResult>(Expression expression)
         {
             throw new Exception(ExceptionMessage.GeneralException);
         }
 
+   
+#endif
         public Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
         {
             return Task.Run(() => Execute<TResult>(expression), cancellationToken);
         }
-
-        //public TResult ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
-        //{
-        //    throw new Exception("a");
-        //}
-
-
-        ///// <summary>Executes the given expression asynchronously.</summary>
-        ///// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
-        ///// <param name="expression">The expression to execute.</param>
-        ///// <param name="cancellationToken">The cancellation token.</param>
-        ///// <returns>The object returned by the execution of the expression.</returns>
-        //public Task<object> ExecuteAsync(Expression expression, CancellationToken cancellationToken)
-        //{
-        //    throw new Exception(ExceptionMessage.GeneralException);
-        //}
-
-        //public IAsyncEnumerable<TResult> ExecuteAsync<TResult>(Expression expression)
-        //{
-        //    throw new Exception("TODO: public IAsyncEnumerable<TResult> ExecuteAsync<TResult>(Expression expression)");
-        //    //return Task.Run(() => Execute<TResult>(expression));
-        //}
-
-        ///// <summary>Executes the given expression asynchronously.</summary>
-        ///// <typeparam name="TResult">Type of the result.</typeparam>
-        ///// <param name="expression">The expression to execute.</param>
-        ///// <param name="cancellationToken">The cancellation token.</param>
-        ///// <returns>The object returned by the execution of the expression.</returns>
-        //public Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
-        //{
-        //    return Task.Run(() => Execute<TResult>(expression), cancellationToken);
-        //}
+        
     }
 }

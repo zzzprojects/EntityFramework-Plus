@@ -12,8 +12,13 @@ namespace Z.EntityFramework.Plus
 {
     internal static partial class EFCoreHelper
     {
-        internal static bool IsVersion3x = typeof(IQuerySqlGenerator).GetMethod("GenerateSql").GetParameters().Length == 3;
-        internal static bool IsVersion3xPreview5 = IsVersion3x && typeof(DbContext).Assembly.GetType("Microsoft.EntityFrameworkCore.Internal.LazyRef`1") == null;
+#if EFCORE_3X
+        internal static bool IsVersion3x = true;
+        internal static bool IsVersion3xPreview5 = true;
+#else
+        internal static bool IsVersion3x = false;
+        internal static bool IsVersion3xPreview5 = false;
+#endif
     }
 }
 #endif

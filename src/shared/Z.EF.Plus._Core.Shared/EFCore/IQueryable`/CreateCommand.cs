@@ -20,6 +20,10 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Remotion.Linq.Parsing.ExpressionVisitors.TreeEvaluation;
 using Remotion.Linq.Parsing.Structure;
 
+#if EFCORE_3X
+using IEvaluatableExpressionFilter = Microsoft.EntityFrameworkCore.Query.Internal.IEvaluatableExpressionFilter;
+#endif
+
 namespace Z.EntityFramework.Plus
 {
     internal static partial class InternalExtensions
@@ -110,7 +114,12 @@ namespace Z.EntityFramework.Plus
             var queries = queryModelVisitor.Queries;
             var sqlQuery = queries.ToList()[0];
 
+#if EFCORE_3X
+            var commandBuilderFactory = queryContext.Context.Database.GetService<IRelationalCommandBuilderFactory>();
+            var command = sqlQuery.CreateDefaultQuerySqlGenerator().GenerateSql(commandBuilderFactory, queryContext.ParameterValues, null);
+#else
             var command = sqlQuery.CreateDefaultQuerySqlGenerator().GenerateSql(queryContext.ParameterValues);
+#endif
 
             return command;
         }

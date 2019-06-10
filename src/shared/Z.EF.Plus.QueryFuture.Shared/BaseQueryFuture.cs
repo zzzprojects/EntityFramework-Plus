@@ -37,7 +37,11 @@ using Remotion.Linq.Parsing.Structure;
 using Microsoft.EntityFrameworkCore.Query.Expressions;
 using Remotion.Linq.Clauses;
 using Microsoft.EntityFrameworkCore.Query.Sql;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
+#endif
+#if EFCORE_3X
+using IEvaluatableExpressionFilter = Microsoft.EntityFrameworkCore.Query.Internal.IEvaluatableExpressionFilter;
 #endif
 
 namespace Z.EntityFramework.Plus
@@ -89,6 +93,8 @@ namespace Z.EntityFramework.Plus
         /// <returns>The new executor and get command.</returns>
         public virtual IRelationalCommand CreateExecutorAndGetCommand(out RelationalQueryContext queryContext)
         {
+            queryContext = null;
+
             bool isEFCore2x = false;
             bool EFCore_2_1 = false;
 #if EFCORE
@@ -234,15 +240,11 @@ namespace Z.EntityFramework.Plus
                 var innerConnectionField = typeof(RelationalConnection).GetField("_connection", BindingFlags.NonPublic | BindingFlags.Instance);
                 var initalConnection = innerConnectionField.GetValue(QueryConnection);
 
-                if (EFCoreHelper.IsVersion3xPreview5)
-                {
-                    innerConnectionField.SetValue(QueryConnection, innerConnection);
-                }
-                else
-                {
-                    innerConnectionField.SetValue(QueryConnection, LazyHelper.NewLazy<DbConnection>(() => innerConnection));
-                }
-                
+#if EFCORE_3X
+                innerConnectionField.SetValue(QueryConnection, innerConnection);
+#else
+                innerConnectionField.SetValue(QueryConnection, LazyHelper.NewLazy<DbConnection>(() => innerConnection));
+#endif
 
                 RestoreConnection = () => innerConnectionField.SetValue(QueryConnection, initalConnection);
             }
@@ -254,15 +256,30 @@ namespace Z.EntityFramework.Plus
                 var relationalQueryContextConstructor = relationalQueryContextType.GetConstructors()[0];
 
                 // EF Core 1.1 preview
-                if (relationalQueryContextConstructor.GetParameters().Length == 5)
+                if (isEFCore3x)
                 {
                     // REFLECTION: Query.Provider._queryCompiler._queryContextFactory.ExecutionStrategyFactory
                     var executionStrategyFactoryField = queryContextFactory.GetType().GetProperty("ExecutionStrategyFactory", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
                     var executionStrategyFactory = executionStrategyFactoryField.GetValue(queryContextFactory);
 
-                    var lazyRefStateManager = LazyHelper.NewLazy(() => stateManager);
+                    var dependenciesProperty3 = typeof(RelationalQueryContextFactory).GetProperty("Dependencies", BindingFlags.NonPublic | BindingFlags.Instance);
+                    var dependencies3 = dependenciesProperty3.GetValue(queryContextFactory);
 
+                    queryContext = (RelationalQueryContext)relationalQueryContextConstructor.Invoke(new object[] { dependencies3, createQueryBufferDelegate, QueryConnection, executionStrategyFactory });
+                }
+                else if (relationalQueryContextConstructor.GetParameters().Length == 5)
+                {
+                    // REFLECTION: Query.Provider._queryCompiler._queryContextFactory.ExecutionStrategyFactory
+                    var executionStrategyFactoryField = queryContextFactory.GetType().GetProperty("ExecutionStrategyFactory", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+                    var executionStrategyFactory = executionStrategyFactoryField.GetValue(queryContextFactory);
+
+#if !EFCORE_3X
+                    var lazyRefStateManager = LazyHelper.NewLazy(() => stateManager);
                     queryContext = (RelationalQueryContext)relationalQueryContextConstructor.Invoke(new object[] { createQueryBufferDelegate, QueryConnection, lazyRefStateManager, concurrencyDetector, executionStrategyFactory });
+#endif
+
+
+
                 }
                 else if(isEFCore2x)
                 {
@@ -270,12 +287,14 @@ namespace Z.EntityFramework.Plus
                     var executionStrategyFactoryField = queryContextFactory.GetType().GetProperty("ExecutionStrategyFactory", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
                     var executionStrategyFactory = executionStrategyFactoryField.GetValue(queryContextFactory);
 
+#if !EFCORE_3X
                     var lazyRefStateManager = LazyHelper.NewLazy(() => stateManager);
 
                     var dependenciesProperty3 = typeof(RelationalQueryContextFactory).GetProperty("Dependencies", BindingFlags.NonPublic | BindingFlags.Instance);
                     var dependencies3 = dependenciesProperty3.GetValue(queryContextFactory);
 
                     queryContext = (RelationalQueryContext)relationalQueryContextConstructor.Invoke(new object[] { dependencies3, createQueryBufferDelegate, QueryConnection, executionStrategyFactory });
+#endif
                 }
                 else
                 {
@@ -284,16 +303,18 @@ namespace Z.EntityFramework.Plus
             }
 
 
-            Expression newQuery;
+            Expression newQuery = null;
 
             if (isEFCore3x)
             {
-                var parameterExtractingExpressionVisitorConstructor = typeof(ParameterExtractingExpressionVisitor).GetConstructors().First(x => x.GetParameters().Length == 6);
-
-                var parameterExtractingExpressionVisitor = (ParameterExtractingExpressionVisitor)parameterExtractingExpressionVisitorConstructor.Invoke(new object[] { evaluatableExpressionFilter, queryContext, queryContext.GetType(), logger, true, false });
-
-                // CREATE new query from query visitor
-                newQuery = parameterExtractingExpressionVisitor.ExtractParameters(Query.Expression);
+#if EFCORE_3X
+                var visitor = new ParameterExtractingExpressionVisitor(evaluatableExpressionFilter, queryContext, queryContext.GetType(), (IDiagnosticsLogger<DbLoggerCategory.Query>)logger, true, false);
+                newQuery = visitor.ExtractParameters(Query.Expression);
+#endif
+                //var parameterExtractingExpressionVisitorConstructor = typeof(ParameterExtractingExpressionVisitor).GetConstructors().First(x => x.GetParameters().Length == 6);
+                //var parameterExtractingExpressionVisitor = (ParameterExtractingExpressionVisitor)parameterExtractingExpressionVisitorConstructor.Invoke(new object[] { evaluatableExpressionFilter, queryContext, queryContext.GetType(), logger, true, false });
+                //// CREATE new query from query visitor
+                //newQuery = parameterExtractingExpressionVisitor.ExtractParameters(Query.Expression);
             }
             else if(isEFCore2x)
             {
@@ -394,8 +415,8 @@ namespace Z.EntityFramework.Plus
         }
 #endif
 
-            /// <summary>Sets the result of the query deferred.</summary>
-            /// <param name="reader">The reader returned from the query execution.</param>
+                    /// <summary>Sets the result of the query deferred.</summary>
+                    /// <param name="reader">The reader returned from the query execution.</param>
         public virtual void SetResult(DbDataReader reader)
         {
         }

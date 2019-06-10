@@ -23,6 +23,10 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Remotion.Linq.Parsing.ExpressionVisitors.TreeEvaluation;
 using Remotion.Linq.Parsing.Structure;
 
+#if EFCORE_3X
+using IEvaluatableExpressionFilter = Microsoft.EntityFrameworkCore.Query.Internal.IEvaluatableExpressionFilter;
+#endif
+
 namespace Z.EntityFramework.Plus
 {
     internal static partial class InternalExtensions
@@ -115,7 +119,7 @@ namespace Z.EntityFramework.Plus
             
 
             // CREATE query context
-            RelationalQueryContext queryContext;
+            RelationalQueryContext queryContext = null;
             {
                 var relationalQueryContextType = typeof(RelationalQueryContext);
                 var relationalQueryContextConstructor = relationalQueryContextType.GetConstructors()[0];
@@ -123,6 +127,7 @@ namespace Z.EntityFramework.Plus
                 // EF Core 1.1 preview
                 if (relationalQueryContextConstructor.GetParameters().Length == 5)
                 {
+#if !EFCORE_3X
                     // REFLECTION: Query.Provider._queryCompiler._queryContextFactory.ExecutionStrategyFactory
                     var executionStrategyFactoryField = queryContextFactory.GetType().GetProperty("ExecutionStrategyFactory", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
                     var executionStrategyFactory = executionStrategyFactoryField.GetValue(queryContextFactory);
@@ -130,6 +135,7 @@ namespace Z.EntityFramework.Plus
                     var lazyRefStateManager = LazyHelper.NewLazy(() => stateManager);
 
                     queryContext = (RelationalQueryContext)relationalQueryContextConstructor.Invoke(new object[] { createQueryBufferDelegate, connection, lazyRefStateManager, concurrencyDetector, executionStrategyFactory });
+#endif
                 }
                 else
                 {
@@ -169,7 +175,13 @@ namespace Z.EntityFramework.Plus
 
             // RETURN the IRealationCommand
             var sqlQuery = queryModelVisitor.Queries.First();
+
+#if EFCORE_3X
+            var commandBuilderFactory = queryContext.Context.Database.GetService<IRelationalCommandBuilderFactory>();
+            var relationalCommand = sqlQuery.CreateDefaultQuerySqlGenerator().GenerateSql(commandBuilderFactory, queryContext.ParameterValues, null);
+#else
             var relationalCommand = sqlQuery.CreateDefaultQuerySqlGenerator().GenerateSql(queryContext.ParameterValues);
+#endif
             return relationalCommand;
         }
     }
