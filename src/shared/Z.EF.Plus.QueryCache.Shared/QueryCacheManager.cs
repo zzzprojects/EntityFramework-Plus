@@ -230,9 +230,13 @@ namespace Z.EntityFramework.Plus
             {
                 CacheTags.AddOrUpdate(CachePrefix + tag, x => new List<string> {cacheKey}, (x, list) =>
                 {
-                    if (!list.Contains(cacheKey))
+                    lock (list)
                     {
-                        list.Add(cacheKey);
+                        // never lock something related to this list elsewhere or ensure we don't create a deadlock
+                        if (!list.Contains(cacheKey))
+                        {
+                            list.Add(cacheKey);
+                        }
                     }
 
                     return list;
@@ -272,10 +276,14 @@ namespace Z.EntityFramework.Plus
             {
                 List<string> list;
                 if (CacheTags.TryRemove(CachePrefix + tag, out list))
-                {
-                    foreach (var item in list)
+                {                        
+                    // never lock something related to this list elsewhere or ensure we don't create a deadlock
+                    lock (list)
                     {
-                        Cache.Remove(item);
+                        foreach (var item in list)
+                        {
+                            Cache.Remove(item);
+                        }
                     }
                 }
             }
