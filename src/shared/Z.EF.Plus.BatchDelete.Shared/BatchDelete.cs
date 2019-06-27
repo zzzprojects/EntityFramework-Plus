@@ -833,8 +833,8 @@ string.Concat("\"", store.Schema, "\".\"", store.Table, "\"");
 				}
 
 				primaryKeys = propertyAndColumnName.Count > 1 ?
-					string.Join(Environment.NewLine + "AND ", propertyAndColumnName.Select(x => string.Concat("\"", x.Item2, "\" = B.\"", x.Item1, "\""))):
-					string.Join(Environment.NewLine + "AND ", propertyAndColumnName.Select(x => string.Concat("\"", x.Item2, "\" = B.\"", x.Item2, "\"")));
+					string.Join(Environment.NewLine + "AND ", propertyAndColumnName.Select(x => string.Concat(tableName + ".\"", x.Item2, "\" = B.\"", x.Item1, "\""))):
+					string.Join(Environment.NewLine + "AND ", propertyAndColumnName.Select(x => string.Concat(tableName + ".\"", x.Item2, "\" = B.\"", x.Item2, "\"")));
 			}
 			else if (isOracle || isDevOracle)
 			{

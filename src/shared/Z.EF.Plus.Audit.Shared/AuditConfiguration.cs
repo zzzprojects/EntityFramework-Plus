@@ -111,9 +111,13 @@ namespace Z.EntityFramework.Plus
         /// <value>true if unchanged property of a modified entity are audited, false if not.</value>
         public bool IgnorePropertyUnchanged { get; set; }
 
-        /// <summary>Gets or sets a dictionary indicating if an entity type or a property name is audited.</summary>
-        /// <value>A dictionary indicating if an entity type or a property name is audited.</value>
-        public ConcurrentDictionary<string, bool> IsAuditedDictionary { get; set; }
+        /// <summary>Gets or sets a value indicating whether the property for entity with Added state are audited.</summary>
+        /// <value>true if the property for entity with Added state are audited, false if not.</value>
+        public bool IgnorePropertyAdded { get; set; }
+
+		/// <summary>Gets or sets a dictionary indicating if an entity type or a property name is audited.</summary>
+		/// <value>A dictionary indicating if an entity type or a property name is audited.</value>
+		public ConcurrentDictionary<string, bool> IsAuditedDictionary { get; set; }
 
         /// <summary>Gets or sets a list of predicates to check if the modified entity is soft added.</summary>
         /// <value>A list of predicates to check if the modified entity is soft added.</value>
@@ -142,12 +146,12 @@ namespace Z.EntityFramework.Plus
         ///     Gets or sets a value indicating whether null value should be used in the Audit instead of DBNull.Value
         /// </summary>
         /// <value>The value indicating whether null value should be used in the Audit instead of DBNull.Value</value>
-        public bool UseNullForDBNullValue { get; set; }
+        public bool UseNullForDBNullValue { get; set; } 
 #endif
 
-        /// <summary>Makes a deep copy of this object.</summary>
-        /// <returns>A copy of this object.</returns>
-        public AuditConfiguration Clone()
+		/// <summary>Makes a deep copy of this object.</summary>
+		/// <returns>A copy of this object.</returns>
+		public AuditConfiguration Clone()
         {
             var audit = new AuditConfiguration
             {
@@ -173,6 +177,7 @@ namespace Z.EntityFramework.Plus
                 SoftDeletedPredicates = new List<Func<object, bool>>(SoftDeletedPredicates),
                 ExcludeRelationshipIfOneExcluded = ExcludeRelationshipIfOneExcluded,
                 UseUtcDateTime = UseUtcDateTime,
+                IgnorePropertyAdded = IgnorePropertyAdded,
 #if EF5 || EF6
                 UseNullForDBNullValue = UseNullForDBNullValue
 #endif

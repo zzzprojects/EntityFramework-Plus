@@ -70,9 +70,11 @@ namespace Z.EntityFramework.Plus
                     // Complex Type
                     AuditEntityAdded(auditEntry, objectStateEntry, valueRecord, string.Concat(prefix, name, "."));
                 }
-                else if (objectStateEntry.EntitySet.ElementType.KeyMembers.Any(x => x.Name == name) || auditEntry.Parent.CurrentOrDefaultConfiguration.IsAuditedProperty(auditEntry.Entry, string.Concat(prefix, name)))
-                {
-                    var auditEntryProperty = auditEntry.Parent.Configuration.AuditEntryPropertyFactory != null ?
+                else if (objectStateEntry.EntitySet.ElementType.KeyMembers.Any(x => x.Name == name) ||
+                         (auditEntry.Parent.CurrentOrDefaultConfiguration.IsAuditedProperty(auditEntry.Entry, string.Concat(prefix, name))
+                         && !auditEntry.Parent.CurrentOrDefaultConfiguration.IgnorePropertyAdded))
+                { 
+					var auditEntryProperty = auditEntry.Parent.Configuration.AuditEntryPropertyFactory != null ?
                         auditEntry.Parent.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(auditEntry, objectStateEntry, string.Concat(prefix, name), null, value)) :
                         new AuditEntryProperty();
 
@@ -102,7 +104,8 @@ namespace Z.EntityFramework.Plus
             {
                 var property = objectStateEntry.Property(propertyEntry.Name);
 
-                if (property.Metadata.IsKey() || entry.Parent.CurrentOrDefaultConfiguration.IsAuditedProperty(entry.Entry, propertyEntry.Name))
+                if (property.Metadata.IsKey() || (entry.Parent.CurrentOrDefaultConfiguration.IsAuditedProperty(entry.Entry, propertyEntry.Name)
+					&& !entry.Parent.CurrentOrDefaultConfiguration.IgnorePropertyAdded))
                 {
                     var auditEntryProperty = entry.Parent.Configuration.AuditEntryPropertyFactory != null ?
                         entry.Parent.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(entry, objectStateEntry, propertyEntry.Name, null, property.CurrentValue)) :
@@ -126,8 +129,8 @@ namespace Z.EntityFramework.Plus
         }
 #endif
 
-	    // https://stackoverflow.com/questions/2490244/default-value-of-a-type-at-runtime
-	    internal static object DefaultValue(Type type)
+		// https://stackoverflow.com/questions/2490244/default-value-of-a-type-at-runtime
+		internal static object DefaultValue(Type type)
 	    {
 		    if (type.IsValueType)
 			    return Activator.CreateInstance(type);
