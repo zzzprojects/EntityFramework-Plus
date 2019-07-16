@@ -5,12 +5,14 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
+
 #if FULL || BATCH_DELETE || BATCH_UPDATE
 #if EF5 || EF6
 using System;
 using System.Data.Entity;
 using System.Linq;
 using System.Xml.Linq;
+using System.Collections.Generic;
 using Z.EntityFramework.Plus.Internal.Core.Infrastructure;
 using Z.EntityFramework.Plus.Internal.Core.Mapping;
 using Z.EntityFramework.Plus.Internal.Core.SchemaObjectModel;
@@ -27,7 +29,17 @@ namespace Z.EntityFramework.Plus.Internal
         internal static DbModelPlus GetDatabaseFirst(DbContext context)
         {
             var modelSplit = "---zzz_multi_model_split_zzz---";
-            var modelNames = context.GetModelNames();
+
+            List<string> modelNames = new List<string>();
+
+
+			try
+            {
+	            modelNames = context.GetModelNames();
+            }
+            catch
+            { 
+			}
 
             if (modelNames.Count == 0)
             {

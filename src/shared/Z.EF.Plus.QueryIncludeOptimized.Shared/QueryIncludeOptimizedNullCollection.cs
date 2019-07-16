@@ -68,32 +68,13 @@ namespace Z.EntityFramework.Plus
 
                 if (property != null)
                 {
-                    var accessor = new PropertyOrFieldAccessor(property);
+					var accessor = new PropertyOrFieldAccessor(property);
 
-                    var value = accessor.GetValue(currentItem);
+	                var value = accessor.GetValue(currentItem);
 
                     if (value == null)
                     {
-                        if (property.PropertyType.GetGenericArguments().Length == 1)
-                        {
-                            var genericTypeDefinition = property.PropertyType.GetGenericTypeDefinition();
-
-                            if (genericTypeDefinition == typeof(ICollection<>))
-                            {
-                                value = Activator.CreateInstance(typeof(HashSet<>).MakeGenericType(property.PropertyType.GetGenericArguments()[0]));
-                            }
-                            else if(genericTypeDefinition == typeof(IList<>))
-                            {
-                                value = Activator.CreateInstance(typeof(List<>).MakeGenericType(property.PropertyType.GetGenericArguments()[0]));
-                            }
-                            else
-                            {
-                                value = Activator.CreateInstance(property.PropertyType);
-                            }
-                            
-                            accessor.SetValue(currentItem, value);
-                        }
-
+                        CheckAndSetCollection(accessor, currentItem, property.PropertyType, property.PropertyType);
                         return;
                     }
 
@@ -104,5 +85,38 @@ namespace Z.EntityFramework.Plus
                 }
             }
         }
+
+	    private static void CheckAndSetCollection(PropertyOrFieldAccessor accessor, object currentItem, Type propertyType, Type originalType)
+	    {
+            if (propertyType.GetGenericArguments().Length == 1)
+            {
+                object value;
+
+                var genericTypeDefinition = propertyType.GetGenericTypeDefinition();
+
+				if (genericTypeDefinition == typeof(ICollection<>))
+				{
+					value = Activator.CreateInstance(typeof(HashSet<>).MakeGenericType(propertyType.GetGenericArguments()[0]));
+				}
+				else if (genericTypeDefinition == typeof(IList<>))
+				{
+					value = Activator.CreateInstance(typeof(List<>).MakeGenericType(propertyType.GetGenericArguments()[0]));
+				}
+				else
+				{
+					// Create an instance of the original type since we know it implement one of the type supported: List<A>
+					value = Activator.CreateInstance(originalType);
+				} 
+			  
+                accessor.SetValue(currentItem, value);
+            }
+			else
+			{
+				if (propertyType.BaseType != null && propertyType.BaseType != typeof(object))
+				{
+                    CheckAndSetCollection(accessor, currentItem, propertyType.BaseType, originalType);
+				}
+			}
+	    }
     }
 }
