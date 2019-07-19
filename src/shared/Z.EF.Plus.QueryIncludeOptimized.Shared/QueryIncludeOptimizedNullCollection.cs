@@ -88,8 +88,8 @@ namespace Z.EntityFramework.Plus
 
 	    private static void CheckAndSetCollection(PropertyOrFieldAccessor accessor, object currentItem, Type propertyType, Type originalType)
 	    {
-            if (propertyType.GetGenericArguments().Length == 1)
-            {
+            if (propertyType.GetGenericArguments().Length == 1 && typeof(IEnumerable).IsAssignableFrom(propertyType)) 
+			{
                 object value;
 
                 var genericTypeDefinition = propertyType.GetGenericTypeDefinition();
