@@ -143,8 +143,6 @@ Entity Framework already does all the job by linking related entities to the pa
 ## Limitations
 
  - **DO NOT** work with **AsNoTracking**
- - Entity Framework Core:
-   - Not supported yet.
  - Entity Framework 5:
    - Will never be supported. Use IncludeOptimized instead to filter collections
  - Cannot be mixed with projection
