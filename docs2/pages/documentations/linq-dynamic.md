@@ -33,7 +33,7 @@ var list = ctx.Where(x => "x > 2").ToList();
 var list = ctx.Where(x => "x > y", new { y = 2 }).ToList();
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/Otm0Aa' %}
+[Try it in EF6](https://dotnetfiddle.net/Otm0Aa) | [Try it in EF Core](https://dotnetfiddle.net/1sTQwA)
 
 ## Order && Select
 
@@ -53,7 +53,7 @@ var list = context.Customers.OrderByDescendingDynamic(x => "x.Name").ToList();
 var list = context.Customers.SelectDynamic(x => "x.Name").ToList();
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/OJjBgK' %}
+[Try it in EF6](https://dotnetfiddle.net/OJjBgK) | [Try it in EF Core](https://dotnetfiddle.net/8n2Xc0)
 
 ## Execute
 
@@ -69,4 +69,4 @@ var list = ctx.Execute<IEnumerable<int>>("Where(x => x > 2)");
 var list3 = ctx.Execute("Where(x => x > y).OrderBy(x => x).ToList()", new { y = 2 });
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/mwTqW7' %}
+[Try it in EF6](https://dotnetfiddle.net/mwTqW7) | [Try it in EF Core](https://dotnetfiddle.net/LbU2at)
