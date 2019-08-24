@@ -25,7 +25,7 @@ var countries1 = ctx.Countries.FromCache().ToList();
 var countries2 = ctx.Countries.FromCache().ToList();
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/nx9A2H' %}
+[Try it in EF6](https://dotnetfiddle.net/nx9A2H) | [Try it in EF Core](https://dotnetfiddle.net/EZZkhP)
 
 ## EF+ Query Cache
 
@@ -44,7 +44,7 @@ var countries = ctx.Countries.Where(x => x.IsActive).FromCache();
 var states = ctx.States.Where(x => x.IsActive).FromCache(DateTime.Now.AddHours(2));
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/BcScGT' %}
+[Try it in EF6](https://dotnetfiddle.net/BcScGT) | [Try it in EF Core](https://dotnetfiddle.net/z5gyPI)
 
 ## EF+ Query Cache Async
 
@@ -79,7 +79,7 @@ var count = ctx.Customers.Count();
 // Oops! All customers are cached instead of customer count.
 var count = ctx.Customers.FromCache().Count();
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/SOjxeY' %}
+[Try it in EF6](https://dotnetfiddle.net/SOjxeY) | [Try it in EF Core](https://dotnetfiddle.net/3EXZBt)
 
 **EF+ Query Deferred** has been created to resolve this issue, the resolution is now deferred instead of being immediate which lets us cache the expected result.
 
@@ -92,7 +92,7 @@ var ctx = new EntitiesContext();
 var count = ctx.Customers.DeferredCount().FromCache();
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/4MUlef' %}
+[Try it in EF6](https://dotnetfiddle.net/4MUlef) | [Try it in EF Core](https://dotnetfiddle.net/V0G6pe)
 
 Query Deferred supports all Queryable extension methods and overloads.
 
@@ -117,7 +117,7 @@ QueryCacheManager.ExpireTag("countries");
 :bulb: Use Enum instead of hard-coding string for tag name.
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/RScINk' %}
+[Try it in EF6](https://dotnetfiddle.net/RScINk) | [Try it in EF Core](https://dotnetfiddle.net/PUQCCY)
 
 ## EF+ Query Cache Expiration
 
@@ -139,7 +139,7 @@ var options = new MemoryCacheEntryOptions() { SlidingExpiration = TimeSpan.FromH
 var states = ctx.States.FromCache(options);
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/f57ZoI' %}
+[Try it in EF6](https://dotnetfiddle.net/f57ZoI)
 
 ## EF Query Cache Control
 
@@ -157,7 +157,7 @@ QueryCacheManager.Cache = MemoryCache.Default;
 QueryCacheManager.Cache = new MemoryCache(new MemoryCacheOptions());
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/mIhcff' %}
+[Try it in EF6](https://dotnetfiddle.net/mIhcff) | [Try it in EF Core](https://dotnetfiddle.net/6ISVBT)
 
 You can set default policy
 
@@ -173,7 +173,7 @@ var options = new MemoryCacheEntryOptions() { SlidingExpiration = TimeSpan.FromH
 QueryCacheManager.DefaultMemoryCacheEntryOptions = options;
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/7JptcT' %}
+[Try it in EF6](https://dotnetfiddle.net/7JptcT)
 
 ## Real Life Scenarios
 

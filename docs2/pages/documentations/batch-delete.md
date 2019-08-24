@@ -23,7 +23,7 @@ ctx.Users.Where(x => x.LastLoginDate < date)
          .Delete(x => x.BatchSize = 1000);
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/R6D5BX' %}
+[Try it in EF6](https://dotnetfiddle.net/R6D5BX) | [Try it in EF Core](https://dotnetfiddle.net/8qqyPw)
 
 ## Batch Delete
 
@@ -49,7 +49,7 @@ ctx.Users.Where(x => x.LastLoginDate < date)
          .Delete();
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/DTWmh1' %}
+[Try it in EF6](https://dotnetfiddle.net/DTWmh1) | [Try it in EF Core](https://dotnetfiddle.net/HQauA0)
 
 ## Batch DeleteAsync
 
@@ -75,7 +75,7 @@ ctx.Users.Where(x => x.LastLoginDate < date)
          .DeleteAsync();
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/KUHvru' %}
+[Try it in EF6](https://dotnetfiddle.net/KUHvru) | [Try it in EF Core](https://dotnetfiddle.net/Xdxjg1)
 
 ## Batch Size
 
@@ -99,7 +99,7 @@ ctx.Users.Where(x => x.LastLoginDate < date)
          .Delete(x => x.BatchSize = 1000);
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/c6TLU3' %}
+[Try it in EF6](https://dotnetfiddle.net/c6TLU3) | [Try it in EF Core](https://dotnetfiddle.net/CpzGUz)
 
 ## Batch Delay Interval
 
@@ -124,7 +124,8 @@ ctx.Users.Where(x => x.LastLoginDate < date)
          .Delete(x => x.BatchDelayInterval = 2000);
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/to4sjm' %}
+[Try it in EF6](https://dotnetfiddle.net/to4sjm) | [Try it in EF Core](https://dotnetfiddle.net/3iRApA
+)
 
 ## Executing Interceptor
 
@@ -148,7 +149,7 @@ ctx.Users.Where(x => x.LastLoginDate < date)
          .Delete(x => { x.Executing = command => commandText = command.CommandText; });
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/VOEdOD' %}
+[Try it in EF6](https://dotnetfiddle.net/VOEdOD) | [Try it in EF Core](https://dotnetfiddle.net/KrtT0e)
 
 ## EF Core InMemory
 

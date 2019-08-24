@@ -19,7 +19,7 @@ ctx.Users.Where(x => x.LastLoginDate < date)
          .Update(x => new User() { IsSoftDeleted = 1 });
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/uzsdub' %}
+[Try it in EF6](https://dotnetfiddle.net/uzsdub) | [Try it in EF Core](https://dotnetfiddle.net/0CBNK1)
 
 ## Batch Update
 
@@ -42,7 +42,7 @@ ctx.Users.Where(x => x.LastLoginDate < date)
          .Update(x => new User() { IsSoftDeleted = 1 });
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/sfMLRj' %}
+[Try it in EF6](https://dotnetfiddle.net/sfMLRj) | [Try it in EF Core](https://dotnetfiddle.net/kJRdnp)
 
 ## Batch UpdateAsync
 
@@ -65,7 +65,7 @@ ctx.Users.Where(x => x.LastLoginDate < date)
          .UpdateAsync(x => new User() { IsSoftDeleted = 1 });
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/7fHg1g' %}
+[Try it in EF6](https://dotnetfiddle.net/7fHg1g) | [Try it in EF Core](https://dotnetfiddle.net/TBfvz6)
 
 ## Executing Interceptor
 
@@ -89,7 +89,7 @@ ctx.Users.Where(x => x.LastLoginDate < date)
                  x => { x.Executing = command => commandText = command.CommandText; });
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/a6zJUe' %}
+[Try it in EF6](https://dotnetfiddle.net/a6zJUe) | [Try it in EF Core](https://dotnetfiddle.net/oHJl9R)
 
 ## Limitations
 
