@@ -21,6 +21,8 @@ var list = ctx.Posts.ToList();
 
 ```
 
+[Try it in EF6](https://dotnetfiddle.net/066xSv) | [Try it in EF Core](https://dotnetfiddle.net/m38JPM)
+
  - You can control the default query to add a default sorting:
 
 {% include template-example.html %} 
@@ -37,6 +39,8 @@ var list = ctx.Posts.ToList();
 
 ```
 
+[Try it in EF6](https://dotnetfiddle.net/F7mGZM) | [Try it in EF Core](https://dotnetfiddle.net/AjRuQO)
+
  - You can use a predefined filter and enable it only for a specific query:
 
 {% include template-example.html %} 
@@ -49,8 +53,9 @@ ctx.Filter<Post>(MyEnum.EnumValue, q => q.Where(x => !x.IsSoftDeleted)).Disable(
 
 // SELECT * FROM Post WHERE IsSoftDeleted = false
 var list = ctx.Posts.Filter(MyEnum.EnumValue).ToList();
-
 ```
+
+[Try it in EF6](https://dotnetfiddle.net/5bmB2n) | [Try it in EF Core](https://dotnetfiddle.net/1tnpPm)
 
 ## EF+ Query Filter Global
 
@@ -70,8 +75,9 @@ QueryFilterManager.InitilizeGlobalFilter(ctx);
 
 // SELECT * FROM Customer WHERE IsActive = true
 var list = ctx.Customers.ToList();
-
 ```
+
+[Try it in EF6](https://dotnetfiddle.net/2XfyGS) | [Try it in EF Core](https://dotnetfiddle.net/IFndNf)
 
 ***Use entities context constructor to initialize global filter by default.***
 
@@ -89,8 +95,9 @@ ctx.Filter<Customer>(q => q.Where(x => x.IsActive));
 
 // SELECT * FROM Customer WHERE IsActive = true
 var list = ctx.Customers.ToList();
-
 ```
+
+[Try it in EF6](https://dotnetfiddle.net/Tyw4Xy) | [Try it in EF Core](https://dotnetfiddle.net/UjIXDH)
 
 ***Use entities context constructor to make some filter "global" to all context.***
 
@@ -111,6 +118,8 @@ ctx.Filter<Customer>(MyEnum.EnumValue, q => q.Where(x => x.IsActive), false);
 var list = ctx.Customers.Filter(MyEnum.EnumValue).ToList();
 
 ```
+
+[Try it in EF6](https://dotnetfiddle.net/UOS9t5) | [Try it in EF Core](https://dotnetfiddle.net/diPOAn)
 
 ## EF+ Query Filter By Inheritance/Interface
 
@@ -136,6 +145,8 @@ var dogs = ctx.Dogs.ToList();
 
 ```
 
+[Try it in EF6](https://dotnetfiddle.net/K6nmYU) | [Try it in EF Core](https://dotnetfiddle.net/iX5gWN)
+
 ## EF+ Query Filter Enable/Disable
 
 Filters are very flexible, you can enable and disable them at any time and only for a specific inheritance or interface if desired.
@@ -147,7 +158,7 @@ Filters are very flexible, you can enable and disable them at any time and only 
 var ctx = new EntitiesContext();
 
 // CREATE filter by interface
-ctx.Filter<IAnimal>(MyEnum.EnumValue, q => q.Where(x => x.IsDomestic))
+ctx.Filter<IAnimal>(MyEnum.EnumValue, q => q.Where(x => x.IsDomestic));
 
 // DISABLE filter only for class inheriting from BaseDog
 ctx.Filter(MyEnum.EnumValue).Disable();
@@ -162,6 +173,8 @@ ctx.Filter(MyEnum.EnumValue).Enable();
 var dogs = ctx.Dogs.ToList();
 
 ```
+
+[Try it in EF6](https://dotnetfiddle.net/6aRIYu) | [Try it in EF Core](https://dotnetfiddle.net/JG2gkF)
 
 ## EF+ Query Filter AsNoFilter
 
@@ -182,6 +195,8 @@ var list = ctx.Customers.ToList();
 var list = ctx.Customers.AsNoFilter().ToList();
 
 ```
+
+[Try it in EF6](https://dotnetfiddle.net/xxM1Tl) | [Try it in EF Core](https://dotnetfiddle.net/El05r4)
 
 ## Real Life Scenarios
 
@@ -206,6 +221,8 @@ ctx.Filter<Product>(q => q.Where(x => x.CategoryID == myCategoryID));
 var list = ctx.Products.ToList();
 
 ```
+
+[Try it in EF6](https://dotnetfiddle.net/IZhSC0) | [Try it in EF Core](https://dotnetfiddle.net/FALmEw)
 
 **Many categories by product**
 
@@ -250,6 +267,8 @@ var list = ctx.Invoices.Where(q => q.Where(x => x.CustomerID = myCustomerID)).To
 
 ```
 
+[Try it in EF6](https://dotnetfiddle.net/EyLwE0) | [Try it in EF Core](https://dotnetfiddle.net/uIeV60)
+
 ### Object State
 
 Removing inactive or soft deleted records is probably the most common scenario. A soft delete is often useful when related data cannot be deleted. For example, the customer cannot be deleted because related orders cannot be deleted instead, he becomes inactive.
@@ -267,6 +286,8 @@ ctx.Filter<ISoftDeleted>(q => q.Where(x => !x.IsSoftDeleted));
 var list = ctx.Categories.ToList();
 
 ```
+
+[Try it in EF6](https://dotnetfiddle.net/4vcAQA) | [Try it in EF Core](https://dotnetfiddle.net/1AcyWB)
 
 ### Security Access
 
@@ -288,6 +309,8 @@ var list = ctx.Posts.ToList();
 
 ```
 
+[Try it in EF6](https://dotnetfiddle.net/3fsHRV) | [Try it in EF Core](https://dotnetfiddle.net/BknS6x)
+
 ### Default Ordering
 
 Default ordering can be often useful for base table like category. No matter the query, you probably want to show categories by alphabetic order.
@@ -305,6 +328,8 @@ ctx.Filter<Category>(q => q.OrderByDescending(x => x.Name));
 var list = ctx.Categories.ToList()
 
 ```
+
+[Try it in EF6](https://dotnetfiddle.net/zXGTk8) | [Try it in EF Core](https://dotnetfiddle.net/OFl9K1)
 
 ### Include Filtering
 
@@ -378,6 +403,8 @@ ctx.Filter<Post>(q => q.Where(x => !x.IsSoftDeleted)
 var list = ctx.SetFiltered<Post>().ToList();
 
 ```
+
+[Try it in EF6](https://dotnetfiddle.net/cTEtCX) | [Try it in EF Core](https://dotnetfiddle.net/3203HR)
 
 For this kind of scenario, we recommend using instead: [EntityFramework.DynamicFilters](https://github.com/zzzprojects/EntityFramework.DynamicFilters).
 
