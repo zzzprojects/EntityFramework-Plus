@@ -102,8 +102,8 @@ new { y = 1 }).ToList();
 					<li>AutoSave audit values in the database</li>
 					<li>Keep track of SoftDelete entities</li>
 					<li>Filter events you desire</li>
-                  <li>Include entity type you desire</li>
-                  <li>Format value in your specific format</li>
+                  <li>Include entity types you desire</li>
+                  <li>Format values in your specific format</li>
 				</ul>
 				<div class="more-info">
 					<a href="{{ site.github.url }}/tutorial-audit" class="btn btn-lg btn-z" role="button">
