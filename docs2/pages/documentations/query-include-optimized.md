@@ -60,6 +60,7 @@ var ctx = new EntitiesContext();
 var orders = ctx.Orders.IncludeOptimized(x => x.Items);
 
 ```
+[Try it in EF6](https://dotnetfiddle.net/d8P4FS) 
 
 ## EF+ Query IncludeOptimized Filter
 
@@ -74,6 +75,7 @@ var ctx = new EntitiesContext();
 var orders = ctx.Orders.IncludeOptimized(x => x.Items.Where(y => y.IsActive));
 
 ```
+[Try it in EF6](https://dotnetfiddle.net/uFBqTO)
 
 ### AllowQueryBatch
 
