@@ -329,28 +329,6 @@ var list = ctx.Categories.ToList()
 
 ```
 
-[Try it in EF6](https://dotnetfiddle.net/zXGTk8) | [Try it in EF Core](https://dotnetfiddle.net/OFl9K1)
-
-### Include Filtering
-
-Including related entities can be useful. For example, every time you load a post, you want to include all active comments related.
-
-**Require:** EF+ Query Include
-
-*In this example, All active comments are included for every post.*
-
-{% include template-example.html %} 
-```csharp
-
-// using Z.EntityFramework.Plus; // Don't forget to include this.
-var ctx = new EntitiesContext();
-ctx.Filter<Post>(q => q.IncludeFilter(x => x.Comments.Where(y => y.IsActive));
-
-// Load all active comments related to post loaded
-var list = ctx.Posts.Take(20).ToList();
-
-```
-
 ## Limitations
 
  - Entity Framework 5

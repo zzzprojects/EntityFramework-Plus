@@ -29,7 +29,7 @@ foreach(var entry in entries)
 }
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/AJVhpP' %}
+[Try it in EF6](https://dotnetfiddle.net/AJVhpP) | [Try it in EF Core](https://dotnetfiddle.net/dc7v3W)
 
 ## AutoSave Audit
 
@@ -65,7 +65,7 @@ audit.CreatedBy = "ZZZ Projects"; // Optional
 ctx.SaveChanges(audit);
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/BfkqWm' %}
+[Try it in EF6](https://dotnetfiddle.net/BfkqWm) | [Try it in EF Core](https://dotnetfiddle.net/wi8men)
 
 ***By using a different context***
 
@@ -96,7 +96,7 @@ audit.CreatedBy = "ZZZ Projects"; // Optional
 oracleContext.SaveChanges(audit);
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/wTwh77' %}
+[Try it in EF6](https://dotnetfiddle.net/wTwh77) | [Try it in EF Core](https://dotnetfiddle.net/RZeTZq)
 
 ***Custom AuditEntry & Database First Approach***
 
@@ -150,7 +150,7 @@ public Static AuditEntryProperty Import(Z.EntityFramework.Plus.AuditEntryPropert
 }
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/9XjCSM' %}
+[Try it in EF6](https://dotnetfiddle.net/9XjCSM) | [Try it in EF Core](https://dotnetfiddle.net/JRiebw)
 
 ***Saving automatically by overriding SaveChanges & SaveChangesAsync***
 
@@ -210,7 +210,7 @@ using(var ctx = new EntityContext())
 }
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/TFf8aj' %}
+[Try it in EF6](https://dotnetfiddle.net/TFf8aj) | [Try it in EF Core](https://dotnetfiddle.net/FtG10X)
 
 ***SQL Script (for Database First)***
 
@@ -289,7 +289,7 @@ public class EntitySimple : IEntitySimple
 }
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/QPcF2a' %}
+[Try it in EF6](https://dotnetfiddle.net/QPcF2a) | [Try it in EF Core](https://dotnetfiddle.net/0ffKls)
 
 **Example Enable DataAnnotations**
 
@@ -332,7 +332,7 @@ audit.Configuration.Include<IAuditable>();
 ctx.SaveChanges(audit);
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/8TbEdO' %}
+[Try it in EF6](https://dotnetfiddle.net/8TbEdO) | [Try it in EF Core](https://dotnetfiddle.net/Ky4SpL)
 
 ## Exclude & Include Property
 
@@ -371,7 +371,7 @@ audit.Configuration.ExcludeProperty<IAuditable>(x =>
 ctx.SaveChanges(audit);
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/eHO1fP' %}
+[Try it in EF6](https://dotnetfiddle.net/eHO1fP) | [Try it in EF Core](https://dotnetfiddle.net/E5fDhN)
 
 ## Format Value
 
@@ -402,7 +402,7 @@ audit.Configuration.Format<OrderItem>(x => x.Price,
 ctx.SaveChanges(audit);
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/Of9Dbz' %}
+[Try it in EF6](https://dotnetfiddle.net/Of9Dbz) | [Try it in EF Core](https://dotnetfiddle.net/PZ4CJ3)
 
 ## Ignore Events
 
@@ -439,7 +439,7 @@ audit.Configuration.IgnoreRelationshipDeleted = true;
 ctx.SaveChanges(audit);
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/Ya95EQ' %}
+[Try it in EF6](https://dotnetfiddle.net/Ya95EQ) | [Try it in EF Core](https://dotnetfiddle.net/w6D8z4)
 
 ## Property Unchanged
 
@@ -468,7 +468,7 @@ audit.Configuration.IgnorePropertyUnchanged = false;
 ctx.SaveChanges(audit);
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/tYE0YR' %}
+[Try it in EF6](https://dotnetfiddle.net/tYE0YR) | [Try it in EF Core](https://dotnetfiddle.net/6oWfr2)
 
 ## Soft Add & Soft Delete
 
@@ -501,7 +501,7 @@ audit.Configuration.SoftDeleted<ISoftDelete>(x => x.IsDeleted);
 ctx.SaveChanges(audit);
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/OadxfN' %}
+[Try it in EF6](https://dotnetfiddle.net/OadxfN) | [Try it in EF Core](https://dotnetfiddle.net/Etv7yC)
 
 ## Retrieve AuditEntries for specific item
 
@@ -524,7 +524,7 @@ using (var ctx = new TestContext())
 }
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/ETFLlO' %}
+[Try it in EF6](https://dotnetfiddle.net/ETFLlO) | [Try it in EF Core](https://dotnetfiddle.net/6qiMrl)
 
 ### Audit, AuditEntry & AuditEntryProperty
 
@@ -601,7 +601,7 @@ audit.Configuration.AuditEntryFactory = args =>
 ctx.SaveChanges(audit);
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/aVIC0C' %}
+[Try it in EF6](https://dotnetfiddle.net/aVIC0C) | [Try it in EF Core](https://dotnetfiddle.net/uYAB7B)
 
 #### Custom Class
 
@@ -630,7 +630,7 @@ audit.Configuration.AuditEntryPropertyFactory = args =>
 ctx.SaveChanges(audit);
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/xazeGj' %}
+[Try it in EF6](https://dotnetfiddle.net/xazeGj) | [Try it in EF Core](https://dotnetfiddle.net/ZV3lxd)
 
 #### Custom DbSet with AutoSave
 
@@ -653,7 +653,7 @@ audit.CreatedBy = "ZZZ Projects"; // Optional
 ctx.SaveChanges(audit);
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/lC7eWg' %}
+[Try it in EF6](https://dotnetfiddle.net/lC7eWg) | [Try it in EF Core](https://dotnetfiddle.net/k1A2OD)
 
 ## Audit + Entity Framework Extensions
 
@@ -699,7 +699,7 @@ public class CurrentContext : DbContext
 }
 
 ```
-{% include component-try-it.html href='https://dotnetfiddle.net/AREtca' %}
+[Try it in EF6](https://dotnetfiddle.net/AREtca) | [Try it in EF Core](https://dotnetfiddle.net/nWXn84)
 
 ## Limitations
 
