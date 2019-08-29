@@ -30,6 +30,7 @@ var states = futureStates.ToList();
 
 ```
 
+[Try it in EF6](https://dotnetfiddle.net/NnXMtb) | [Try it in EF Core](https://dotnetfiddle.net/8gwESn)
 
 ## EF+ Query Future
 
@@ -55,6 +56,8 @@ var states = futureStates.ToList();
 
 ```
 
+[Try it in EF6](https://dotnetfiddle.net/NnXMtb) | [Try it in EF Core](https://dotnetfiddle.net/8gwESn)
+
 ## EF+ Query FutureValue
 
 Query FutureValue delays the execution of the query returning a result.
@@ -77,6 +80,8 @@ int maxPrice = futureMinPrice.Value;
 
 ```
 
+[Try it in EF6](https://dotnetfiddle.net/4K4Fx2) | [Try it in EF Core](https://dotnetfiddle.net/gNCsOR)
+
 ## EF+ Query FutureValue Deferred
 
 Immediate resolution methods like **Count()** and **FirstOrDefault()** cannot use future methods since it executes the query immediately.
@@ -91,6 +96,7 @@ var count = ctx.Customers.Count();
 var count = ctx.Customers.Future().Count();
 
 ```
+[Try it in EF6](https://dotnetfiddle.net/lLkiUc) | [Try it in EF Core](https://dotnetfiddle.net/62LQVi)
 
 **EF+ Query Deferred** has been created to resolve this issue. The resolution is now deferred instead of being immediate which lets you use FutureValue and get the expected result.
 
@@ -101,7 +107,7 @@ var count = ctx.Customers.Future().Count();
 var ctx = new EntitiesContext();
 
 // GET the first active customer and the number of active customers
-var futureFirstCustomer = ctx.Customer.DeferredFirstOrDefault().FutureValue();
+var futureFirstCustomer = ctx.Customers.DeferredFirstOrDefault().FutureValue();
 var futureCustomerCount = ctx.Customers.DeferredCount().FutureValue();
 
 // TRIGGER all pending queries
@@ -111,6 +117,8 @@ Customer firstCustomer = futureFirstCustomer.Value;
 var count = futureCustomerCount.Value;
 
 ```
+
+[Try it in EF6](https://dotnetfiddle.net/V2ifb0) | [Try it in EF Core](https://dotnetfiddle.net/BI16rq)
 
 ## Real Life Scenarios
 
@@ -151,6 +159,7 @@ var postCount = futurePostCount.Value;
 
 ```
 
+[Try it in EF6](https://dotnetfiddle.net/oA24FP) | [Try it in EF Core](https://dotnetfiddle.net/PyyUsy)
 ## Behind the code
 
  - All queries from a context using query future are added to a batch list.

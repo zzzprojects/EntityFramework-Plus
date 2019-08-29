@@ -19,6 +19,7 @@ var list = ctx.Orders.IncludeFilter(x => x.Items.Where(y => !y.IsSoftDeleted)
                      .ToList();
 
 ```
+[Try it in EF6](https://dotnetfiddle.net/Duyw5p) | [Try it in EF Core](https://dotnetfiddle.net/1unMtl)
 
 ## EF+ Query IncludeFilter
 
@@ -36,6 +37,7 @@ var ctx = new EntitiesContext();
 var blogs = ctx.Blogs.IncludeFilter(x => x.Posts.Where(y => !y.IsSoftDeleted)).ToList();
 
 ```
+[Try it in EF6](https://dotnetfiddle.net/10sM7d) | [Try it in EF Core](https://dotnetfiddle.net/1unMtl)
 
 ### Load multiple levels
 
@@ -53,6 +55,7 @@ var blogs = ctx.Blogs.IncludeFilter(x => x.Posts.Where(y => !y.IsSoftDeleted))
                      .ToList();
 
 ```
+[Try it in EF6](https://dotnetfiddle.net/gFGxt6) | [Try it in EF Core](https://dotnetfiddle.net/SK934m)
 
 ## Real Life Scenarios
 
@@ -71,6 +74,7 @@ var posts= ctx.Posts.IncludeFilter(x => x.Comments
                      .ToList();
 
 ```
+[Try it in EF6](https://dotnetfiddle.net/WpLt3A) | [Try it in EF Core](https://dotnetfiddle.net/IMdizK)
 
 - Security Access (Include available related entities)
 
@@ -87,6 +91,7 @@ var posts= ctx.Posts.IncludeFilter(x => x.Comments.Where(y => y.RoleID >= myRole
                     .ToList();
 
 ```
+[Try it in EF6](https://dotnetfiddle.net/8hXy4V) | [Try it in EF Core](https://dotnetfiddle.net/RKvLJU)
 
  - Soft Deleted Records (Include active related entities)
 
@@ -101,6 +106,7 @@ var posts= ctx.Posts.IncludeFilter(x => x.Comments.Where(y => !y.IsSoftDeleted))
                     .ToList();
 
 ```
+[Try it in EF6](https://dotnetfiddle.net/sGsBlh) | [Try it in EF Core](https://dotnetfiddle.net/qXHvYM)
 
 ## Behind the code
 
