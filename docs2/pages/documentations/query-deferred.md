@@ -112,6 +112,7 @@ var taskCount = countDeferred.ExecuteAsync();
 
 ```
 
+[EF6](https://dotnetfiddle.net/0BpVn1) | [EF Core](https://dotnetfiddle.net/1pttmj)
 ## Real Life Scenarios
 
 EF Query Deferred brings advantages to other third party features:
