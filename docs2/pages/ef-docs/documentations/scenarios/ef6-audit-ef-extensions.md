@@ -42,4 +42,4 @@ public class CurrentContext : DbContext
 }
 
 ```
-[Try it](https://dotnetfiddle.net/nWXn84)
+[Try it](https://dotnetfiddle.net/AREtca)
