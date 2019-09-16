@@ -33,17 +33,17 @@ foreach(var entry in entries)
 
 ## Scenarios
 
- - [AutoSave](scenarios/ef-core-audit-autosave)
- - [Data Annotations](scenarios/ef-core-audit-data-annotations)
- - [Exclude & Include Entity](scenarios/ef-core-audit-exclude-include-entity)
- - [Exclude & Include Property](scenarios/ef-core-audit-exclude-include-property)
- - [Format Value](scenarios/ef-core-audit-format-value)
- - [Ignore Events](scenarios/ef-core-audit-ignore-events)
- - [Property Unchanged](scenarios/ef-core-audit-property-unchanged)
- - [Soft Add & Soft Delete](scenarios/ef-core-audit-soft-add-soft-delete)
- - [Retrieve AuditEntries for specific item](scenarios/ef-core-audit-retrieve-audit-entries-for-specific-item)
- - [Audit Customization](scenarios/ef-core-audit-customization)
- - [Audit + Entity Framework Extensions](scenarios/ef-core-audit-ef-extensions)
+ - [AutoSave](scenarios/ef-core-audit-autosave.md)
+ - [Data Annotations](scenarios/ef-core-audit-data-annotations.md)
+ - [Exclude & Include Entity](scenarios/ef-core-audit-exclude-include-entity.md)
+ - [Exclude & Include Property](scenarios/ef-core-audit-exclude-include-property.md)
+ - [Format Value](scenarios/ef-core-audit-format-value.md)
+ - [Ignore Events](scenarios/ef-core-audit-ignore-events.md)
+ - [Property Unchanged](scenarios/ef-core-audit-property-unchanged.md)
+ - [Soft Add & Soft Delete](scenarios/ef-core-audit-soft-add-soft-delete.md)
+ - [Retrieve AuditEntries for specific item](scenarios/ef-core-audit-retrieve-audit-entries-for-specific-item.md)
+ - [Audit Customization](scenarios/ef-core-audit-customization.md)
+ - [Audit + Entity Framework Extensions](scenarios/ef-core-audit-ef-extensions.md)
  
 ## Limitations
 
