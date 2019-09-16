@@ -122,7 +122,6 @@ EF Query Deferred brings advantages to other third party features:
  - Allows to use Immediate Method with YOUR own features.
 
 ## Behind the code
-Try it in 
 When a deferred method is used, the query expression is created exactly like a non-deferred method but instead of invoking the execute method from the query provider, a new instance of a class QueryDeferred<TResult> is created using the query and the expression.
 
 The QueryDeferred instance has methods to either execute the expression from the query provider or let a third party library use the object query.
