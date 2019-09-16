@@ -65,6 +65,7 @@ var task = ctx.Countries.Where(x => x.IsActive).FromCacheAsync();
 var task = ctx.States.Where(x => x.IsActive).FromCacheAsync(DateTime.Now.AddHours(2));
 
 ```
+[Try it in EF6](https://dotnetfiddle.net/Uh9miZ) | [Try it in EF Core](https://dotnetfiddle.net/U9pU1a)
 
 ## EF+ Query Cache Query Deferred
 
