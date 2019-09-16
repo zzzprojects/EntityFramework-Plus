@@ -33,7 +33,17 @@ foreach(var entry in entries)
 
 ## Scenarios
 
- - [AutoSave](/audit-autosave)
+ - [AutoSave](scenarios/ef-core-audit-autosave)
+ - [Data Annotations](scenarios/ef-core-audit-data-annotations)
+ - [Exclude & Include Entity](scenarios/ef-core-audit-exclude-include-entity)
+ - [Exclude & Include Property](scenarios/ef-core-audit-exclude-include-property)
+ - [Format Value](scenarios/ef-core-audit-format-value)
+ - [Ignore Events](scenarios/ef-core-audit-ignore-events)
+ - [Property Unchanged](scenarios/ef-core-audit-property-unchanged)
+ - [Soft Add & Soft Delete](scenarios/ef-core-audit-soft-add-soft-delete)
+ - [Retrieve AuditEntries for specific item](scenarios/ef-core-audit-retrieve-audit-entries-for-specific-item)
+ - [Audit Customization](scenarios/ef-core-audit-customization)
+ - [Audit + Entity Framework Extensions](scenarios/ef-core-audit-ef-extensions)
  
 ## Limitations
 
