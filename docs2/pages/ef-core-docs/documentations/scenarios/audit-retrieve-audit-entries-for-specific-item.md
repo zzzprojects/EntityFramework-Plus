@@ -20,3 +20,47 @@ using (var ctx = new TestContext())
 
 ```
 [Try it](https://dotnetfiddle.net/6qiMrl)
+
+## Audit, AuditEntry & AuditEntryProperty
+
+AuditEntry and AuditEntryProperty can be added in your context to automatically save audit entries using the AutoSavePreAction property. Only mapped properties are mapped to your database.
+
+## Audit
+
+ - Properties
+   - Configuration
+   - CreatedBy
+   - Entries
+ - Methods
+   - PostSaveChanges()
+   - PreSaveChanges()
+
+## AuditEntry
+
+ - Properties (Mapped)
+   - AuditEntryID
+   - EntitySetName
+   - EntityTypeName
+   - State
+   - StateName
+   - CreatedBy
+   - CreatedDate
+ - Properties (Not Mapped)
+   - ObjectStateEntry
+   - Parent
+   - Properties
+   - State
+
+## AuditEntryProperty
+
+ - Properties (Mapped)
+   - AuditEntryPropertyID
+   - AuditEntryID
+   - RelationName
+   - PropertyName
+   - NewValueFormatted (Mapped to NewValue)
+   - OldValueFormatted (Mapped to OldValue)
+ - Properties (Not Mapped)
+   - NewValue
+   - OldValue
+   - Parent
