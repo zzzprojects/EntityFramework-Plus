@@ -1,3 +1,7 @@
+---
+Permalink: ef-core-audit-property-unchanged
+---
+
 # Property Unchanged
 
 ## Problem
