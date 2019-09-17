@@ -1,3 +1,7 @@
+---
+Permalink: ef-core-audit-exclude-include-entity
+---
+
 # Exclude & Include Entity
 
 ## Problem
