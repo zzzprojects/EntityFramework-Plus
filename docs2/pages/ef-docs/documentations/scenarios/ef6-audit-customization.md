@@ -1,3 +1,7 @@
+---
+Permalink: ef6-audit-customization
+---
+
 # Audit Customization
 
 ## Problem
