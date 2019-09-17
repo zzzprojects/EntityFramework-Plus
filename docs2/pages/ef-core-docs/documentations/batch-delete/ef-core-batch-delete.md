@@ -31,11 +31,11 @@ ctx.Users.Where(x => x.LastLoginDate < date)
 
 ## Scenarios
 
- - [Query Criteria](scenarios/ef-core-batch-delete-query-criteria)
- - [Batch Size](scenarios/ef-core-batch-delete-using-batch-size)
- - [Batch Delay Interval](scenarios/ef-core-batch-delete-using-batch-delay-interval)
- - [Executing Interceptor](scenarios/ef-core-batch-delete-executing-interceptor)
- - [EF Core InMemory](scenarios/ef-core-batch-delete-inmemory)
+ - [Query Criteria](scenarios/ef-core-batch-delete-query-criteria.md)
+ - [Batch Size](scenarios/ef-core-batch-delete-using-batch-size.md)
+ - [Batch Delay Interval](scenarios/ef-core-batch-delete-using-batch-delay-interval.md)
+ - [Executing Interceptor](scenarios/ef-core-batch-delete-executing-interceptor.md)
+ - [EF Core InMemory](scenarios/ef-core-batch-delete-inmemory.md)
  
 ## Limitations
 
