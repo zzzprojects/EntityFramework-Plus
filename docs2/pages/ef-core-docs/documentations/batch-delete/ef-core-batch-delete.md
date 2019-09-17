@@ -27,8 +27,16 @@ ctx.Users.Where(x => x.LastLoginDate < date)
          .Delete(x => x.BatchSize = 1000);
 
 ```
-[Try it](https://dotnetfiddle.net/R6D5BX)
+[Try it](https://dotnetfiddle.net/8qqyPw)
 
+## Scenarios
+
+ - [Query Criteria](scenarios/ef-core-batch-delete-query-criteria)
+ - [Batch Size](scenarios/ef-core-batch-delete-using-batch-size)
+ - [Batch Delay Interval](scenarios/ef-core-batch-delete-using-batch-delay-interval)
+ - [Executing Interceptor](scenarios/ef-core-batch-delete-executing-interceptor)
+ - [EF Core InMemory](scenarios/ef-core-batch-delete-inmemory)
+ 
 ## Limitations
 
  - **DO NOT** support Complex Type
