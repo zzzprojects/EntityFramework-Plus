@@ -1,3 +1,7 @@
+---
+Permalink: ef-core-audit-retrieve-audit-entries-for-specific-item
+---
+
 # Retrieve AuditEntries for specific item
 
 ## Problem
