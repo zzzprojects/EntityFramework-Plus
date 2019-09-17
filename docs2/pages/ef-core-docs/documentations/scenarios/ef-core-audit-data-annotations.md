@@ -1,3 +1,7 @@
+---
+Permalink: ef-core-data-annotations
+---
+
 # Data Annotations
 
 ## Problem
