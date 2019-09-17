@@ -1,3 +1,7 @@
+---
+Permalink: ef-core-audit-audit-autosave
+---
+
 # AutoSave Audit
 
 ## Problem
