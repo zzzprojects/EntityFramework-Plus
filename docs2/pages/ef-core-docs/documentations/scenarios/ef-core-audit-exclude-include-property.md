@@ -1,3 +1,7 @@
+---
+Permalink: ef-core-audit-exclude-include-property
+---
+
 # Exclude & Include Property
 
 ## Problem
