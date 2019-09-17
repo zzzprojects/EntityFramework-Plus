@@ -1,3 +1,7 @@
+---
+Permalink: ef6-audit-format-value
+---
+
 # Format Value
 
 ## Problem
