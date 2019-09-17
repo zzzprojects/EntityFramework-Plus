@@ -1,3 +1,7 @@
+---
+Permalink: ef6-audit-data-annotations
+---
+
 # Data Annotations
 
 ## Problem
