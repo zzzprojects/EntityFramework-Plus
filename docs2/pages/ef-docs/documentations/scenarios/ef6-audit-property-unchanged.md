@@ -1,3 +1,7 @@
+---
+Permalink: ef6-audit-property-unchanged
+---
+
 # Property Unchanged
 
 ## Problem
