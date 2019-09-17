@@ -1,3 +1,6 @@
+---
+Permalink: ef-core-audit
+---
 # Audit
 
 ## Introduction
