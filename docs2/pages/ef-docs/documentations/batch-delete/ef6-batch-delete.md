@@ -29,6 +29,13 @@ ctx.Users.Where(x => x.LastLoginDate < date)
 ```
 [Try it](https://dotnetfiddle.net/R6D5BX)
 
+## Scenarios
+
+ - [Query Criteria](scenarios/ef6-batch-delete-query-criteria.md)
+ - [Batch Size](scenarios/ef6-batch-delete-using-batch-size.md)
+ - [Batch Delay Interval](scenarios/ef6-batch-delete-using-batch-delay-interval.md)
+ - [Executing Interceptor](scenarios/ef6-batch-delete-executing-interceptor.md)
+ 
 ## Limitations
 
  - **DO NOT** support Complex Type
