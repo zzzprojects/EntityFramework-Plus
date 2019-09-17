@@ -1,3 +1,7 @@
+---
+Permalink: ef-core-audit-format-value
+---
+
 # Format Value
 
 ## Problem
