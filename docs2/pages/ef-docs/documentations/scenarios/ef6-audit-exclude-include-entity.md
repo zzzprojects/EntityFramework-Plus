@@ -1,3 +1,7 @@
+---
+Permalink: ef6-audit-exclude-include-entity
+---
+
 # Exclude & Include Entity
 
 ## Problem
