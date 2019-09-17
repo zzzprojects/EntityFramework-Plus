@@ -1,3 +1,7 @@
+---
+Permalink: ef-core-audit-ignore-events
+---
+
 # Ignore Events
 
 ### Problem
