@@ -1,3 +1,7 @@
+---
+Permalink: ef6-audit-exclude-include-property
+---
+
 # Exclude & Include Property
 
 ## Problem
