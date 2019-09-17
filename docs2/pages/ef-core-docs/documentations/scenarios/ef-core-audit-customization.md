@@ -1,3 +1,7 @@
+---
+Permalink: ef-core-audit-customization
+---
+
 # Audit Customization
 
 ## Problem
