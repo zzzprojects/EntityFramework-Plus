@@ -1,5 +1,5 @@
 ---
-Permalink: ef-core-audit-audit-autosave
+Permalink: ef-core-audit-autosave
 ---
 
 # AutoSave Audit
