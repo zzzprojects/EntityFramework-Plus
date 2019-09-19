@@ -25,6 +25,11 @@ ctx.Users.Where(x => x.LastLoginDate < date)
 ```
 [Try it](https://dotnetfiddle.net/0CBNK1)
 
+## Scenarios
+
+ - [Query Criteria](scenarios/ef-core-batch-update-query-criteria.md)
+ - [Executing Interceptor](scenarios/ef-core-batch-update-executing-interceptor.md)
+ 
 ## Limitations
 
  - **DO NOT** support Complex Type
