@@ -14,9 +14,6 @@ var ctx = new EntitiesContext();
 
 // Make the query expire after 2 hours of inactivity
 
-// (EF5 | EF6)
-var options = new CacheItemPolicy() { SlidingExpiration = TimeSpan.FromHours(2)};
-// (EF7)
 var options = new MemoryCacheEntryOptions() { SlidingExpiration = TimeSpan.FromHours(2)};
 
 var states = ctx.States.FromCache(options);
