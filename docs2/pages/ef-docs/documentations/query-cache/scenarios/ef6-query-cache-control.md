@@ -16,7 +16,7 @@ QueryCacheManager.Cache = MemoryCache.Default;
 
 
 ```
-[Try it in EF6](https://dotnetfiddle.net/mIhcff) | [Try it in EF Core](https://dotnetfiddle.net/6ISVBT)
+[Try it](https://dotnetfiddle.net/mIhcff)
 
 You can set default policy
 
