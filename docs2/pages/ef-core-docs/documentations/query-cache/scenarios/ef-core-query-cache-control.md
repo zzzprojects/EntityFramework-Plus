@@ -7,7 +7,7 @@ Permalink: ef-core-query-cache-control
 EF+ Cache is very flexible and lets you have full control over the cache.
 
 You can use your own cache:
--core
+
 {% include template-example.html %} 
 ```csharp
 QueryCacheManager.Cache = new MemoryCache(new MemoryCacheOptions());
