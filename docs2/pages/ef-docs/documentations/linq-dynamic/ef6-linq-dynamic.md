@@ -1,5 +1,5 @@
 ---
-Permalink: ef6-linq-dynamic
+Permalink: linq-dynamic
 ---
 
 # LINQ Dynamic

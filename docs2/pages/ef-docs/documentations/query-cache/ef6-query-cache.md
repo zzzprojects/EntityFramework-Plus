@@ -1,5 +1,5 @@
 ---
-Permalink: ef6-query-cache
+Permalink: query-cache
 ---
 
 # Query Cache
