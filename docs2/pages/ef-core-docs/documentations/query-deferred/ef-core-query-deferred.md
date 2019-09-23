@@ -26,7 +26,7 @@ var count = ctx.Customers.Count();
 var count = ctx.Customers.FromCache().Count();
 
 ```
-[Try it in EF6](https://dotnetfiddle.net/WgpFfH) | [Try it in EF Core](https://dotnetfiddle.net/cu3UiE)
+[Try it](https://dotnetfiddle.net/cu3UiE)
 
 Here comes in play the deferred query which acts exactly like deferred methods, by modifying the query expression without resolving it.
 
@@ -40,7 +40,7 @@ var ctx = new EntitiesContext();
 var count = ctx.Customers.DeferredCount().FromCache();
 
 ```
-[Try it in EF6](https://dotnetfiddle.net/ZChhmD) | [Try it in EF Core](https://dotnetfiddle.net/xIz5wx)
+[Try it](https://dotnetfiddle.net/xIz5wx)
 
 #### All LINQ IQueryable extension methods and overloads are supported:
 
@@ -64,59 +64,11 @@ var count = ctx.Customers.DeferredCount().FromCache();
  - DeferredSingleOrDefault
  - DeferredSum
 
-## EF+ Query Deferred
+## Options
 
-Defer the execution of a query which is normally executed to allow some features like Query Cache and Query Future.
-
-{% include template-example.html %} 
-```csharp
-
-// using Z.EntityFramework.Plus; // Don't forget to include this.
-var ctx = new EntitiesContext();
-
-// Query Cache
-ctx.Customers.DeferredCount().FromCache();
-
-// Query Future
-ctx.Customers.DeferredCount().FutureValue();
-
-```
-[Try it in EF6](https://dotnetfiddle.net/5KcNj3) | [Try it in EF Core](https://dotnetfiddle.net/ohLJL3)
-
-## EF+ Query Deferred Execute
-
-Execute the deferred query and return the result.
-
-{% include template-example.html %} 
-```csharp
-
-// using Z.EntityFramework.Plus; // Don't forget to include this.
-var ctx = new EntitiesContext();
-
-var countDeferred = ctx.Customers.DeferredCount();
-var count = countDeferred.Execute();
-
-```
-[Try it in EF6](https://dotnetfiddle.net/sXOfNB) | [Try it in EF Core](https://dotnetfiddle.net/Ou2Ly4)
-
-## EF+ Query Deferred Execute Async
-
-Execute the Deferred query asynchronously and return the result.
-
-**ExecuteAsync** methods are available starting from .NET Framework 4.5 and support all the same options than **Execute** methods.
-
-{% include template-example.html %} 
-```csharp
-
-// using Z.EntityFramework.Plus; // Don't forget to include this.
-var ctx = new EntitiesContext();
-
-var countDeferred = ctx.Customers.DeferredCount();
-var taskCount = countDeferred.ExecuteAsync();
-
-```
-[Try it in EF6](https://dotnetfiddle.net/0BpVn1) | [Try it in EF Core](https://dotnetfiddle.net/1pttmj)
-
+ - [Using Query Cache and Query Future](options/ef-core-query-deferred-using-query-cache-and-query-future.md)
+ - [Execute](options/ef-core-query-deferred-execute.md)
+ 
 ## Real Life Scenarios
 
 EF Query Deferred brings advantages to other third party features:
@@ -138,7 +90,7 @@ None.
 
  - **EF+ Query Deferred:** Full version or Standalone version
  - **Database Provider:** All supported
- - **Entity Framework Version:** EF5, EF6, EF Core
+ - **Entity Framework Version:** EF Core
  - **Minimum Framework Version:** .NET Framework 4
 
 ## Conclusion
