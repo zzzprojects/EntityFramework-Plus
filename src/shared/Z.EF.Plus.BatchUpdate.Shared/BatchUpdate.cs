@@ -1459,11 +1459,15 @@ SELECT  @totalRowAffected
                     valueSql = valueSql.Trim();
 
 					if (updateFactory.Parameters != null && updateFactory.Parameters.Count == 1)
-					{ 
-						valueSql = valueSql.Replace("[" +updateFactory.Parameters.First().Name +"]", "B");
+					{
+                        string name = updateFactory.Parameters.First().Name;
+                        valueSql = valueSql.Replace($"`{name}`", "B");
+                        valueSql = valueSql.Replace($"[{name}]", "B");
 					}
 					 
 					// Add the destination name
+					valueSql = valueSql.Replace("`x`", "B");
+					valueSql = valueSql.Replace("`c`", "B");
 					valueSql = valueSql.Replace("[x]", "B");
                     valueSql = valueSql.Replace("[c]", "B");
 
