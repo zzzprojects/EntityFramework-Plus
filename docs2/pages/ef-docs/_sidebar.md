@@ -1,0 +1,14 @@
+- Batch Operations
+   - [Batch Delete](batch-delete.md)
+   - [Batch Update](batch-update.md)
+- Misc
+	- [LINQ Dynamic](linq-dynamic.md)
+	- [Audit](audit.md)
+- Query
+   - [Query Cache](query-cache.md)
+   - [Query Deferred](query-deferred.md)
+   - [Query Filter](query-filter.md)
+   - [Query DbSetFilter](query-db-set-filter.md)
+   - [Query Future](query-future.md)
+   - [Query IncludeFilter](query-include-filter.md)
+   - [Query IncludeOptimized](query-include-optimized.md)
