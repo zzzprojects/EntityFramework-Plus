@@ -34,7 +34,7 @@ var states = futureStates.ToList();
 
 ```
 
-[Try it in EF6](https://dotnetfiddle.net/NnXMtb) | [Try it in EF Core](https://dotnetfiddle.net/8gwESn)
+[Try it](https://dotnetfiddle.net/NnXMtb)
 
 ## EF+ Query Future
 
@@ -60,7 +60,7 @@ var states = futureStates.ToList();
 
 ```
 
-[Try it in EF6](https://dotnetfiddle.net/NnXMtb) | [Try it in EF Core](https://dotnetfiddle.net/8gwESn)
+[Try it](https://dotnetfiddle.net/NnXMtb)
 
 ## Options
 
