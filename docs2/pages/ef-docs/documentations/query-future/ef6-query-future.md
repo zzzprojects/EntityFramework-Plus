@@ -64,13 +64,13 @@ var states = futureStates.ToList();
 
 ## Options
 
- -[FutureValue](options/ef6-query-future-value.md)
- -[FutureValue Deferred](options/ef6-query-future-value-deferred.md)
+ - [FutureValue](options/ef6-query-future-value.md)
+ - [FutureValue Deferred](options/ef6-query-future-value-deferred.md)
  
 ## Real Life Scenarios
 
- -[Multi Tables Information](scenarios/ef6-query-future-multi-tables-information.md)
- -[Paging](scenarios/ef6-query-future-paging.md)
+ - [Multi Tables Information](scenarios/ef6-query-future-multi-tables-information.md)
+ - [Paging](scenarios/ef6-query-future-paging.md)
 
 ## Behind the code
 
