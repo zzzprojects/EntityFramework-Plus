@@ -62,108 +62,16 @@ var states = futureStates.ToList();
 
 [Try it in EF6](https://dotnetfiddle.net/NnXMtb) | [Try it in EF Core](https://dotnetfiddle.net/8gwESn)
 
-## EF+ Query FutureValue
+## Options
 
-Query FutureValue delays the execution of the query returning a result.
-
-{% include template-example.html %} 
-```csharp
-
-// using Z.EntityFramework.Plus; // Don't forget to include this.
-var ctx = new EntitiesContext();
-
-// GET the minimum and maximum product prices
-var futureMaxPrice = ctx.Products.DeferredMax(x => x.Prices).FutureValue<int>();
-var futureMinPrice = ctx.Products.DeferredMin(x => x.Prices).FutureValue<int>();
-
-// TRIGGER all pending queries
-int maxPrice = futureMaxPrice.Value;
-
-// The future query is already resolved and contains the result
-int maxPrice = futureMinPrice.Value;
-
-```
-
-[Try it in EF6](https://dotnetfiddle.net/4K4Fx2) | [Try it in EF Core](https://dotnetfiddle.net/gNCsOR)
-
-## EF+ Query FutureValue Deferred
-
-Immediate resolution methods like **Count()** and **FirstOrDefault()** cannot use future methods since it executes the query immediately.
-
-{% include template-example.html %} 
-```csharp
-
-// Oops! The query is already executed, we cannot delay the execution.
-var count = ctx.Customers.Count();
-
-// Oops! All customers will be retrieved instead of customer count
-var count = ctx.Customers.Future().Count();
-
-```
-[Try it in EF6](https://dotnetfiddle.net/lLkiUc) | [Try it in EF Core](https://dotnetfiddle.net/62LQVi)
-
-**EF+ Query Deferred** has been created to resolve this issue. The resolution is now deferred instead of being immediate which lets you use FutureValue and get the expected result.
-
-{% include template-example.html %} 
-```csharp
-
-// using Z.EntityFramework.Plus; // Don't forget to include this.
-var ctx = new EntitiesContext();
-
-// GET the first active customer and the number of active customers
-var futureFirstCustomer = ctx.Customers.DeferredFirstOrDefault().FutureValue();
-var futureCustomerCount = ctx.Customers.DeferredCount().FutureValue();
-
-// TRIGGER all pending queries
-Customer firstCustomer = futureFirstCustomer.Value;
-
-// The future query is already resolved and contains the result
-var count = futureCustomerCount.Value;
-
-```
-
-[Try it in EF6](https://dotnetfiddle.net/V2ifb0) | [Try it in EF Core](https://dotnetfiddle.net/BI16rq)
-
+ -[FutureValue](options/ef6-query-future-value.md)
+ -[FutureValue Deferred](options/ef6-query-future-value-deferred.md)
+ 
 ## Real Life Scenarios
 
- - Multi tables information scenario: Client and all related information (order, invoice, etc.) must be loaded.
+ -[Multi Tables Information](scenarios/ef6-query-future-multi-tables-information.md)
+ -[Paging](scenarios/ef6-query-future-paging.md)
 
-{% include template-example.html %} 
-```csharp
-
-// using Z.EntityFramework.Plus; // Don't forget to include this.
-var ctx = new EntitiesContext();
-
-var futureClient = ctx.Clients.DeferredFirst(x => x.ClientID = myClientID)
-                                 .FutureValue();
-var futureOrders = ctx.Orders.Where(x => x.ClientID = myClientID).Future();
-var futureOrderDetails = ctx.OrderDetails.Where(x => x.ClientID = myClientID).Future();
-var futureInvoices = ctx.Invoices.Where(x => x.ClientID = myClientID).Future();
-
-// ONE database round trip is required
-var client = futureClient.Value;
-var orders = futureOrders.ToList();
-
-```
-
- - **Paging Scenario:** The first ten posts must be returned but you also need to know the total numbers of posts
-
-{% include template-example.html %} 
-```csharp
-
-// using Z.EntityFramework.Plus; // Don't forget to include this.
-var ctx = new EntitiesContext();
-
-var futurePost = ctx.Posts.OrderBy(x => x.CreatedDate).Take(10).Future()
-var futurePostCount = ctx.Post.DeferredCount().FutureValue();
-
-// ONE database round trip is required
-var post = futurePost.ToList();
-var postCount = futurePostCount.Value;
-
-```
-
-[Try it in EF6](https://dotnetfiddle.net/oA24FP) | [Try it in EF Core](https://dotnetfiddle.net/PyyUsy)
 ## Behind the code
 
  - All queries from a context using query future are added to a batch list.
@@ -182,7 +90,7 @@ var postCount = futurePostCount.Value;
 
  - **EF+ Query Future:** Full version or Standalone version
  - **Database Provider:** SQL Server
- - **Entity Framework Version:** EF5, EF6, EF Core
+ - **Entity Framework Version:** EF5, EF6
  - **Minimum Framework Version:** .NET Framework 4
 
 ## Conclusion
