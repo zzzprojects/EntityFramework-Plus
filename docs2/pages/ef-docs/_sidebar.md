@@ -1,9 +1,9 @@
 - Batch Operations
-   - [Batch Delete](batch-delete.md)
-   - [Batch Update](batch-update.md)
+   - [Batch Delete](documentations/batch-delete/ef6-batch-delete.md)
+   - [Batch Update](documentations/batch-update/ef6-batch-update.md)
 - Misc
-	- [LINQ Dynamic](linq-dynamic.md)
-	- [Audit](audit.md)
+   - [LINQ Dynamic](linq-dynamic.md)
+   - [Audit](audit.md)
 - Query
    - [Query Cache](query-cache.md)
    - [Query Deferred](query-deferred.md)
