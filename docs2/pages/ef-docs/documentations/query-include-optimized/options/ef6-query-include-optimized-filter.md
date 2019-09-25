@@ -16,3 +16,16 @@ var orders = ctx.Orders.IncludeOptimized(x => x.Items.Where(y => y.IsActive));
 
 ```
 [Try it](https://dotnetfiddle.net/uFBqTO)
+
+## AllowQueryBatch
+
+In some scenario, you may want to disable the Query Batch features to execute every query as individual.
+
+{% include template-example.html %} 
+```csharp
+
+// using Z.EntityFramework.Plus; // Don't forget to include this.
+
+QueryIncludeOptimizedManager.AllowQueryBatch = false;
+
+```
