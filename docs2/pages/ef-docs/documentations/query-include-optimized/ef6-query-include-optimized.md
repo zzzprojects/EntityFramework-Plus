@@ -64,7 +64,7 @@ var ctx = new EntitiesContext();
 var orders = ctx.Orders.IncludeOptimized(x => x.Items);
 
 ```
-[Try it in EF6](https://dotnetfiddle.net/d8P4FS) 
+[Try it](https://dotnetfiddle.net/d8P4FS) 
 
 ## Options
 
