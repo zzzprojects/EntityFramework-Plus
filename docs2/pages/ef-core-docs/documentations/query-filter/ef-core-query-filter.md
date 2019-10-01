@@ -25,7 +25,7 @@ var list = ctx.Posts.ToList();
 
 ```
 
-[Try it in EF6](https://dotnetfiddle.net/066xSv) | [Try it in EF Core](https://dotnetfiddle.net/m38JPM)
+[Try it](https://dotnetfiddle.net/m38JPM)
 
  - You can control the default query to add a default sorting:
 
@@ -43,7 +43,7 @@ var list = ctx.Posts.ToList();
 
 ```
 
-[Try it in EF6](https://dotnetfiddle.net/F7mGZM) | [Try it in EF Core](https://dotnetfiddle.net/AjRuQO)
+[Try it](https://dotnetfiddle.net/AjRuQO)
 
  - You can use a predefined filter and enable it only for a specific query:
 
@@ -59,336 +59,31 @@ ctx.Filter<Post>(MyEnum.EnumValue, q => q.Where(x => !x.IsSoftDeleted)).Disable(
 var list = ctx.Posts.Filter(MyEnum.EnumValue).ToList();
 ```
 
-[Try it in EF6](https://dotnetfiddle.net/5bmB2n) | [Try it in EF Core](https://dotnetfiddle.net/1tnpPm)
+[Try it](https://dotnetfiddle.net/1tnpPm)
 
-## EF+ Query Filter Global
+## Options
 
-Global filter can be used by any context.
-
-Global filter is normally preferred in most scenarios over instance filter since the filter code is centralized in one method over being spread in multiple methods.
-
-{% include template-example.html %} 
-```csharp
-
-// using Z.EntityFramework.Plus; // Don't forget to include this.
-QueryFilterManager.Filter<Customer>(q => q.Where(x => x.IsActive));
-
-var ctx = new EntitiesContext();
-// TIP: You can also add this line in EntitiesContext constructor instead
-QueryFilterManager.InitilizeGlobalFilter(ctx);
-
-// SELECT * FROM Customer WHERE IsActive = true
-var list = ctx.Customers.ToList();
-```
-
-[Try it in EF6](https://dotnetfiddle.net/2XfyGS) | [Try it in EF Core](https://dotnetfiddle.net/IFndNf)
-
-***Use entities context constructor to initialize global filter by default.***
-
-## EF+ Query Filter By Instance
-
-Instance filter applies filters to the current context only. The filtering logic is added once the context is created.
-
-{% include template-example.html %} 
-```csharp
-
-// using Z.EntityFramework.Plus; // Don't forget to include this.
-var ctx = new EntitiesContext();
-
-ctx.Filter<Customer>(q => q.Where(x => x.IsActive));
-
-// SELECT * FROM Customer WHERE IsActive = true
-var list = ctx.Customers.ToList();
-```
-
-[Try it in EF6](https://dotnetfiddle.net/Tyw4Xy) | [Try it in EF Core](https://dotnetfiddle.net/UjIXDH)
-
-***Use entities context constructor to make some filter "global" to all context.***
-
-## EF+ Query Filter By Query
-
-Query filter applies filters to specific queries only. The filtering logic is added globally or by instance but in a disabled state and then it is enabled by these specific queries.
-
-{% include template-example.html %} 
-```csharp
-
-// using Z.EntityFramework.Plus; // Don't forget to include this.
-var ctx = new EntitiesContext();
-
-// CREATE a disabled filter
-ctx.Filter<Customer>(MyEnum.EnumValue, q => q.Where(x => x.IsActive), false);
-
-// SELECT * FROM Customer WHERE IsActive = true
-var list = ctx.Customers.Filter(MyEnum.EnumValue).ToList();
-
-```
-
-[Try it in EF6](https://dotnetfiddle.net/UOS9t5) | [Try it in EF Core](https://dotnetfiddle.net/diPOAn)
-
-## EF+ Query Filter By Inheritance/Interface
-
-Filter can be enabled and disabled by class inheritance and interface.
-
-{% include template-example.html %} 
-```csharp
-
-// using Z.EntityFramework.Plus; // Don't forget to include this.
-var ctx = new EntitiesContext();
-
-// CREATE filter by inheritance
-ctx.Filter<BaseDog>(q => q.Where(x => !x.IsDangerous));
-
-// CREATE filter by interface
-ctx.Filter<IAnimal>(q => q.Where(x => x.IsDomestic));
-
-// SELECT * FROM Cat WHERE IsDomestic = true
-var cats = ctx.Cats.ToList();
-
-// SELECT * FROM Dog WHERE IsDomestic = true AND IsDangerous = false
-var dogs = ctx.Dogs.ToList();
-
-```
-
-[Try it in EF6](https://dotnetfiddle.net/K6nmYU) | [Try it in EF Core](https://dotnetfiddle.net/iX5gWN)
-
-## EF+ Query Filter Enable/Disable
-
-Filters are very flexible, you can enable and disable them at any time and only for a specific inheritance or interface if desired.
-
-{% include template-example.html %} 
-```csharp
-
-// using Z.EntityFramework.Plus; // Don't forget to include this.
-var ctx = new EntitiesContext();
-
-// CREATE filter by interface
-ctx.Filter<IAnimal>(MyEnum.EnumValue, q => q.Where(x => x.IsDomestic));
-
-// DISABLE filter only for class inheriting from BaseDog
-ctx.Filter(MyEnum.EnumValue).Disable();
-
-// SELECT * FROM Dog
-var dogs = ctx.Dogs.ToList();
-
-// ENABLE filter
-ctx.Filter(MyEnum.EnumValue).Enable();
-
-// SELECT * FROM Dog WHERE IsDomestic = true
-var dogs = ctx.Dogs.ToList();
-
-```
-
-[Try it in EF6](https://dotnetfiddle.net/6aRIYu) | [Try it in EF Core](https://dotnetfiddle.net/JG2gkF)
-
-## EF+ Query Filter AsNoFilter
-
-You can bypass all filters by using AsNoFilter method in a query if a special scenario doesn't require filtering.
-
-{% include template-example.html %} 
-```csharp
-
-// using Z.EntityFramework.Plus; // Don't forget to include this.
-var ctx = new EntitiesContext();
-
-this.Filter<Customer>(q => q.Where(x => x.IsActive));
-
-// SELECT * FROM Customer WHERE IsActive = true
-var list = ctx.Customers.ToList();
-
-// SELECT * FROM Customer
-var list = ctx.Customers.AsNoFilter().ToList();
-
-```
-
-[Try it in EF6](https://dotnetfiddle.net/xxM1Tl) | [Try it in EF Core](https://dotnetfiddle.net/El05r4)
+ - [Global](options/ef-core-query-filter-global.md)
+ - [By Instance](options/ef-core-query-filter-by-instance.md)
+ - [By Query](options/ef-core-query-filter-by-query.md)
+ - [By Inheritance/Interface](options/ef-core-query-filter-by-inheritance-interface.md)
+ - [By Enable/Disable](options/ef-core-query-filter-by-enable-disable.md)
+ - [By AsNoFilter](options/ef-core-query-filter-by-as-no-filter.md)
 
 ## Real Life Scenarios
 
-### Logical Data Partitioning
-
-A common scenario is to retrieve products by category or the ones available only for a specific country. All data are stored in the same table but only a specific range should be available.
-
-*In this example, we retrieve only the products available for the selected category.*
-
-**Single category by product**
-
-{% include template-example.html %} 
-```csharp
-
-// myCategoryID = 9
-
-// using Z.EntityFramework.Plus; // Don't forget to include this.
-var ctx = new EntitiesContext();
-ctx.Filter<Product>(q => q.Where(x => x.CategoryID == myCategoryID));
-
-// SELECT * FROM Product WHERE CategoryID = 9
-var list = ctx.Products.ToList();
-
-```
-
-[Try it in EF6](https://dotnetfiddle.net/IZhSC0) | [Try it in EF Core](https://dotnetfiddle.net/FALmEw)
-
-**Many categories by product**
-
-{% include template-example.html %} 
-```csharp
-
-// myCategoryID = 9
-
-// using Z.EntityFramework.Plus; // Don't forget to include this.
-var ctx = new EntitiesContext();
-ctx.Filter<Product>(x => ctx.ProductByCategory.Any(
-                          y => y.CategoryID == myCategoryID 
-                               && y.ProductID == x.ProductID))
-
-// SELECT * FROM Product AS X WHERE EXISTS
-//   (SELECT 1 FROM ProductByCategory AS Y 
-//        WHERE Y.CategoryID = 9 AND Y.ProductID = X.ProductID)
-var list = ctx.Products.ToList();
-
-```
-
-### Multi-Tenancy
-
-An example of multi-tenancy is an online store for which the same instance of the database is used by multiple independent applications or clients and the data should not be shared between them.
-
-Learn more about [Multi-tenancy](https://en.wikipedia.org/wiki/Multitenancy)
-
-*In this example, the application is a tenant. The customer can only see invoice from the current application.*
-
-{% include template-example.html %} 
-```csharp
-
-// myApplicationID = 9
-// myCustomerID = 6
-
-// using Z.EntityFramework.Plus; // Don't forget to include this.
-var ctx = new EntitiesContext();
-ctx.Filter<IApplication>(q => q.Where(x => x.ApplicationID == myApplicationID));
-
-// SELECT * FROM Invoice WHERE ApplicationID = 9 and CustomerID= 6
-var list = ctx.Invoices.Where(q => q.Where(x => x.CustomerID = myCustomerID)).ToList();
-
-```
-
-[Try it in EF6](https://dotnetfiddle.net/EyLwE0) | [Try it in EF Core](https://dotnetfiddle.net/uIeV60)
-
-### Object State
-
-Removing inactive or soft deleted records is probably the most common scenario. A soft delete is often useful when related data cannot be deleted. For example, the customer cannot be deleted because related orders cannot be deleted instead, he becomes inactive.
-
-*In this example, we display only active category.*
-
-{% include template-example.html %} 
-```csharp
-
-// using Z.EntityFramework.Plus; // Don't forget to include this.
-var ctx = new EntitiesContext();
-ctx.Filter<ISoftDeleted>(q => q.Where(x => !x.IsSoftDeleted));
-
-// SELECT * FROM Category WHERE IsSoftDeleted = false
-var list = ctx.Categories.ToList();
-
-```
-
-[Try it in EF6](https://dotnetfiddle.net/4vcAQA) | [Try it in EF Core](https://dotnetfiddle.net/1AcyWB)
-
-### Security Access
-
-Viewing sensible data often requires some permissions. For example, not everyone can see all posts in a forum.
-
-*In this example, some posts are only available by role level.*
-
-{% include template-example.html %} 
-```csharp
-
-// myRoleID = 1; // Administrator
-
-// using Z.EntityFramework.Plus; // Don't forget to include this.
-var ctx = new EntitiesContext();
-ctx.Filter<Post>(x => q => q.Where(x.RoleID >= myRoleID));
-
-// SELECT * FROM Posts WHERE RoleID >= 1
-var list = ctx.Posts.ToList();
-
-```
-
-[Try it in EF6](https://dotnetfiddle.net/3fsHRV) | [Try it in EF Core](https://dotnetfiddle.net/BknS6x)
-
-### Default Ordering
-
-Default ordering can be often useful for base table like category. No matter the query, you probably want to show categories by alphabetic order.
-
-*In this example, categories are sorted by name*
-
-{% include template-example.html %} 
-```csharp
-
-// using Z.EntityFramework.Plus; // Don't forget to include this.
-var ctx = new EntitiesContext();
-ctx.Filter<Category>(q => q.OrderByDescending(x => x.Name));
-
-// SELECT * FROM Category ORDER BY Name
-var list = ctx.Categories.ToList()
-
-```
-
+ - [Logical Data Partitioning](scenarios/ef-core-query-filter-logical-data-partitioning.md)
+ - [Multi-Tenancy](scenarios/ef-core-query-filter-multi-tenancy.md)
+ - [Object State](scenarios/ef-core-query-filter-object-state.md)
+ - [Security Access](scenarios/ef-core-query-filter-security-access.md)
+ - [Default Ordering](scenarios/ef-core-query-filter-default-ordering.md)
+ 
 ## Limitations
 
- - Entity Framework 5
-   - Doesn't work with LazyLoading
-   - Doesn't work with Include
-- Entity Framework Core
+ - Entity Framework Core
    - Doesn't work with LazyLoading
    - Doesn't work with Include
    - **DO NOT** support filter by inheritance/interface (Will be supported when EntityFramework team will fix this [issue](https://github.com/aspnet/EntityFramework/issues/3736))
-
-### Entity Framework 6 - Limitations
-
-#### Property Filter
-
-To some backward compatibility, filtering works already on collection but are not enabled on a property by default.
-
-You must enable the option **AllowPropertyFilter**
-
-{% include template-example.html %} 
-```csharp
-
-QueryFilterManager.AllowPropertyFilter = true;
-
-using (var ctx = new EntityContext())
-{
-    ctx.Filter<Invoice>(q => q.Where(x => !x.IsDeleted));
-    ctx.Filter<InvoiceItem>(q => q.Where(x => !x.IsDeleted));
-
-    var list = ctx.InvoiceItems.Where(x => x.Invoice.Total > 400).Include("Invoice").ToList();
-}
-
-```
-
-#### Context Filter
-
-Since the QueryCacheManager is global, our library have some limitations with Filter by context (Global Filter doesn't have this issue since it applies the same logic to all query.)
-
- - LazyLoading only work with GlobalFilter
- - context.Set only work with GlobalFilter (You can use the method SetFiltered instead)
-
-{% include template-example.html %} 
-```csharp
-
-var ctx = new EntitiesContext();
-
-ctx.Filter<Post>(q => q.Where(x => !x.IsSoftDeleted)
-                       .OrderByDescending(x => x.ViewCount));
-
-// SELECT * FROM Post WHERE IsSoftDeleted = false ORDER BY ViewCount
-var list = ctx.SetFiltered<Post>().ToList();
-
-```
-
-[Try it in EF6](https://dotnetfiddle.net/cTEtCX) | [Try it in EF Core](https://dotnetfiddle.net/3203HR)
-
-For this kind of scenario, we recommend using instead: [EntityFramework.DynamicFilters](https://github.com/zzzprojects/EntityFramework.DynamicFilters).
 
 #### Entity Framework Core - Limitations
 
@@ -412,7 +107,7 @@ Here is a list of known method that no longer work with query filtered with the 
 
  - **EF+ Query Filter:** Full version or Standalone version
  - **Database Provider:** All supported
- - **Entity Framework Version:** EF5, EF6, EF Core
+ - **Entity Framework Version:** EF5, EF6
  - **Minimum Framework Version:** .NET Framework 4
 
 ## Conclusion

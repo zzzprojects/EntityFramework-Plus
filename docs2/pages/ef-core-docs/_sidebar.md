@@ -1,12 +1,12 @@
 - Batch Operations
-   - [Batch Delete](ef-core-batch-delete.md)
-   - [Batch Update](ef-core-batch-update.md)
+   - [Batch Delete](documentations/batch-delete/ef-core-batch-delete.md)
+   - [Batch Update](documentations/batch-update/ef-core-batch-update.md)
 - Misc
-	- [LINQ Dynamic](ef-core-linq-dynamic.md)
-	- [Audit](ef-core-audit.md)
+   - [LINQ Dynamic](documentations/linq-dynamic/ef-core-linq-dynamic.md)
+   - [Audit](documentations/audit/ef-core-audit.md)
 - Query
-   - [Query Cache](ef-core-query-cache.md)
-   - [Query Deferred](ef-core-query-deferred.md)
-   - [Query Filter](ef-core-query-filter.md)
-   - [Query Future](ef-core-query-future.md)
-   - [Query IncludeFilter](ef-core-query-include-filter.md)
+   - [Query Cache](documentations/query-cache/ef-core-query-cache.md)
+   - [Query Deferred](documentations/query-deferred/ef-core-query-deferred.md)
+   - [Query Filter](documentations/query-filter/ef-core-query-filter.md)
+   - [Query Future](documentations/query-future/ef-core-query-future.md)
+   - [Query IncludeFilter](documentations/query-include-filter/ef-core-query-include-filter.md)
