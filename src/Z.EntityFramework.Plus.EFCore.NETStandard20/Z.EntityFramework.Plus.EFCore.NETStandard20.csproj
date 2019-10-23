@@ -10,7 +10,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Z.EntityFramework.Plus.EFCore</AssemblyName>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>zzzproject.pfx</AssemblyOriginatorKeyFile>
     <PackageId>Z.EntityFramework.Plus.EFCore</PackageId>
     <Version>1.6.11</Version>

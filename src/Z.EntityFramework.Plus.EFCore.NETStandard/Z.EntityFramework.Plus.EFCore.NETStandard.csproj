@@ -9,7 +9,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.3</TargetFramework>
-    <SignAssembly>True</SignAssembly>
+    <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>zzzproject.pfx</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
     <Version>1.6.7</Version>

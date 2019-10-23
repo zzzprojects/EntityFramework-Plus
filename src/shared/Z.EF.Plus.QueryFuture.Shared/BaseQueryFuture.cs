@@ -37,7 +37,6 @@ using Remotion.Linq.Parsing.Structure;
 using Microsoft.EntityFrameworkCore.Query.Expressions;
 using Remotion.Linq.Clauses;
 using Microsoft.EntityFrameworkCore.Query.Sql;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 
 #endif
 #if EFCORE_3X

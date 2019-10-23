@@ -53,12 +53,4 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\DbContext\SaveChangesAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\DbSet`AuditEntry\DbSet`AuditEntry.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="$(MSBuildThisFileDirectory)Extensions\DbContext\SaveChanges.cs.bak">
-      <DependentUpon>SaveChanges.cs</DependentUpon>
-    </Content>
-    <Content Include="$(MSBuildThisFileDirectory)Extensions\DbSet`AuditEntry\SaveChanges - Copy (2).cs.bak">
-      <DependentUpon>DbSet`AuditEntry.cs</DependentUpon>
-    </Content>
-  </ItemGroup>
 </Project>

@@ -593,12 +593,6 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Z.EntityFramework.Plus.EFCore.NET451\Z.EntityFramework.Plus.EFCore.NET451.csproj">
-      <Project>{035d058a-0dd2-4a74-b1e7-68e482c7c806}</Project>
-      <Name>Z.EntityFramework.Plus.EFCore.NET451</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

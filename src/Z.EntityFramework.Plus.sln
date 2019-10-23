@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29411.108
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{14D8985E-0AA8-444A-A32E-D766ABA114D6}"
 EndProject
@@ -47,23 +47,10 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Z.EF.Plus.QueryIncludeFilte
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Z.EF.Plus.QueryIncludeOptimized.Shared", "shared\Z.EF.Plus.QueryIncludeOptimized.Shared\Z.EF.Plus.QueryIncludeOptimized.Shared.shproj", "{D1953D60-B322-4CAF-92DF-0581A1FD758F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.EntityFramework.Plus.EFCore.NET451", "Z.EntityFramework.Plus.EFCore.NET451\Z.EntityFramework.Plus.EFCore.NET451.csproj", "{035D058A-0DD2-4A74-B1E7-68E482C7C806}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Z.EntityFramework.Plus.EFCore.NETStandard", "Z.EntityFramework.Plus.EFCore.NETStandard\Z.EntityFramework.Plus.EFCore.NETStandard.csproj", "{C85E4987-DD55-4182-8125-6C8D996F4328}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Z.EntityFramework.Plus.EFCore.NETStandard20", "Z.EntityFramework.Plus.EFCore.NETStandard20\Z.EntityFramework.Plus.EFCore.NETStandard20.csproj", "{EF1CBE03-3B93-4F28-8D98-3166320F62DB}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		shared\Z.EF.Plus.Audit.Shared\Z.EF.Plus.Audit.Shared.projitems*{035d058a-0dd2-4a74-b1e7-68e482c7c806}*SharedItemsImports = 4
-		shared\Z.EF.Plus.BatchDelete.Shared\Z.EF.Plus.BatchDelete.Shared.projitems*{035d058a-0dd2-4a74-b1e7-68e482c7c806}*SharedItemsImports = 4
-		shared\Z.EF.Plus.BatchUpdate.Shared\Z.EF.Plus.BatchUpdate.Shared.projitems*{035d058a-0dd2-4a74-b1e7-68e482c7c806}*SharedItemsImports = 4
-		shared\Z.EF.Plus.QueryCache.Shared\Z.EF.Plus.QueryCache.Shared.projitems*{035d058a-0dd2-4a74-b1e7-68e482c7c806}*SharedItemsImports = 4
-		shared\Z.EF.Plus.QueryDeferred.Shared\Z.EF.Plus.QueryDeferred.Shared.projitems*{035d058a-0dd2-4a74-b1e7-68e482c7c806}*SharedItemsImports = 4
-		shared\Z.EF.Plus.QueryFilter.Shared\Z.EF.Plus.QueryFilter.Shared.projitems*{035d058a-0dd2-4a74-b1e7-68e482c7c806}*SharedItemsImports = 4
-		shared\Z.EF.Plus.QueryFuture.Shared\Z.EF.Plus.QueryFuture.Shared.projitems*{035d058a-0dd2-4a74-b1e7-68e482c7c806}*SharedItemsImports = 4
-		shared\Z.EF.Plus._Core.Shared\Z.EF.Plus._Core.Shared.projitems*{035d058a-0dd2-4a74-b1e7-68e482c7c806}*SharedItemsImports = 4
-		shared\Z.EF.Plus._ExceptionMessage.Shared\Z.EF.Plus._ExceptionMessage.Shared.projitems*{035d058a-0dd2-4a74-b1e7-68e482c7c806}*SharedItemsImports = 4
 		shared\Z.EF.Plus.Audit.Shared\Z.EF.Plus.Audit.Shared.projitems*{1b28efb7-e679-4275-aca9-da7cd589a56a}*SharedItemsImports = 4
 		shared\Z.EF.Plus.BatchDelete.Shared\Z.EF.Plus.BatchDelete.Shared.projitems*{1b28efb7-e679-4275-aca9-da7cd589a56a}*SharedItemsImports = 4
 		shared\Z.EF.Plus.BatchUpdate.Shared\Z.EF.Plus.BatchUpdate.Shared.projitems*{1b28efb7-e679-4275-aca9-da7cd589a56a}*SharedItemsImports = 4
@@ -159,14 +146,6 @@ Global
 		{C47F920B-8064-44B0-BF3F-CD29298597A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C47F920B-8064-44B0-BF3F-CD29298597A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C47F920B-8064-44B0-BF3F-CD29298597A0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{035D058A-0DD2-4A74-B1E7-68E482C7C806}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{035D058A-0DD2-4A74-B1E7-68E482C7C806}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{035D058A-0DD2-4A74-B1E7-68E482C7C806}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{035D058A-0DD2-4A74-B1E7-68E482C7C806}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C85E4987-DD55-4182-8125-6C8D996F4328}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C85E4987-DD55-4182-8125-6C8D996F4328}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C85E4987-DD55-4182-8125-6C8D996F4328}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C85E4987-DD55-4182-8125-6C8D996F4328}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EF1CBE03-3B93-4F28-8D98-3166320F62DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EF1CBE03-3B93-4F28-8D98-3166320F62DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF1CBE03-3B93-4F28-8D98-3166320F62DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
