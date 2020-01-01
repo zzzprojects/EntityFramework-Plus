@@ -94,7 +94,7 @@ namespace Z.EntityFramework.Plus
         /// <value>The compiled action to update the internal query.</value>
         /// <summary>Adds an or get a filter queryable from the context.</summary>
         /// <param name="context">The context to add or get a filter queryable.</param>
-        /// <returns>the filter queryable fromt the context.</returns>
+        /// <returns>the filter queryable from the context.</returns>
         public AliasBaseQueryFilterQueryable AddOrGetFilterQueryable(DbContext context)
         {
             AliasBaseQueryFilterQueryable filterQueryable;

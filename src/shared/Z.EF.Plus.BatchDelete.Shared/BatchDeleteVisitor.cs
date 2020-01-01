@@ -6,15 +6,15 @@ namespace Z.EntityFramework.Plus
     public class BatchDeleteVisitor : ExpressionVisitor
     {
         /// <summary>Gets or sets a value indicating whether the expression contains an OrderBy method.</summary>
-        /// <value>true if the expression contains an OrderBy metho has order by, false if not.</value>
+        /// <value>true if the expression contains an OrderBy method has order by, false if not.</value>
         public bool HasOrderBy { get; set; }
 
         /// <summary>Gets or sets a value indicating whether the expression contains an Skip method.</summary>
-        /// <value>true if the expression contains an Skip metho has order by, false if not.</value>
+        /// <value>true if the expression contains an Skip method has order by, false if not.</value>
         public bool HasSkip { get; set; }
 
         /// <summary>Gets or sets a value indicating whether the expression contains an Take method.</summary>
-        /// <value>true if the expression contains an Take metho has order by, false if not.</value>
+        /// <value>true if the expression contains an Take method has order by, false if not.</value>
         public bool HasTake { get; set; }
 
         /// <summary>

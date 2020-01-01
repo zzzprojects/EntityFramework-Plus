@@ -99,7 +99,7 @@ namespace Z.EntityFramework.Plus
         [MaxLength(255)]
         public string CreatedBy { get; set; }
 
-        /// <summary>Gets or sets the the date of the changes.</summary>
+        /// <summary>Gets or sets the date of the changes.</summary>
         /// <value>The date of the changes.</value>
         [Column(Order = 6)]
         public DateTime CreatedDate { get; set; }

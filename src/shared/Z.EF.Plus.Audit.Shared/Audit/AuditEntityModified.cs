@@ -53,7 +53,7 @@ new AuditEntry();
         /// <param name="audit">The audit to use to add changes made to the context.</param>
         /// <param name="entry">The entry.</param>
         /// <param name="objectStateEntry">The object state entry.</param>
-        /// <param name="orginalRecord">The orginal record.</param>
+        /// <param name="orginalRecord">The original record.</param>
         /// <param name="currentRecord">The current record.</param>
         /// <param name="prefix">The prefix.</param>
         public static void AuditEntityModified(Audit audit, AuditEntry entry, ObjectStateEntry objectStateEntry, DbDataRecord orginalRecord, DbUpdatableDataRecord currentRecord, string prefix = "")

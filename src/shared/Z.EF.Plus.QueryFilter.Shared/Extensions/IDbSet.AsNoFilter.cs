@@ -36,10 +36,10 @@ namespace Z.EntityFramework.Plus
     public static partial class QueryFilterExtensions
 #endif
     {
-		/// <summary>Return the orginal query before the context was filtered.</summary>
+		/// <summary>Return the original query before the context was filtered.</summary>
 		/// <typeparam name="T">The type of elements of the query.</typeparam>
 		/// <param name="query">The filtered query from which the original query should be retrieved.</param>
-		/// <returns>The orginal query before the context was filtered.</returns>
+		/// <returns>The original query before the context was filtered.</returns>
 #if EF5
         public static IQueryable<T> AsNoFilter<T>(this IQueryable<T> query) where T : class
 #elif EF6

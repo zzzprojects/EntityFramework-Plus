@@ -52,7 +52,7 @@ namespace Z.EntityFramework.Plus
 
         /// <summary>Apply the filter on the query and return the new filtered query.</summary>
         /// <param name="query">The query to filter.</param>
-        /// <returns>The new query filered query.</returns>
+        /// <returns>The new filtered query.</returns>
         public override object ApplyFilter<TEntity>(object query)
         {
 #if EF5 || EF6

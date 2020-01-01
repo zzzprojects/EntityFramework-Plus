@@ -407,7 +407,7 @@ namespace Z.EntityFramework.Plus
                     baseType = baseType.BaseType;
                 }
 
-                // ENSURE all discting
+                // ENSURE all distinct
                 types = types.Distinct().ToList();
 
                 if (!TypeByDbSet.ContainsKey(entityTypebase))
