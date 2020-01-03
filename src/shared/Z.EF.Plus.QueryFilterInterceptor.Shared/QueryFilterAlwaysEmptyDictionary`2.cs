@@ -8,7 +8,7 @@ namespace Z.EntityFramework.Plus
 
         public bool Equals(TKey x, TKey y)
         {
-            // It's "emtpty"! so it always false
+            // It's "empty"! so it always false
             return false;
         }
 

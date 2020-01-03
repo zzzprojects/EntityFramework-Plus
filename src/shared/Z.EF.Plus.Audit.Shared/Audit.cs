@@ -49,7 +49,7 @@ namespace Z.EntityFramework.Plus
             }
             catch (Exception)
             {
-                // Oops! it's k, this is the responsability of the user to set the default CreatedBy field
+                // Oops! it's ok, this is the responsibility of the user to set the default CreatedBy field
                 CreatedBy = "System";
             }
         }

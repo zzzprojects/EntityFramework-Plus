@@ -59,9 +59,9 @@ namespace Z.EntityFramework.Plus
         /// </summary>
         /// <typeparam name="T">The type of elements of the query.</typeparam>
         /// <param name="context">The context to filter.</param>
-        /// <param name="queryFilter">The query filter to apply to the the context.</param>
+        /// <param name="queryFilter">The query filter to apply to the context.</param>
         /// <param name="isEnabled">true if the filter is enabled.</param>
-        /// <returns>The filter created and added to the the context.</returns>
+        /// <returns>The filter created and added to the context.</returns>
 #if EF6
         public static AliasBaseQueryFilter DbSetFilter<T>(this DbContext context, Func<IQueryable<T>, IQueryable<T>> queryFilter, bool isEnabled = true)
 #else
@@ -82,9 +82,9 @@ namespace Z.EntityFramework.Plus
         /// <typeparam name="T">The type of elements of the query.</typeparam>
         /// <param name="context">The context filtered.</param>
         /// <param name="key">The filter key associated to the filter.</param>
-        /// <param name="queryFilter">The query filter to apply to the the context.</param>
+        /// <param name="queryFilter">The query filter to apply to the context.</param>
         /// <param name="isEnabled">true if the filter is enabled.</param>
-        /// <returns>The filter created and added to the the context.</returns>
+        /// <returns>The filter created and added to the context.</returns>
 #if EF6
         public static AliasBaseQueryFilter DbSetFilter<T>(this DbContext context, object key, Func<IQueryable<T>, IQueryable<T>> queryFilter, bool isEnabled = true)
 #else

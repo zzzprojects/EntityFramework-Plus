@@ -63,7 +63,7 @@ namespace Z.EntityFramework.Plus
 #elif EFCORE
                         if (entry.State == AuditEntryState.EntityModified && entry.Entry.State == EntityState.Detached)
                         {
-                            // Oops! It's has not beed modified but deleted
+                            // Oops! It's has not been modified but deleted
                             entry.State = AuditEntryState.EntityDeleted;
 
                             var listToRemove = entry.Properties.Where(x => !x.PropertyEntry.Metadata.IsKey()).ToList();

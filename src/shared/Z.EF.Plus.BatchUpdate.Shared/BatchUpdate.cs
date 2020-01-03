@@ -1558,7 +1558,7 @@ SELECT  @totalRowAffected
 
 				var memberExpression = memberAssignment.Expression;
 
-				// CHECK if the assignement has a property from the entity.
+				// CHECK if the assignment has a property from the entity.
 				var hasEntityProperty = false;
 				memberExpression.Visit((ParameterExpression p) =>
 				{
@@ -1625,7 +1625,7 @@ SELECT  @totalRowAffected
 
 			if (dictValues.Count == 0)
 			{
-				throw new Exception("Invalid update expression. Atleast one column must be updated");
+				throw new Exception("Invalid update expression. At least one column must be updated");
 			}
 
 			return dictValues;

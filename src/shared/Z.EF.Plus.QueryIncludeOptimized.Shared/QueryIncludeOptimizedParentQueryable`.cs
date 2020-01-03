@@ -248,16 +248,16 @@ namespace Z.EntityFramework.Plus
 #endif
 
 #if EF6 && NET45
-        /// <summary>Gets the asynchrounously enumerator.</summary>
+        /// <summary>Gets the asynchronously enumerator.</summary>
         /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
-        /// <returns>The asynchrounously enumerator.</returns>
+        /// <returns>The asynchronously enumerator.</returns>
         IDbAsyncEnumerator<T> IDbAsyncEnumerable<T>.GetAsyncEnumerator()
         {
             return new LazyAsyncEnumerator<T>(token => Task.Run(() => CreateEnumerable(), token));
         }
 
-        /// <summary>Gets the asynchrounously enumerator.</summary>
-        /// <returns>The asynchrounously enumerator.</returns>
+        /// <summary>Gets the asynchronously enumerator.</summary>
+        /// <returns>The asynchronously enumerator.</returns>
         public IDbAsyncEnumerator GetAsyncEnumerator()
         {
             return new LazyAsyncEnumerator<T>(token => Task.Run(() => CreateEnumerable(), token));

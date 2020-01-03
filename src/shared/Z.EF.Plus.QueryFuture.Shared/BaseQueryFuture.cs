@@ -45,7 +45,7 @@ using IEvaluatableExpressionFilter = Microsoft.EntityFrameworkCore.Query.Interna
 
 namespace Z.EntityFramework.Plus
 {
-    /// <summary>Interace for QueryFuture class.</summary>
+    /// <summary>Interface for QueryFuture class.</summary>
 #if QUERY_INCLUDEOPTIMIZED
     internal abstract class BaseQueryFuture
 #else

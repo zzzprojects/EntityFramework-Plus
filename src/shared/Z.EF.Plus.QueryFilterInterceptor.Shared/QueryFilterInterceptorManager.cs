@@ -92,9 +92,9 @@ namespace Z.EntityFramework.Plus
         ///     Creates and return a filter added for the context.
         /// </summary>
         /// <typeparam name="T">The type of elements of the query.</typeparam>
-        /// <param name="queryFilter">The query filter to apply to the the context.</param>
+        /// <param name="queryFilter">The query filter to apply to the context.</param>
         /// <param name="isEnabled">true if the filter is enabled.</param>
-        /// <returns>The filter created and added to the the context.</returns>
+        /// <returns>The filter created and added to the context.</returns>
         public static BaseQueryFilterInterceptor Filter<T>(Func<IQueryable<T>, IQueryable<T>> queryFilter, bool isEnabled = true) where T : class
         {
             return Filter(Guid.NewGuid(), queryFilter, isEnabled);
@@ -105,9 +105,9 @@ namespace Z.EntityFramework.Plus
         /// </summary>
         /// <typeparam name="T">The type of elements of the query.</typeparam>
         /// <param name="key">The filter key associated to the filter.</param>
-        /// <param name="queryFilter">The query filter to apply to the the context.</param>
+        /// <param name="queryFilter">The query filter to apply to the context.</param>
         /// <param name="isEnabled">true if the filter is enabled.</param>
-        /// <returns>The filter created and added to the the context.</returns>
+        /// <returns>The filter created and added to the context.</returns>
         public static BaseQueryFilterInterceptor Filter<T>(object key, Func<IQueryable<T>, IQueryable<T>> queryFilter, bool isEnabled = true) where T : class
         {
             BaseQueryFilterInterceptor filter;
@@ -186,7 +186,7 @@ namespace Z.EntityFramework.Plus
             return (IQueryable)result;
         }
 
-        /// <summary>Initilize global filter in the context.</summary>
+        /// <summary>Initialize global filter in the context.</summary>
         /// <param name="context">The context to initialize global filter on.</param>
         public static void InitilizeGlobalFilter(DbContext context)
         {

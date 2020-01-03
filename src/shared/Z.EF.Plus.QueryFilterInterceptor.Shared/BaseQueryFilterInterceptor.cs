@@ -45,7 +45,7 @@ namespace Z.EntityFramework.Plus
             Disable(null);
         }
 
-        /// <summary>Disables this filter on the speficied type.</summary>
+        /// <summary>Disables this filter on the specified type.</summary>
         /// <typeparam name="TType">Type of the element to disable the filter on.</typeparam>
         public void Disable<TType>()
         {
@@ -91,7 +91,7 @@ namespace Z.EntityFramework.Plus
             Enable(null);
         }
 
-        /// <summary>Enables this filter on the speficied type.</summary>
+        /// <summary>Enables this filter on the specified type.</summary>
         /// <typeparam name="TType">Type of the element to enable the filter on.</typeparam>
         public void Enable<TType>()
         {

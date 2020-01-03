@@ -6,7 +6,7 @@ namespace Z.EntityFramework.Plus
     public class BatchUpdateVisitor : ExpressionVisitor
     {
         /// <summary>Gets or sets a value indicating whether the expression contains an OrderBy method.</summary>
-        /// <value>true if the expression contains an OrderBy metho has order by, false if not.</value>
+        /// <value>true if the expression contains an OrderBy method has order by, false if not.</value>
         public bool HasOrderBy { get; set; }
 
         /// <summary>

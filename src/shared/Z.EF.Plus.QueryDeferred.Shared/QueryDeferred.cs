@@ -79,16 +79,16 @@ namespace Z.EntityFramework.Plus
         }
 
 #if NET45
-        /// <summary>Execute asynchrounously the deferred expression and return the result.</summary>
-        /// <returns>The result of the deferred expression executed asynchrounously.</returns>
+        /// <summary>Execute asynchronously the deferred expression and return the result.</summary>
+        /// <returns>The result of the deferred expression executed asynchronously.</returns>
         public Task<TResult> ExecuteAsync()
         {
             return ExecuteAsync(default(CancellationToken));
         }
 
-        /// <summary>Execute asynchrounously the deferred expression and return the result.</summary>
+        /// <summary>Execute asynchronously the deferred expression and return the result.</summary>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The result of the deferred expression executed asynchrounously.</returns>
+        /// <returns>The result of the deferred expression executed asynchronously.</returns>
         public Task<TResult> ExecuteAsync(CancellationToken cancellationToken)
         {
 #if EF5
