@@ -1455,10 +1455,10 @@ SELECT  @totalRowAffected
 
                     var valueSql = commandText.Substring(6, pos);
 #endif
-					if (valueSql.Trim().StartsWith("TOP") && valueSql.IndexOf(")") != -1)
-					{
-						valueSql = valueSql.Substring(valueSql.IndexOf(")") + 1);
-					}
+                    if (valueSql.Trim().StartsWith("TOP") && valueSql.IndexOf(")") != -1)
+                    {
+                        valueSql = valueSql.Substring(valueSql.IndexOf(")") + 1);
+                    }
 
                     valueSql = valueSql.Trim();
 
