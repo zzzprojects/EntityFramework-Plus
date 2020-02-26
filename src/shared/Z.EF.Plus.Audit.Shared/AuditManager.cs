@@ -5,6 +5,8 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
+using Z.EntityFramework.Extensions;
+
 namespace Z.EntityFramework.Plus
 {
     /// <summary>Manager for audits.</summary>
@@ -13,6 +15,8 @@ namespace Z.EntityFramework.Plus
         /// <summary>Static constructor.</summary>
         static AuditManager()
         {
+            EntityFrameworkManager.IsEntityFrameworkPlus = true;
+
             DefaultConfiguration = new AuditConfiguration();
         }
 

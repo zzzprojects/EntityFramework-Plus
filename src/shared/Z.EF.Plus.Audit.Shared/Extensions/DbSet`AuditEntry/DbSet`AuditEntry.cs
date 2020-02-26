@@ -24,6 +24,11 @@ namespace Z.EntityFramework.Plus
     {
         public static IQueryable<AuditEntry> Where<T>(this DbSet<AuditEntry> set, T entry) where T : class
         {
+            return set.Where<AuditEntry, T>(entry);
+        }
+
+        public static IQueryable<TAuditEntry> Where<TAuditEntry, T>(this DbSet<TAuditEntry> set, T entry) where TAuditEntry : AuditEntry where T : class
+        {
             var context = set.GetDbContext();
             var keyNames = context.GetKeyNames<T>();
 
@@ -50,6 +55,11 @@ namespace Z.EntityFramework.Plus
 
         public static IQueryable<AuditEntry> Where<T>(this DbSet<AuditEntry> set, params object[] keyValues) where T : class
         {
+            return set.Where<AuditEntry, T>(keyValues);
+        }
+
+        public static IQueryable<TAuditEntry> Where<TAuditEntry, T>(this DbSet<TAuditEntry> set, params object[] keyValues) where TAuditEntry : AuditEntry where T : class
+        {
             var context = set.GetDbContext();
             var keyNames = context.GetKeyNames<T>();
 
@@ -59,6 +69,7 @@ namespace Z.EntityFramework.Plus
             {
                 throw new Exception(ExceptionMessage.Audit_Key_Null);
             }
+
             if (keyValues.Length != keyNames.Length)
             {
                 throw new Exception(ExceptionMessage.Audit_Key_OutOfBound);
