@@ -11,6 +11,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Z.EntityFramework.Extensions;
 
 namespace Z.EntityFramework.Plus
 {

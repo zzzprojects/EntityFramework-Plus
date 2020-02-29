@@ -6,6 +6,7 @@
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 using System.Runtime.CompilerServices;
+using Z.EntityFramework.Extensions;
 #if EF5
 using System.Data.Objects;
 using System.Data.Entity;
@@ -31,6 +32,8 @@ namespace Z.EntityFramework.Plus
         /// <summary>Static constructor.</summary>
         static QueryFutureManager()
         {
+            EntityFrameworkManager.IsEntityFrameworkPlus = true;
+
 #if EF5 || EF6
             CacheWeakFutureBatch = new ConditionalWeakTable<ObjectContext, QueryFutureBatch>();
 #elif EFCORE

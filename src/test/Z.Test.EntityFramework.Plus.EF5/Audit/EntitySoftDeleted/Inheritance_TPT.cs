@@ -60,7 +60,7 @@ namespace Z.Test.EntityFramework.Plus
 
             // UnitTest - Audit
             {
-                var entries = audit.Entries;
+                var entries = audit.Entries.OrderBy(x => x.EntityTypeName).ThenBy(x => x.AuditEntryID).ToList();
 
                 // Entries
                 {
@@ -135,7 +135,7 @@ namespace Z.Test.EntityFramework.Plus
                 using (var ctx = new TestContext())
                 {
                     // ENSURE order
-                    var entries = ctx.AuditEntries.OrderBy(x => x.AuditEntryID).Include(x => x.Properties).ToList();
+                    var entries = ctx.AuditEntries.OrderBy(x => x.EntityTypeName).ThenBy(x => x.AuditEntryID).Include(x => x.Properties).ToList();
                     entries.ForEach(x => x.Properties = x.Properties.OrderBy(y => y.AuditEntryPropertyID).ToList());
 
                     // Entries

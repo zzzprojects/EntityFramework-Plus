@@ -48,9 +48,18 @@ namespace Z.EntityFramework.Plus
 
             if (item == null)
             {
+#if EF6
+                using (var handler = new QueryCacheItemTracker().Initialize(query))
+                {
+                    item = query.AsNoTracking().ToList();
+                    item = QueryCacheManager.AddOrGetExisting(key, item, policy) ?? item;
+                    QueryCacheManager.AddCacheTag(handler, key, tags);
+                }
+#else
                 item = query.AsNoTracking().ToList();
                 item = QueryCacheManager.AddOrGetExisting(key, item, policy) ?? item;
                 QueryCacheManager.AddCacheTag(key, tags);
+#endif
             }
 
             return (IEnumerable<T>) item;
@@ -81,9 +90,18 @@ namespace Z.EntityFramework.Plus
 
             if (item == null)
             {
+#if EF6
+                using (var handler = new QueryCacheItemTracker().Initialize(query))
+                {
+                    item = query.AsNoTracking().ToList();
+                    item = QueryCacheManager.AddOrGetExisting(key, item, absoluteExpiration) ?? item;
+                    QueryCacheManager.AddCacheTag(handler, key, tags);
+                }
+#else           
                 item = query.AsNoTracking().ToList();
                 item = QueryCacheManager.AddOrGetExisting(key, item, absoluteExpiration) ?? item;
                 QueryCacheManager.AddCacheTag(key, tags);
+#endif
             }
 
             return (IEnumerable<T>) item;
@@ -155,5 +173,5 @@ namespace Z.EntityFramework.Plus
             return query.FromCache(QueryCacheManager.DefaultMemoryCacheEntryOptions, tags);
         }
 #endif
-    }
+            }
 }

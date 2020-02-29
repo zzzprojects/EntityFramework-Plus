@@ -5,6 +5,8 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
+
+using Z.EntityFramework.Extensions;
 #if NET45
 using System;
 using System.Linq;

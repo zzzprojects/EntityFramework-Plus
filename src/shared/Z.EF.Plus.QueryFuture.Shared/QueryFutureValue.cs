@@ -133,6 +133,33 @@ namespace Z.EntityFramework.Plus
             }
             else
             {
+#if EFCORE
+                var query = (IQueryable<TResult>)Query;
+                var value = query.Provider.Execute<object>(query.Expression);
+
+                if (value is TResult valueTResult)
+                {
+                    _result = valueTResult;
+                }
+                else if (value == null)
+                {
+                    _result = (TResult)value;
+                }
+                else if (value is IEnumerable<TResult> valueIEnumerable)
+                {
+                    using (var enumerator = valueIEnumerable.GetEnumerator())
+                    {
+                        enumerator.MoveNext();
+                        _result = enumerator.Current;
+                    }
+                }
+                else
+                {
+                    throw new Exception($"Oops! The following return type is currently unsupported in the method GetResultDirectly: {value.GetType().FullName}. Please report this error to info@zzzprojects.com");
+                }
+
+                HasValue = true;
+#else
                 var enumerator = Query.GetEnumerator();
 
                 // Enumerate on first item only
@@ -140,16 +167,44 @@ namespace Z.EntityFramework.Plus
                 _result = (TResult)enumerator.Current;
 
                 HasValue = true;
+#endif
             }
         }
 #endif
         public override void GetResultDirectly()
         {
             var query = (IQueryable<TResult>) Query;
+#if EFCORE_3X
+            var value = query.Provider.Execute<object>(query.Expression);
+
+            if (value is TResult valueTResult)
+            {
+                _result = valueTResult;
+            }
+            else if (value == null)
+            {
+                _result = (TResult)value;
+            }
+            else if (value is IEnumerable<TResult> valueIEnumerable)
+            {
+                using (var enumerator = valueIEnumerable.GetEnumerator())
+                {
+                    enumerator.MoveNext();
+                    _result = enumerator.Current;
+                }
+            }
+            else
+            {
+                throw new Exception($"Oops! The following return type is currently unsupported in the method GetResultDirectly: {value.GetType().FullName}. Please report this error to info@zzzprojects.com");
+            }
+
+            HasValue = true;
+#else
             var value = query.Provider.Execute<TResult>(query.Expression);
 
             _result = value;
             HasValue = true;
+#endif
         }
 
 #if NET45

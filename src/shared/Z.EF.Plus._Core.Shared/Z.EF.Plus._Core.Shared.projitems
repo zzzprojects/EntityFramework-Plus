@@ -73,6 +73,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)EF\Object\Object.NullIfDbNull.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EF\Type\Type.GetDbSetElementType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EF\Type\Type.GetField.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EntityFrameworkPlusManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\List`\List`.GetVersion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LazyAsyncEnumerator\LazyAsyncEnumeratorCore.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LazyAsyncEnumerator\LazyAsyncEnumerator.cs" />

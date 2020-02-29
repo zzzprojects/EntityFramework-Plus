@@ -98,7 +98,7 @@ namespace Z.EntityFramework.Plus
 				{
 					value = Activator.CreateInstance(typeof(HashSet<>).MakeGenericType(propertyType.GetGenericArguments()[0]));
 				}
-				else if (genericTypeDefinition == typeof(IList<>))
+				else if (genericTypeDefinition == typeof(IList<>) || genericTypeDefinition == typeof(IEnumerable<>))
 				{
 					value = Activator.CreateInstance(typeof(List<>).MakeGenericType(propertyType.GetGenericArguments()[0]));
 				}

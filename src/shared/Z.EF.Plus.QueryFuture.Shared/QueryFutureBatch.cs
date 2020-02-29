@@ -25,6 +25,7 @@ using System.Data.Entity.Infrastructure.Interception;
 
 #elif EFCORE
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Storage;
 
@@ -94,7 +95,24 @@ namespace Z.EntityFramework.Plus
                 return;
             }
 
-            if (!QueryFutureManager.AllowQueryBatch)
+            bool allowQueryBatch = QueryFutureManager.AllowQueryBatch;
+#if EFCORE
+            var databaseCreator = Context.Database.GetService<IDatabaseCreator>();
+
+            var assembly = databaseCreator.GetType().GetTypeInfo().Assembly;
+            var assemblyName = assembly.GetName().Name;
+
+            // We deactivated temporary some QueryFuture for EF Core as they don't work correctly            
+            // We need to still make them "work" for IncludeFilter feature
+            var isMySqlPomelo = assemblyName == "Pomelo.EntityFrameworkCore.MySql";
+            var isOracle = assemblyName == "Oracle.EntityFrameworkCore" || assemblyName == "Devart.Data.Oracle.Entity.EFCore";
+            if (allowQueryBatch && (isOracle || isMySqlPomelo))
+            {
+	            allowQueryBatch = false;
+            }
+#endif
+
+            if (!allowQueryBatch)
             {
                 foreach (var query in Queries)
                 {

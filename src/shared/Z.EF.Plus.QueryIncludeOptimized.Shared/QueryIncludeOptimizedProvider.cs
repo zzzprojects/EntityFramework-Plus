@@ -7,11 +7,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+
 #if EF5
 using System.Data.Metadata.Edm;
 using System.Data.Objects;
@@ -21,15 +22,19 @@ using System.Linq;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Core.Objects;
 using System.Linq;
-#elif EFCORE
-using Microsoft.Data.Entity.Internal;
-using Microsoft.Data.Entity.Query.Internal;
-using Remotion.Linq;
 
 #endif
 #if NET45
-using System.Data.Entity.Infrastructure;
 
+
+#endif
+
+#if EFCORE_3X
+using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.EntityFrameworkCore.Query.Internal;
+#else
+using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 #endif
 
 namespace Z.EntityFramework.Plus
@@ -37,8 +42,10 @@ namespace Z.EntityFramework.Plus
     /// <summary>A class for query include optimized provider.</summary>
 #if EF6 && NET45
     public class QueryIncludeOptimizedProvider<T> : IDbAsyncQueryProvider
+#elif EFCORE_3X
+    public class QueryIncludeOptimizedProvider<T> : IQueryProvider, IAsyncQueryProvider
 #else
-    public class QueryIncludeOptimizedProvider<T> : IQueryProvider
+    public class QueryIncludeOptimizedProvider<T> : IQueryProvider 
 #endif
     {
         /// <summary>Constructor.</summary>
@@ -166,7 +173,9 @@ namespace Z.EntityFramework.Plus
             }
 
             // RESOLE parent queries using .FutureValue();
-#if EF5 || EF6
+#if EFCORE_3X
+            var immediateQuery = new EntityQueryable<TResult>((IAsyncQueryProvider)OriginalProvider, expression);
+#elif EF5 || EF6
             var objectQuery = CurrentQueryable.OriginalQueryable.GetObjectQuery();
 
             // GET provider 
@@ -178,10 +187,6 @@ namespace Z.EntityFramework.Plus
             var createQueryMethod = provider.GetType().GetMethod("CreateQuery", BindingFlags.NonPublic | BindingFlags.Instance, null, new[] {typeof (Expression)}, null);
             createQueryMethod = createQueryMethod.MakeGenericMethod(typeof (TResult));
             var immediateQuery = (ObjectQuery<T>) createQueryMethod.Invoke(provider, new object[] {expression});
-#elif EFCORE
-            var immediateQuery = new EntityQueryable<TResult>((IAsyncQueryProvider)OriginalProvider);
-            var expressionProperty = typeof(QueryableBase<>).MakeGenericType(typeof(TResult)).GetProperty("Expression", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            expressionProperty.SetValue(immediateQuery, expression);
 #endif
 
             object value = null;
@@ -219,7 +224,11 @@ namespace Z.EntityFramework.Plus
             }
             else
             {
+#if EFCORE_3X
+                value = immediateQuery.FutureValue().Value;
+#else
                 value = immediateQuery.Execute(objectQuery.MergeOption).FirstOrDefault();
+#endif
 
                 // RESOLVE child queries using .Future()
                 {
@@ -293,6 +302,31 @@ namespace Z.EntityFramework.Plus
         {
             return Task.Run(() => Execute<TResult>(expression), cancellationToken);
         }
+#endif
+
+#if EFCORE_3X
+	    TResult IAsyncQueryProvider.ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
+	    {
+		    var tResult = typeof(TResult);
+		    if (tResult.IsGenericType && tResult.GetGenericTypeDefinition() == typeof(Task<>))
+		    {
+			    tResult = tResult.GetGenericArguments()[0];
+
+			    var executeMethod = this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).Single(x => x.Name == "ExecuteAsyncTask" && x.IsGenericMethod).MakeGenericMethod(tResult);
+
+			    return (TResult)executeMethod.Invoke(this, new object[] { expression, cancellationToken });
+		    }
+
+		    else
+		    {
+			    return Execute<TResult>(expression);
+		    }
+	    }
+
+	    private object ExecuteAsyncTask<T>(Expression expression, CancellationToken cancellationToken)
+	    {
+		    return Task.Run(() => Execute<T>(expression), cancellationToken);
+	    }
 #endif
     }
 }

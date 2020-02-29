@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-
+using Z.EntityFramework.Extensions;
 #if EF5 || EF6
 using System.Data.Entity;
 
@@ -51,6 +51,8 @@ namespace Z.EntityFramework.Plus
         static QueryFilterManager()
 #endif
         {
+            EntityFrameworkManager.IsEntityFrameworkPlus = true;
+
             CacheGenericFilterContext = new Dictionary<string, AliasQueryFilterContext>();
             CacheWeakFilterContext = new ConditionalWeakTable<DbContext, AliasQueryFilterContext>();
             CacheWeakFilterQueryable = new ConditionalWeakTable<IQueryable, AliasBaseQueryFilterQueryable>();

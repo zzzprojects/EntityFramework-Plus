@@ -36,7 +36,7 @@ namespace Z.Test.EntityFramework.Plus
 #if EF5
                 Assert.AreEqual(@"
 DELETE
-FROM    A
+FROM    A 
 FROM    [dbo].[Entity_Basic] AS A
         INNER JOIN ( SELECT TOP (20) 
 [Extent1].[ID] AS [ID]
@@ -63,13 +63,14 @@ SELECT @@ROWCOUNT
 ", sql);
 #elif EFCORE
                 Assert.AreEqual(@"
+DECLARE @stop int
 DECLARE @rowAffected INT
 DECLARE @totalRowAffected INT
 
+SET @stop = 0
 SET @totalRowAffected = 0
 
-WHILE @rowAffected IS NULL
-    OR @rowAffected > 0
+WHILE @stop=0
     BEGIN
         DELETE TOP (4000)
         FROM    A
@@ -81,6 +82,9 @@ WHERE ([x].[ColumnInt] > 10) AND ([x].[ColumnInt] <= 40)
 
         SET @rowAffected = @@ROWCOUNT
         SET @totalRowAffected = @totalRowAffected + @rowAffected
+
+		IF @rowAffected < 4000
+            SET @stop = 1
     END
 
 SELECT  @totalRowAffected

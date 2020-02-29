@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Z.EntityFramework.Extensions;
 
 namespace Z.EntityFramework.Plus
 {
@@ -17,6 +18,11 @@ namespace Z.EntityFramework.Plus
     /// <typeparam name="TChild">The type of elements of the child.</typeparam>
     public class QueryIncludeFilterChild<T, TChild> : BaseQueryIncludeFilterChild
     {
+        static QueryIncludeFilterChild()
+        {
+            EntityFrameworkManager.IsEntityFrameworkPlus = true;
+        }
+
         /// <summary>Constructor.</summary>
         /// <param name="filter">The query filter to apply on included related entities.</param>
         public QueryIncludeFilterChild(Expression<Func<T, IEnumerable<TChild>>> filter)

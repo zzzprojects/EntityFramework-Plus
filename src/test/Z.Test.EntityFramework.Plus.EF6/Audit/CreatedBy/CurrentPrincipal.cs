@@ -32,6 +32,8 @@ namespace Z.Test.EntityFramework.Plus
 
             var audit = AuditHelper.AutoSaveAudit();
 
+            var createdBy = audit.CreatedBy;
+
             using (var ctx = new TestContext())
             {
                 TestContext.Insert(ctx, x => x.Entity_Basics, 3);
@@ -44,6 +46,10 @@ namespace Z.Test.EntityFramework.Plus
 
                 // Entries
                 {
+
+                    Assert.AreNotEqual(null, createdBy);
+
+
                     // Entries Count
                     Assert.AreEqual(3, entries.Count);
 
@@ -63,9 +69,9 @@ namespace Z.Test.EntityFramework.Plus
                     Assert.AreEqual(typeof(Entity_Basic).Name, entries[2].EntityTypeName);
 
                     // Entries CreatedBy
-                    Assert.AreEqual("XPS8700\\Jonathan", entries[0].CreatedBy);
-                    Assert.AreEqual("XPS8700\\Jonathan", entries[1].CreatedBy);
-                    Assert.AreEqual("XPS8700\\Jonathan", entries[2].CreatedBy);
+                    Assert.AreEqual(createdBy, entries[0].CreatedBy);
+                    Assert.AreEqual(createdBy, entries[1].CreatedBy);
+                    Assert.AreEqual(createdBy, entries[2].CreatedBy);
                 }
 
                 // Properties
@@ -132,9 +138,9 @@ namespace Z.Test.EntityFramework.Plus
                         Assert.AreEqual(typeof(Entity_Basic).Name, entries[2].EntityTypeName);
 
                         // Entries CreatedBy
-                        Assert.AreEqual("XPS8700\\Jonathan", entries[0].CreatedBy);
-                        Assert.AreEqual("XPS8700\\Jonathan", entries[1].CreatedBy);
-                        Assert.AreEqual("XPS8700\\Jonathan", entries[2].CreatedBy);
+                        Assert.AreEqual(createdBy, entries[0].CreatedBy);
+                        Assert.AreEqual(createdBy, entries[1].CreatedBy);
+                        Assert.AreEqual(createdBy, entries[2].CreatedBy);
                     }
 
                     // Properties

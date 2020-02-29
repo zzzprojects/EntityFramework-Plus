@@ -5,6 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
+using System;
 using System.Linq;
 
 namespace Z.EntityFramework.Plus

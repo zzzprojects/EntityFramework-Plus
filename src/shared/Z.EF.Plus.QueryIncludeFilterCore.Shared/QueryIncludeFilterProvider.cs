@@ -12,9 +12,13 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Query.Internal;
+
+#if EFCORE_2X
 using Remotion.Linq;
+#endif
 
 namespace Z.EntityFramework.Plus
 {
@@ -157,25 +161,33 @@ namespace Z.EntityFramework.Plus
 
             object value = null;
 
-            if (QueryIncludeFilterManager.AllowQueryBatch)
+            DbContext context = null; 
+
+            if (currentQuery.OriginalQueryable.IsInMemoryQueryContext())
+            {
+                context = currentQuery.OriginalQueryable.GetInMemoryContext();
+            }
+            else
+            {
+	            // MODIFY query if necessary
+	            context = currentQuery.OriginalQueryable.GetDbContext();
+			}
+
+			if (QueryIncludeFilterManager.AllowQueryBatch)
             {
                 var futureValue = immediateQuery.FutureValue();
 
                 // RESOLVE child queries using .Future()
                 {
-                    // MODIFY query if necessary
+                    // MODIFY query if necessary 
 
-                    var context = currentQuery.OriginalQueryable.GetDbContext();
+                    var keyNames = context.Model.FindEntityType(typeof(TResult).DisplayName(true))
+                        .GetKeys().ToList()[0]
+                        .Properties.Select(x => x.Name).ToArray();
 
-                var keyNames = context.Model.FindEntityType(typeof (TResult).DisplayName(true))
-                    .GetKeys().ToList()[0]
-                    .Properties.Select(x => x.Name).ToArray();
-
-                var currentNewQuery = methodCall.Method.Name == "First" || methodCall.Method.Name == "FirstOrDefault" ?
-                        currentQuery.AddToRootOrAppendOrderBy(keyNames).Take(1) :
-                        methodCall.Method.Name == "Last" || methodCall.Method.Name == "LastOrDefault" ?
-                            currentQuery.AddToRootOrAppendOrderBy(keyNames).Reverse().Take(1) :
-                            currentQuery;
+                    var currentNewQuery = methodCall.Method.Name == "First" || methodCall.Method.Name == "FirstOrDefault" ? currentQuery.AddToRootOrAppendOrderBy(keyNames).Take(1) :
+                        methodCall.Method.Name == "Last" || methodCall.Method.Name == "LastOrDefault" ? currentQuery.AddToRootOrAppendOrderBy(keyNames).Reverse().Take(1) :
+                        currentQuery;
 
                     currentQuery.CreateQueryable(currentNewQuery);
                 }
@@ -186,14 +198,13 @@ namespace Z.EntityFramework.Plus
             {
                 // TODO: Find a better way
                 value = immediateQuery.FutureValue().Value;
-                //value = immediateQuery.Execute(objectQuery.MergeOption).FirstOrDefault();
+				//value = immediateQuery.Execute(objectQuery.MergeOption).FirstOrDefault();
 
-                // RESOLVE child queries using .Future()
-                {
-                    // MODIFY query if necessary
-                    var context = currentQuery.OriginalQueryable.GetDbContext();
+				// RESOLVE child queries using .Future()
+				{
+					// MODIFY query if necessary 
 
-                    var keyNames = context.Model.FindEntityType(typeof(TResult).DisplayName(true))
+					var keyNames = context.Model.FindEntityType(typeof(TResult).DisplayName(true))
                         .GetKeys().ToList()[0]
                         .Properties.Select(x => x.Name).ToArray();
 
@@ -237,10 +248,35 @@ namespace Z.EntityFramework.Plus
 
    
 #endif
+
+#if EFCORE_2X
         public Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
         {
             return Task.Run(() => Execute<TResult>(expression), cancellationToken);
         }
-        
+#elif EFCORE_3X
+        TResult IAsyncQueryProvider.ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
+        {
+            var tResult = typeof(TResult);
+            if (tResult.IsGenericType && tResult.GetGenericTypeDefinition() == typeof(Task<>))
+            {
+                tResult = tResult.GetGenericArguments()[0];
+
+                var executeMethod = this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).Single(x => x.Name == "ExecuteAsyncTask" && x.IsGenericMethod).MakeGenericMethod(tResult);
+
+                return (TResult) executeMethod.Invoke(this, new object[] {expression, cancellationToken});
+            }
+
+            else
+            {
+                return Execute<TResult>(expression);
+            }
+        }
+
+        private object ExecuteAsyncTask<T>(Expression expression, CancellationToken cancellationToken)
+        {
+            return Task.Run(() => Execute<T>(expression), cancellationToken);
+        }
+#endif
     }
 }

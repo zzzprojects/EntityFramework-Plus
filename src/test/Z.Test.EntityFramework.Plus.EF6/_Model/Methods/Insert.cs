@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Effort.Provider;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 #if EF5
 using System.Data.Entity;
@@ -113,9 +114,18 @@ namespace Z.Test.EntityFramework.Plus
             return list;
         }
 
-        public static List<T> Insert<T>(Func<TestContext, DbSet<T>> func, int count) where T : class, new()
+        public static List<T> Insert<T>(Func<TestContext, DbSet<T>> func, int count, EffortConnection effortConnection = null) where T : class, new()
         {
-            var ctx = new TestContext();
+            TestContext ctx;
+            if (effortConnection != null)
+            {
+                ctx  = new TestContext(effortConnection);
+            }
+            else
+            {
+                ctx = new TestContext();
+            }
+            
             var sets = func(ctx);
 
 

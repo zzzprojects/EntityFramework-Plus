@@ -6,7 +6,10 @@
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 using System;
+using Z.EntityFramework.Extensions;
+#if EF6
 using System.Data.Entity;
+#endif
 
 namespace Z.EntityFramework.Plus
 {
@@ -14,6 +17,8 @@ namespace Z.EntityFramework.Plus
     {
         static QueryIncludeOptimizedManager()
         {
+            EntityFrameworkManager.IsEntityFrameworkPlus = true;
+
             AllowQueryBatch = true;
             AllowIncludeSubPath = false;
         }

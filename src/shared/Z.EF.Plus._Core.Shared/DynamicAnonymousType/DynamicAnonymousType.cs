@@ -20,7 +20,7 @@ namespace Z.EntityFramework.Plus
     {
 
         private static readonly AssemblyName AssemblyName = new AssemblyName { Name = "<>f__AnonymousType" };
-#if NETSTANDARD1_3 || NETSTANDARD2_0
+#if NETSTANDARD1_3 || NETSTANDARD2_0 || NETSTANDARD2_1
         private static readonly ModuleBuilder ModuleBuilder = System.Reflection.Emit.AssemblyBuilder.DefineDynamicAssembly(AssemblyName, AssemblyBuilderAccess.Run).DefineDynamicModule(AssemblyName.Name);
 #else
         private static readonly ModuleBuilder ModuleBuilder = Thread.GetDomain().DefineDynamicAssembly(AssemblyName, AssemblyBuilderAccess.Run).DefineDynamicModule(AssemblyName.Name);

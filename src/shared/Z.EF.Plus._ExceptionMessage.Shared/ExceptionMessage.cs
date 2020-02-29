@@ -22,6 +22,7 @@ namespace Z.EntityFramework.Plus
 #if FULL || BATCH_DELETE || BATCH_UPDATE
         public static string BatchOperations_PropertyNotFound = "Oops! Mapping for the property '{0}' cannot be found, the current version don't support yet Complex Type, Enum, TPC, TPH and TPT. For more information, contact us: info@zzzprojects.com";
         public static string BatchOperations_AssemblyNotFound = "Oops! The assembly 'Microsoft.EntityFrameworkCore.SqlServer' could not be found. This feature is only supported for SQL Server for .NET Core. For more information, contact us: info@zzzprojects.com";
+        public static string Unexpected_ClientSideEvaluation = "Oops! The current query contains a client-side evaluation. The query must contain an expression that can be converted on server-side (into a SQL).";
 #endif
 #if FULL || QUERY_CACHE
         public static string QueryCache_FirstTagNullOrEmpty = "Oops! The option 'UseFirstTagAsCacheKey' is enabled but we found no tag, an empty tag string, or a null tag string instead. Make sure a tag is provided, and it's not null or empty. For more information, contact us: info@zzzprojects.com";

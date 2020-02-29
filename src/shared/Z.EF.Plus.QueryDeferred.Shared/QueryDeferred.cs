@@ -21,9 +21,13 @@ using System.Data.Entity.Infrastructure;
 
 #elif EFCORE
 using Microsoft.EntityFrameworkCore.Query.Internal;
-using Remotion.Linq;
 
 #endif
+
+#if EFCORE_2X
+using Remotion.Linq;
+#endif
+
 
 namespace Z.EntityFramework.Plus
 {
@@ -48,18 +52,14 @@ namespace Z.EntityFramework.Plus
             var createQueryMethod = provider.GetType().GetMethod("CreateQuery", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(Expression), typeof(Type) }, null);
             Query = (IQueryable<TResult>)createQueryMethod.Invoke(provider, new object[] { expression, typeof(TResult) });
 #elif EFCORE
-            if (EFCoreHelper.IsVersion3x)
-            {
-                // EF Core 3.x
-                Query = new EntityQueryable<TResult>((IAsyncQueryProvider)query.Provider, Expression);
-            }
-            else
-            {
+#if EFCORE_3X
+            Query = new EntityQueryable<TResult>((IAsyncQueryProvider)query.Provider, Expression);
+#elif EFCORE_2X
                 // EF Core 2.x
                 Query = new EntityQueryable<TResult>((IAsyncQueryProvider)query.Provider);
                 var expressionProperty = typeof(QueryableBase<>).MakeGenericType(typeof(TResult)).GetProperty("Expression", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                 expressionProperty.SetValue((QueryableBase<TResult>)Query, expression);
-            }
+#endif
 #endif
         }
 
@@ -79,6 +79,7 @@ namespace Z.EntityFramework.Plus
         }
 
 #if NET45
+
         /// <summary>Execute asynchronously the deferred expression and return the result.</summary>
         /// <returns>The result of the deferred expression executed asynchronously.</returns>
         public Task<TResult> ExecuteAsync()
@@ -99,11 +100,17 @@ namespace Z.EntityFramework.Plus
             return asyncQueryProvider != null ?
                 asyncQueryProvider.ExecuteAsync<TResult>(Expression, cancellationToken) :
                 Task.Run(() => Execute(), cancellationToken);
-#elif EFCORE
+#elif EFCORE_2X
             var asyncQueryProvider = Query.Provider as IAsyncQueryProvider;
 
             return asyncQueryProvider != null ?
                 asyncQueryProvider.ExecuteAsync<TResult>(Expression, cancellationToken) :
+                Task.Run(() => Execute(), cancellationToken);
+#elif EFCORE_3X
+            var asyncQueryProvider = Query.Provider as IAsyncQueryProvider;
+
+            return asyncQueryProvider != null ?
+                asyncQueryProvider.ExecuteAsync<Task<TResult>>(Expression, cancellationToken) :
                 Task.Run(() => Execute(), cancellationToken);
 #endif
         }

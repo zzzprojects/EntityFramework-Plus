@@ -42,6 +42,10 @@ namespace Z.EntityFramework.Plus
             }
         }
 
+
+
+
+#if EFCORE_2X
         public Task<bool> MoveNext(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -53,7 +57,6 @@ namespace Z.EntityFramework.Plus
 
             return FirstMoveNextAsync(cancellationToken);
         }
-
         public Task<bool> MoveNextAsync(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -79,6 +82,52 @@ namespace Z.EntityFramework.Plus
             }
             return _objectResultAsyncEnumerator.MoveNext();
         }
+#elif EFCORE_3X
+
+        public ValueTask DisposeAsync()
+        {
+            Dispose();
+            return new ValueTask(Task.CompletedTask);
+        }
+
+        public Task<bool> MoveNext(CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (_objectResultAsyncEnumerator != null)
+            {
+                return Task.FromResult(_objectResultAsyncEnumerator.MoveNext());
+            }
+
+            return FirstMoveNextAsync();
+        }
+        public ValueTask<bool> MoveNextAsync()
+        {
+            if (_objectResultAsyncEnumerator != null)
+            {
+                
+                return new ValueTask<bool>(Task.FromResult(_objectResultAsyncEnumerator.MoveNext()));
+            }
+
+            return new ValueTask<bool>(FirstMoveNextAsync());
+        }
+
+        private async Task<bool> FirstMoveNextAsync()
+        {
+            var objectResult = await _getObjectResultAsync(CancellationToken.None).ConfigureAwait(false);
+            try
+            {
+                _objectResultAsyncEnumerator = objectResult.GetEnumerator();
+            }
+            catch
+            {
+                throw;
+            }
+            return _objectResultAsyncEnumerator.MoveNext();
+        }
+#endif
+
+
     }
 }
 

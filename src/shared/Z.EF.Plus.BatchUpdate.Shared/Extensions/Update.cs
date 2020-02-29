@@ -8,6 +8,7 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using Z.EntityFramework.Extensions;
 
 namespace Z.EntityFramework.Plus
 {
@@ -37,19 +38,15 @@ namespace Z.EntityFramework.Plus
         /// <returns>The number of rows affected.</returns>
         public static int Update<T>(this IQueryable<T> query, Expression<Func<T, T>> updateFactory, Action<BatchUpdate> batchUpdateBuilder) where T : class
         {
-            var batchUpdate = new BatchUpdate();
-
-            if (BatchUpdateManager.BatchUpdateBuilder != null)
+#if EFCORE
+            return query.UpdateFromQuery(updateFactory, batchUpdateBuilder);
+#else
+            return query.UpdateFromQuery(updateFactory, options =>
             {
-                BatchUpdateManager.BatchUpdateBuilder(batchUpdate);
-            }
-
-            if (batchUpdateBuilder != null)
-            {
-                batchUpdateBuilder(batchUpdate);
-            }
-
-            return batchUpdate.Execute(query, updateFactory);
+                options.InternalIsEntityFrameworkPlus = true;
+                options.BatchUpdateBuilder = batchUpdateBuilder;
+            });
+#endif
         }
     }
 }

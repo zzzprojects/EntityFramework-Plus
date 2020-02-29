@@ -17,20 +17,24 @@ using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Query;
-using Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
+
+#if EFCORE_2X
+using Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal;
 using Remotion.Linq.Parsing.ExpressionVisitors.TreeEvaluation;
 using Remotion.Linq.Parsing.Structure;
 
-#if EFCORE_3X
-using IEvaluatableExpressionFilter = Microsoft.EntityFrameworkCore.Query.Internal.IEvaluatableExpressionFilter;
+#elif EFCORE_3X
+//using IEvaluatableExpressionFilter = Microsoft.EntityFrameworkCore.Query.Internal.IEvaluatableExpressionFilter;
+
 #endif
 
 namespace Z.EntityFramework.Plus
 {
     internal static partial class InternalExtensions
     {
+#if EFCORE_2X
         public static IRelationalCommand GetDbCommand<T>(this IQueryable<T> query)
         {
             bool isEFCore2x = false;
@@ -184,6 +188,7 @@ namespace Z.EntityFramework.Plus
 #endif
             return relationalCommand;
         }
+#endif
     }
 }
 

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Z.EntityFramework.Extensions;
 
 namespace Z.EntityFramework.Plus
 {
@@ -33,6 +34,8 @@ namespace Z.EntityFramework.Plus
         /// <summary>Static constructor.</summary>
         static QueryFilterManager()
         {
+            EntityFrameworkManager.IsEntityFrameworkPlus = true;
+
             DbInterception.Add(new QueryFilterInterceptorDbCommandTree());
 
             CacheWeakFilterContext = new ConditionalWeakTable<DbContext, QueryFilterContextInterceptor>();

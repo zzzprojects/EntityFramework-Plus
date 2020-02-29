@@ -8,7 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Reflection;
+using System.Reflection; 
 #if NET45
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,18 +29,27 @@ using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Query;
-using Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
-using Remotion.Linq.Parsing.ExpressionVisitors.TreeEvaluation;
-using Remotion.Linq.Parsing.Structure;
-using Microsoft.EntityFrameworkCore.Query.Expressions;
-using Remotion.Linq.Clauses;
-using Microsoft.EntityFrameworkCore.Query.Sql;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 #endif
-#if EFCORE_3X
-using IEvaluatableExpressionFilter = Microsoft.EntityFrameworkCore.Query.Internal.IEvaluatableExpressionFilter;
+
+#if EFCORE_2X
+using Microsoft.EntityFrameworkCore.Query.Expressions;
+using Remotion.Linq.Parsing.ExpressionVisitors.TreeEvaluation;
+using Remotion.Linq.Parsing.Structure;
+using Remotion.Linq.Clauses;
+using Microsoft.EntityFrameworkCore.Query.Sql;
+using Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal;
+
+#elif EFCORE_3X
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.EntityFrameworkCore.Query.Internal;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Logging;
+using Z.EntityFramework.Extensions;
 #endif
 
 namespace Z.EntityFramework.Plus
@@ -81,6 +90,10 @@ namespace Z.EntityFramework.Plus
         /// <value>The query connection.</value>
         internal IRelationalConnection QueryConnection { get; set; }
 
+#if EFCORE_3X
+        internal object CompiledQuery { get; set; }
+#endif
+
         internal Action RestoreConnection { get;set;}
 
         public virtual void ExecuteInMemory()
@@ -88,6 +101,7 @@ namespace Z.EntityFramework.Plus
             
         }
 
+#if EFCORE_2X
         /// <summary>Creates executor and get command.</summary>
         /// <returns>The new executor and get command.</returns>
         public virtual IRelationalCommand CreateExecutorAndGetCommand(out RelationalQueryContext queryContext)
@@ -412,10 +426,162 @@ namespace Z.EntityFramework.Plus
 
             return relationalCommand;
         }
+#elif EFCORE_3X
+
+        private static readonly TypeInfo QueryCompilerTypeInfo = typeof(QueryCompiler).GetTypeInfo();
+
+        private static readonly FieldInfo QueryCompilerField = typeof(EntityQueryProvider).GetTypeInfo().DeclaredFields.First(x => x.Name == "_queryCompiler");
+
+        private static readonly FieldInfo QueryModelGeneratorField = QueryCompilerTypeInfo.DeclaredFields.First(x => x.Name == "_queryModelGenerator");
+
+        private static readonly FieldInfo DataBaseField = QueryCompilerTypeInfo.DeclaredFields.Single(x => x.Name == "_database");
+
+        private static readonly PropertyInfo DatabaseDependenciesField = typeof(Database).GetTypeInfo().DeclaredProperties.Single(x => x.Name == "Dependencies");
+
+        /// <summary>Creates executor and get command.</summary>
+        /// <returns>The new executor and get command.</returns>
+        public virtual IRelationalCommand CreateExecutorAndGetCommand(out RelationalQueryContext queryContext)
+        {
+            object compiledQueryOut;
+
+            var relationalCommand = Query.EFPlusCreateCommand(queryable =>
+            {
+                var context = queryable.GetDbContext();
+
+                QueryConnection = context.Database.GetService<IRelationalConnection>();
+
+                var innerConnection = new CreateEntityConnection(QueryConnection.DbConnection, null);
+                var innerConnectionField = typeof(RelationalConnection).GetField("_connection", BindingFlags.NonPublic | BindingFlags.Instance);
+                var initalConnection = innerConnectionField.GetValue(QueryConnection);
+
+                innerConnectionField.SetValue(QueryConnection, innerConnection);
+
+                RestoreConnection = () => innerConnectionField.SetValue(QueryConnection, initalConnection);
+            }, out queryContext, out compiledQueryOut);
+
+            QueryContext = queryContext;
+            CompiledQuery = compiledQueryOut;
+
+            return relationalCommand;
+
+            //var source = Query;
+
+            //// CREATE connection
+            //{
+            //    var context = Query.GetDbContext();
+
+            //    QueryConnection = context.Database.GetService<IRelationalConnection>();
+
+            //    var innerConnection = new CreateEntityConnection(QueryConnection.DbConnection, null);
+            //    var innerConnectionField = typeof(RelationalConnection).GetField("_connection", BindingFlags.NonPublic | BindingFlags.Instance);
+            //    var initalConnection = innerConnectionField.GetValue(QueryConnection);
+
+            //    innerConnectionField.SetValue(QueryConnection, innerConnection);
+
+            //    RestoreConnection = () => innerConnectionField.SetValue(QueryConnection, initalConnection);
+            //}
+
+            //// REFLECTION: source.Provider._queryCompiler
+            //var queryCompilerField = typeof(EntityQueryProvider).GetField("_queryCompiler", BindingFlags.NonPublic | BindingFlags.Instance);
+            //var queryCompiler = queryCompilerField.GetValue(source.Provider);
+
+            //// REFLECTION: queryCompiler._database
+            //var databaseField = queryCompiler.GetType().GetField("_database", BindingFlags.NonPublic | BindingFlags.Instance);
+            //var database = (RelationalDatabase) databaseField.GetValue(queryCompiler);
+
+            //// REFLECTION: queryCompiler._queryContextFactory().Create()
+            //var queryContextFactoryField = queryCompiler.GetType().GetField("_queryContextFactory", BindingFlags.NonPublic | BindingFlags.Instance);
+            //var queryContextFactory = (IQueryContextFactory) queryContextFactoryField.GetValue(queryCompiler);
+            //queryContext = (RelationalQueryContext) queryContextFactory.Create();
+
+            //// REFLECTION: queryCompiler._evaluatableExpressionFilter
+            //var evaluatableExpressionFilterField = typeof(QueryCompiler).GetField("_evaluatableExpressionFilter", BindingFlags.NonPublic | BindingFlags.Instance);
+            //var evaluatableExpressionFilter = (IEvaluatableExpressionFilter) evaluatableExpressionFilterField.GetValue(queryCompiler);
+
+            //// REFLECTION: database.Dependencies
+            //var dependenciesProperty = typeof(Database).GetProperty("Dependencies", BindingFlags.NonPublic | BindingFlags.Instance);
+            //var dependencies = (DatabaseDependencies) dependenciesProperty.GetValue(database);
+
+            //// queryCompilationContext
+            //var queryCompilationContextFactory = dependencies.QueryCompilationContextFactory;
+            //var queryCompilationContext = queryCompilationContextFactory.Create(false);
+
+            //// parameterExtractingExpressionVisitor
+            //var parameterExtractingExpressionVisitor = new ParameterExtractingExpressionVisitor(evaluatableExpressionFilter, queryContext, queryContext.GetType(), queryCompilationContext.Logger, true, false);
+
+            //// CREATE new query from query visitor
+            //var queryExpression = parameterExtractingExpressionVisitor.ExtractParameters(source.Expression);
+
+            //// REFLECTION: database.CompileQuery<TResult>(queryExpression, false)
+            //object compileQuery = null;
+
+            //{
+            //    // the code below somewhat replace the "CompileQuery" code like this:
+            //    // var queryingEnumerableType = database.GetType().Assembly.GetType("Microsoft.EntityFrameworkCore.Query.RelationalShapedQueryCompilingExpressionVisitor+QueryingEnumerable`1").MakeGenericType(source.ElementType);
+            //    // var compileQueryMethod = database.GetType().GetMethod("CompileQuery", BindingFlags.Public | BindingFlags.Instance).MakeGenericMethod(queryingEnumerableType);
+            //    // compileQuery = compileQueryMethod.Invoke(database, new object[] { queryExpression, false });
+            //    var query = queryExpression;
+
+            //    var queryCompilationFactory = (QueryCompilationContextFactory) dependencies.QueryCompilationContextFactory;
+            //    var queryCompilation = queryCompilationFactory.Create(false);
+
+            //    // get private stuff
+            //    var _queryOptimizerFactory = (IQueryOptimizerFactory)queryCompilation.GetType().GetField("_queryOptimizerFactory", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(queryCompilation);
+            //    var _queryableMethodTranslatingExpressionVisitorFactory =
+            //        (IQueryableMethodTranslatingExpressionVisitorFactory)queryCompilation.GetType().GetField("_queryableMethodTranslatingExpressionVisitorFactory", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(queryCompilation);
+            //    var _shapedQueryOptimizerFactory = (IShapedQueryOptimizerFactory)queryCompilation.GetType().GetField("_shapedQueryOptimizerFactory", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(queryCompilation);
+            //    var _shapedQueryCompilingExpressionVisitorFactory = (IShapedQueryCompilingExpressionVisitorFactory)queryCompilation.GetType().GetField("_shapedQueryCompilingExpressionVisitorFactory", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(queryCompilation);
+            //    var InsertRuntimeParametersMethod = queryCompilation.GetType().GetMethod("InsertRuntimeParameters", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            //    query = _queryOptimizerFactory.Create(queryCompilation).Visit(query);
+            //    query = _queryableMethodTranslatingExpressionVisitorFactory.Create(queryCompilation.Model).Visit(query);
+                
+            //    // required, otherwise the compileQuery return directly the result and not the command
+            //    {
+            //        var shapedQuery = (Microsoft.EntityFrameworkCore.Query.ShapedQueryExpression)query;
+            //        if (shapedQuery.ResultCardinality != ResultCardinality.Enumerable)
+            //        {
+
+            //            shapedQuery.ResultCardinality = ResultCardinality.Enumerable;
+            //        }
+            //    }
+
+            //    query = _shapedQueryOptimizerFactory.Create(queryCompilation).Visit(query);
+            //    query = _shapedQueryCompilingExpressionVisitorFactory.Create(queryCompilation).Visit(query);
+            //    query = (Expression) InsertRuntimeParametersMethod.Invoke(queryCompilation, new object[] {query});
+
+            //    var method = typeof(BaseQueryFuture).GetMethod("SelfCompile", BindingFlags.Public | BindingFlags.Static).MakeGenericMethod(query.Type);
+            //    compileQuery = method.Invoke(null, new object[] {query, queryCompilation});
+            //}
+            
+            //var compiledQuery = ((dynamic) compileQuery)(queryContext);
+
+            //// REFLECTION: compiledQuery._selectExpression
+            //var selectExpressionField = ((Type) compiledQuery.GetType()).GetField("_selectExpression", BindingFlags.NonPublic | BindingFlags.Instance);
+            //var selectExpression = (SelectExpression) selectExpressionField.GetValue(compiledQuery);
+
+            //// REFLECTION: compiledQuery._querySqlGeneratorFactory
+            //var querySqlGeneratorFactoryField = ((Type) compiledQuery.GetType()).GetField("_querySqlGeneratorFactory", BindingFlags.NonPublic | BindingFlags.Instance);
+            //var querySqlGeneratorFactory = (IQuerySqlGeneratorFactory) querySqlGeneratorFactoryField.GetValue(compiledQuery);
+            //var querySqlGenerator = querySqlGeneratorFactory.Create();
+
+            //var command = querySqlGenerator.GetCommand(selectExpression);
+
+            //CompiledQuery = compiledQuery;
+            //QueryContext = queryContext;
+
+            //return command;
+        }
+
+        //public virtual IRelationalCommand CreateExecutorAndGetCommand(out RelationalQueryContext queryContext)
+        //{
+        //    return Query.CreateCommand(out queryContext);
+        //}
+#endif
 #endif
 
-                    /// <summary>Sets the result of the query deferred.</summary>
-                    /// <param name="reader">The reader returned from the query execution.</param>
+        /// <summary>Sets the result of the query deferred.</summary>
+        /// <param name="reader">The reader returned from the query execution.</param>
         public virtual void SetResult(DbDataReader reader)
         {
         }
@@ -456,12 +622,42 @@ namespace Z.EntityFramework.Plus
 
             var enumerator = (IEnumerator<T>)getEnumerator;
             return enumerator;
-#elif EFCORE
+#elif EFCORE_2X
            
             ((CreateEntityConnection)QueryConnection.DbConnection).OriginalDataReader = reader;
             var queryExecutor = (Func<QueryContext, IEnumerable<T>>) QueryExecutor;
             var queryEnumerable = queryExecutor(QueryContext);
             return queryEnumerable.GetEnumerator();
+#elif EFCORE_3X
+            ((CreateEntityConnection)QueryConnection.DbConnection).OriginalDataReader = reader;
+            var compiledQuery = CompiledQuery;
+            var getEnumeratorMethod = compiledQuery.GetType().GetMethod("GetEnumerator", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var getEnumerator = getEnumeratorMethod.Invoke(compiledQuery, new object[0]);
+            var enumerator = (IEnumerator<T>) getEnumerator;
+
+            {
+                // EFCore.Relational\Storage\RelationalCommandParameterObject.cs
+                /// <param name="readerColumns"> The expected columns if the reader needs to be buffered, or null otherwise. </param>
+                /// public RelationalCommandParameterObject(
+                ///   // pour bloquer cette logique : 
+                //
+                // if (readerColumns != null)
+                // {
+                //     reader = new BufferedDataReader(reader).Initialize(readerColumns);
+                // }
+                var fielReaderColumns = enumerator.GetType().GetField("_readerColumns", BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+                if (fielReaderColumns != null)
+                {
+	                fielReaderColumns.SetValue(enumerator, null);
+                }
+            }
+
+            return enumerator;
+            //object queryExecutor;
+            //var queryEnumerable = queryExecutor(QueryContext);
+            //return null;
+            //return ((IQueryable)compiledQuery).GetEnumerator();
 #endif
         }
 

@@ -14,6 +14,7 @@ using System.Data.Entity;
 
 #elif EF6
 using System.Data.Entity;
+using Effort.Provider;
 using System.Data.Entity.Infrastructure.Interception;
 
 #elif EFCORE
@@ -33,12 +34,12 @@ namespace Z.Test.EntityFramework.Plus
         protected override void Seed(TestContext context)
         {
             var sql = @"
-TRUNCATE TABLE Inheritance_TPC_Cat
-IF IDENT_CURRENT( 'Inheritance_TPC_Cat' ) < 1000000
-BEGIN
-	DBCC CHECKIDENT('Inheritance_TPC_Cat', RESEED, 1000000)
-END
-";
+        TRUNCATE TABLE Inheritance_TPC_Cat
+        IF IDENT_CURRENT( 'Inheritance_TPC_Cat' ) < 1000000
+        BEGIN
+        	DBCC CHECKIDENT('Inheritance_TPC_Cat', RESEED, 1000000)
+        END
+        ";
             using (var connection = new SqlConnection(My.Config.ConnectionStrings.TestDatabase))
             using (var command = new SqlCommand(sql, connection))
             {
@@ -47,11 +48,25 @@ END
             }
             base.Seed(context);
         }
+
+
     }
 #endif
 
     public partial class TestContext : DbContext
     {
+#if EF6
+        public static EffortConnection EffortConnection = Effort.DbConnectionFactory.CreateTransient();
+        public TestContext(DbConnection connection) : base(connection, true)
+        {
+            // BE careful, this one also need to clear filter!
+            QueryFilterManager.ClearQueryCache(this);
+
+            QueryDbSetFilterManager.GlobalFilters.Clear();
+            QueryDbSetFilterManager.GlobalInitializeFilterActions.Clear(); 
+        }
+#endif
+
 #if EF5 || EF6
         public TestContext() : base(My.Config.ConnectionStrings.TestDatabase)
 #elif EFCORE
@@ -59,7 +74,9 @@ END
 #endif
         {
 #if EF5 || EF6
-            Database.SetInitializer(new CreateDatabaseIfNotExists<TestContext>());
+             
+
+            Database.SetInitializer(new TestContextInitializer());
 #elif EFCORE
             Database.EnsureCreated();
 #endif
@@ -67,10 +84,128 @@ END
 #if EF6
             // BE careful, this one also need to clear filter!
             QueryFilterManager.ClearQueryCache(this);
+
+            QueryDbSetFilterManager.GlobalFilters.Clear();
+            QueryDbSetFilterManager.GlobalInitializeFilterActions.Clear();
+
+
 #endif
 
         }
 
+#if EF5 || EF6
+        public TestContext(bool isDbSetFilter, bool isEnabled, string fixResharper = null, bool? enableFilter1 = null, bool? enableFilter2 = null, bool? enableFilter3 = null, bool? enableFilter4 = null, bool? excludeClass = null, bool? excludeInterface = null, bool? excludeBaseClass = null, bool? excludeBaseInterface = null, bool? includeClass = null, bool? includeInterface = null, bool? includeBaseClass = null, bool? includeBaseInterface = null) : base(My.Config.ConnectionStrings.TestDatabase)
+#elif EFCORE
+        public TestContext(bool isDbSetFilter, bool isEnabled, string fixResharper = null, bool? enableFilter1 = null, bool? enableFilter2 = null, bool? enableFilter3 = null, bool? enableFilter4 = null, bool? excludeClass = null, bool? excludeInterface = null, bool? excludeBaseClass = null, bool? excludeBaseInterface = null, bool? includeClass = null, bool? includeInterface = null, bool? includeBaseClass = null, bool? includeBaseInterface = null)
+#endif
+        {
+#if EF5 || EF6
+            Database.SetInitializer(new CreateDatabaseIfNotExists<TestContext>());
+#elif EFCORE
+            Database.EnsureCreated();
+#endif
+#if EFCORE
+    // TODO: Remove this when cast issue will be fixed
+            QueryFilterManager.GlobalFilters.Clear();
+            QueryFilterManager.GlobalInitializeFilterActions.Clear();
+#endif
+
+#if EF6
+            // Clear query cache
+            // Why we don't clear for EF5?
+            //QueryDbSetFilterManager.ClearQueryCache(this);
+#endif
+
+
+            if (enableFilter1 != null)
+            {
+                this.DbSetFilter<Inheritance_Interface_Entity>(QueryFilterHelper.Filter.Filter1, entities => entities.Where(x => x.ColumnInt != 1), isEnabled);
+                if (!isEnabled && enableFilter1.Value)
+                {
+                    this.DbSetFilter(QueryFilterHelper.Filter.Filter1).Enable();
+                }
+                else if (isEnabled && !enableFilter1.Value)
+                {
+                    this.DbSetFilter(QueryFilterHelper.Filter.Filter1).Disable();
+                }
+            }
+            if (enableFilter2 != null)
+            {
+                this.DbSetFilter<Inheritance_Interface_IEntity>(QueryFilterHelper.Filter.Filter2, entities => entities.Where(x => x.ColumnInt != 2), isEnabled);
+                if (!isEnabled && enableFilter2.Value)
+                {
+                    this.DbSetFilter(QueryFilterHelper.Filter.Filter2).Enable();
+                }
+                else if (isEnabled && !enableFilter2.Value)
+                {
+                    this.DbSetFilter(QueryFilterHelper.Filter.Filter2).Disable();
+                }
+            }
+            if (enableFilter3 != null)
+            {
+                this.DbSetFilter<Inheritance_Interface_Base>(QueryFilterHelper.Filter.Filter3, entities => entities.Where(x => x.ColumnInt != 3), isEnabled);
+                if (!isEnabled && enableFilter3.Value)
+                {
+                    this.DbSetFilter(QueryFilterHelper.Filter.Filter3).Enable();
+                }
+                else if (isEnabled && !enableFilter3.Value)
+                {
+                    this.DbSetFilter(QueryFilterHelper.Filter.Filter3).Disable();
+                }
+            }
+            if (enableFilter4 != null)
+            {
+                this.DbSetFilter<Inheritance_Interface_IBase>(QueryFilterHelper.Filter.Filter4, entities => entities.Where(x => x.ColumnInt != 4), isEnabled);
+                if (!isEnabled && enableFilter4.Value)
+                {
+                    this.DbSetFilter(QueryFilterHelper.Filter.Filter4).Enable();
+                }
+                else if (isEnabled && !enableFilter4.Value)
+                {
+                    this.DbSetFilter(QueryFilterHelper.Filter.Filter4).Disable();
+                }
+            }
+
+            if (excludeClass != null && excludeClass.Value)
+            {
+                this.DbSetFilter(QueryFilterHelper.Filter.Filter1).Disable(typeof(Inheritance_Interface_Entity));
+            }
+
+            if (excludeInterface != null && excludeInterface.Value)
+            {
+                this.DbSetFilter(QueryFilterHelper.Filter.Filter2).Disable(typeof(Inheritance_Interface_IEntity));
+            }
+
+            if (excludeBaseClass != null && excludeBaseClass.Value)
+            {
+                this.DbSetFilter(QueryFilterHelper.Filter.Filter3).Disable(typeof(Inheritance_Interface_Base));
+            }
+
+            if (excludeBaseInterface != null && excludeBaseInterface.Value)
+            {
+                this.DbSetFilter(QueryFilterHelper.Filter.Filter4).Disable(typeof(Inheritance_Interface_IBase));
+            }
+
+            if (includeClass != null && includeClass.Value)
+            {
+                this.DbSetFilter(QueryFilterHelper.Filter.Filter1).Enable(typeof(Inheritance_Interface_IEntity));
+            }
+
+            if (includeInterface != null && includeInterface.Value)
+            {
+                this.DbSetFilter(QueryFilterHelper.Filter.Filter2).Enable(typeof(Inheritance_Interface_IEntity));
+            }
+
+            if (includeBaseClass != null && includeBaseClass.Value)
+            {
+                this.DbSetFilter(QueryFilterHelper.Filter.Filter3).Enable(typeof(Inheritance_Interface_Base));
+            }
+
+            if (includeBaseInterface != null && includeBaseInterface.Value)
+            {
+                this.DbSetFilter(QueryFilterHelper.Filter.Filter4).Enable(typeof(Inheritance_Interface_IBase));
+            }
+        }
 
 #if EF5 || EF6
         public TestContext(bool isEnabled, string fixResharper = null, bool? enableFilter1 = null, bool? enableFilter2 = null, bool? enableFilter3 = null, bool? enableFilter4 = null, bool? excludeClass = null, bool? excludeInterface = null, bool? excludeBaseClass = null, bool? excludeBaseInterface = null, bool? includeClass = null, bool? includeInterface = null, bool? includeBaseClass = null, bool? includeBaseInterface = null) : base(My.Config.ConnectionStrings.TestDatabase)
@@ -91,6 +226,7 @@ END
 
 #if EF6
             // Clear query cache
+            
             QueryFilterManager.ClearQueryCache(this);
 #endif
 
@@ -188,6 +324,8 @@ END
 #if EF5 || EF6
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+  
+
             // Association
             {
                 // Many to Many
@@ -290,7 +428,7 @@ END
 
 #endif
 
-        #region Association
+#region Association
 
 #if EF5 || EF6
         public DbSet<Association_ManyToMany_Left> Association_ManyToMany_Lefts { get; set; }
@@ -302,9 +440,9 @@ END
 
         public DbSet<Association_OneToMany_Right> Association_OneToMany_Rights { get; set; }
 
-        #endregion
+#endregion
 
-        #region Association Multi
+#region Association Multi
 
         public DbSet<Association_Multi_OneToMany_Left> Association_Multi_OneToMany_Lefts { get; set; }
 
@@ -312,9 +450,9 @@ END
 
         public DbSet<Association_Multi_OneToMany_Right2> Association_Multi_OneToMany_Right2s { get; set; }
 
-        #endregion
+#endregion
 
-        #region Association ToManyToMany
+#region Association ToManyToMany
 
         public DbSet<Association_OneToManyToMany_Left> Association_Multi_OneToManyToMany_Lefts { get; set; }
 
@@ -322,11 +460,11 @@ END
 
         public DbSet<Association_OneToManyToMany_RightRight> Association_Multi_OneToManyToMany_RightRights { get; set; }
 
-        #endregion
+#endregion
 
-        #region Association OneToSingleAndMany
+#region Association OneToSingleAndMany
 
-        #endregion
+#endregion
 
         public DbSet<Association_OneToSingleAndMany_Left> Association_OneToSingleAndMany_Lefts { get; set; }
 
@@ -338,7 +476,7 @@ END
 
         public DbSet<Association_OneToSingleAndMany_RightRightRightRight> Association_OneToSingleAndMany_RightRightRightRights { get; set; }
 
-        #region Audit
+#region Audit
 
         public DbSet<AuditEntry> AuditEntries { get; set; }
 
@@ -349,9 +487,9 @@ END
 
         public DbSet<AuditEntryProperty_Extended> AuditEntryProperty_Extendeds { get; set; }
 
-        #endregion
+#endregion
 
-        #region Entity
+#region Entity
 
         public DbSet<Entity_Basic> Entity_Basics { get; set; }
 
@@ -382,9 +520,9 @@ END
         public DbSet<Entity_Enum> Entity_Enums { get; set; }
 #endif
 
-        #endregion
+#endregion
 
-        #region Inheritance
+#region Inheritance
 
         public DbSet<Inheritance_Interface_Entity> Inheritance_Interface_Entities { get; set; }
 

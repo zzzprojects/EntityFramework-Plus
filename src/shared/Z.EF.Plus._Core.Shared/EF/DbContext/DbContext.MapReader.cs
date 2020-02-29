@@ -28,22 +28,25 @@ using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Query;
-using Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
-using Remotion.Linq.Parsing.ExpressionVisitors.TreeEvaluation;
-using Remotion.Linq.Parsing.Structure;
 
 #endif
 
-#if EFCORE_3X
-using IEvaluatableExpressionFilter = Microsoft.EntityFrameworkCore.Query.Internal.IEvaluatableExpressionFilter;
+#if EFCORE_2X
+using Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal;
+using Remotion.Linq.Parsing.ExpressionVisitors.TreeEvaluation;
+using Remotion.Linq.Parsing.Structure;
+
+#elif EFCORE_3X
+//using IEvaluatableExpressionFilter = Microsoft.EntityFrameworkCore.Query.Internal.IEvaluatableExpressionFilter;
 #endif
 
 namespace Z.EntityFramework.Plus
 {
     internal static partial class InternalExtensions
     {
+#if EFCORE_2X
         internal static IEnumerable<T> MapReader<T>(this DbContext context, DbDataReader reader) where T : class
         {
 #if EF5 || EF6
@@ -212,6 +215,7 @@ namespace Z.EntityFramework.Plus
             return list;
 #endif
                 }
+#endif
     }
 }
 #endif

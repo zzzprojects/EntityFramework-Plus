@@ -7,6 +7,7 @@
 
 using System;
 using System.Linq;
+using Effort.Provider;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 #if EF5
 using System.Data.Entity;
@@ -30,14 +31,20 @@ namespace Z.Test.EntityFramework.Plus
             sets.RemoveRange(sets);
         }
 
-        public static void DeleteAll<T>(Func<TestContext, DbSet<T>> func) where T : class
+        public static void DeleteAll<T>(Func<TestContext, DbSet<T>> func, EffortConnection effortConnection = null) where T : class
         {
-            var ctx = new TestContext();
-            var sets = func(ctx);
-            sets.RemoveRange(sets);
-            ctx.SaveChanges();
-
-            Assert.AreEqual(0, sets.Count());
+            if (effortConnection != null)
+            {
+                effortConnection.ClearTables(); 
+            }
+            else
+            { 
+                TestContext ctx = new TestContext(); 
+                var sets = func(ctx);
+                sets.RemoveRange(sets);
+                ctx.SaveChanges(); 
+                Assert.AreEqual(0, sets.Count());
+            }
         }
     }
 }

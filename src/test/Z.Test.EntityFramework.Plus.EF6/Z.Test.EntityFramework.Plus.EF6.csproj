@@ -40,15 +40,20 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>bin\Release\Z.Test.EntityFramework.Plus.EF6.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Effort, Version=2.0.0.0, Culture=neutral, PublicKeyToken=6a46696d54971e6d, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Effort.EF6.2.0.0-beta6\lib\net45\Effort.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <HintPath>..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="NMemory, Version=2.0.0.0, Culture=neutral, PublicKeyToken=afc61983f100d280, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NMemory.2.0.7\lib\net45\NMemory.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -58,6 +63,9 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Runtime.Caching" />
+    <Reference Include="Z.EntityFramework.Extensions, Version=4.0.52.0, Culture=neutral, PublicKeyToken=59b66d028979105b, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Z.EntityFramework.Extensions.4.0.52\lib\net45\Z.EntityFramework.Extensions.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -88,6 +96,7 @@
     <Compile Include="Audit\Audit_GetAudits_ByKey.cs" />
     <Compile Include="Audit\Audit_EntitySoftDeleted.cs" />
     <Compile Include="Audit\Audit_RelationshipDeleted.cs" />
+    <Compile Include="Audit\Audit_CreatedDate.cs" />
     <Compile Include="Audit\Configuration_AuditEntryFactory\EntityAdded.cs" />
     <Compile Include="Audit\Configuration_AuditEntryFactory\EntityDeleted.cs" />
     <Compile Include="Audit\Configuration_AuditEntryFactory\EntityModified.cs" />
@@ -141,6 +150,7 @@
     <Compile Include="Audit\Configuration_UseNullForDBNullValue\EntityModified_IsTrue.cs" />
     <Compile Include="Audit\CreatedBy\CurrentPrincipal.cs" />
     <Compile Include="Audit\Configuration_UseNullForDBNullValue\EntityAdded_IsTrue.cs" />
+    <Compile Include="Audit\CreatedDate\UseUtc.cs" />
     <Compile Include="Audit\EntityAdded\Entity_Proxy.cs" />
     <Compile Include="Audit\EntityDeleted\Entity_Proxy.cs" />
     <Compile Include="Audit\EntityModified\Entity_Proxy.cs" />
@@ -228,6 +238,7 @@
     <Compile Include="BatchUpdate\Action\Twenty.cs" />
     <Compile Include="BatchUpdate\BatchDelayInterval\Default.cs" />
     <Compile Include="BatchUpdate\BatchDelayInterval\FiftyMilliseconds.cs" />
+    <Compile Include="BatchUpdate\BatchUpdate_Hook.cs" />
     <Compile Include="BatchUpdate\BatchUpdate_Keyword.cs" />
     <Compile Include="BatchUpdate\BatchUpdate_Visitor.cs" />
     <Compile Include="BatchUpdate\BatchUpdate_PrimaryKey.cs" />
@@ -247,6 +258,8 @@
     <Compile Include="BatchUpdate\Executing\Template.cs" />
     <Compile Include="BatchUpdate\Executing\WhileDelayTemplate.cs" />
     <Compile Include="BatchUpdate\Executing\WhileTemplate.cs" />
+    <Compile Include="BatchUpdate\Hook\Interface_Parent.cs" />
+    <Compile Include="BatchUpdate\Hook\Interface_Child.cs" />
     <Compile Include="BatchUpdate\Keyword\From.cs" />
     <Compile Include="BatchUpdate\PrimaryKey\Many.cs" />
     <Compile Include="BatchUpdate\PrimaryKey\Single.cs" />
@@ -282,6 +295,7 @@
     <Compile Include="BatchDelete\Transaction\Commit.cs" />
     <Compile Include="BatchUpdate\Value\Many_Arithmetic.cs" />
     <Compile Include="BatchUpdate\Value\Many_Property_InternalAccess_Lambda.cs" />
+    <Compile Include="BatchUpdate\Value\Many_Property_LambdaAndVariable.cs" />
     <Compile Include="BatchUpdate\Value\Single_Arithmetic.cs" />
     <Compile Include="BatchUpdate\Value\Many_Constant.cs" />
     <Compile Include="BatchUpdate\Value\Single_Constant.cs" />
@@ -289,6 +303,7 @@
     <Compile Include="BatchUpdate\Value\Many_Property_Lambda.cs" />
     <Compile Include="BatchUpdate\Value\Many_Property_Object.cs" />
     <Compile Include="BatchUpdate\Value\Single_Property_InternalAccess_Lambda.cs" />
+    <Compile Include="BatchUpdate\Value\Single_Property_LambdaAndVariable.cs" />
     <Compile Include="BatchUpdate\Value\Single_Property_Object.cs" />
     <Compile Include="BatchUpdate\Value\Single_Property_InternalAccess.cs" />
     <Compile Include="BatchUpdate\Value\Single_Property_Lambda.cs" />
@@ -302,10 +317,31 @@
     <Compile Include="BatchUpdate\WhereValue\Many_Variable.cs" />
     <Compile Include="BatchUpdate\WhereValue\Single_Constant.cs" />
     <Compile Include="BatchUpdate\WhereValue\Single_Variable.cs" />
+    <Compile Include="Mik_Area\BatchDelete_ChangeSet8127_Issue3109.cs" />
+    <Compile Include="Mik_Area\BatchUpdateDelete_ComplexType.cs" />
+    <Compile Include="Mik_Area\TestArea.cs" />
+    <Compile Include="Mik_Area\BatchUpdateDelete_TPH.cs" />
+    <Compile Include="Mik_Area\ModelAndContext.cs" />
+    <Compile Include="QueryCache\AutoResetCache\BulkSaveChanges_ParentAndChild_ChildModified.cs" />
+    <Compile Include="QueryCache\AutoResetCache\BatchSaveChanges_ParentAndChild_ChildModified.cs" />
+    <Compile Include="QueryCache\AutoResetCache\BulkSaveChanges_ParentAndChild_ParentModified.cs" />
+    <Compile Include="QueryCache\AutoResetCache\BulkSaveChanges_Parent_ChildModified.cs" />
+    <Compile Include="QueryCache\AutoResetCache\BulkSaveChanges_Parent_Disabled.cs" />
+    <Compile Include="QueryCache\AutoResetCache\BulkSaveChanges_Parent_ParentModified.cs" />
+    <Compile Include="QueryCache\AutoResetCache\SaveChanges_ParentAndChild_ChildModified.cs" />
+    <Compile Include="QueryCache\AutoResetCache\BatchSaveChanges_ParentAndChild_ParentModified.cs" />
+    <Compile Include="QueryCache\AutoResetCache\SaveChanges_ParentAndChild_ParentModified.cs" />
+    <Compile Include="QueryCache\AutoResetCache\BatchSaveChanges_Parent_ChildModified.cs" />
+    <Compile Include="QueryCache\AutoResetCache\SaveChanges_Parent_ChildModified.cs" />
+    <Compile Include="QueryCache\AutoResetCache\BatchSaveChanges_Parent_Disabled.cs" />
+    <Compile Include="QueryCache\AutoResetCache\SaveChanges_Parent_Disabled.cs" />
+    <Compile Include="QueryCache\AutoResetCache\BatchSaveChanges_Parent_ParentModified.cs" />
+    <Compile Include="QueryCache\AutoResetCache\SaveChanges_Parent_ParentModified.cs" />
     <Compile Include="QueryCache\CacheKeyFactory\NotNull.cs" />
     <Compile Include="QueryCache\ExpireAll\Queryable_WithTag.cs" />
     <Compile Include="QueryCache\ExpireAll\Queryable_WithDefault.cs" />
     <Compile Include="QueryCache\ExpireAll\Queryable_WithExpiration.cs" />
+    <Compile Include="QueryCache\QueryCache_AutoResetCache.cs" />
     <Compile Include="QueryCache\UseTagsAsCacheKey\Many.cs" />
     <Compile Include="QueryCache\UseTagsAsCacheKey\None.cs" />
     <Compile Include="QueryCache\UseTagsAsCacheKey\Single.cs" />
@@ -321,13 +357,213 @@
     <Compile Include="QueryCache\QueryCache_ExpireAll.cs" />
     <Compile Include="QueryCache\WithInclude\IncludeFilter.cs" />
     <Compile Include="QueryCache\WithInclude\IncludeOptimized.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithGlobalFilter\ManyFilter.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithGlobalFilter\ManyFilter_Disable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithGlobalFilter\ManyFilter_Enable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithGlobalFilter\ManyFilter_Exclude.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithGlobalFilter\ManyFilter_Include.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithGlobalFilter\SingleFilter.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithGlobalFilter\SingleFilter_Disable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithGlobalFilter\SingleFilter_Enable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithGlobalFilter\SingleFilter_Exclude.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithGlobalFilter\SingleFilter_Include.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithGlobalFilter_WithInstanceFilter\ManyFilter.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithGlobalFilter_WithInstanceFilter\ManyFilter_Disable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithGlobalFilter_WithInstanceFilter\ManyFilter_Enable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithGlobalFilter_WithInstanceFilter\SingleFilter.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithGlobalFilter_WithInstanceFilter\SingleFilter_Disable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithGlobalFilter_WithInstanceFilter\SingleFilter_Enable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithGlobalManagerFilter\ManyFilter.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithGlobalManagerFilter\ManyFilter_Disable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithGlobalManagerFilter\ManyFilter_Enable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithGlobalManagerFilter\ManyFilter_Exclude.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithGlobalManagerFilter\ManyFilter_Include.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithGlobalManagerFilter\SingleFilter.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithGlobalManagerFilter\SingleFilter_Disable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithGlobalManagerFilter\SingleFilter_Enable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithGlobalManagerFilter\SingleFilter_Exclude.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithGlobalManagerFilter\SingleFilter_Include.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithInclude\ManyFilter.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithInclude\ManyFilter_Disable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithInclude\ManyFilter_Enable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithInclude\ManyFilter_Exclude.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithInclude\ManyFilter_Include.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithInclude\SingleFilter.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithInclude\SingleFilter_Disable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithInclude\SingleFilter_Enable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithInclude\SingleFilter_Exclude.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithInclude\SingleFilter_Include.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithInstanceFilter\ManyFilter.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithInstanceFilter\ManyFilter_Disable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithInstanceFilter\ManyFilter_Enable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithInstanceFilter\ManyFilter_Exclude.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithInstanceFilter\ManyFilter_Include.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithInstanceFilter\SingleFilter.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithInstanceFilter\SingleFilter_Disable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithInstanceFilter\SingleFilter_Enable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithInstanceFilter\SingleFilter_Exclude.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithInstanceFilter\SingleFilter_Include.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithLazyLoading\ManyFilter.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithLazyLoading\ManyFilter_Disable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithLazyLoading\ManyFilter_Enable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithLazyLoading\ManyFilter_Exclude.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithLazyLoading\ManyFilter_Include.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithLazyLoading\SingleFilter.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithLazyLoading\SingleFilter_Disable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithLazyLoading\SingleFilter_Enable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithLazyLoading\SingleFilter_Exclude.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_Filter\WithLazyLoading\SingleFilter_Include.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithGlobalFilter\ManyFilter.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithGlobalFilter\ManyFilter_Disable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithGlobalFilter\ManyFilter_Enable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithGlobalFilter\ManyFilter_Exclude.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithGlobalFilter\ManyFilter_Include.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithGlobalFilter\SingleFilter.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithGlobalFilter\SingleFilter_Disable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithGlobalFilter\SingleFilter_Enable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithGlobalFilter\SingleFilter_Exclude.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithGlobalFilter\SingleFilter_Include.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithGlobalFilter_WithInstanceFilter\ManyFilter.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithGlobalFilter_WithInstanceFilter\ManyFilter_Disable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithGlobalFilter_WithInstanceFilter\ManyFilter_Enable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithGlobalFilter_WithInstanceFilter\SingleFilter.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithGlobalFilter_WithInstanceFilter\SingleFilter_Disable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithGlobalFilter_WithInstanceFilter\SingleFilter_Enable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithGlobalManagerFilter\ManyFilter.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithGlobalManagerFilter\ManyFilter_Disable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithGlobalManagerFilter\ManyFilter_Enable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithGlobalManagerFilter\ManyFilter_Exclude.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithGlobalManagerFilter\ManyFilter_Include.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithGlobalManagerFilter\SingleFilter.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithGlobalManagerFilter\SingleFilter_Disable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithGlobalManagerFilter\SingleFilter_Enable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithGlobalManagerFilter\SingleFilter_Exclude.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithGlobalManagerFilter\SingleFilter_Include.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithInstanceFilter\ManyFilter.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithInstanceFilter\ManyFilter_Disable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithInstanceFilter\ManyFilter_Enable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithInstanceFilter\ManyFilter_Exclude.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithInstanceFilter\ManyFilter_Include.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithInstanceFilter\SingleFilter.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithInstanceFilter\SingleFilter_Disable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithInstanceFilter\SingleFilter_Enable.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithInstanceFilter\SingleFilter_Exclude.cs" />
+    <Compile Include="QueryDbSetFilter\DbContext_SetFilterted\WithInstanceFilter\SingleFilter_Include.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_AsNoFilter\WithGlobalFilter\ManyFilter_Disabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_AsNoFilter\WithGlobalFilter\ManyFilter_Enabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_AsNoFilter\WithGlobalFilter\SingleFilter_Disabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_AsNoFilter\WithGlobalFilter\SingleFilter_Enabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_AsNoFilter\WithGlobalFilter_WithInstanceFilter\ManyFilter_GlobalFilterDisabled_InstanceFilterDisabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_AsNoFilter\WithGlobalFilter_WithInstanceFilter\ManyFilter_GlobalFilterDisabled_InstanceFilterEnabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_AsNoFilter\WithGlobalFilter_WithInstanceFilter\ManyFilter_GlobalFilterEnabled_InstanceFilterDisabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_AsNoFilter\WithGlobalFilter_WithInstanceFilter\ManyFilter_GlobalFilterEnabled_InstanceFilterEnabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_AsNoFilter\WithGlobalFilter_WithInstanceFilter\SingleFilter_GlobalFilterDisabled_InstanceFilterDisabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_AsNoFilter\WithGlobalFilter_WithInstanceFilter\SingleFilter_GlobalFilterDisabled_InstanceFilterEnabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_AsNoFilter\WithGlobalFilter_WithInstanceFilter\SingleFilter_GlobalFilterEnabled_InstanceFilterDisabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_AsNoFilter\WithGlobalFilter_WithInstanceFilter\SingleFilter_GlobalFilterEnabled_InstanceFilterEnabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_AsNoFilter\WithGlobalManagerFilter\ManyFilter_Disabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_AsNoFilter\WithGlobalManagerFilter\ManyFilter_Enabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_AsNoFilter\WithGlobalManagerFilter\SingleFilter_Disabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_AsNoFilter\WithGlobalManagerFilter\SingleFilter_Enabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_AsNoFilter\WithInclude\ManyFilter_Disabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_AsNoFilter\WithInclude\ManyFilter_Enabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_AsNoFilter\WithInclude\SingleFilter_Disabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_AsNoFilter\WithInclude\SingleFilter_Enabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_AsNoFilter\WithInstanceFilter\ManyFilter_Disabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_AsNoFilter\WithInstanceFilter\ManyFilter_Enabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_AsNoFilter\WithInstanceFilter\SingleFilter_Disabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_AsNoFilter\WithInstanceFilter\SingleFilter_Enabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_AsNoFilter\WithLazyLoading\ManyFilter_Disabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_AsNoFilter\WithLazyLoading\ManyFilter_Enabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_AsNoFilter\WithLazyLoading\SingleFilter_Disabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_AsNoFilter\WithLazyLoading\SingleFilter_Enabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_AsNoFilter\WithNoFilter\WithNoFilter.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_Filter\WithGlobalFilter\ManyFilter_Disabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_Filter\WithGlobalFilter\ManyFilter_Enabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_Filter\WithGlobalFilter\SingleFilter_Disabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_Filter\WithGlobalFilter\SingleFilter_Enabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_Filter\WithGlobalFilter_WithInstanceFilter\ManyFilter_GlobalFilterDisabled_InstanceFilterDisabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_Filter\WithGlobalFilter_WithInstanceFilter\ManyFilter_GlobalFilterDisabled_InstanceFilterEnabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_Filter\WithGlobalFilter_WithInstanceFilter\ManyFilter_GlobalFilterEnabled_InstanceFilterDisabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_Filter\WithGlobalFilter_WithInstanceFilter\ManyFilter_GlobalFilterEnabled_InstanceFilterEnabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_Filter\WithGlobalFilter_WithInstanceFilter\SingleFilter_GlobalFilterDisabled_InstanceFilterDisabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_Filter\WithGlobalFilter_WithInstanceFilter\SingleFilter_GlobalFilterDisabled_InstanceFilterEnabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_Filter\WithGlobalFilter_WithInstanceFilter\SingleFilter_GlobalFilterEnabled_InstanceFilterDisabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_Filter\WithGlobalFilter_WithInstanceFilter\SingleFilter_GlobalFilterEnabled_InstanceFilterEnabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_Filter\WithGlobalManagerFilter\ManyFilter_Disabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_Filter\WithGlobalManagerFilter\ManyFilter_Enabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_Filter\WithGlobalManagerFilter\SingleFilter_Disabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_Filter\WithGlobalManagerFilter\SingleFilter_Enabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_Filter\WithInclude\ManyFilter_Disabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_Filter\WithInclude\ManyFilter_Enabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_Filter\WithInclude\SingleFilter_Disabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_Filter\WithInclude\SingleFilter_Enabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_Filter\WithInstanceFilter\ManyFilter_Disabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_Filter\WithInstanceFilter\ManyFilter_Enabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_Filter\WithInstanceFilter\SingleFilter_Disabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_Filter\WithInstanceFilter\SingleFilter_Enabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_Filter\WithLazyLoading\ManyFilter_Disabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_Filter\WithLazyLoading\ManyFilter_Enabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_Filter\WithLazyLoading\SingleFilter_Disabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_Filter\WithLazyLoading\SingleFilter_Enabled.cs" />
+    <Compile Include="QueryDbSetFilter\DbSet_Filter\WithNoFilter\WithNoFilter.cs" />
+    <Compile Include="QueryDbSetFilter\QueryFilter_DbContext_Filter.cs" />
+    <Compile Include="QueryDbSetFilter\QueryFilter_DbContext_SetFiltered.cs" />
+    <Compile Include="QueryDbSetFilter\QueryFilter_DbSet_AsNoFilter.cs" />
+    <Compile Include="QueryDbSetFilter\QueryFilter_DbSet_Filter.cs" />
     <Compile Include="QueryFilter\DbContext_Filter\WithParameter\ManyFilter_ManyParameter.cs" />
     <Compile Include="QueryFilter\DbContext_Filter\WithParameter\ManyFilter_NoParameter.cs" />
     <Compile Include="QueryFilter\DbContext_Filter\WithParameter\ManyFilter_SingleParameter.cs" />
     <Compile Include="QueryFilter\DbContext_Filter\WithParameter\SingleFilter_SingleParameter.cs" />
     <Compile Include="QueryFilter\DbContext_Filter\WithParameter\SingleFilter_ManyParameter.cs" />
     <Compile Include="QueryFilter\DbContext_Filter\WithParameter\SingleFilter_NoParameter.cs" />
-    <Compile Include="QueryFuture\FutureValue\ImplicitCastTest.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter\ManyFilter.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter\ManyFilter_Disable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter\ManyFilter_Enable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter\ManyFilter_Exclude.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter\ManyFilter_Include.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter\SingleFilter.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter\SingleFilter_Disable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter\SingleFilter_Enable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter\SingleFilter_Exclude.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter\SingleFilter_Include.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter_WithInstanceFilter\ManyFilter.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter_WithInstanceFilter\ManyFilter_Disable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter_WithInstanceFilter\ManyFilter_Enable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter_WithInstanceFilter\SingleFilter.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter_WithInstanceFilter\SingleFilter_Disable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter_WithInstanceFilter\SingleFilter_Enable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalManagerFilter\ManyFilter.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalManagerFilter\ManyFilter_Disable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalManagerFilter\ManyFilter_Enable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalManagerFilter\ManyFilter_Exclude.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalManagerFilter\ManyFilter_Include.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalManagerFilter\SingleFilter.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalManagerFilter\SingleFilter_Disable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalManagerFilter\SingleFilter_Enable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalManagerFilter\SingleFilter_Exclude.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalManagerFilter\SingleFilter_Include.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithInstanceFilter\ManyFilter.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithInstanceFilter\ManyFilter_Disable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithInstanceFilter\ManyFilter_Enable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithInstanceFilter\ManyFilter_Exclude.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithInstanceFilter\ManyFilter_Include.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithInstanceFilter\SingleFilter.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithInstanceFilter\SingleFilter_Disable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithInstanceFilter\SingleFilter_Enable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithInstanceFilter\SingleFilter_Exclude.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithInstanceFilter\SingleFilter_Include.cs" />
+    <Compile Include="QueryFilter\QueryFilter_DbContext_SetFiltered.cs" />
+    <Compile Include="QueryFuture_Effort\FutureValue\DelayedQuery_AsNoTracking.cs" />
+    <Compile Include="QueryFuture_Effort\FutureValue\DelayedQuery_AsTracking.cs" />
+    <Compile Include="QueryFuture_Effort\FutureValue\Queryable_AsNoTracking.cs" />
+    <Compile Include="QueryFuture_Effort\FutureValue\Queryable_AsTracking.cs" />
+    <Compile Include="QueryFuture_Effort\FutureValue\QueryFuture_FutureValue.cs" />
+    <Compile Include="QueryFuture_Effort\Future\Queryable_AsNoTracking.cs" />
+    <Compile Include="QueryFuture_Effort\Future\Queryable_AsTracking.cs" />
+    <Compile Include="QueryFuture_Effort\QueryFuture_Future.cs" />
+    <Compile Include="QueryFuture_Effort\QueryFuture_FutureValue.cs" />
+    <Compile Include="QueryFuture\FutureValue\QueryFuture_FutureValue.cs" />
     <Compile Include="QueryIncludeOptimized\ByPath\Many_Many_Many_Many.cs" />
     <Compile Include="QueryIncludeOptimized\ByPath\Many_Many_Many_Single.cs" />
     <Compile Include="QueryIncludeOptimized\ByPath\Many_Many_Single_Many.cs" />
@@ -344,97 +580,97 @@
     <Compile Include="QueryIncludeOptimized\ByPath\Single_Many_Many_Many.cs" />
     <Compile Include="QueryIncludeOptimized\ByPath\Many_Single_Single_Single.cs" />
     <Compile Include="QueryIncludeOptimized\ByPath\Single_Single_Single_Single.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Many_Many_Many_Many_Null.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Many_Many_Many_Single_Null.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Many_Single_Many_Many_Null.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Many_Single_Many_Single_Null.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Single_Many_Many_Many_Null.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Single_Many_Many_Single_Null.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Single_Many_Single_Many_Null.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Many_Many_Null_Single.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Many_Many_Single_Null_Many.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Many_Many_Single_Null_Single.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Single_Single_Many_Many_Null.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Single_Single_Many_Null_Many.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Many_Null_Single.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Single_Single_Many_Single_Null.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Single_Single_Single_Null_Many.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Single_Single_Single_Many_Null.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Single_Many_Null_Single.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Single_Single_Single_Single_Null.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Single_Single_Many_Null_Single.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Many_Single_Single_Null_Single.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Many_Single_Many_Null_Single.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Many_Single_Many_Null_Many.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Many_Single_Null_Many.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Many_Single_Single_Null_Many.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Many_Many_Null_Many.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Many_Many_Single_Single_Null.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Many_Many_Single_Many_Null.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Many_Many_Many_Null_Single.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Single_Many_Many_Null_Single.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Many_Single_Null_Single.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Single_Many_Many_Null_Many.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Single_Many_Null_Many.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Single_Many_Single_Null_Single.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Many_Null_Many.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Single_Single_Single_Null_Single.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Many_Single_Single_Single_Null.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Many_Single_Single_Many_Null.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Single_Single_Null_Single.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Single_Null_Many.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Single_Single_Null_Many.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Single_Many_Single_Null_Many.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Single_Many_Single_Single_Null.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Many_Many_Many_Null_Many.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Enumerator\Single_Null_Single.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Many_Many_Many_Many_Null.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Many_Many_Many_Null_Many.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Many_Many_Many_Null_Single.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Many_Many_Many_Single_Null.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Many_Many_Null_Many.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Many_Many_Null_Single.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Many_Many_Single_Many_Null.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Many_Many_Single_Null_Many.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Many_Many_Single_Null_Single.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Many_Many_Single_Single_Null.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Many_Null_Many.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Many_Null_Single.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Many_Single_Many_Many_Null.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Many_Single_Many_Null_Many.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Many_Single_Many_Null_Single.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Many_Single_Many_Single_Null.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Many_Single_Null_Many.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Many_Single_Null_Single.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Many_Single_Single_Many_Null.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Many_Single_Single_Null_Many.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Many_Single_Single_Null_Single.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Many_Single_Single_Single_Null.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Single_Many_Many_Many_Null.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Single_Many_Many_Null_Many.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Single_Many_Many_Null_Single.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Single_Many_Many_Single_Null.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Single_Many_Null_Many.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Single_Many_Null_Single.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Single_Many_Single_Many_Null.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Single_Many_Single_Null_Many.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Single_Many_Single_Null_Single.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Single_Many_Single_Single_Null.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Single_Null_Many.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Single_Null_Single.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Single_Single_Many_Many_Null.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Single_Single_Many_Null_Many.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Single_Single_Many_Null_Single.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Single_Single_Many_Single_Null.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Single_Single_Null_Many.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Single_Single_Null_Single.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Single_Single_Single_Many_Null.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Single_Single_Single_Null_Many.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Single_Single_Single_Null_Single.cs" />
-    <Compile Include="QueryIncludeOptimized\Null_Executor\Single_Single_Single_Single_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Many_Many_Many_Many_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Many_Many_Many_Single_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Many_Single_Many_Many_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Many_Single_Many_Single_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Single_Many_Many_Many_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Single_Many_Many_Single_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Single_Many_Single_Many_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Many_Many_Null_Single.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Many_Many_Single_Null_Many.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Many_Many_Single_Null_Single.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Single_Single_Many_Many_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Single_Single_Many_Null_Many.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Many_Null_Single.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Single_Single_Many_Single_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Single_Single_Single_Null_Many.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Single_Single_Single_Many_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Single_Many_Null_Single.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Single_Single_Single_Single_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Single_Single_Many_Null_Single.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Many_Single_Single_Null_Single.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Many_Single_Many_Null_Single.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Many_Single_Many_Null_Many.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Many_Single_Null_Many.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Many_Single_Single_Null_Many.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Many_Many_Null_Many.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Many_Many_Single_Single_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Many_Many_Single_Many_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Many_Many_Many_Null_Single.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Single_Many_Many_Null_Single.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Many_Single_Null_Single.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Single_Many_Many_Null_Many.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Single_Many_Null_Many.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Single_Many_Single_Null_Single.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Many_Null_Many.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Single_Single_Single_Null_Single.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Many_Single_Single_Single_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Many_Single_Single_Many_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Single_Single_Null_Single.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Single_Null_Many.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Single_Single_Null_Many.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Single_Many_Single_Null_Many.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Single_Many_Single_Single_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Many_Many_Many_Null_Many.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Enumerator\Single_Null_Single.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Many_Many_Many_Many_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Many_Many_Many_Null_Many.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Many_Many_Many_Null_Single.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Many_Many_Many_Single_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Many_Many_Null_Many.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Many_Many_Null_Single.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Many_Many_Single_Many_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Many_Many_Single_Null_Many.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Many_Many_Single_Null_Single.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Many_Many_Single_Single_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Many_Null_Many.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Many_Null_Single.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Many_Single_Many_Many_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Many_Single_Many_Null_Many.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Many_Single_Many_Null_Single.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Many_Single_Many_Single_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Many_Single_Null_Many.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Many_Single_Null_Single.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Many_Single_Single_Many_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Many_Single_Single_Null_Many.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Many_Single_Single_Null_Single.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Many_Single_Single_Single_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Single_Many_Many_Many_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Single_Many_Many_Null_Many.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Single_Many_Many_Null_Single.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Single_Many_Many_Single_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Single_Many_Null_Many.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Single_Many_Null_Single.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Single_Many_Single_Many_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Single_Many_Single_Null_Many.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Single_Many_Single_Null_Single.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Single_Many_Single_Single_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Single_Null_Many.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Single_Null_Single.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Single_Single_Many_Many_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Single_Single_Many_Null_Many.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Single_Single_Many_Null_Single.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Single_Single_Many_Single_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Single_Single_Null_Many.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Single_Single_Null_Single.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Single_Single_Single_Many_Null.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Single_Single_Single_Null_Many.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Single_Single_Single_Null_Single.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\Null_Executor\Single_Single_Single_Single_Null.cs" />
     <Compile Include="QueryIncludeOptimized\QueryIncludeOptimized_ByPath.cs" />
-    <Compile Include="QueryIncludeOptimized\QueryIncludeOptimized_Null_Executor.cs" />
-    <Compile Include="QueryIncludeOptimized\QueryIncludeOptimized_Null_Enumerator.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\QueryIncludeOptimized_AllowIncludeSubPath_Null_Executor.cs" />
+    <Compile Include="QueryIncludeOptimized\AllowIncludeSubPath\QueryIncludeOptimized_AllowIncludeSubPath_Null_Enumerator.cs" />
     <Compile Include="_Helper\QueryIncludeOptimizedHelper.cs" />
     <Compile Include="_Model\Association_OneToSingleAndMany_RightRight.cs" />
     <Compile Include="_Model\Association_OneToSingleAndMany_RightRightRight.cs" />
@@ -727,16 +963,20 @@
     <Compile Include="_Model\_TestContextMemory.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-    <None Include="packages.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\..\Z.EntityFramework.Plus.EF6\Z.EntityFramework.Plus.EF6.csproj">
       <Project>{6ea3675a-ab66-4aba-94d1-3da69fa88d4e}</Project>
       <Name>Z.EntityFramework.Plus.EF6</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

@@ -40,7 +40,7 @@ namespace Z.Test.EntityFramework.Plus
                 var item = list[0];
 
                 // TEST: Right
-                Assert.AreEqual(null, item.Rights);
+                Assert.AreEqual(0, item.Rights.Count);
             }
         }
     }

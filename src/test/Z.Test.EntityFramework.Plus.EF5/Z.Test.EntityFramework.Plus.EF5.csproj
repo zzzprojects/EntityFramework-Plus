@@ -40,6 +40,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>bin\Release\Z.Test.EntityFramework.Plus.EF5.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -55,6 +56,9 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Runtime.Caching" />
+    <Reference Include="Z.EntityFramework.Extensions.EF5, Version=4.0.52.0, Culture=neutral, PublicKeyToken=59b66d028979105b, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Z.EntityFramework.Extensions.EF5.4.0.52\lib\net45\Z.EntityFramework.Extensions.EF5.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -277,6 +281,7 @@
     <Compile Include="BatchUpdate\Value\Many_Property_InternalAccess.cs" />
     <Compile Include="BatchUpdate\Value\Many_Property_InternalAccess_Lambda.cs" />
     <Compile Include="BatchUpdate\Value\Many_Property_Lambda.cs" />
+    <Compile Include="BatchUpdate\Value\Many_Property_LambdaAndVariable.cs" />
     <Compile Include="BatchUpdate\Value\Many_Property_Object.cs" />
     <Compile Include="BatchUpdate\Value\Many_Property_Type.cs" />
     <Compile Include="BatchUpdate\Value\Many_Variable.cs" />
@@ -285,6 +290,7 @@
     <Compile Include="BatchUpdate\Value\Single_Property_InternalAccess.cs" />
     <Compile Include="BatchUpdate\Value\Single_Property_InternalAccess_Lambda.cs" />
     <Compile Include="BatchUpdate\Value\Single_Property_Lambda.cs" />
+    <Compile Include="BatchUpdate\Value\Single_Property_LambdaAndVariable.cs" />
     <Compile Include="BatchUpdate\Value\Single_Property_Object.cs" />
     <Compile Include="BatchUpdate\Value\Single_Property_Type.cs" />
     <Compile Include="BatchUpdate\Value\Single_Variable.cs" />
@@ -399,6 +405,42 @@
     <Compile Include="QueryFilter\DbContext_Filter\WithLazyLoading\SingleFilter_Enable.cs" />
     <Compile Include="QueryFilter\DbContext_Filter\WithLazyLoading\SingleFilter_Exclude.cs" />
     <Compile Include="QueryFilter\DbContext_Filter\WithLazyLoading\SingleFilter_Include.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter\ManyFilter.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter\ManyFilter_Disable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter\ManyFilter_Enable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter\ManyFilter_Exclude.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter\ManyFilter_Include.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter\SingleFilter.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter\SingleFilter_Disable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter\SingleFilter_Enable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter\SingleFilter_Exclude.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter\SingleFilter_Include.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter_WithInstanceFilter\ManyFilter.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter_WithInstanceFilter\ManyFilter_Disable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter_WithInstanceFilter\ManyFilter_Enable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter_WithInstanceFilter\SingleFilter.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter_WithInstanceFilter\SingleFilter_Disable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalFilter_WithInstanceFilter\SingleFilter_Enable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalManagerFilter\ManyFilter.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalManagerFilter\ManyFilter_Disable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalManagerFilter\ManyFilter_Enable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalManagerFilter\ManyFilter_Exclude.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalManagerFilter\ManyFilter_Include.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalManagerFilter\SingleFilter.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalManagerFilter\SingleFilter_Disable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalManagerFilter\SingleFilter_Enable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalManagerFilter\SingleFilter_Exclude.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithGlobalManagerFilter\SingleFilter_Include.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithInstanceFilter\ManyFilter.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithInstanceFilter\ManyFilter_Disable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithInstanceFilter\ManyFilter_Enable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithInstanceFilter\ManyFilter_Exclude.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithInstanceFilter\ManyFilter_Include.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithInstanceFilter\SingleFilter.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithInstanceFilter\SingleFilter_Disable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithInstanceFilter\SingleFilter_Enable.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithInstanceFilter\SingleFilter_Exclude.cs" />
+    <Compile Include="QueryFilter\DbContext_SetFilterted\WithInstanceFilter\SingleFilter_Include.cs" />
     <Compile Include="QueryFilter\DbSet_AsNoFilter\WithGlobalFilter\ManyFilter_Disabled.cs" />
     <Compile Include="QueryFilter\DbSet_AsNoFilter\WithGlobalFilter\ManyFilter_Enabled.cs" />
     <Compile Include="QueryFilter\DbSet_AsNoFilter\WithGlobalFilter\SingleFilter_Disabled.cs" />
@@ -460,10 +502,12 @@
     <Compile Include="QueryFilter\QueryFilter_DbContext_Filter.cs" />
     <Compile Include="QueryFilter\QueryFilter_DbSet_AsNoFilter.cs" />
     <Compile Include="QueryFilter\QueryFilter_DbSet_Filter.cs" />
+    <Compile Include="QueryFilter\QueryFilter_DbContext_SetFiltered.cs" />
     <Compile Include="QueryFuture\FutureValue\DelayedQuery_AsNoTracking.cs" />
     <Compile Include="QueryFuture\FutureValue\DelayedQuery_AsTracking.cs" />
     <Compile Include="QueryFuture\FutureValue\Queryable_AsNoTracking.cs" />
     <Compile Include="QueryFuture\FutureValue\Queryable_AsTracking.cs" />
+    <Compile Include="QueryFuture\FutureValue\QueryFuture_FutureValue.cs" />
     <Compile Include="QueryFuture\Future\Queryable_AsNoTracking.cs" />
     <Compile Include="QueryFuture\Future\Queryable_AsTracking.cs" />
     <Compile Include="QueryFuture\QueryFuture_Future.cs" />
@@ -686,7 +730,6 @@
       <Name>Z.EntityFramework.Plus.EF5</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

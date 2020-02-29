@@ -53,7 +53,7 @@ SELECT @@ROWCOUNT
 #elif EF6
                 Assert.AreEqual(@"
 DELETE
-FROM    A
+FROM    A 
 FROM    [dbo].[Entity_Basic] AS A
         INNER JOIN ( SELECT 
     [Extent1].[ID] AS [ID]

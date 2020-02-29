@@ -7,7 +7,7 @@
 
 #if EFCORE
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.Sql;
+
 namespace Z.EntityFramework.Plus
 {
     internal static partial class EFCoreHelper

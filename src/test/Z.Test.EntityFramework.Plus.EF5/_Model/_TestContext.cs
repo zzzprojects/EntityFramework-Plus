@@ -33,12 +33,12 @@ namespace Z.Test.EntityFramework.Plus
         protected override void Seed(TestContext context)
         {
             var sql = @"
-TRUNCATE TABLE Inheritance_TPC_Cat
-IF IDENT_CURRENT( 'Inheritance_TPC_Cat' ) < 1000000
-BEGIN
-	DBCC CHECKIDENT('Inheritance_TPC_Cat', RESEED, 1000000)
-END
-";
+        TRUNCATE TABLE Inheritance_TPC_Cat
+        IF IDENT_CURRENT( 'Inheritance_TPC_Cat' ) < 1000000
+        BEGIN
+        	DBCC CHECKIDENT('Inheritance_TPC_Cat', RESEED, 1000000)
+        END
+        ";
             using (var connection = new SqlConnection(My.Config.ConnectionStrings.TestDatabase))
             using (var command = new SqlCommand(sql, connection))
             {
@@ -59,7 +59,7 @@ END
 #endif
         {
 #if EF5 || EF6
-            Database.SetInitializer(new CreateDatabaseIfNotExists<TestContext>());
+            Database.SetInitializer(new TestContextInitializer());
 #elif EFCORE
             Database.EnsureCreated();
 #endif

@@ -148,9 +148,12 @@ namespace Z.EntityFramework.Plus
 
             if (item == null)
             {
-                item = await query.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
-                item = QueryCacheManager.AddOrGetExisting(key, item, policy) ?? item;
-                QueryCacheManager.AddCacheTag(key, tags);
+                using (var handler = new QueryCacheItemTracker().Initialize(query))
+                {
+                    item = await query.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
+                    item = QueryCacheManager.AddOrGetExisting(key, item, policy) ?? item;
+                    QueryCacheManager.AddCacheTag(handler, key, tags);
+                }
             }
 
             return (IEnumerable<T>) item;
@@ -199,9 +202,12 @@ namespace Z.EntityFramework.Plus
 
             if (item == null)
             {
-                item = await query.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
-                item = QueryCacheManager.AddOrGetExisting(key, item, absoluteExpiration) ?? item;
-                QueryCacheManager.AddCacheTag(key, tags);
+                using (var handler = new QueryCacheItemTracker().Initialize(query))
+                {
+                    item = await query.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
+                    item = QueryCacheManager.AddOrGetExisting(key, item, absoluteExpiration) ?? item;
+                    QueryCacheManager.AddCacheTag(handler, key, tags);
+                }
             }
 
             return (IEnumerable<T>) item;

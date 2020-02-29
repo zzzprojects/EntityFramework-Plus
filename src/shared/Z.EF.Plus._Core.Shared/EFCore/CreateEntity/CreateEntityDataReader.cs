@@ -191,7 +191,23 @@ namespace Z.EntityFramework.Plus
         {
             return OriginalDataReader.Read();
         }
-    }
+
+		public override T GetFieldValue<T>(int ordinal)
+		{
+			var value = this.GetValue(ordinal);
+
+            if (typeof(T) == typeof(DateTimeOffset) && value is DateTime valueDateTime)
+            {
+                value = new DateTimeOffset(valueDateTime);
+            }
+            else if (typeof(T) == typeof(Guid) && value is byte[] valueByteArray && valueByteArray.Length == 16)
+            {
+                value = new Guid(valueByteArray);
+            }
+
+            return (T)value; 
+		} 
+	}
 }
 
 #endif

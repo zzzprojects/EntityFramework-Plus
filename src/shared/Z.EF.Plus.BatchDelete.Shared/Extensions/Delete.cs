@@ -7,6 +7,7 @@
 
 using System;
 using System.Linq;
+using Z.EntityFramework.Extensions;
 
 namespace Z.EntityFramework.Plus
 {
@@ -34,19 +35,16 @@ namespace Z.EntityFramework.Plus
         /// <returns>The number of rows affected.</returns>
         public static int Delete<T>(this IQueryable<T> query, Action<BatchDelete> batchDeleteBuilder) where T : class
         {
-            var batchDelete = new BatchDelete();
-
-            if (BatchDeleteManager.BatchDeleteBuilder != null)
+#if EFCORE
+            return query.DeleteFromQuery(batchDeleteBuilder);
+#else
+            return query.DeleteFromQuery(options =>
             {
-                BatchDeleteManager.BatchDeleteBuilder(batchDelete);
-            }
+                options.InternalIsEntityFrameworkPlus = true;
+                options.BatchDeleteBuilder = batchDeleteBuilder;
+            });
+#endif
 
-            if (batchDeleteBuilder != null)
-            {
-                batchDeleteBuilder(batchDelete);
-            }
-
-            return batchDelete.Execute(query);
         }
     }
 }

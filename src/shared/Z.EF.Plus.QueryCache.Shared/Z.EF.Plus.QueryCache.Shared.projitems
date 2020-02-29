@@ -22,6 +22,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`\FromCacheAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\QueryDeferred`\FromCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\QueryDeferred`\FromCacheAsync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryCacheInterceptorCore.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryCacheItemTrackerCore.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryCacheItemTracker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryCacheInterceptor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)QueryCacheManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RedisObjectCache.cs" />
   </ItemGroup>

@@ -12,15 +12,19 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+
 #if EF5
 using System.Data.Metadata.Edm;
 
 #elif EF6
 using System.Data.Entity.Core.Metadata.Edm;
-#endif
-#if NET45
 using System.Data.Entity.Infrastructure;
+#endif
 
+#if EFCORE_3X
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
+using System.Threading;
 #endif
 
 namespace Z.EntityFramework.Plus
@@ -29,6 +33,8 @@ namespace Z.EntityFramework.Plus
     /// <typeparam name="T">The type of elements of the query.</typeparam>
 #if EF6 && NET45
     public class QueryIncludeOptimizedParentQueryable<T> : IOrderedQueryable<T>, IDbAsyncEnumerable<T>
+#elif EFCORE_3X && NETSTANDARD2_1
+    public class QueryIncludeOptimizedParentQueryable<T> : IOrderedQueryable<T>, IAsyncEnumerable<T>
 #else
     public class QueryIncludeOptimizedParentQueryable<T> : IOrderedQueryable<T>
 #endif
@@ -105,39 +111,6 @@ namespace Z.EntityFramework.Plus
         /// </returns>
         public IEnumerable<T> CreateEnumerable()
         {
-            //var objectQuery = OriginalQueryable.GetObjectQuery();
-
-
-            //if (objectQuery.MergeOption == MergeOption.NoTracking)
-            //{
-            //    objectQuery.MergeOption = MergeOption.AppendOnly;
-
-            //    var newContext = QueryIncludeOptimizedManager.DbContextFactory(objectQuery.Context.GetDbContext()).GetObjectContext();
-
-            //    // CHANGE the context under the objectQuery
-            //    {
-            //        var internalQueryProperty = OriginalQueryable.GetType().GetProperty("InternalQuery", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            //        var internalQuery = internalQueryProperty.GetValue(OriginalQueryable);
-            //        //var internalQueryProperty = typeof(DbQuery).GetProperty("InternalQuery", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            //        //var internalQuery = internalQueryProperty.GetValue(OriginalQueryable, null);
-
-            //        var stateField = typeof(ObjectQuery).GetField("_state", BindingFlags.NonPublic | BindingFlags.Instance);
-            //        var state = stateField.GetValue(objectQuery);
-
-            //        var assembly = typeof(ObjectQuery).Assembly;
-            //        var objectQueryState = assembly.GetType("System.Data.Entity.Core.Objects.Internal.ObjectQueryState");
-            //        var contextField = objectQueryState.GetField("_context", BindingFlags.NonPublic | BindingFlags.Instance);
-            //        contextField.SetValue(state, newContext);
-
-            //        var expressionField = state.GetType().GetField("_expression", BindingFlags.NonPublic | BindingFlags.Instance);
-            //        var expression = (Expression)expressionField.GetValue(state);
-
-            //        var visitor = new QueryIncludeOptimizedExpressionReduceVisitor2();
-            //        expression = visitor.Visit(expression);
-            //    }
-            //}
-
-
             QueryIncludeOptimizedIncludeSubPath.RemoveLazyChild(this);
 
             // MODIFY query if necessary
@@ -147,12 +120,21 @@ namespace Z.EntityFramework.Plus
             var keyMembers = objectContext.GetEntitySet<T>().ElementType.KeyMembers;
             var keyNames = keyMembers.Select(x => x.Name).ToArray();
 #elif EFCORE
+            DbContext context = null;
 
-                var context = currentQuery.OriginalQueryable.GetDbContext();
+            if (OriginalQueryable.IsInMemoryQueryContext())
+            {
+                context = OriginalQueryable.GetInMemoryContext();
+            }
+            else
+            {
+                // MODIFY query if necessary
+                context = OriginalQueryable.GetDbContext();
+            }
 
-                var keyNames = context.Model.FindEntityType(typeof (TResult).DisplayName(true))
-                    .GetKeys().ToList()[0]
-                    .Properties.Select(x => x.Name).ToArray();
+            var keyNames = context.Model.FindEntityType(typeof(T).DisplayName(true))
+                .GetKeys().ToList()[0]
+                .Properties.Select(x => x.Name).ToArray();
 #endif
             var newQuery = OriginalQueryable.AddToRootOrAppendOrderBy(keyNames).Select(x => x);
 
@@ -189,6 +171,71 @@ namespace Z.EntityFramework.Plus
 
             return list;
         }
+
+#if EFCORE_3X && NETSTANDARD2_1
+        public async Task<List<T>> CreateEnumerableAsync(CancellationToken cancellationToken)
+        {
+            QueryIncludeOptimizedIncludeSubPath.RemoveLazyChild(this);
+
+            // MODIFY query if necessary
+#if EF5 || EF6
+            var objectContext = OriginalQueryable.GetObjectQuery().Context;
+
+            var keyMembers = objectContext.GetEntitySet<T>().ElementType.KeyMembers;
+            var keyNames = keyMembers.Select(x => x.Name).ToArray();
+#elif EFCORE
+            DbContext context = null;
+
+            if (OriginalQueryable.IsInMemoryQueryContext())
+            {
+                context = OriginalQueryable.GetInMemoryContext();
+            }
+            else
+            {
+                // MODIFY query if necessary
+                context = OriginalQueryable.GetDbContext();
+            }
+
+            var keyNames = context.Model.FindEntityType(typeof(T).DisplayName(true))
+                .GetKeys().ToList()[0]
+                .Properties.Select(x => x.Name).ToArray();
+#endif
+            var newQuery = OriginalQueryable.AddToRootOrAppendOrderBy(keyNames).Select(x => x);
+
+            List<T> list;
+
+            if (QueryIncludeOptimizedManager.AllowQueryBatch)
+            {
+                var future = newQuery.Future();
+
+                foreach (var child in Childs)
+                {
+                    child.CreateIncludeQuery(newQuery);
+                }
+
+                list = await future.ToListAsync(cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                list = await newQuery.ToListAsync(cancellationToken).ConfigureAwait(false);
+
+                foreach (var child in Childs)
+                {
+                    child.CreateIncludeQuery(newQuery);
+                }
+            }
+
+#if EF6
+            // FIX lazy loading
+            QueryIncludeOptimizedLazyLoading.SetLazyLoaded(list, Childs);
+#endif
+
+            // FIX collection null
+            QueryIncludeOptimizedNullCollection.NullCollectionToEmpty(list, Childs);
+
+            return list;
+        }
+#endif
 
 
         /// <summary>Creates the queryable.</summary>
@@ -262,6 +309,14 @@ namespace Z.EntityFramework.Plus
         {
             return new LazyAsyncEnumerator<T>(token => Task.Run(() => CreateEnumerable(), token));
         }
+#endif
+
+#if EFCORE_3X 
+
+	    public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = default)
+	    {
+		    return new LazyAsyncEnumerator<T>(token => Task.Run(() => CreateEnumerable(), token));
+	    }
 #endif
     }
 }

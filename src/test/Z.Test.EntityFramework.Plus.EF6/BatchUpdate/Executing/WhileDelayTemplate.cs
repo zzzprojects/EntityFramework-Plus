@@ -39,13 +39,14 @@ namespace Z.Test.EntityFramework.Plus
                 Assert.AreEqual(460, ctx.Entity_Basics.Sum(x => x.ColumnInt));
                 Assert.AreEqual(30, rowsAffected);
                 Assert.AreEqual(@"
+DECLARE @stop int
 DECLARE @rowAffected INT
 DECLARE @totalRowAffected INT
 
+SET @stop = 0
 SET @totalRowAffected = 0
 
-WHILE @rowAffected IS NULL
-    OR @rowAffected > 0
+WHILE @stop=0
     BEGIN
         IF @rowAffected IS NOT NULL
             BEGIN
@@ -63,6 +64,9 @@ WHILE @rowAffected IS NULL
 
         SET @rowAffected = @@ROWCOUNT
         SET @totalRowAffected = @totalRowAffected + @rowAffected
+
+        IF @rowAffected < 4000
+            SET @stop = 1
     END
 
 SELECT  @totalRowAffected

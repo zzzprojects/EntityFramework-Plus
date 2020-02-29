@@ -11,5 +11,6 @@ namespace Z.Test.EntityFramework.Plus
     {
         public int ID { get; set; }
         public int ColumnInt { get; set; }
+        public int ColumnInt2 { get; set; }
     }
 }

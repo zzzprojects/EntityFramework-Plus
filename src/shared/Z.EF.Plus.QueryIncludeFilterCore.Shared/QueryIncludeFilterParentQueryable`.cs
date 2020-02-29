@@ -11,7 +11,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 
 
@@ -128,15 +130,25 @@ namespace Z.EntityFramework.Plus
 
             QueryIncludeFilterIncludeSubPath.RemoveLazyChild(this);
 
-            // MODIFY query if necessary
-            var context = OriginalQueryable.GetDbContext();
+            DbContext context = null; 
 
-                var keyNames = context.Model.FindEntityType(typeof (T).DisplayName(true))
-                    .GetKeys().ToList()[0]
-                    .Properties.Select(x => x.Name).ToArray();
+			if (OriginalQueryable.IsInMemoryQueryContext())
+			{
+                context = OriginalQueryable.GetInMemoryContext();  
+			}
+            else
+            {
+				// MODIFY query if necessary
+	            context = OriginalQueryable.GetDbContext(); 
+			}
 
-            //var newQuery = OriginalQueryable.AddToRootOrAppendOrderBy(keyNames).Select(x => x);
-            var newQuery = OriginalQueryable.AddToRootOrAppendOrderBy(keyNames);
+            var keyNames = context.Model.FindEntityType(typeof(T).DisplayName(true))
+	            .GetKeys().ToList()[0]
+	            .Properties.Select(x => x.Name).ToArray();
+
+
+			//var newQuery = OriginalQueryable.AddToRootOrAppendOrderBy(keyNames).Select(x => x);
+			var newQuery = OriginalQueryable.AddToRootOrAppendOrderBy(keyNames);
 
             List<T> list;
 
@@ -187,6 +199,7 @@ namespace Z.EntityFramework.Plus
             throw new Exception(ExceptionMessage.QueryIncludeFilter_Include);
         }
 
+#if EFCORE_2X
         /// <summary>Gets the asynchrounously enumerator.</summary>
         /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
         /// <returns>The asynchrounously enumerator.</returns>
@@ -194,6 +207,13 @@ namespace Z.EntityFramework.Plus
         {
             return new LazyAsyncEnumerator<T>(token => Task.Run(() => CreateEnumerable(), token));
         }
+#elif EFCORE_3X
+
+        public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = default)
+        {
+            return new LazyAsyncEnumerator<T>(token => Task.Run(() => CreateEnumerable(), token));
+        }
+#endif
 
 #if FULL
         /// <summary>Gets query cache unique key.</summary>

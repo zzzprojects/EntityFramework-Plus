@@ -12,6 +12,7 @@ using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Z.EntityFramework.Extensions;
 #if EF5
 using System.Runtime.Caching;
 using System.Data.EntityClient;
@@ -19,7 +20,9 @@ using System.Data.SqlClient;
 
 #elif EF6
 using System.Data.Entity.Core.EntityClient;
+using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
+using System.Data.Entity.Infrastructure.Interception;
 using System.Runtime.Caching;
 
 #elif EFCORE
@@ -27,6 +30,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Caching.Memory;
 
+#endif
+
+#if EFCORE_3X
+using Z.EntityFramework.Extensions;
 #endif
 
 namespace Z.EntityFramework.Plus
@@ -37,6 +44,8 @@ namespace Z.EntityFramework.Plus
         /// <summary>Static constructor.</summary>
         static QueryCacheManager()
         {
+            EntityFrameworkManager.IsEntityFrameworkPlus = true;
+
 #if EF5 || EF6
             Cache = MemoryCache.Default;
             DefaultCacheItemPolicy = new CacheItemPolicy();
@@ -220,6 +229,81 @@ namespace Z.EntityFramework.Plus
         /// True if this object is command information optional for cache key, false if not.
         /// </value>
         public static bool IsCommandInfoOptionalForCacheKey { get; set; }
+
+
+
+#if EF6
+        internal static bool _isAutoExpireCacheEnabled;
+
+        internal static QueryCacheInterceptor AutoResetCacheInterceptor { get; set; }
+
+        public static bool IsAutoExpireCacheEnabled
+        {
+            get { return _isAutoExpireCacheEnabled; }
+            set
+            {
+                if (value != _isAutoExpireCacheEnabled)
+                {
+                    lock (AutoExpireCacheEnabledLock)
+                    {
+                        if (value != _isAutoExpireCacheEnabled)
+                        {
+                            if (value)
+                            {
+                                AutoResetCacheInterceptor = new QueryCacheInterceptor();
+
+                                DbInterception.Add(AutoResetCacheInterceptor);
+                                _isAutoExpireCacheEnabled = true;
+                            }
+                            else
+                            {
+                                DbInterception.Remove(AutoResetCacheInterceptor);
+
+                                _isAutoExpireCacheEnabled = false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        internal static object AutoExpireCacheEnabledLock = new object();
+        public static string PrefixTagSet { get; set; } = "ZZZSETS;";
+
+
+        internal static void AddCacheTag(QueryCacheItemTracker handler, string cacheKey, params string[] tags)
+        {
+            if (IsAutoExpireCacheEnabled && handler.HookAdded)
+            {
+                var model = handler.Context.GetDbContext().GetModel();
+
+                var types = handler.MaterializedEntities.Select(x => ObjectContext.GetObjectType(x.GetType())).Distinct().ToList();
+                var entitySetNames = new List<string>();
+
+                foreach (var type in types)
+                {
+                    var conceptual = model.ConceptualModel.EntityTypes.FirstOrDefault(x => x.Name == type.Name);
+                    if (conceptual == null)
+                    {
+                        // we don't care, the cache will simply not be reset
+                        continue;
+                    }
+
+                    entitySetNames.Add(conceptual.EntitySet.Name);
+                }
+
+                if (tags == null)
+                {
+                    tags = new string[0];
+                }
+
+                var tagsList = tags.ToList();
+                tagsList.AddRange(entitySetNames.Select(x => PrefixTagSet + x));
+                tags = tagsList.ToArray();
+            }
+
+            AddCacheTag(cacheKey, tags);
+        }
+#endif
 
         /// <summary>Adds cache tags corresponding to a cached key in the CacheTags dictionary.</summary>
         /// <param name="cacheKey">The cache key.</param>

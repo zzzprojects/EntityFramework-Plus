@@ -151,9 +151,12 @@ namespace Z.EntityFramework.Plus
 
             if (item == null)
             {
-                item = await query.ExecuteAsync(cancellationToken).ConfigureAwait(false);
-                item = QueryCacheManager.AddOrGetExistingDeferred<T>(key, item ?? DBNull.Value, policy) ?? item;
-                QueryCacheManager.AddCacheTag(key, tags);
+                using (var handler = new QueryCacheItemTracker().Initialize(query))
+                {
+                    item = await query.ExecuteAsync(cancellationToken).ConfigureAwait(false);
+                    item = QueryCacheManager.AddOrGetExistingDeferred<T>(key, item ?? DBNull.Value, policy) ?? item;
+                    QueryCacheManager.AddCacheTag(handler, key, tags);
+                }
             }
 
             item = item.IfDbNullThenNull();
@@ -204,9 +207,12 @@ namespace Z.EntityFramework.Plus
 
             if (item == null)
             {
-                item = await query.ExecuteAsync(cancellationToken).ConfigureAwait(false);
-                item = QueryCacheManager.AddOrGetExistingDeferred<T>(key, item ?? DBNull.Value, absoluteExpiration) ?? item;
-                QueryCacheManager.AddCacheTag(key, tags);
+                using (var handler = new QueryCacheItemTracker().Initialize(query))
+                {
+                    item = await query.ExecuteAsync(cancellationToken).ConfigureAwait(false);
+                    item = QueryCacheManager.AddOrGetExistingDeferred<T>(key, item ?? DBNull.Value, absoluteExpiration) ?? item;
+                    QueryCacheManager.AddCacheTag(handler, key, tags);
+                }
             }
 
             item = item.IfDbNullThenNull();
@@ -351,7 +357,7 @@ namespace Z.EntityFramework.Plus
             return query.FromCacheAsync(QueryCacheManager.DefaultMemoryCacheEntryOptions, cancellationToken, tags);
         }
 #endif
-    }
+        }
 }
 
 #endif
