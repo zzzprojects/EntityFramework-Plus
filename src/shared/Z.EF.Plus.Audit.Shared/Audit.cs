@@ -39,7 +39,7 @@ namespace Z.EntityFramework.Plus
             try
             {
 #if !NETSTANDARD1_3
-                CreatedBy = System.Threading.Thread.CurrentPrincipal.Identity.Name;
+                CreatedBy = System.Threading.Thread.CurrentPrincipal?.Identity?.Name;
 #endif
 
                 if (string.IsNullOrEmpty(CreatedBy))

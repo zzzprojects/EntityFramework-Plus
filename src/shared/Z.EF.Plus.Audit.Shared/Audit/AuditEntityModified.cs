@@ -45,7 +45,17 @@ new AuditEntry();
 #elif EFCORE
             AuditEntityModified(audit, entry, objectStateEntry);
 #endif
-            audit.Entries.Add(entry);
+            if (audit.Configuration.IgnoreEntityUnchanged)
+            {
+                if (entry.Properties != null && entry.Properties.Count > 0)
+                { 
+                    audit.Entries.Add(entry);
+                }
+            }
+            else
+            {
+                audit.Entries.Add(entry);
+            } 
         }
 
 #if EF5 || EF6
@@ -58,6 +68,8 @@ new AuditEntry();
         /// <param name="prefix">The prefix.</param>
         public static void AuditEntityModified(Audit audit, AuditEntry entry, ObjectStateEntry objectStateEntry, DbDataRecord orginalRecord, DbUpdatableDataRecord currentRecord, string prefix = "")
         {
+            bool hasModified = false;
+
             for (var i = 0; i < orginalRecord.FieldCount; i++)
             {
                 var name = orginalRecord.GetName(i);
@@ -84,8 +96,10 @@ new AuditEntry();
 				else if (objectStateEntry.EntityKey.EntityKeyValues.Any(x => x.Key == name)
                          || entry.Parent.CurrentOrDefaultConfiguration.IsAuditedProperty(entry.Entry, string.Concat(prefix, name)))
                 {
+                    var isKey = objectStateEntry.EntityKey.EntityKeyValues.Any(x => x.Key == name);
+
                     if (!audit.Configuration.IgnorePropertyUnchanged
-                        || objectStateEntry.EntityKey.EntityKeyValues.Any(x => x.Key == name)
+                        || isKey
                         || !Equals(currentValue, originalValue))
                     {
                         var auditEntryProperty = entry.Parent.Configuration.AuditEntryPropertyFactory != null ?
@@ -94,7 +108,20 @@ new AuditEntryProperty();
 
                         auditEntryProperty.Build(entry, string.Concat(prefix, name), originalValue, currentRecord, i);
                         entry.Properties.Add(auditEntryProperty);
+
+                        if (!isKey)
+                        {
+                            hasModified = true;
+                        }
                     }
+                }
+            }
+
+            if (audit.Configuration.IgnoreEntityUnchanged)
+            {
+                if (!hasModified)
+                {
+                    entry.Properties.Clear();
                 }
             }
         }
@@ -103,6 +130,8 @@ new AuditEntryProperty();
     /// <param name="objectStateEntry">The object state entry.</param>
         public static void AuditEntityModified(Audit audit, AuditEntry entry, EntityEntry objectStateEntry)
         {
+            bool hasModified = false;
+
             foreach (var propertyEntry in objectStateEntry.Metadata.GetProperties())
             {
                 var property = objectStateEntry.Property(propertyEntry.Name);
@@ -117,7 +146,20 @@ new AuditEntryProperty();
 
                         auditEntryProperty.Build(entry, propertyEntry.Name, property.OriginalValue, property);
                         entry.Properties.Add(auditEntryProperty);
+
+                        if (property.IsModified)
+                        {
+                            hasModified = true;
+                        }
                     }
+                }
+            } 
+
+            if (audit.Configuration.IgnoreEntityUnchanged)
+            { 
+                if (!hasModified)
+                {
+                    entry.Properties.Clear(); 
                 }
             }
         }

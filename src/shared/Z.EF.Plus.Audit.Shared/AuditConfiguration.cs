@@ -115,9 +115,13 @@ namespace Z.EntityFramework.Plus
         /// <value>true if the property for entity with Added state are audited, false if not.</value>
         public bool IgnorePropertyAdded { get; set; }
 
-		/// <summary>Gets or sets a dictionary indicating if an entity type or a property name is audited.</summary>
-		/// <value>A dictionary indicating if an entity type or a property name is audited.</value>
-		public ConcurrentDictionary<string, bool> IsAuditedDictionary { get; set; }
+        /// <summary>Gets or sets a value indicating whether an entity with no modified property is audited.</summary>
+        /// <value>true if an entity with no modified property should be ignored.</value>
+        public bool IgnoreEntityUnchanged { get; set; }
+
+        /// <summary>Gets or sets a dictionary indicating if an entity type or a property name is audited.</summary>
+        /// <value>A dictionary indicating if an entity type or a property name is audited.</value>
+        public ConcurrentDictionary<string, bool> IsAuditedDictionary { get; set; }
 
         /// <summary>Gets or sets a list of predicates to check if the modified entity is soft added.</summary>
         /// <value>A list of predicates to check if the modified entity is soft added.</value>
@@ -178,6 +182,7 @@ namespace Z.EntityFramework.Plus
                 ExcludeRelationshipIfOneExcluded = ExcludeRelationshipIfOneExcluded,
                 UseUtcDateTime = UseUtcDateTime,
                 IgnorePropertyAdded = IgnorePropertyAdded,
+                IgnoreEntityUnchanged = IgnoreEntityUnchanged,
 #if EF5 || EF6
                 UseNullForDBNullValue = UseNullForDBNullValue
 #endif

@@ -28,6 +28,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore.Storage.Internal;
 
 #endif
 
@@ -403,8 +404,13 @@ namespace Z.EntityFramework.Plus
                 var sql = queryCommand.CommandText;
                 var parameters = queryCommand.Parameters;
 
+                if (parameters.Count == 1 && parameters[0] is CompositeRelationalParameter compositeRelationalParameter)
+                {
+                    parameters = compositeRelationalParameter.RelationalParameters;
+                }
+
                 // UPDATE parameter name
-                foreach (var relationalParameter in queryCommand.Parameters)
+                foreach (var relationalParameter in parameters)
                 {
                     var parameter = queryContext.ParameterValues[relationalParameter.InvariantName];
 

@@ -18,7 +18,7 @@ using System.Data.Objects;
 
 #elif EF6
 using System.Data.Entity.Core.Objects;
-#if NET45 
+#if NET45
 using System.Data.Entity.Infrastructure;
 #endif
 
@@ -135,7 +135,17 @@ namespace Z.EntityFramework.Plus
             {
 #if EFCORE
                 var query = (IQueryable<TResult>)Query;
-                var value = query.Provider.Execute<object>(query.Expression);
+
+                object value = null;
+
+                if (!typeof(TResult).IsPrimitive)
+                {
+                    value = query.Provider.Execute<object>(query.Expression);
+                }
+                else
+                {
+                    value = query.Provider.Execute<TResult>(query.Expression);
+                } 
 
                 if (value is TResult valueTResult)
                 {
@@ -175,7 +185,16 @@ namespace Z.EntityFramework.Plus
         {
             var query = (IQueryable<TResult>) Query;
 #if EFCORE_3X
-            var value = query.Provider.Execute<object>(query.Expression);
+            object value = null;
+
+            if (!typeof(TResult).IsPrimitive)
+            {
+                value =  query.Provider.Execute<object>(query.Expression);
+            }
+            else
+            {
+                value = query.Provider.Execute<TResult>(query.Expression);
+            } 
 
             if (value is TResult valueTResult)
             {
