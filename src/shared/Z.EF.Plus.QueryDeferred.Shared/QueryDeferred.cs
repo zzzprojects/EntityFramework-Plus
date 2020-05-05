@@ -20,6 +20,7 @@ using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
 
 #elif EFCORE
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 
 #endif

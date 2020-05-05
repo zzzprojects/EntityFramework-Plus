@@ -52,12 +52,14 @@ namespace Z.EntityFramework.Plus
 
                     item = QueryCacheManager.AddOrGetExistingDeferred<T>(key, item ?? DBNull.Value, policy) ?? item;
                     QueryCacheManager.AddCacheTag(handler, key, tags);
+                    QueryCacheManager.AddCacheTag(key, typeof(T).Name + QueryCacheManager.CacheTypeSuffix);
                 }
 #else
                 item = query.Execute();
 
                 item = QueryCacheManager.AddOrGetExistingDeferred<T>(key, item ?? DBNull.Value, policy) ?? item;
                 QueryCacheManager.AddCacheTag(key, tags);
+                QueryCacheManager.AddCacheTag(key, typeof(T).Name + QueryCacheManager.CacheTypeSuffix);
 #endif
             }
 
@@ -98,12 +100,14 @@ namespace Z.EntityFramework.Plus
 
                     item = QueryCacheManager.AddOrGetExistingDeferred<T>(key, item ?? DBNull.Value, absoluteExpiration) ?? item;
                     QueryCacheManager.AddCacheTag(handler, key, tags);
+                    QueryCacheManager.AddCacheTag(key, typeof(T).Name + QueryCacheManager.CacheTypeSuffix);
                 }
 #else
                 item = query.Execute();
 
                 item = QueryCacheManager.AddOrGetExistingDeferred<T>(key, item ?? DBNull.Value, absoluteExpiration) ?? item;
                 QueryCacheManager.AddCacheTag(key, tags);
+                QueryCacheManager.AddCacheTag(key, typeof(T).Name + QueryCacheManager.CacheTypeSuffix);
 #endif
             }
 
@@ -156,6 +160,7 @@ namespace Z.EntityFramework.Plus
 
                 item = QueryCacheManager.Cache.Set(key, item ?? DBNull.Value, options);
                 QueryCacheManager.AddCacheTag(key, tags);
+                QueryCacheManager.AddCacheTag(key, typeof(T).Name + QueryCacheManager.CacheTypeSuffix);
             }
 
             item = item.IfDbNullThenNull();

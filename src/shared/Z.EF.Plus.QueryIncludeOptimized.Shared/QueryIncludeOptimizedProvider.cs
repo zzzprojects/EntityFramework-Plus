@@ -12,7 +12,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-
 #if EF5
 using System.Data.Metadata.Edm;
 using System.Data.Objects;
@@ -28,9 +27,13 @@ using System.Linq;
 
 
 #endif
+#if EFCORE
+using Microsoft.EntityFrameworkCore;
+#endif
 
 #if EFCORE_3X
 using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 #else
 using System.Data.Entity;
@@ -203,12 +206,20 @@ namespace Z.EntityFramework.Plus
                     var keyMembers = objectContext.GetEntitySet<T>().ElementType.KeyMembers;
                     var keyNames = ((IEnumerable<EdmMember>)keyMembers).Select(x => x.Name).ToArray();
 #elif EFCORE
+	                DbContext context;
 
-                var context = currentQuery.OriginalQueryable.GetDbContext();
+                    if (currentQuery.OriginalQueryable.IsInMemoryQueryContext())
+	                {
+		                context = currentQuery.OriginalQueryable.GetInMemoryContext();
+	                }
+	                else
+	                { 
+		                context = currentQuery.OriginalQueryable.GetDbContext();
+	                } 
 
-                var keyNames = context.Model.FindEntityType(typeof (TResult).DisplayName(true))
-                    .GetKeys().ToList()[0]
-                    .Properties.Select(x => x.Name).ToArray();
+					var keyNames = context.Model.FindEntityType(typeof (TResult).DisplayName(true))
+	                    .GetKeys().ToList()[0]
+	                    .Properties.Select(x => x.Name).ToArray();
 #endif
 
                     var currentNewQuery = methodCall.Method.Name == "First" || methodCall.Method.Name == "FirstOrDefault" ?
@@ -237,9 +248,16 @@ namespace Z.EntityFramework.Plus
                     var objectContext = CurrentQueryable.OriginalQueryable.GetObjectQuery().Context;
                     var keyMembers = ((dynamic)objectContext).CreateObjectSet<T>().EntitySet.ElementType.KeyMembers;
                     var keyNames = ((IEnumerable<EdmMember>)keyMembers).Select(x => x.Name).ToArray();
-#elif EFCORE
-
-                var context = currentQuery.OriginalQueryable.GetDbContext();
+#elif EFCORE 
+	            DbContext context;
+				if (currentQuery.OriginalQueryable.IsInMemoryQueryContext())
+                {
+	                context = currentQuery.OriginalQueryable.GetInMemoryContext();
+                }
+                else
+                { 
+	                context = currentQuery.OriginalQueryable.GetDbContext();
+                }  
 
                 var keyNames = context.Model.FindEntityType(typeof (TResult).DisplayName(true))
                     .GetKeys().ToList()[0]

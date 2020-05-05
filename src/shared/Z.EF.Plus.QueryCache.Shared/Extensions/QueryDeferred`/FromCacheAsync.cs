@@ -56,6 +56,7 @@ namespace Z.EntityFramework.Plus
                     item = query.Execute();
                     item = QueryCacheManager.AddOrGetExistingDeferred<T>(key, item ?? DBNull.Value, policy) ?? item;
                     QueryCacheManager.AddCacheTag(key, tags);
+				    QueryCacheManager.AddCacheTag(key, typeof(T).Name + QueryCacheManager.CacheTypeSuffix);
                 }
 
                 item = item.IfDbNullThenNull();
@@ -99,6 +100,7 @@ namespace Z.EntityFramework.Plus
                     item = query.Execute();
                     item = QueryCacheManager.AddOrGetExistingDeferred<T>(key, item ?? DBNull.Value, absoluteExpiration) ?? item;
                     QueryCacheManager.AddCacheTag(key, tags);
+					QueryCacheManager.AddCacheTag(key, typeof(T).Name + QueryCacheManager.CacheTypeSuffix);
                 }
 
                 item = item.IfDbNullThenNull();
@@ -156,6 +158,7 @@ namespace Z.EntityFramework.Plus
                     item = await query.ExecuteAsync(cancellationToken).ConfigureAwait(false);
                     item = QueryCacheManager.AddOrGetExistingDeferred<T>(key, item ?? DBNull.Value, policy) ?? item;
                     QueryCacheManager.AddCacheTag(handler, key, tags);
+                    QueryCacheManager.AddCacheTag(key, typeof(T).Name + QueryCacheManager.CacheTypeSuffix);
                 }
             }
 
@@ -212,6 +215,7 @@ namespace Z.EntityFramework.Plus
                     item = await query.ExecuteAsync(cancellationToken).ConfigureAwait(false);
                     item = QueryCacheManager.AddOrGetExistingDeferred<T>(key, item ?? DBNull.Value, absoluteExpiration) ?? item;
                     QueryCacheManager.AddCacheTag(handler, key, tags);
+                    QueryCacheManager.AddCacheTag(key, typeof(T).Name + QueryCacheManager.CacheTypeSuffix);
                 }
             }
 
@@ -298,6 +302,7 @@ namespace Z.EntityFramework.Plus
                 item = await query.ExecuteAsync(cancellationToken).ConfigureAwait(false);
                 item = QueryCacheManager.Cache.Set(key, item ?? DBNull.Value, options);
                 QueryCacheManager.AddCacheTag(key, tags);
+                QueryCacheManager.AddCacheTag(key, typeof(T).Name + QueryCacheManager.CacheTypeSuffix); 
             }
 
             item = item.IfDbNullThenNull();

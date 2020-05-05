@@ -51,7 +51,8 @@ namespace Z.EntityFramework.Plus
                 {
                     item = query.ToList();
                     item = QueryCacheManager.AddOrGetExisting(key, item, policy) ?? item;
-                    QueryCacheManager.AddCacheTag(handler, key, tags);
+                    QueryCacheManager.AddCacheTag(handler, key, tags); 
+                    QueryCacheManager.AddCacheTag(key, typeof(T).Name + QueryCacheManager.CacheTypeSuffix);
                 }
             }
 
@@ -85,6 +86,7 @@ namespace Z.EntityFramework.Plus
                     item = query.ToList();
                     item = QueryCacheManager.AddOrGetExisting(key, item, absoluteExpiration) ?? item;
                     QueryCacheManager.AddCacheTag(handler, key, tags);
+                    QueryCacheManager.AddCacheTag(key, typeof(T).Name + QueryCacheManager.CacheTypeSuffix);
                 }
             }
 

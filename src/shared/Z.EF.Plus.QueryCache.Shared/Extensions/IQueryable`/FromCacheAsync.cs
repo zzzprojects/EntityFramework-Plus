@@ -58,6 +58,7 @@ namespace Z.EntityFramework.Plus
                     item = query.AsNoTracking().ToList();
                     item = QueryCacheManager.AddOrGetExisting(key, item, policy) ?? item;
                     QueryCacheManager.AddCacheTag(key, tags);
+                    QueryCacheManager.AddCacheTag(key, typeof(T).Name + QueryCacheManager.CacheTypeSuffix);
                 }
 
                 return (IEnumerable<T>) item;
@@ -98,6 +99,7 @@ namespace Z.EntityFramework.Plus
                     item = query.AsNoTracking().ToList();
                     item = QueryCacheManager.AddOrGetExisting(key, item, absoluteExpiration) ?? item;
                     QueryCacheManager.AddCacheTag(key, tags);
+                    QueryCacheManager.AddCacheTag(key, typeof(T).Name + QueryCacheManager.CacheTypeSuffix);
                 }
 
                 return (IEnumerable<T>) item;
@@ -153,6 +155,7 @@ namespace Z.EntityFramework.Plus
                     item = await query.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
                     item = QueryCacheManager.AddOrGetExisting(key, item, policy) ?? item;
                     QueryCacheManager.AddCacheTag(handler, key, tags);
+                    QueryCacheManager.AddCacheTag(key, typeof(T).Name + QueryCacheManager.CacheTypeSuffix);
                 }
             }
 
@@ -207,6 +210,7 @@ namespace Z.EntityFramework.Plus
                     item = await query.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
                     item = QueryCacheManager.AddOrGetExisting(key, item, absoluteExpiration) ?? item;
                     QueryCacheManager.AddCacheTag(handler, key, tags);
+                    QueryCacheManager.AddCacheTag(key, typeof(T).Name + QueryCacheManager.CacheTypeSuffix);
                 }
             }
 
@@ -291,6 +295,7 @@ namespace Z.EntityFramework.Plus
                 item = await query.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
                 item = QueryCacheManager.Cache.Set(key, item, options);
                 QueryCacheManager.AddCacheTag(key, tags);
+                QueryCacheManager.AddCacheTag(key, typeof(T).Name + QueryCacheManager.CacheTypeSuffix);
             }
 
             item = item.IfDbNullThenNull();

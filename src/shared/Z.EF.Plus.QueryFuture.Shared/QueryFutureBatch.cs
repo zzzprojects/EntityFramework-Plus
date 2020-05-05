@@ -403,23 +403,33 @@ namespace Z.EntityFramework.Plus
                 var queryCommand = query.CreateExecutorAndGetCommand(out queryContext);
                 var sql = queryCommand.CommandText;
                 var parameters = queryCommand.Parameters;
+                string invariantName = null;
 
                 if (parameters.Count == 1 && parameters[0] is CompositeRelationalParameter compositeRelationalParameter)
                 {
+	                invariantName = parameters[0].InvariantName;
                     parameters = compositeRelationalParameter.RelationalParameters;
                 }
 
+                int i = 0;
+                object value;
                 // UPDATE parameter name
                 foreach (var relationalParameter in parameters)
                 {
-                    var parameter = queryContext.ParameterValues[relationalParameter.InvariantName];
+                    value = null;
+                    var parameter = queryContext.ParameterValues[invariantName ?? relationalParameter.InvariantName];
+                    if (invariantName != null && parameter is object[] objectArray)
+                    {
+	                    value = objectArray[i];
+	                    i++;
+                    }
 
                     var oldValue = relationalParameter.InvariantName;
                     var newValue = string.Concat("Z_", queryCount, "_", oldValue);
 
                     // CREATE parameter
                     var dbParameter = command.CreateParameter();
-                    dbParameter.CopyFrom(relationalParameter, parameter, newValue);
+                    dbParameter.CopyFrom(relationalParameter, value ?? parameter, newValue);
 
                     command.Parameters.Add(dbParameter);
 

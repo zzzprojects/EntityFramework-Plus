@@ -51,9 +51,10 @@ namespace Z.EntityFramework.Plus
             DefaultCacheItemPolicy = new CacheItemPolicy();
 #elif EFCORE
             Cache = new MemoryCache(new MemoryCacheOptions());
-            DefaultMemoryCacheEntryOptions = new MemoryCacheEntryOptions();
+            DefaultMemoryCacheEntryOptions = new MemoryCacheEntryOptions(); 
 #endif
             CachePrefix = "Z.EntityFramework.Plus.QueryCacheManager;";
+            CacheTypeSuffix = "_ZZZ_QueryCacheManager_CacheType";
             CacheTags = new ConcurrentDictionary<string, List<string>>();
             IncludeConnectionInCacheKey = true;
         }
@@ -182,12 +183,16 @@ namespace Z.EntityFramework.Plus
                 _memoryCacheEntryOptionsFactory = value;
                 _defaultMemoryCacheEntryOptions = null;
             }
-        }
+        }  
 #endif
 
         /// <summary>Gets or sets the cache prefix to use to create the cache key.</summary>
         /// <value>The cache prefix to use to create the cache key.</value>
         public static string CachePrefix { get; set; }
+
+        /// <summary>Gets or sets the cache type suffix.</summary>
+        /// <value>The cache type suffix.</value>
+        public static string CacheTypeSuffix { get; set; }
 
         /// <summary>Gets or sets the cache key factory.</summary>
         /// <value>The cache key factory.</value>
@@ -347,7 +352,42 @@ namespace Z.EntityFramework.Plus
                 Cache.Remove(item);
             }
         }
+#else 
+	    /// <summary>Expire all cached objects && tag.</summary>
+        public static void ExpireAll()
+	    {
+		    var tags =  CacheTags.Select(x => x.Key).ToList();
+
+            // We do not use ExpireTag because type doesn't have CachePrefix
+            foreach (var tag in tags)
+		    {
+			     List<string> list;
+			     if (CacheTags.TryRemove(tag, out list))
+			     {
+				     // never lock something related to this list elsewhere or ensure we don't create a deadlock
+				     lock (list)
+				     {
+					     foreach (var item in list)
+					     {
+						     Cache.Remove(item);
+					     }
+				     }
+			     }
+		     }
+        }
 #endif
+        /// <summary>Expire type.</summary>
+        /// <param name="type">The type.</param>
+	    public static void ExpireType(Type type)
+	    {
+		    ExpireTag(type.Name + CacheTypeSuffix);
+	    }
+
+        /// <summary>Expire type.</summary>
+        public static void ExpireType<T>()
+        {
+            ExpireType(typeof(T));
+        }
 
         /// <summary>Expire all cached keys linked to specified tags.</summary>
         /// <param name="tags">
@@ -371,7 +411,7 @@ namespace Z.EntityFramework.Plus
                     }
                 }
             }
-        }
+        } 
 
         /// <summary>Gets cached keys used to cache or retrieve a query from the QueryCacheManager.</summary>
         /// <param name="query">The query to cache or retrieve from the QueryCacheManager.</param>
