@@ -1,9 +1,11 @@
-﻿#if !EFCORE
+﻿#if EFCORE
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Z.EntityFramework.Plus
 {
@@ -20,8 +22,10 @@ namespace Z.EntityFramework.Plus
             var elementType = typeof(T);
             var paths = navigationPath.Split('.');
 
+            var context = query.IsInMemoryQueryContext() ? null : query.GetDbContext();
+
             // CREATE expression x => x.Right
-            var expression = CreateLambdaExpression(elementType, paths, 0);
+            var expression = CreateLambdaExpression(elementType, paths, 0, context);
 
             var method = typeof(QueryIncludeOptimizedExtensions)
                 .GetMethod("IncludeOptimizedSingle", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)
@@ -37,7 +41,7 @@ namespace Z.EntityFramework.Plus
         /// <param name="paths">The paths.</param>
         /// <param name="currentIndex">The current index.</param>
         /// <returns>The new lambda expression.</returns>
-        public static Expression CreateLambdaExpression(Type parameterType, string[] paths, int currentIndex)
+        public static Expression CreateLambdaExpression(Type parameterType, string[] paths, int currentIndex, DbContext context)
         {
             // CREATE expression [x => x.Right]
 
@@ -46,7 +50,7 @@ namespace Z.EntityFramework.Plus
             Expression expression = parameter;
 
             // ADD property [x.Right]
-            expression = AppendPropertyPath(expression, paths, currentIndex);
+            expression = AppendPropertyPath(expression, paths, currentIndex, context);
 
             // GET function generic type
             var funcGenericType = typeof(Func<,>).MakeGenericType(parameterType, expression.Type);
@@ -70,11 +74,11 @@ namespace Z.EntityFramework.Plus
         /// <param name="paths">The paths.</param>
         /// <param name="currentIndex">The current index.</param>
         /// <returns>An Expression.</returns>
-        public static Expression AppendPath(Expression expression, string[] paths, int currentIndex)
+        public static Expression AppendPath(Expression expression, string[] paths, int currentIndex, DbContext context)
         {
             expression = expression.Type.GetGenericArguments().Length == 0 ?
-                AppendPropertyPath(expression, paths, currentIndex) :
-                AppendSelectPath(expression, paths, currentIndex);
+                AppendPropertyPath(expression, paths, currentIndex, context) :
+                AppendSelectPath(expression, paths, currentIndex, context);
 
             return expression;
         }
@@ -85,7 +89,7 @@ namespace Z.EntityFramework.Plus
         /// <param name="paths">The paths.</param>
         /// <param name="currentIndex">The current index.</param>
         /// <returns>An Expression.</returns>
-        public static Expression AppendPropertyPath(Expression expression, string[] paths, int currentIndex)
+        public static Expression AppendPropertyPath(Expression expression, string[] paths, int currentIndex, DbContext context)
         {
             // APPEND [x.PropertyName]
             var elementType = expression.Type;
@@ -103,9 +107,32 @@ namespace Z.EntityFramework.Plus
                     property = properties[0];
                 }
 
-                if (property == null)
+                // last try with GetDerivedTypes
+                if (property == null && context != null)
                 {
-                    throw new Exception(string.Format(ExceptionMessage.QueryIncludeOptimized_ByPath_MissingPath, elementType.FullName, paths[currentIndex]));
+                    var entityType = context.Model.FindEntityType(elementType);
+
+                    foreach (var entity in entityType.GetDerivedTypes())
+                    {
+                        if (entity.ClrType != null)
+                        {
+                            properties = entity.ClrType.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+                                .Where(x => x.Name.ToLowerInvariant() == paths[currentIndex].ToLowerInvariant()).ToList();
+
+                            if (properties.Count == 1)
+                            {
+                                property = properties[0];
+                                expression = Expression.Convert(expression, entity.ClrType);
+                                break;
+                            }
+                        }
+
+                    }
+
+                    if (property == null)
+                    {
+                        throw new Exception(string.Format(ExceptionMessage.QueryIncludeOptimized_ByPath_MissingPath, elementType.FullName, paths[currentIndex]));
+                    }
                 }
             }
 
@@ -115,7 +142,7 @@ namespace Z.EntityFramework.Plus
             currentIndex++;
             if (currentIndex < paths.Length)
             {
-                expression = AppendPath(expression, paths, currentIndex);
+                expression = AppendPath(expression, paths, currentIndex, context);
             }
 
             return expression;
@@ -126,13 +153,13 @@ namespace Z.EntityFramework.Plus
         /// <param name="paths">The paths.</param>
         /// <param name="currentIndex">The current index.</param>
         /// <returns>An Expression.</returns>
-        public static Expression AppendSelectPath(Expression expression, string[] paths, int currentIndex)
+        public static Expression AppendSelectPath(Expression expression, string[] paths, int currentIndex, DbContext context)
         {
             // APPEND x => x.Rights[.Select(y => y.Right)]
             var elementType = expression.Type.GetGenericArguments()[0];
 
             // CREATE lambda expression [y => y.Right]
-            var lambdaExpression = CreateLambdaExpression(elementType, paths, currentIndex);
+            var lambdaExpression = CreateLambdaExpression(elementType, paths, currentIndex, context);
 
             // APPEND Method [.Select(y => y.Right)]
             var selectMethod = typeof(Enumerable).GetMethods()

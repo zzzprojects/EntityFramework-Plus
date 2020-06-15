@@ -20,6 +20,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`.IncludeOptimized.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\IQueryable`.IncludeOptimizedByPath.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeOptimizedByPath.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeOptimizedByPath_EFCore.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeOptimizedChild`2.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeOptimizedExpressionReduceVisitor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)QueryIncludeOptimizedExpressionToReduceVisitor.cs" />
