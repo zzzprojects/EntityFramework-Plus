@@ -77,6 +77,7 @@ namespace Z.EntityFramework.Plus
                     var auditEntryProperty = entry.Parent.Configuration.AuditEntryPropertyFactory != null ?
                         entry.Parent.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(entry, objectStateEntry, string.Concat(prefix, name), value, null)) :
                         new AuditEntryProperty();
+                    auditEntryProperty.IsKey = objectStateEntry.EntitySet.ElementType.KeyMembers.Any(x => x.Name == name);
 
                     auditEntryProperty.Build(entry, string.Concat(prefix, name), value, null);
                     entry.Properties.Add(auditEntryProperty);
@@ -99,6 +100,7 @@ namespace Z.EntityFramework.Plus
     new AuditEntryProperty();
 
                     auditEntryProperty.Build(entry, propertyEntry.Name, property.OriginalValue, null);
+                    auditEntryProperty.IsKey = property.Metadata.IsKey();
                     entry.Properties.Add(auditEntryProperty);
                 }
             }

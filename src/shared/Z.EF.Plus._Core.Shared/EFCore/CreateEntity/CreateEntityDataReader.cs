@@ -204,6 +204,12 @@ namespace Z.EntityFramework.Plus
             {
                 value = new Guid(valueByteArray);
             }
+            else if (typeof(T) == typeof(TimeSpan) && value is string valueString)
+            {
+	            TimeSpan timeSpan; 
+                TimeSpan.TryParse(valueString, out timeSpan);
+                value = timeSpan;
+            }
 
             return (T)value; 
 		} 

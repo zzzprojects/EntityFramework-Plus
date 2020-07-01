@@ -77,8 +77,9 @@ namespace Z.EntityFramework.Plus
 					var auditEntryProperty = auditEntry.Parent.Configuration.AuditEntryPropertyFactory != null ?
                         auditEntry.Parent.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(auditEntry, objectStateEntry, string.Concat(prefix, name), null, value)) :
                         new AuditEntryProperty();
+					auditEntryProperty.IsKey = objectStateEntry.EntitySet.ElementType.KeyMembers.Any(x => x.Name == name);
 
-	                if (auditEntry.Parent.CurrentOrDefaultConfiguration.IgnoreEntityAddedDefaultValue && type != typeof(object) && value != null)
+                    if (auditEntry.Parent.CurrentOrDefaultConfiguration.IgnoreEntityAddedDefaultValue && type != typeof(object) && value != null)
 	                {
 		                var checkDefaultValue = DefaultValue(type);
 						if (checkDefaultValue != null && checkDefaultValue.Equals(value))
@@ -109,9 +110,9 @@ namespace Z.EntityFramework.Plus
                 {
                     var auditEntryProperty = entry.Parent.Configuration.AuditEntryPropertyFactory != null ?
                         entry.Parent.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(entry, objectStateEntry, propertyEntry.Name, null, property.CurrentValue)) :
-                        new AuditEntryProperty(); 
-
-	                var value = property.CurrentValue;
+                        new AuditEntryProperty();
+                    auditEntryProperty.IsKey = property.Metadata.IsKey();
+                    var value = property.CurrentValue;
 
 					if (entry.Parent.CurrentOrDefaultConfiguration.IgnoreEntityAddedDefaultValue && property.Metadata.FieldInfo != null &&  property.Metadata.FieldInfo.FieldType != typeof(object) && property.CurrentValue != null)
 	                {

@@ -105,6 +105,7 @@ new AuditEntry();
                         var auditEntryProperty = entry.Parent.Configuration.AuditEntryPropertyFactory != null ?
 entry.Parent.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(entry, objectStateEntry, string.Concat(prefix, name), originalValue, currentValue)) :
 new AuditEntryProperty();
+                        auditEntryProperty.IsKey = isKey;
 
                         auditEntryProperty.Build(entry, string.Concat(prefix, name), originalValue, currentRecord, i);
                         entry.Properties.Add(auditEntryProperty);
@@ -145,6 +146,7 @@ new AuditEntryProperty();
                             new AuditEntryProperty();
 
                         auditEntryProperty.Build(entry, propertyEntry.Name, property.OriginalValue, property);
+                        auditEntryProperty.IsKey = property.Metadata.IsKey();
                         entry.Properties.Add(auditEntryProperty);
 
                         if (property.IsModified)

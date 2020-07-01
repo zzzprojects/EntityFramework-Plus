@@ -227,6 +227,11 @@ namespace Z.EntityFramework.Plus
         public object OldValue;
 #endif
 
+        /// <summary>Gets or sets a value indicating whether this property is part of the key (NotMapped).</summary>
+        /// <value>True if this property is part of the key, false if not (NotMapped).</value>
+        [NotMapped]
+        public bool IsKey { get; set; }
+
         /// <summary>Gets or sets the old value audited formatted.</summary>
         /// <value>The old value audited formatted.</value>
         [Column("OldValue", Order = 4)]
