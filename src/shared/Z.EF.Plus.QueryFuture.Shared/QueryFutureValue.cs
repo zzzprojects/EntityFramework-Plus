@@ -144,7 +144,8 @@ namespace Z.EntityFramework.Plus
                 }
                 else
                 {
-                    value = query.Provider.Execute<TResult>(query.Expression);
+                    var temp = Expression.Convert(query.Expression, typeof(object));
+                    value = query.Provider.Execute<object>(temp);
                 } 
 
                 if (value is TResult valueTResult)
