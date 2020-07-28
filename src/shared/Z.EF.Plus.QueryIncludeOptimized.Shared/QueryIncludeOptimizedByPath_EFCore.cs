@@ -22,7 +22,14 @@ namespace Z.EntityFramework.Plus
             var elementType = typeof(T);
             var paths = navigationPath.Split('.');
 
-            var context = query.IsInMemoryQueryContext() ? null : query.GetDbContext();
+            var queryForContext = query;
+
+            if (query is QueryIncludeOptimizedParentQueryable<T> queryIncludeOptimizedParent)
+			{
+                queryForContext = queryIncludeOptimizedParent.OriginalQueryable;
+			}
+
+            var context = queryForContext.IsInMemoryQueryContext() ? null : queryForContext.GetDbContext();
 
             // CREATE expression x => x.Right
             var expression = CreateLambdaExpression(elementType, paths, 0, context);

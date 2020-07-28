@@ -61,6 +61,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)EFCore\IQueryable`\IQueryable`.GetCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EFCore\IQueryable`\IsInMemoryQueryContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EFCore\LazyHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EFCore\Type\DIsplayName.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EFCore\Type\GetTypeFromAssembly_Core.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EF\DbContext\DbContext.GetDbSetProperties.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EF\DbContext\DbContext.MapReader.cs" />
