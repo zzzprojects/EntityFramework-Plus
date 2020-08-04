@@ -534,6 +534,18 @@ namespace Z.EntityFramework.Plus
                 sb.Append(";");
                 sb.Append(parameter.Value);
                 sb.AppendLine(";");
+
+                if (parameter.Value is object[] parameterValues)
+                {
+	                foreach (var param in parameterValues)
+	                {
+		                if (param is DbParameter dbParameter)
+		                { 
+			                sb.Append(dbParameter.Value?.ToString() ?? "NULL");
+			                sb.AppendLine(";");
+                        }
+	                }
+                }
             }
 #endif
 

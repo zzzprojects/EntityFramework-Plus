@@ -1,4 +1,4 @@
-﻿ // Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update, Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
+﻿// Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update, Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
 // Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
 // Forum & Issues: https://github.com/zzzprojects/EntityFramework-Plus/issues
 // License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 #if EF5
@@ -76,8 +77,8 @@ namespace Z.EntityFramework.Plus
         /// <value>The value of the future query.</value>
         public async Task<TResult> ValueAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-	        cancellationToken.ThrowIfCancellationRequested();
-			if (!HasValue)
+            cancellationToken.ThrowIfCancellationRequested();
+            if (!HasValue)
             {
 #if EF6
                 if (Query.Context.IsInMemoryEffortQueryContext())
@@ -91,14 +92,14 @@ namespace Z.EntityFramework.Plus
 #else
                 await OwnerBatch.ExecuteQueriesAsync(cancellationToken).ConfigureAwait(false);
 #endif
-			}
+            }
 
-			return _result;
+            return _result;
         }
 #endif
 
-                /// <summary>Sets the result of the query deferred.</summary>
-                /// <param name="reader">The reader returned from the query execution.</param>
+        /// <summary>Sets the result of the query deferred.</summary>
+        /// <param name="reader">The reader returned from the query execution.</param>
         public override void SetResult(DbDataReader reader)
         {
             if (reader.GetType().FullName.Contains("Oracle"))
@@ -106,7 +107,7 @@ namespace Z.EntityFramework.Plus
                 var reader2 = new QueryFutureOracleDbReader(reader);
                 reader = reader2;
             }
-  
+
             var enumerator = GetQueryEnumerator<TResult>(reader);
             using (enumerator)
             {
@@ -114,9 +115,9 @@ namespace Z.EntityFramework.Plus
                 _result = enumerator.Current;
 
             }
-           
+
             // Enumerate on first item only
-          
+
             HasValue = true;
         }
 
@@ -136,16 +137,13 @@ namespace Z.EntityFramework.Plus
 #if EFCORE
                 var query = (IQueryable<TResult>)Query;
 
-                object value = null;
-
-                if (!typeof(TResult).IsPrimitive)
+                var expression = query.Expression;
+                if (expression.Type != typeof(object))
                 {
-                    value = query.Provider.Execute<object>(query.Expression);
+                    expression = Expression.Convert(expression, typeof(object));
                 }
-                else
-                {
-                    value = query.Provider.Execute<TResult>(query.Expression);
-                } 
+
+                var value = query.Provider.Execute<object>(expression);
 
                 if (value is TResult valueTResult)
                 {
@@ -183,18 +181,18 @@ namespace Z.EntityFramework.Plus
 #endif
         public override void GetResultDirectly()
         {
-            var query = (IQueryable<TResult>) Query;
+            var query = (IQueryable<TResult>)Query;
 #if EFCORE_3X
             object value = null;
 
             if (!typeof(TResult).IsPrimitive)
             {
-                value =  query.Provider.Execute<object>(query.Expression);
+                value = query.Provider.Execute<object>(query.Expression);
             }
             else
             {
                 value = query.Provider.Execute<TResult>(query.Expression);
-            } 
+            }
 
             if (value is TResult valueTResult)
             {
@@ -234,7 +232,7 @@ namespace Z.EntityFramework.Plus
         public override Task GetResultDirectlyAsync(CancellationToken cancellationToken)
 #endif
         {
-		    cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
 #if EF6
 			var query = (IQueryable<TResult>)Query;
@@ -243,11 +241,11 @@ namespace Z.EntityFramework.Plus
 			_result = value;
 		    HasValue = true;
 #else
-		    GetResultDirectly();
+            GetResultDirectly();
             return Task.FromResult(0);
 #endif
 
-	    }
+        }
 #endif
 
 
