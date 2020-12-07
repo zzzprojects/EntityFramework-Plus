@@ -102,10 +102,7 @@ namespace Z.EntityFramework.Plus
             if (!CacheGenericFilterContext.TryGetValue(key, out filterContext))
             {
                 filterContext = new AliasQueryFilterContext(context, true);
-                if (!CacheGenericFilterContext.TryAdd(key, filterContext))
-                {
-                    CacheGenericFilterContext.TryGetValue(key, out filterContext);
-                }
+                filterContext = CacheGenericFilterContext.GetOrAdd(key, filterContext);
             }
 
             return filterContext;
@@ -178,10 +175,7 @@ namespace Z.EntityFramework.Plus
 #else
                 filter = new QueryFilter<T>(null, queryFilter) { IsDefaultEnabled = isEnabled };
 #endif
-                if (!GlobalFilters.TryAdd(key, filter))
-                {
-                    GlobalFilters.TryGetValue(key, out filter);
-                }
+                filter = GlobalFilters.GetOrAdd(key, filter);
             }
 
             return filter;
