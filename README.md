@@ -1,11 +1,3 @@
----
-
-We are currently porting all features on [Entity Framework Classic](https://entityframework-classic.net/) 
-
-> Entity Framework Classic is a supported version from the latest EF6 code base. It supports .NET Framework and .NET Core and overcomes some EF limitations by adding tons of must-haves built-in features.
-
----
-
 ### Library Powered By
 
 This library is powered by [Entity Framework Extensions](https://entityframework-extensions.net/?z=github&y=entityframework-plus)
