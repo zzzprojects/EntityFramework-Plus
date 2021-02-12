@@ -294,7 +294,7 @@ AuditManager.DefaultConfiguration.AutoSavePreAction = (context, audit) =>
 - [Website](https://entityframework-plus.net/)
 - [Documentation](https://entityframework-plus.net/batch-delete)
 - [Online Examples](https://entityframework-plus.net/online-examples) 
-- You can also consult thousands of HAP questions on 
+- You can also consult tons of Entity Framework Plus questions on 
 [Stack Overflow](https://stackoverflow.com/questions/tagged/entity-framework-plus)
 
 ## Contribute
