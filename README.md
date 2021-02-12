@@ -289,35 +289,37 @@ AuditManager.DefaultConfiguration.AutoSavePreAction = (context, audit) =>
 
 **[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Audit-%7C-Entity-Framework-Audit-Trail-Context-and-Track-Changes)**
 
-## Contribute
-The best way to contribute is by **spreading the word** about the library:
+## Usefull links
 
- - Blog it
- - Comment it
- - Fork it
- - Star it
- - Share it
+- [Website](https://entityframework-plus.net/)
+- [Documentation](https://entityframework-plus.net/batch-delete)
+- [Online Examples](https://entityframework-plus.net/online-examples) 
+- You can also consult thousands of HAP questions on 
+[Stack Overflow](https://stackoverflow.com/questions/tagged/entity-framework-plus)
+
+## Contribute
+
+You want to help us? 
+Your donation directly helps us maintaining and growing ZZZ Free Projects. We can’t thank you enough for your support.
+
+### Why should I contribute to this free & open source library?
+We all love free and open source libraries!
+But there is a catch! Nothing is free in this world.
+Contributions allow us to spend more of our time on: Bug Fix, Content Writing, Development and Support.
+
+We NEED your help. Last year alone, we spent over **3000 hours** maintaining all our open source libraries.
+
+### How much should I contribute?
+Any amount is much appreciated. All our libraries together have more than 100 million downloads, if everyone could contribute a tiny amount, it would help us to make the .NET community a better place to code!
+
+Another great free way to contribute is  **spreading the word** about the library!
  
 A **HUGE THANKS** for your help.
 
 ## More Projects
 
-**Entity Framework**
 - [EntityFramework Extensions](https://entityframework-extensions.net/)
-- [EntityFramework Plus](https://entityframework-plus.net)
-
-**Bulk Operations**
-- [Bulk Operations](https://bulk-operations.net/)
 - [Dapper Plus](https://dapper-plus.net/)
-
-**Expression Evaluator**
-- [Eval-SQL.NET](https://eval-sql.net/)
-- [Eval-Expression.NET](https://eval-expression.net/)
-
-**Utilities**
-- [Extension Methods Library](https://github.com/zzzprojects/Z.ExtensionMethods/)
-- [Html Agility Pack](https://html-agility-pack.net/)
-
-**Need more info?** info@zzzprojects.com
-
-Contact our outstanding customer support for any request. We usually answer within the next business day, hour, or minutes!
+- [C# Eval Expression](https://eval-expression.net/)
+- and much more! 
+To view all our free and paid librariries visit our [website](https://zzzprojects.com/).
