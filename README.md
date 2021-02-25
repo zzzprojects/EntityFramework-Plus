@@ -289,7 +289,7 @@ AuditManager.DefaultConfiguration.AutoSavePreAction = (context, audit) =>
 
 **[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Audit-%7C-Entity-Framework-Audit-Trail-Context-and-Track-Changes)**
 
-## Usefull links
+## Useful links
 
 - [Website](https://entityframework-plus.net/)
 - [Documentation](https://entityframework-plus.net/batch-delete)
