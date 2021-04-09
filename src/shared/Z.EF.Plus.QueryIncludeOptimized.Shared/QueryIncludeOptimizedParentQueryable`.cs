@@ -33,7 +33,7 @@ namespace Z.EntityFramework.Plus
     /// <typeparam name="T">The type of elements of the query.</typeparam>
 #if EF6 && NET45
     public class QueryIncludeOptimizedParentQueryable<T> : IOrderedQueryable<T>, IDbAsyncEnumerable<T>
-#elif EFCORE_3X && NETSTANDARD2_1
+#elif EFCORE_3X && NETSTANDARD
     public class QueryIncludeOptimizedParentQueryable<T> : IOrderedQueryable<T>, IAsyncEnumerable<T>
 #else
     public class QueryIncludeOptimizedParentQueryable<T> : IOrderedQueryable<T>
@@ -172,7 +172,7 @@ namespace Z.EntityFramework.Plus
             return list;
         }
 
-#if EFCORE_3X && NETSTANDARD2_1
+#if EFCORE_3X && NETSTANDARD
         public async Task<List<T>> CreateEnumerableAsync(CancellationToken cancellationToken)
         {
             QueryIncludeOptimizedIncludeSubPath.RemoveLazyChild(this);
