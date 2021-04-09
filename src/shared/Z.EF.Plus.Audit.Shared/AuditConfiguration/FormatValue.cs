@@ -38,7 +38,11 @@ namespace Z.EntityFramework.Plus
         {
             if (entity != null && EntityValueFormatters.Count > 0)
             {
+#if EF5 || EF6
+                var type = ObjectContext.GetObjectType(entity.GetType());
+#elif EFCORE
                 var type = entity.GetType();
+#endif
                 var key = string.Concat(type.FullName, ";", propertyName);
                 Func<object, object> formatter;
 
