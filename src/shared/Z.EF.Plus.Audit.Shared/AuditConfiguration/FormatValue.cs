@@ -57,7 +57,10 @@ namespace Z.EntityFramework.Plus
                         }
                     }
 
-                    ValueFormatterDictionary.TryAdd(key, formatter);
+                    if (formatter != null)
+                    {
+                        ValueFormatterDictionary.TryAdd(key, formatter);
+                    }
                 }
 
                 if (formatter != null)
