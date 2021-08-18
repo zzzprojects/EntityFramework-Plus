@@ -42,6 +42,7 @@ namespace Z.EntityFramework.Plus
             IsAuditedDictionary = new ConcurrentDictionary<string, bool>();
             ValueFormatterDictionary = new ConcurrentDictionary<string, Func<object, object>>();
 
+            MetaProperties = new List<Action<AuditEntry>>();
 
 #if EF5 || EF6
             UseNullForDBNullValue = true;
@@ -74,6 +75,8 @@ namespace Z.EntityFramework.Plus
         /// <summary>Gets or sets a list of predicates to exclude or include properties.</summary>
         /// <value>A list of predicates to exclude or include properties.</value>
         public List<Func<object, string, bool?>> ExcludeIncludePropertyPredicates { get; set; }
+
+        public List<Action<AuditEntry>> MetaProperties { get; set; }
 
         /// <summary>Gets or sets a value indicating whether the entity with Added state are audited.</summary>
         /// <value>true if entity with Added state are audited, false if not.</value>
@@ -179,6 +182,7 @@ namespace Z.EntityFramework.Plus
                 ExcludeIncludePropertyPredicates = new List<Func<object, string, bool?>>(ExcludeIncludePropertyPredicates),
                 SoftAddedPredicates = new List<Func<object, bool>>(SoftAddedPredicates),
                 SoftDeletedPredicates = new List<Func<object, bool>>(SoftDeletedPredicates),
+                MetaProperties = new List<Action<AuditEntry>>(MetaProperties),
                 ExcludeRelationshipIfOneExcluded = ExcludeRelationshipIfOneExcluded,
                 UseUtcDateTime = UseUtcDateTime,
                 IgnorePropertyAdded = IgnorePropertyAdded,

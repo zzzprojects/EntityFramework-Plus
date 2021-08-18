@@ -30,14 +30,18 @@ namespace Z.EntityFramework.Plus
 #if EF5 || EF6
         public static void AuditEntityModified(Audit audit, ObjectStateEntry objectStateEntry, AuditEntryState state)
 #elif EFCORE
-        public static void AuditEntityModified(Audit audit, EntityEntry objectStateEntry, AuditEntryState state)
+        public static void AuditEntityModified(Audit audit, EntityEntry objectStateEntry, AuditEntryState state, DbContext context)
 #endif
         {
             var entry = audit.Configuration.AuditEntryFactory != null ?
 audit.Configuration.AuditEntryFactory(new AuditEntryFactoryArgs(audit, objectStateEntry, state)) :
 new AuditEntry();
 
+#if EF5 || EF6
             entry.Build(audit, objectStateEntry);
+#elif EFCORE
+            entry.Build(audit, objectStateEntry, context);
+#endif
             entry.State = state;
 
 #if EF5 || EF6
@@ -139,7 +143,7 @@ new AuditEntryProperty();
 
                 if (property.Metadata.IsKey() || entry.Parent.CurrentOrDefaultConfiguration.IsAuditedProperty(entry.Entry, propertyEntry.Name))
                 {
-                    if (!audit.Configuration.IgnorePropertyUnchanged || property.Metadata.IsKey() || property.IsModified)
+                    if (!audit.Configuration.IgnorePropertyUnchanged || property.Metadata.IsKey() || !Equals(property.CurrentValue, property.OriginalValue))
                     {
                         var auditEntryProperty = entry.Parent.Configuration.AuditEntryPropertyFactory != null ?
                             entry.Parent.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(entry, objectStateEntry, propertyEntry.Name, property.OriginalValue, property.CurrentValue)) :
@@ -149,7 +153,7 @@ new AuditEntryProperty();
                         auditEntryProperty.IsKey = property.Metadata.IsKey();
                         entry.Properties.Add(auditEntryProperty);
 
-                        if (property.IsModified)
+                        if (!property.Metadata.IsKey())
                         {
                             hasModified = true;
                         }

@@ -31,16 +31,17 @@ namespace Z.EntityFramework.Plus
                 var visitorFilter = new QueryFilterInterceptorDbFilterExpression();
                 var queryFiltered = dbQueryCommandTree.Query.Accept(visitorFilter);
 
+                var filterByContext = QueryFilterManager.AddOrGetFilterContext(context);
+
                 if (!string.IsNullOrEmpty(visitorFilter.HookID))
                 {
-                    if (!QueryFilterManager.DbExpressionByHook.ContainsKey(visitorFilter.HookID))
+                    if (!filterByContext.DbExpressionByHook.ContainsKey(visitorFilter.HookID))
                     {
-                        QueryFilterManager.DbExpressionByHook.TryAdd(visitorFilter.HookID, queryFiltered);
+                        filterByContext.DbExpressionByHook.TryAdd(visitorFilter.HookID, queryFiltered);
                     }
                 }
                 else
                 {
-                    var filterByContext = QueryFilterManager.AddOrGetFilterContext(context);
                     filterByContext.ClearCacheRequired = true;
 
                     var filterQuery = new QueryFilterInterceptorApply

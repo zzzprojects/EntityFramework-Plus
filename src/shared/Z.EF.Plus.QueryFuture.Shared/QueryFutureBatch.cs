@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
@@ -109,7 +110,7 @@ namespace Z.EntityFramework.Plus
             var isOracle = assemblyName == "Oracle.EntityFrameworkCore" || assemblyName == "Devart.Data.Oracle.Entity.EFCore";
             if (allowQueryBatch && (isOracle || isMySqlPomelo))
             {
-	            allowQueryBatch = false;
+                allowQueryBatch = false;
             }
 #endif
 
@@ -123,6 +124,8 @@ namespace Z.EntityFramework.Plus
                 Queries.Clear();
                 return;
             }
+
+            var ownConnection = false;
 
 #if EF5 || EF6
             var connection = (EntityConnection)Context.Connection;
@@ -152,16 +155,24 @@ namespace Z.EntityFramework.Plus
             var connection = Context.Database.GetDbConnection();
 
             var firstQuery = Queries[0];
+
+            if (connection.State != ConnectionState.Open)
+            {
+                Context.Database.OpenConnection();
+                ownConnection = true;
+            }
 #endif
             var command = CreateCommandCombined();
-
-            var ownConnection = false;
 
             try
             {
                 if (connection.State != ConnectionState.Open)
                 {
+#if EFCORE
+                    // connection opened before
+#else
                     connection.Open();
+#endif
                     ownConnection = true;
                 }
 
@@ -205,7 +216,11 @@ namespace Z.EntityFramework.Plus
             {
                 if (ownConnection)
                 {
+#if EFCORE
+                    Context.Database.CloseConnection();
+#else
                     connection.Close();
+#endif
                 }
             }
 
@@ -221,9 +236,9 @@ namespace Z.EntityFramework.Plus
         /// <summary>Executes deferred query lists.</summary>
         public async Task ExecuteQueriesAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-	        cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
-			if (Queries.Count == 0)
+            if (Queries.Count == 0)
             {
                 // Already all executed
                 return;
@@ -243,7 +258,7 @@ namespace Z.EntityFramework.Plus
 
             if (Queries.Count == 1)
             {
-				await Queries[0].GetResultDirectlyAsync(cancellationToken).ConfigureAwait(false);
+                await Queries[0].GetResultDirectlyAsync(cancellationToken).ConfigureAwait(false);
                 Queries.Clear();
                 return;
             }
@@ -298,19 +313,19 @@ namespace Z.EntityFramework.Plus
                         }
                     }
 #elif EFCORE
-					using (var reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false))
-					{
-						var createEntityDataReader = new CreateEntityDataReader(reader);
-						foreach (var query in Queries)
-						{
-							query.SetResult(createEntityDataReader);
-							await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
-						}
-					}
+                    using (var reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false))
+                    {
+                        var createEntityDataReader = new CreateEntityDataReader(reader);
+                        foreach (var query in Queries)
+                        {
+                            query.SetResult(createEntityDataReader);
+                            await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
+                        }
+                    }
 #endif
-				}
+                }
 
-				Queries.Clear();
+                Queries.Clear();
             }
             finally
             {
@@ -334,13 +349,38 @@ namespace Z.EntityFramework.Plus
         protected DbCommand CreateCommandCombined()
         {
             var command = Context.CreateStoreCommand();
-         
+
             var sb = new StringBuilder();
             var queryCount = 1;
 
             var isOracle = command.GetType().FullName.Contains("Oracle.DataAccess");
             var isOracleManaged = command.GetType().FullName.Contains("Oracle.ManagedDataAccess");
             var isOracleDevArt = command.GetType().FullName.Contains("Devart");
+
+#if EFCORE_3X
+            // foreach is broken need stop and new Foreach, a for is better here, but I don't know if is possible Include with logique with new IncludeOptimized in a Where logic or other. In theory I guess yes, in true I don't know.
+            // For now I try without check that.
+            for (int i = 0; i < Queries.Count;i++)
+            {
+                var query = Queries.ElementAt(i);
+                // first check is because parano.
+                if (query.GetType().FullName.Contains("QueryFutureEnumerable") && query.Query != null && query.Query.GetType().FullName.Contains("Z.EntityFramework.Plus.QueryIncludeOptimizedParentQueryable"))
+                {
+                    var futurType = query.GetType();
+                    var typeIncludeOptimized = query.Query.GetType();
+                    var methodPrepareQuery = typeIncludeOptimized.GetMethod("PrepareQuery", BindingFlags.Instance | BindingFlags.NonPublic);
+                    var propertyChilds = typeIncludeOptimized.GetProperty("Childs", BindingFlags.Instance | BindingFlags.Public);
+
+                    // call futur.  
+                    methodPrepareQuery.Invoke(query.Query, null);
+                    var childs = propertyChilds.GetValue(query.Query);
+
+                    query.Childs = (dynamic)childs;
+                    query.IsIncludeOptimizedNullCollectionNeeded = true;
+                }
+            }
+#endif
+
 
             foreach (var query in Queries)
             {
@@ -398,7 +438,7 @@ namespace Z.EntityFramework.Plus
                     }
                 }
 #elif EFCORE
-         
+
                 RelationalQueryContext queryContext;
                 var queryCommand = query.CreateExecutorAndGetCommand(out queryContext);
                 var sql = queryCommand.CommandText;
@@ -407,21 +447,49 @@ namespace Z.EntityFramework.Plus
 
                 if (parameters.Count == 1 && parameters[0] is CompositeRelationalParameter compositeRelationalParameter)
                 {
-	                invariantName = parameters[0].InvariantName;
+                    invariantName = parameters[0].InvariantName;
                     parameters = compositeRelationalParameter.RelationalParameters;
                 }
 
                 int i = 0;
                 object value;
+                MethodInfo methodeConvertFromProvider;
+                object convertToProvider; 
+
                 // UPDATE parameter name
                 foreach (var relationalParameter in parameters)
                 {
                     value = null;
                     var parameter = queryContext.ParameterValues[invariantName ?? relationalParameter.InvariantName];
+
+                    // logic FROM BatchUpdate.cs
+                    methodeConvertFromProvider = null;
+                    convertToProvider = null;
+
+                    var propertyRelationalTypeMapping = relationalParameter.GetType().GetProperty("RelationalTypeMapping", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+                    if (propertyRelationalTypeMapping != null)
+                    {
+                        var relationalTypeMapping = propertyRelationalTypeMapping.GetValue(relationalParameter);
+                        var propertyConverter = relationalTypeMapping?.GetType().GetProperty("Converter", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+
+                        if (propertyConverter != null)
+                        {
+                            var converter = propertyConverter.GetValue(relationalTypeMapping);
+                            var propertyConvertToProvider = converter?.GetType().GetProperty("ConvertToProvider", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+
+                            if (propertyConvertToProvider != null)
+                            {
+                                convertToProvider = propertyConvertToProvider.GetValue(converter);
+                                methodeConvertFromProvider = convertToProvider?.GetType().GetMethod("Invoke", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+                            }
+                        }
+                    }
+
+
                     if (invariantName != null && parameter is object[] objectArray)
                     {
-	                    value = objectArray[i];
-	                    i++;
+                        value = objectArray[i];
+                        i++;
                     }
 
                     var oldValue = relationalParameter.InvariantName;
@@ -431,7 +499,15 @@ namespace Z.EntityFramework.Plus
                     var dbParameter = command.CreateParameter();
                     dbParameter.CopyFrom(relationalParameter, value ?? parameter, newValue);
 
-                    command.Parameters.Add(dbParameter);
+                    if (methodeConvertFromProvider != null)
+                    {
+                        dbParameter.Value = methodeConvertFromProvider.Invoke(convertToProvider, new[] { dbParameter.Value });
+                    }
+
+                    if (dbParameter.Value == null || dbParameter.Value.GetType() != typeof(object[]) || ((object[])dbParameter.Value).Count() != 0)
+                    {
+                        command.Parameters.Add(dbParameter);
+                    }
 
                     // REPLACE parameter with new value
                     if (isOracle || isOracleManaged || isOracleDevArt)

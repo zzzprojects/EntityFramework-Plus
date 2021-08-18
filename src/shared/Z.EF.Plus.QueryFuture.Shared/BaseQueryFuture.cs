@@ -60,7 +60,11 @@ namespace Z.EntityFramework.Plus
 #else
     public abstract class BaseQueryFuture
 #endif
-    {
+    { 
+#if EFCORE_3X
+        internal bool IsIncludeOptimizedNullCollectionNeeded { get; set; }
+        internal List<BaseQueryIncludeOptimizedChild> Childs { get; set; }
+#endif
         /// <summary>Gets the value indicating whether the query future has a value.</summary>
         /// <value>true if this query future has a value, false if not.</value>
         public bool HasValue { get; protected set; }
@@ -636,6 +640,33 @@ namespace Z.EntityFramework.Plus
             var enumerator = (IEnumerator<T>) getEnumerator;
 
             {
+
+#if EFCORE_5X
+
+                {
+                    //https://github.com/dotnet/efcore/blob/b970bf29a46521f40862a01db9e276e6448d3cb0/src/EFCore.Relational/Storage/RelationalCommand.cs#L380
+                    //public virtual RelationalDataReader ExecuteReader(RelationalCommandParameterObject parameterObject)
+          
+                    //-columns
+                    var fieldrelationalCommandCache = enumerator.GetType().GetField("_relationalCommandCache", BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+                    if (fieldrelationalCommandCache != null)
+				    {
+                        var relationalCommandCache = fieldrelationalCommandCache.GetValue(enumerator);
+
+                        if (relationalCommandCache != null && relationalCommandCache is RelationalCommandCache relationalCommand && relationalCommand.ReaderColumns != null)
+                        { 
+                            var fielCacheReaderColumns = relationalCommandCache.GetType().GetField("<ReaderColumns>k__BackingField", BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+                            if (fielCacheReaderColumns != null)
+                            {
+                                fielCacheReaderColumns.SetValue(relationalCommand, null);
+                            }
+
+                        }
+                    }
+                }
+#else
                 // EFCore.Relational\Storage\RelationalCommandParameterObject.cs
                 /// <param name="readerColumns"> The expected columns if the reader needs to be buffered, or null otherwise. </param>
                 /// public RelationalCommandParameterObject(
@@ -644,13 +675,14 @@ namespace Z.EntityFramework.Plus
                 // if (readerColumns != null)
                 // {
                 //     reader = new BufferedDataReader(reader).Initialize(readerColumns);
-                // }
+                // } 
                 var fielReaderColumns = enumerator.GetType().GetField("_readerColumns", BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
                 if (fielReaderColumns != null)
                 {
 	                fielReaderColumns.SetValue(enumerator, null);
                 }
+#endif
             }
 
             return enumerator;

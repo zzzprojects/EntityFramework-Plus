@@ -41,8 +41,6 @@ namespace Z.EntityFramework.Plus
             CacheWeakFilterContext = new ConditionalWeakTable<DbContext, QueryFilterContextInterceptor>();
             GlobalFiltersByKey = new ConcurrentDictionary<object, BaseQueryFilterInterceptor>();
             GlobalFilterByType = new ConcurrentDictionary<Type, List<BaseQueryFilterInterceptor>>();
-            DbExpressionByHook = new ConcurrentDictionary<string, DbExpression>();
-            DbExpressionParameterByHook = new ConcurrentDictionary<DbExpression, DbParameterCollection>();
         }
 
         public static void RegisterType(params Type[] types)
@@ -59,14 +57,6 @@ namespace Z.EntityFramework.Plus
         /// <summary>Gets or sets a value indicating whether we allow property to be filtering.</summary>
         /// <value>True if allow property filtering, false if not.</value>
         public static bool AllowPropertyFilter { get; set; }
-
-        /// <summary>Gets the database expression by hook.</summary>
-        /// <value>The database expression by hook.</value>
-        public static ConcurrentDictionary<string, DbExpression> DbExpressionByHook { get; }
-
-        /// <summary>Gets the database expression parameter by hook.</summary>
-        /// <value>The database expression parameter by hook.</value>
-        public static ConcurrentDictionary<DbExpression, DbParameterCollection> DbExpressionParameterByHook { get; }
 
         /// <summary>Gets the global filters.</summary>
         /// <value>The global filters.</value>

@@ -33,7 +33,7 @@ namespace Z.EntityFramework.Plus
     /// <typeparam name="T">The type of elements of the query.</typeparam>
 #if EF6 && NET45
     public class QueryIncludeOptimizedParentQueryable<T> : IOrderedQueryable<T>, IDbAsyncEnumerable<T>
-#elif EFCORE_3X && NETSTANDARD2_1
+#elif EFCORE_3X
     public class QueryIncludeOptimizedParentQueryable<T> : IOrderedQueryable<T>, IAsyncEnumerable<T>
 #else
     public class QueryIncludeOptimizedParentQueryable<T> : IOrderedQueryable<T>
@@ -171,8 +171,61 @@ namespace Z.EntityFramework.Plus
 
             return list;
         }
+#if EFCORE_3X
+        /// <summary>Enumerates create enumerable in this collection.</summary>
+        /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
+        /// <returns>
+        ///     An enumerator that allows foreach to be used to process create enumerable in this collection.
+        /// </returns>
+        internal void PrepareQuery()
+        {
+            QueryIncludeOptimizedIncludeSubPath.RemoveLazyChild(this);
 
-#if EFCORE_3X && NETSTANDARD2_1
+            // MODIFY query if necessary 
+
+            DbContext context = null;
+
+            if (OriginalQueryable.IsInMemoryQueryContext())
+            {
+                context = OriginalQueryable.GetInMemoryContext();
+            }
+            else
+            {
+                // MODIFY query if necessary
+                context = OriginalQueryable.GetDbContext();
+            }
+
+            var keyNames = context.Model.FindEntityType(typeof(T).DisplayName(true))
+                .GetKeys().ToList()[0]
+                .Properties.Select(x => x.Name).ToArray();
+
+            var newQuery = OriginalQueryable.AddToRootOrAppendOrderBy(keyNames).Select(x => x);
+
+            List<T> list;
+
+            if (QueryIncludeOptimizedManager.AllowQueryBatch)
+            {
+                foreach (var child in Childs)
+                {
+                    child.CreateIncludeQuery(newQuery);
+                }
+            }
+            else
+            {
+                //list = newQuery.ToList();
+
+                //foreach (var child in Childs)
+                //{
+                //    child.CreateIncludeQuery(newQuery);
+                //}
+
+                // for now no idea How support that, in fast.
+                throw new Exception("That scenario is only supported when AllowQueryBatch is true.");
+            }  
+        }
+#endif
+
+#if EFCORE_3X
         public async Task<List<T>> CreateEnumerableAsync(CancellationToken cancellationToken)
         {
             QueryIncludeOptimizedIncludeSubPath.RemoveLazyChild(this);

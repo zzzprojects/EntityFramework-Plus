@@ -119,7 +119,7 @@ namespace Z.EntityFramework.Plus
                             {
                                 var visitor = new QueryFilterInterceptorDbProjectExpression();
                                 visitor.DbScanExpression = baseExpression;
-                                visitor.ParameterCollection = QueryFilterManager.DbExpressionParameterByHook[expression2];
+                                visitor.ParameterCollection = InstanceFilterContext.DbExpressionParameterByHook[expression2];
 
                                 var filetered = expression2.Accept(visitor);
 
@@ -170,7 +170,7 @@ namespace Z.EntityFramework.Plus
                             {
                                 var visitor = new QueryFilterInterceptorDbProjectExpression();
                                 visitor.DbScanExpression = baseExpression;
-                                visitor.ParameterCollection = QueryFilterManager.DbExpressionParameterByHook[expression2];
+                                visitor.ParameterCollection = InstanceFilterContext.DbExpressionParameterByHook[expression2];
 
                                 var filetered = expression2.Accept(visitor);
 

@@ -42,21 +42,26 @@ namespace Z.EntityFramework.Plus
 	    internal Tuple<object,object> GetFinalCollectionQuery(Type listType, object subQuery)
 		{
 			Tuple<object, object> finalQuery = new Tuple<object, object>(listType, subQuery);
-			var elementType = listType.GenericTypeArguments[0];
+			var elementType = listType.GenericTypeArguments.Count() != 0 ? listType.GenericTypeArguments[0] : listType.BaseType.GenericTypeArguments[0]; 
 		    var isCollection = typeof(IEnumerable).IsAssignableFrom(elementType);
-		    if (isCollection)
-		    {
-
+			if (isCollection)
+			{
+#if EFCORE_2X
 				var selectManyMethod = typeof(QueryIncludeFilterManager).GetMethod("SelectMany", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)
 				    ?.MakeGenericMethod(elementType, listType, typeof(IEnumerable<>).MakeGenericType(elementType));
 			    var subQueryList2 = selectManyMethod?.Invoke(this, new object[] {subQuery});
+#else
 
-			    listType = elementType; 
+				var selectManyMethod = typeof(QueryIncludeFilterManager).GetMethod("SelectManyWithReturn", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)
+					?.MakeGenericMethod(elementType);
+				var subQueryList2 = selectManyMethod?.Invoke(this, new object[] { subQuery });
+#endif
+				listType = elementType;
 
-			    finalQuery = GetFinalCollectionQuery(listType, subQueryList2); 
-		    }
+				finalQuery = GetFinalCollectionQuery(listType, subQueryList2);
+			}
 
-		    return finalQuery;
+			return finalQuery;
 	    }
 
 	    /// <summary>Creates the query to use to load related entities.</summary>
@@ -81,12 +86,16 @@ namespace Z.EntityFramework.Plus
 
                     var listType = subQuery.GetType().GenericTypeArguments[0];
 	                var tuple = GetFinalCollectionQuery(listType, subQuery);
-
-					var elementType = ((Type)tuple.Item1).GenericTypeArguments[0];
-				
-					var selectManyFutureMethod = typeof(QueryIncludeFilterManager).GetMethod("SelectManyFuture", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)
+                    var elementType = ((Type)tuple.Item1).GenericTypeArguments.Count() != 0 ? ((Type)tuple.Item1).GenericTypeArguments[0] : ((Type)tuple.Item1).BaseType.GenericTypeArguments[0]; 
+#if EFCORE_2X
+                    var selectManyFutureMethod = typeof(QueryIncludeFilterManager).GetMethod("SelectManyFuture", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)
 		                ?.MakeGenericMethod(elementType, (Type)tuple.Item1, typeof(IEnumerable<>).MakeGenericType(elementType));
 	                selectManyFutureMethod?.Invoke(this, new object[] { tuple.Item2 });
+#else
+                    var selectManyFutureMethod = typeof(QueryIncludeFilterManager).GetMethod("SelectManyFutureNoCast", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)
+                        ?.MakeGenericMethod(elementType);
+                    selectManyFutureMethod?.Invoke(this, new object[] { tuple.Item2 });
+#endif
                 }
                 else
                 {
@@ -110,10 +119,14 @@ namespace Z.EntityFramework.Plus
                     var subQuery = queryable.Select(Filter);
 
                     var listType = subQuery.GetType().GenericTypeArguments[0];
-                    var elementType = listType.GenericTypeArguments[0];
-
+                    var elementType = listType.GenericTypeArguments.Count() != 0 ? listType.GenericTypeArguments[0] : listType.BaseType.GenericTypeArguments[0];
+#if EFCORE_2X
                     var selectManyToListMethod = typeof(QueryIncludeFilterManager).GetMethod("SelectManyToList", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)
                         ?.MakeGenericMethod(elementType, listType, typeof(IEnumerable<>).MakeGenericType(elementType));
+#else
+                    var selectManyToListMethod = typeof(QueryIncludeFilterManager).GetMethod("SelectManyNoCastToList", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)
+                        ?.MakeGenericMethod(elementType); 
+#endif
                     var subQueryList = selectManyToListMethod?.Invoke(this, new object[] {subQuery});
                 }
                 else

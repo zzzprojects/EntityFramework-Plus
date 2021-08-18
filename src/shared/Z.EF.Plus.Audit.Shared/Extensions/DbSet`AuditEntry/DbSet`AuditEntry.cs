@@ -32,12 +32,14 @@ namespace Z.EntityFramework.Plus
             var context = set.GetDbContext();
             var keyNames = context.GetKeyNames<T>();
 
+            var name = AuditManager.DefaultConfiguration.DataAnnotationEntityDisplayName(typeof(T));
+
             if (entry == null)
             {
                 return set.Where(x => false);
             }
 
-            var query = set.Where(x => x.EntityTypeName == typeof(T).Name);
+            var query = set.Where(x => x.EntityTypeName == name);
 
             foreach (var keyName in keyNames)
             {
@@ -63,7 +65,9 @@ namespace Z.EntityFramework.Plus
             var context = set.GetDbContext();
             var keyNames = context.GetKeyNames<T>();
 
-            var query = set.Where(x => x.EntityTypeName == typeof(T).Name);
+            var name = AuditManager.DefaultConfiguration.DataAnnotationEntityDisplayName(typeof(T));
+
+            var query = set.Where(x => x.EntityTypeName == name);
 
             if (keyValues == null)
             {

@@ -89,19 +89,28 @@ namespace Z.EntityFramework.Plus
                         && !audit.CurrentOrDefaultConfiguration.IgnoreEntityAdded
                         && audit.CurrentOrDefaultConfiguration.IsAuditedEntity(objectStateEntry))
                     {
-                        AuditEntityAdded(audit, objectStateEntry);
-                    }
+#if EF5 || EF6
+                       AuditEntityAdded(audit, objectStateEntry);
+#elif EFCORE 
+                       AuditEntityAdded(audit, objectStateEntry, context);
+#endif
+                }
 
-                    // Entity Deleted
-                    else if (objectStateEntry.State == EntityState.Deleted
+                // Entity Deleted
+                else if (objectStateEntry.State == EntityState.Deleted
                              && !audit.CurrentOrDefaultConfiguration.IgnoreEntityDeleted
                              && audit.CurrentOrDefaultConfiguration.IsAuditedEntity(objectStateEntry))
                     {
+#if EF5 || EF6
                         AuditEntityDeleted(audit, objectStateEntry);
+#elif EFCORE
+                        AuditEntityDeleted(audit, objectStateEntry, context);
+#endif
+                  
                     }
 
-                    // Entity Modified
-                    else if (objectStateEntry.State == EntityState.Modified
+                // Entity Modified
+                else if (objectStateEntry.State == EntityState.Modified
                              && audit.CurrentOrDefaultConfiguration.IsAuditedEntity(objectStateEntry))
                     {
                         var auditState = audit.CurrentOrDefaultConfiguration.GetEntityModifiedState(objectStateEntry);
@@ -110,23 +119,35 @@ namespace Z.EntityFramework.Plus
                         if (auditState == AuditEntryState.EntityModified
                             && !audit.CurrentOrDefaultConfiguration.IgnoreEntityModified)
                         {
+#if EF5 || EF6
                             AuditEntityModified(audit, objectStateEntry, auditState);
-                        }
+#elif EFCORE
+                            AuditEntityModified(audit, objectStateEntry, auditState, context);
+#endif
+                    }
 
-                        // Entity Soft Added
-                        else if (auditState == AuditEntryState.EntitySoftAdded
+                    // Entity Soft Added
+                    else if (auditState == AuditEntryState.EntitySoftAdded
                                  && !audit.CurrentOrDefaultConfiguration.IgnoreEntitySoftAdded)
                         {
+#if EF5 || EF6
                             AuditEntityModified(audit, objectStateEntry, auditState);
+#elif EFCORE    
+                            AuditEntityModified(audit, objectStateEntry, auditState, context);
+#endif
                         }
 
-                        // Entity Soft Deleted
-                        else if (auditState == AuditEntryState.EntitySoftDeleted
+                    // Entity Soft Deleted
+                    else if (auditState == AuditEntryState.EntitySoftDeleted
                                  && !audit.CurrentOrDefaultConfiguration.IgnoreEntitySoftDeleted)
                         {
+#if EF5 || EF6
                             AuditEntityModified(audit, objectStateEntry, auditState);
+#elif EFCORE    
+                            AuditEntityModified(audit, objectStateEntry, auditState, context);
+#endif
                         }
-                    }
+                }
 #if EF5 || EF6
                 }
 #endif

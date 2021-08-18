@@ -32,14 +32,17 @@ namespace Z.EntityFramework.Plus
 #if EF5 || EF6
         public static void AuditEntityAdded(Audit audit, ObjectStateEntry objectStateEntry)
 #elif EFCORE
-        public static void AuditEntityAdded(Audit audit, EntityEntry objectStateEntry)
+        public static void AuditEntityAdded(Audit audit, EntityEntry objectStateEntry, DbContext context)
 #endif
         {
             var entry = audit.Configuration.AuditEntryFactory != null ?
                 audit.Configuration.AuditEntryFactory(new AuditEntryFactoryArgs(audit, objectStateEntry, AuditEntryState.EntityAdded)) :
                 new AuditEntry();
-
+#if EF5 || EF6
             entry.Build(audit, objectStateEntry);
+#elif EFCORE
+            entry.Build(audit, objectStateEntry, context);
+#endif
             entry.State = AuditEntryState.EntityAdded;
 
             audit.Entries.Add(entry);

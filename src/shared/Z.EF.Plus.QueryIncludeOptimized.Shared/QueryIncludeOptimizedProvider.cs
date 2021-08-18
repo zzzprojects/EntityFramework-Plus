@@ -46,14 +46,30 @@ namespace Z.EntityFramework.Plus
 #if EF6 && NET45
     public class QueryIncludeOptimizedProvider<T> : IDbAsyncQueryProvider
 #elif EFCORE_3X
+#if EFCORE_3X
+    public class QueryIncludeOptimizedProvider<T> : EntityQueryProvider, IQueryProvider, IAsyncQueryProvider
+#else
     public class QueryIncludeOptimizedProvider<T> : IQueryProvider, IAsyncQueryProvider
+#endif
 #else
     public class QueryIncludeOptimizedProvider<T> : IQueryProvider 
 #endif
     {
+
+#if EFCORE_3X
+        // Used by IsInMemoryQueryContext with Futur for example.
+        public static QueryCompiler GetQueryCompiler(object provider)
+        {
+            var compilerField = typeof(EntityQueryProvider).GetField("_queryCompiler", BindingFlags.NonPublic | BindingFlags.Instance);
+            return (QueryCompiler)compilerField.GetValue(provider); 
+        }
+#endif
         /// <summary>Constructor.</summary>
         /// <param name="originalProvider">The original provider.</param>
         public QueryIncludeOptimizedProvider(IQueryProvider originalProvider)
+#if EFCORE_3X
+            : base(GetQueryCompiler(originalProvider))
+#endif
         {
             OriginalProvider = originalProvider;
         }

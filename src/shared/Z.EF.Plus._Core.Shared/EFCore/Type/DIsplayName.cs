@@ -21,10 +21,15 @@ namespace Z.EntityFramework.Plus
         internal static string DisplayName(this Type type, bool fullName)
         {
             var displayNameMethod = typeof(DbContext).Assembly.GetType("System.SharedTypeExtensions").GetMethod("DisplayName");
+
+#if EFCORE_6X
+            return (string)displayNameMethod.Invoke(null, new object[] { type, fullName, false });
+#else
             return (string)displayNameMethod.Invoke(null, new object[] {type, fullName });
+#endif
         }
 #endif
-    }
+        }
 }
 #endif
 #endif

@@ -47,9 +47,27 @@ namespace Z.EntityFramework.Plus
 		    var selectManyQuery = (IQueryable<TSource>)methodGeneric.Invoke(null, new[] { test, selector });
 
 		    return selectManyQuery;
-	    }
+        }
 
-		internal static IQueryable<TSource> SelectManyFuture<TSource, TList, TEnumerable>(object test) where TList : TEnumerable
+        internal static void SelectManyFutureNoCast<IEntity>(IQueryable<IEnumerable<IEntity>> query)
+        {
+            query.SelectMany(x => x).Future();
+        }
+
+
+        internal static IEnumerable<IEntity> SelectManyWithReturn<IEntity>(IQueryable<IEnumerable<IEntity>> query)
+        { 
+            return query.SelectMany(x => x);
+        }
+       
+
+        internal static IEnumerable<IEntity> SelectManyNoCastToList<IEntity>(IQueryable<IEnumerable<IEntity>> query)
+        {
+            return query.SelectMany(x => x).ToList();
+        }
+
+
+        internal static IQueryable<TSource> SelectManyFuture<TSource, TList, TEnumerable>(object test) where TList : TEnumerable
         {
             var method = typeof(Queryable).GetMethods().First(x => x.Name == "SelectMany");
             var methodGeneric = method.MakeGenericMethod(typeof(TList), typeof(TSource));

@@ -39,13 +39,17 @@ namespace Z.EntityFramework.Plus
             if (entity != null && EntityValueFormatters.Count > 0)
             {
                 var type = entity.GetType();
-                var key = string.Concat(type.FullName, ";", propertyName);
+                // Null value doesn't work with scenario 2. So we add it to the key for this scenario.
+                // Only scenario 2 use the currentValue
+                // 1. EntityValueFormatters.Add((x, s, v) => x is T && s == accessor ? formatter : null);
+                // 2. EntityValueFormatters.Add((x, s, v) => v != null && v.GetType() == typeof(T) ? func : null);
+                var key = string.Concat(type.FullName, ";", propertyName, ";", currentValue == null ? "NULL" : currentValue.GetType().FullName);
                 Func<object, object> formatter;
 
                 if (!ValueFormatterDictionary.TryGetValue(key, out formatter))
                 {
                     if (EntityValueFormatters.Count > 0)
-                    {
+                    { 
                         foreach (var formatProperty in EntityValueFormatters)
                         {
                             formatter = formatProperty(entity, propertyName, currentValue);

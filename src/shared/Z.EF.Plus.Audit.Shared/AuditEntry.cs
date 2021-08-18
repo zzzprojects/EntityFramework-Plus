@@ -16,7 +16,10 @@ using System.Data.Objects;
 using System.Data.Entity.Core.Objects;
 
 #elif EFCORE
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System.Collections.Concurrent;
+using System.Linq;
 
 #endif
 
@@ -25,10 +28,14 @@ namespace Z.EntityFramework.Plus
     /// <summary>An audit entry.</summary>
     public class AuditEntry
     {
+#if EFCORE
+        public static ConcurrentDictionary<Type, ConcurrentDictionary<Type, string>> DictEntitySetNameByContext = new ConcurrentDictionary<Type, ConcurrentDictionary<Type, string>>();
+#endif
+
 #if EF5 || EF6
         public void Build(Audit parent, ObjectStateEntry entry)
 #else
-        public void Build(Audit parent, EntityEntry entry)
+        public void Build(Audit parent, EntityEntry entry, DbContext context)
 #endif
         {
             if (CreatedBy == null)
@@ -83,7 +90,43 @@ namespace Z.EntityFramework.Plus
 #elif EFCORE
             if (EntityTypeName == null)
             {
-                EntityTypeName = Entry.Entity.GetType().Name;
+                EntityTypeName = parent.CurrentOrDefaultConfiguration.EntityNameFactory != null ?
+                        parent.CurrentOrDefaultConfiguration.EntityNameFactory(Entry.Entity.GetType()) : Entry.Entity.GetType().Name;
+            }
+
+            if (EntitySetName == null)
+            {
+                var dictEntitySetNameByTypes = DictEntitySetNameByContext.GetOrAdd(context.GetType(), new ConcurrentDictionary<Type, string>());
+                var entitySetName = dictEntitySetNameByTypes.GetOrAdd(Entry.Entity.GetType(), type =>
+                {
+                    try
+                    {
+                        string setName = null;
+                        var setProperties = context.GetDbSetProperties();
+                        var baseType = Entry.Entity.GetType();
+
+                        while (baseType != typeof(object))
+                        {
+                            // If we found more than one corresponding entry, we throw an error and stop searching
+                            var setSingle = setProperties.SingleOrDefault(x => x.PropertyType.GetGenericArguments()[0] == Entry.Entity.GetType());
+                            if (setSingle != null)
+                            {
+                                setName = setSingle.Name;
+                                break;
+                            }
+
+                            baseType = baseType.BaseType;
+                        }
+
+                        return setName;
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+                });
+
+                EntitySetName = entitySetName; 
             }
 #endif
         }

@@ -87,6 +87,17 @@ namespace Z.EntityFramework.Plus
                 Context = query.GetObjectQuery().Context;
                 AddHook();
             }
+            else
+            {
+                try
+                {
+                    Context = query.GetObjectQuery().Context;
+                }
+                catch
+                {
+                    // for backward compatibility, might not always be possible or exists
+                }
+            }
 
             return this;
         }

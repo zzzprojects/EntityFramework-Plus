@@ -38,7 +38,9 @@ namespace Z.EntityFramework.Plus
             var typeFullName = type.AssemblyQualifiedName ?? type.FullName;
             var hookId = QueryFilterManager.PrefixHook + contextFullName + ";" + typeFullName + ";" + UniqueKey;
 
-            if (!QueryFilterManager.DbExpressionByHook.ContainsKey(hookId) || !QueryFilterManager.DbExpressionParameterByHook.ContainsKey(QueryFilterManager.DbExpressionByHook[hookId]))
+            var filterContext = QueryFilterManager.AddOrGetFilterContext(context);
+
+            if (!filterContext.DbExpressionByHook.ContainsKey(hookId) || !filterContext.DbExpressionParameterByHook.ContainsKey(filterContext.DbExpressionByHook[hookId]))
             {
                 // CREATE set
                 var setMethod = typeof(DbContext).GetMethod("Set", new Type[0]).MakeGenericMethod(type);
@@ -55,11 +57,10 @@ namespace Z.EntityFramework.Plus
                 var commandTextAndParameters = objectQuery.GetCommandTextAndParameters();
 
                 // ADD parameter
-                QueryFilterManager.DbExpressionParameterByHook.AddOrUpdate(QueryFilterManager.DbExpressionByHook[hookId], commandTextAndParameters.Item2, (s, list) => list);
+                filterContext.DbExpressionParameterByHook.AddOrUpdate(filterContext.DbExpressionByHook[hookId], commandTextAndParameters.Item2, (s, list) => list);
             }
 
-            // TODO: WeakTable ?
-            return QueryFilterManager.DbExpressionByHook[hookId];
+            return filterContext.DbExpressionByHook[hookId];
         }
     }
 }

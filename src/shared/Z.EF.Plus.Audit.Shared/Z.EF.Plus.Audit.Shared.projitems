@@ -21,6 +21,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\DisplayNameDataAnnotation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\ExcludeDataAnnotation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\ExcludeEntity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\MetaProperty.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\ExcludeProperty.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\Format.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\FormatType.cs" />

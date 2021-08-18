@@ -6,6 +6,8 @@
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 using System;
+using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using Z.EntityFramework.Extensions;
@@ -48,5 +50,89 @@ namespace Z.EntityFramework.Plus
             });
 #endif
         }
-    }
+
+
+        #region Expando & Dictionary & Anonymous
+
+        /// <summary>An IQueryable&lt;T&gt; extension method that updates from query.</summary>
+        /// <typeparam name="T">Type of the entity.</typeparam>
+        /// <param name="query">The query to act on.</param>
+        /// <param name="expandoObject">The expandoObject.</param>
+        /// <returns>The number of row affected.</returns>
+        public static int Update<T>(this IQueryable<T> query, ExpandoObject expandoObject) where T : class
+        {
+            return Update(query, (IDictionary<string, object>)expandoObject, null);
+        }
+
+        /// <summary>An IQueryable&lt;T&gt; extension method that updates from query.</summary>
+        /// <typeparam name="T">Type of the entity.</typeparam>
+        /// <param name="query">The query to act on.</param>
+        /// <param name="expandoObject">The expandoObject.</param>
+        /// <param name="batchUpdateBuilder">The batch builder action to change default configuration.</param>
+        /// <returns>The number of row affected.</returns>
+        public static int Update<T>(this IQueryable<T> query, ExpandoObject expandoObject, Action<BatchUpdate> batchUpdateBuilder) where T : class
+        {
+            return Update(query, (IDictionary<string, object>)expandoObject, batchUpdateBuilder);
+        }
+
+        /// <summary>An IQueryable&lt;T&gt; extension method that updates from query.</summary>
+        /// <typeparam name="T">Type of the entity.</typeparam>
+        /// <param name="query">The query to act on.</param>
+        /// <param name="dictionary">The dictionary.</param>
+        /// <returns>The number of row affected.</returns>
+        public static int Update<T>(this IQueryable<T> query, IDictionary<string, object> dictionary) where T : class
+        {
+            return Update(query, dictionary, null);
+        }
+
+        /// <summary>An IQueryable&lt;T&gt; extension method that updates from query.</summary>
+        /// <typeparam name="T">Type of the entity.</typeparam>
+        /// <param name="query">The query to act on.</param>
+        /// <param name="dictionary">The dictionary.</param>
+        /// <param name="batchUpdateBuilder">The batch builder action to change default configuration.</param>
+        /// <returns>The number of row affected.</returns>
+        public static int Update<T>(this IQueryable<T> query, IDictionary<string, object> dictionary, Action<BatchUpdate> batchUpdateBuilder) where T : class
+        {
+#if EFCORE
+            return query.UpdateFromQuery(dictionary, batchUpdateBuilder);
+#else
+            return query.UpdateFromQuery(dictionary, options =>
+            {
+                options.InternalIsEntityFrameworkPlus = true;
+                options.BatchUpdateBuilder = batchUpdateBuilder;
+            });
+#endif
+        }
+
+        /// <summary>An IQueryable&lt;T&gt; extension method that updates from query.</summary>
+        /// <typeparam name="T">Type of the entity.</typeparam>
+        /// <param name="query">The query to act on.</param>
+        /// <param name="batchUpdateBuilder">The batch builder action to change default configuration.</param>
+        /// <returns>The number of row affected.</returns>
+        public static int Update<T>(this IQueryable<T> query, Expression<Func<T, object>> updateExpression) where T : class
+        {
+            return Update(query, updateExpression, null);
+        }
+
+        /// <summary>An IQueryable&lt;T&gt; extension method that updates from query.</summary>
+        /// <typeparam name="T">Type of the entity.</typeparam>
+        /// <param name="query">The query to act on.</param>
+        /// <param name="updateExpression">The update expression.</param>
+        /// <param name="batchUpdateBuilder">The batch builder action to change default configuration.</param>
+        /// <returns>The number of row affected.</returns>
+        public static int Update<T>(this IQueryable<T> query, Expression<Func<T, object>> updateExpression, Action<BatchUpdate> batchUpdateBuilder) where T : class
+        {
+#if EFCORE
+            return query.UpdateFromQuery(updateExpression, batchUpdateBuilder);
+#else
+            return query.UpdateFromQuery(updateExpression, options =>
+            {
+                options.InternalIsEntityFrameworkPlus = true;
+                options.BatchUpdateBuilder = batchUpdateBuilder;
+            });
+#endif
+        }
+
+		#endregion
+	}
 }

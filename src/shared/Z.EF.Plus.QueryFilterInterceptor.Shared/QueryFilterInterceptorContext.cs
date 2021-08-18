@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.Entity;
+using System.Data.Entity.Core.Common.CommandTrees;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
@@ -36,6 +38,14 @@ namespace Z.EntityFramework.Plus
 
         /// <summary>Type of the filter by.</summary>
         public ConcurrentDictionary<Type, List<BaseQueryFilterInterceptor>> GlobalFilterByType = new ConcurrentDictionary<Type, List<BaseQueryFilterInterceptor>>();
+
+        /// <summary>Gets the database expression by hook.</summary>
+        /// <value>The database expression by hook.</value>
+        public ConcurrentDictionary<string, DbExpression> DbExpressionByHook = new ConcurrentDictionary<string, DbExpression>();
+
+        /// <summary>Gets the database expression parameter by hook.</summary>
+        /// <value>The database expression parameter by hook.</value>
+        public ConcurrentDictionary<DbExpression, DbParameterCollection> DbExpressionParameterByHook = new ConcurrentDictionary<DbExpression, DbParameterCollection>();
 
         /// <summary>Set the type by database belongs to.</summary>
         public Dictionary<string, List<Type>> TypeByDbSet = new Dictionary<string, List<Type>>();

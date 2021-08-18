@@ -88,6 +88,14 @@ namespace Z.EntityFramework.Plus
 #endif
                         break;
                 }
+
+                if (audit.Configuration.MetaProperties != null)
+                {
+                    foreach (var metaProperty in audit.Configuration.MetaProperties)
+                    {
+                        metaProperty(entry);
+                    }
+                }
             }
             //            foreach (var entry in audit.Entries)
             //            {

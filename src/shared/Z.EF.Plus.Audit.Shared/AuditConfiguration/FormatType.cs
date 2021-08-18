@@ -33,7 +33,10 @@ namespace Z.EntityFramework.Plus
 #else
             Func<object, object> func = o => formatter((T) o);
 #endif
-            EntityValueFormatters.Add((x, s, v) => v != null && v.GetType() == typeof(T) ? func : null);
+            EntityValueFormatters.Add((x, s, v) => v != null && (v.GetType() == typeof(T) || 
+            (
+                typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(Nullable<>) && v.GetType() == typeof(T).GetGenericArguments()[0]
+            )) ? func : null);
 
             return this;
         }

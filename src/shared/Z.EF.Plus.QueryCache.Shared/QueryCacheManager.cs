@@ -19,6 +19,7 @@ using System.Data.EntityClient;
 using System.Data.SqlClient;
 
 #elif EF6
+using System.Data.Entity;
 using System.Data.Entity.Core.EntityClient;
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
@@ -141,6 +142,13 @@ namespace Z.EntityFramework.Plus
                 _defaultCacheItemPolicy = null;
             }
         }
+
+#if EF6
+        /// <summary>
+        /// Gets or sets a value indicating whether the cache should automatically add the model cache key.
+        /// </summary>
+        public static bool AutoAddModelCacheKey { get; set; }
+#endif
 
 #elif EFCORE
         /// <summary>Gets or sets the cache to use for the QueryCacheExtensions extension methods.</summary>
@@ -306,6 +314,23 @@ namespace Z.EntityFramework.Plus
                 tags = tagsList.ToArray();
             }
 
+            if (AutoAddModelCacheKey && handler.Context != null)
+            {
+                var modelCacheKey = handler.Context.GetDbContext().GetModelCacheKey();
+
+                if (modelCacheKey.HasValue)
+                {
+                    if (tags == null)
+                    {
+                        tags = new string[0];
+                    }
+
+                    var tagsList = tags.ToList();
+                    tagsList.Add("ModelCacheKey=" + modelCacheKey);
+                    tags = tagsList.ToArray();
+                }
+            }
+
             AddCacheTag(cacheKey, tags);
         }
 #endif
@@ -388,6 +413,20 @@ namespace Z.EntityFramework.Plus
         {
             ExpireType(typeof(T));
         }
+
+#if EF6
+        /// <summary>Expire all items for this ModelCacheKey.</summary>
+        /// <param name="context">The context.</param>
+        public static void ExpireModelCacheKey(DbContext context)
+        {
+            var modelCacheKey = context.GetModelCacheKey();
+
+            if (modelCacheKey.HasValue)
+            {
+                ExpireTag("ModelCacheKey=" + modelCacheKey);
+            }
+        }
+#endif
 
         /// <summary>Expire all cached keys linked to specified tags.</summary>
         /// <param name="tags">
@@ -543,6 +582,11 @@ namespace Z.EntityFramework.Plus
 		                { 
 			                sb.Append(dbParameter.Value?.ToString() ?? "NULL");
 			                sb.AppendLine(";");
+                        }
+                        else if (param != null)
+                        {
+                            sb.Append(param);
+                            sb.AppendLine(";");
                         }
 	                }
                 }

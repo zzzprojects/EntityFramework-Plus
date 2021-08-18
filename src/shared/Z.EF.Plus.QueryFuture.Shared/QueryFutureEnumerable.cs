@@ -35,6 +35,7 @@ namespace Z.EntityFramework.Plus
     public class QueryFutureEnumerable<T> : BaseQueryFuture, IEnumerable<T>
 #endif
     {
+
         /// <summary>The result of the query future.</summary>
         private IEnumerable<T> _result;
 
@@ -58,6 +59,8 @@ namespace Z.EntityFramework.Plus
         /// <returns>The enumerator of the query future.</returns>
         public IEnumerator<T> GetEnumerator()
         {
+            IEnumerator<T> values;
+
             if (!HasValue)
             {
                 OwnerBatch.ExecuteQueries();
@@ -65,10 +68,21 @@ namespace Z.EntityFramework.Plus
 
             if (_result == null)
             {
-                return new List<T>().GetEnumerator();
+                values = new List<T>().GetEnumerator();
+            }
+            else
+            {
+                values = _result.GetEnumerator(); 
             }
 
-            return _result.GetEnumerator();
+#if EFCORE_3X
+            if (IsIncludeOptimizedNullCollectionNeeded)
+			{ 
+                QueryIncludeOptimizedNullCollection.NullCollectionToEmpty(_result, Childs);
+            }
+#endif
+
+            return values; 
         }
 
 
