@@ -53,5 +53,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\DbContext\SaveChanges.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\DbContext\SaveChangesAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\DbSet`AuditEntry\DbSet`AuditEntry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\Type\GetAuditDisplayName.cs" />
   </ItemGroup>
 </Project>
