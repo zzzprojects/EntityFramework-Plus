@@ -21,23 +21,23 @@ Z.EntityFramework.Plus.EFCore | <a href="https://www.nuget.org/packages/Z.Entity
 Z.EntityFramework.Plus.EF6 | <a href="https://www.nuget.org/packages/Z.EntityFramework.Plus.EF6/" target="_blank"><img src="https://zzzprojects.github.io/images/nuget/ef6-full-version-v.svg" alt="download" /></a><a href="https://www.nuget.org/packages/Z.EntityFramework.Plus.EF6/" target="_blank"><img src="https://zzzprojects.github.io/images/nuget/ef6-full-version-d.svg" alt="" /></a> | ```PM> Install-Package Z.EntityFramework.Plus.EF6```
 Z.EntityFramework.Plus.EF5 | <a href="https://www.nuget.org/packages/Z.EntityFramework.Plus.EF5/" target="_blank"><img src="https://zzzprojects.github.io/images/nuget/ef5-full-version-v.svg" alt="download" /></a><a href="https://www.nuget.org/packages/Z.EntityFramework.Plus.EF5/" target="_blank"><img src="https://zzzprojects.github.io/images/nuget/ef5-full-version-d.svg" alt="" /></a> | ```PM> Install-Package Z.EntityFramework.Plus.EF5```
 
-<a href="https://github.com/zzzprojects/EntityFramework-Plus/wiki/Downloads">More download options (Full and Standalone Version)</a>
+<a href="https://entityframework-plus.net/download">More download options (Full and Standalone Version)</a>
 
 ## Features
 - Batch Operations
-    - [Batch Delete](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Batch-Delete-%7C-Entity-Framework-Batch-Delete-Objects-Without-Loading-Them)
-    - [Batch Update](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Batch-Update-%7C-Entity-Framework-Batch-Update-Objects-Without-Loading-Them)
+    - [Batch Delete](https://entityframework-plus.net/ef-core-batch-delete)
+    - [Batch Update](https://entityframework-plus.net/ef-core-batch-update)
 - LINQ
-    - [LINQ Dynamic](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-LINQ-Dynamic)
+    - [LINQ Dynamic](https://entityframework-plus.net/ef-core-linq-dynamic)
 - Query
-    - [Query Cache](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Cache-%7C-Entity-Framework-Second-Level-Caching)  
-    - [Query Deferred](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Deferred-%7C-Entity-Framework-deferring-immediate-LINQ-query-execution)
-    - [Query DbSetFilter](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-DbSetFilter)
-    - [Query Filter](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Filter-%7C-Entity-Framework-Dynamic-Instance-and-Global-Filters)
-    - [Query Future](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Future-%7C-Entity-Framework-Combine-and-Execute-Multiple-SQL-Command)
-    - [Query IncludeFilter](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-IncludeFilter-%7C-Entity-Framework-Include-Related-Entities-using-Where-Filter)
-    - [Query IncludeOptimized](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-IncludeOptimized-%7C-Entity-Framework-Filter-Child-Collections-and-Optimize-Include)
-- [Audit](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Audit-%7C-Entity-Framework-Audit-Trail-Context-and-Track-Changes)
+    - [Query Cache](https://entityframework-plus.net/ef-core-query-cache)  
+    - [Query Deferred](https://entityframework-plus.net/ef-core-query-deferred)
+    - [Query DbSetFilter](https://entityframework-plus.net/query-db-set-filter)
+    - [Query Filter](https://entityframework-plus.net/ef-core-query-filter)
+    - [Query Future](https://entityframework-plus.net/ef-core-query-future)
+    - [Query IncludeFilter](https://entityframework-plus.net/ef-core-query-include-filter)
+    - [Query IncludeOptimized](https://entityframework-plus.net/ef-core-query-include-optimized)
+- [Audit](https://entityframework-plus.net/ef-core-audit)
 
 ---
 
@@ -67,7 +67,7 @@ ctx.Users.Where(x => x.LastLoginDate < DateTime.Now.AddYears(-2))
 
 **Support:** EF5, EF6, EF Core
 
-**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Batch-Delete-%7C-Entity-Framework-Batch-Delete-Objects-Without-Loading-Them)**
+**[Learn more](https://entityframework-plus.net/ef-core-batch-delete)**
 
 ## Batch Update
 Updates multiples rows using an expression in a single database roundtrip and without loading entities in the context.
@@ -82,7 +82,7 @@ ctx.Users.Where(x => x.LastLoginDate < DateTime.Now.AddYears(-2))
 
 **Support:** EF5, EF6, EF Core
 
-**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Batch-Update-%7C-Entity-Framework-Batch-Update-Objects-Without-Loading-Them)**
+**[Learn more](https://entityframework-plus.net/ef-core-batch-update)**
 
 ## Query Cache
 **Query cache is the second level cache for Entity Framework.**
@@ -119,7 +119,7 @@ QueryCacheManager.ExpireTag("countries");
 
 **Support:** EF5, EF6, EF Core
 
-**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Cache-%7C-Entity-Framework-Second-Level-Caching)**
+**[Learn more](https://entityframework-plus.net/ef-core-batch-update)**
 
 ## Query Deferred
 **Defer the execution of a query which is normally executed to allow some features like Query Cache and Query Future.**
@@ -138,7 +138,7 @@ ctx.Customers.DeferredCount().FutureValue();
 
 **Support:** EF5, EF6, EF Core
 
-**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Deferred-%7C-Entity-Framework-deferring-immediate-LINQ-query-execution)**
+**[Learn more](https://entityframework-plus.net/ef-core-query-deferred)**
 
 ## Query Filter
 **Filter query with predicate at global, instance or query level.**
@@ -183,7 +183,7 @@ var customer = ctx.Customers.Filter(CustomEnum.EnumValue).ToList();
 
 **Support:** EF5, EF6, EF Core
 
-**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Filter-%7C-Entity-Framework-Dynamic-Instance-and-Global-Filters)**
+**[Learn more](https://entityframework-plus.net/ef-core-query-filter)**
 
 ## Query Future
 **Query Future allow to reduce database roundtrip by batching multiple queries in the same sql command.**
@@ -216,7 +216,7 @@ Customer firstCustomer = futureFirstCustomer.Value;
 
 **Support:** EF5, EF6, EF Core
 
-**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-Future-%7C-Entity-Framework-Combine-and-Execute-Multiple-SQL-Command)**
+**[Learn more](https://entityframework-plus.net/ef-core-query-future)**
 
 ## Query IncludeFilter
 Entity Framework already support eager loading however the major drawback is you cannot control what will be included. There is no way to load only active item or load only the first 10 comments.
@@ -229,9 +229,9 @@ var ctx = new EntityContext();
 var posts = ctx.Post.IncludeFilter(x => x.Comments.Where(x => x.IsActive));
 ```
 
-**Support:** EF6
+**Support:** EF6, EF Core
 
-**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-IncludeFilter-%7C-Entity-Framework-Include-Related-Entities-using-Where-Filter)**
+**[Learn more](https://entityframework-plus.net/ef-core-query-include-filter)**
 
 ## Query IncludeOptimized
 Improve SQL generate by Include and filter child collections at the same times!
@@ -243,9 +243,9 @@ var ctx = new EntityContext();
 var posts = ctx.Post.IncludeOptimized(x => x.Comments.Where(x => x.IsActive));
 ```
 
-**Support:** EF5, EF6
+**Support:** EF5, EF6, EF Core
 
-**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Query-IncludeFilter-%7C-Entity-Framework-Include-Related-Entities-using-Where-Filter)**
+**[Learn more](https://entityframework-plus.net/ef-core-query-include-optimized)**
 
 ## Audit
 Allow to easily track changes, exclude/include entity or property and auto save audit entries in the database.
@@ -287,7 +287,7 @@ AuditManager.DefaultConfiguration.AutoSavePreAction = (context, audit) =>
 
 **Support:** EF5, EF6, EF Core
 
-**[Learn more](https://github.com/zzzprojects/EntityFramework-Plus/wiki/EF-Audit-%7C-Entity-Framework-Audit-Trail-Context-and-Track-Changes)**
+**[Learn more](https://entityframework-plus.net/ef-core-audit)**
 
 ## Useful links
 
