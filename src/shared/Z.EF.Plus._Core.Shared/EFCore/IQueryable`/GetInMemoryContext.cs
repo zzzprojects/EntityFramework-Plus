@@ -29,10 +29,16 @@ namespace Z.EntityFramework.Plus
 			object stateManagerDynamic;
 
 #if EFCORE_3X
-            var dependenciesField = queryContextFactory.GetType().GetField("_dependencies", BindingFlags.NonPublic | BindingFlags.Instance);
-            var dependencies = dependenciesField.GetValue(queryContextFactory);
 
-            var stateManagerField = typeof(DbContext).GetTypeFromAssembly_Core("Microsoft.EntityFrameworkCore.Query.QueryContextDependencies").GetProperty("StateManager", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+#if EFCORE_6X
+            var dependenciesProperty = queryContextFactory.GetType().GetProperty("Dependencies", BindingFlags.NonPublic | BindingFlags.Instance);
+            var dependencies = dependenciesProperty.GetValue(queryContextFactory);
+#else
+			var dependenciesField = queryContextFactory.GetType().GetField("_dependencies", BindingFlags.NonPublic | BindingFlags.Instance);
+			var dependencies = dependenciesField.GetValue(queryContextFactory);
+#endif
+
+			var stateManagerField = typeof(DbContext).GetTypeFromAssembly_Core("Microsoft.EntityFrameworkCore.Query.QueryContextDependencies").GetProperty("StateManager", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             stateManagerDynamic = stateManagerField.GetValue(dependencies);
 #else
             var dependenciesProperty = queryContextFactory.GetType().GetProperty("Dependencies", BindingFlags.NonPublic | BindingFlags.Instance);

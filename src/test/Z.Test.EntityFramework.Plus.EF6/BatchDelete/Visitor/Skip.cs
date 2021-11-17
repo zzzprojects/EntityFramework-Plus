@@ -5,6 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
+using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Z.EntityFramework.Plus;
@@ -16,24 +17,26 @@ namespace Z.Test.EntityFramework.Plus
         [TestMethod]
         public void Skip()
         {
-            TestContext.DeleteAll(x => x.Entity_Basics);
-            TestContext.Insert(x => x.Entity_Basics, 50);
-
-            using (var ctx = new TestContext())
+            Action action = () =>
             {
-                var sql = "";
+                TestContext.DeleteAll(x => x.Entity_Basics);
+                TestContext.Insert(x => x.Entity_Basics, 50);
 
-                // BEFORE
-                Assert.AreEqual(1225, ctx.Entity_Basics.Sum(x => x.ColumnInt));
+                using (var ctx = new TestContext())
+                {
+                    var sql = "";
 
-                // ACTION
-                var rowsAffected = ctx.Entity_Basics.Where(x => x.ColumnInt > 10 && x.ColumnInt <= 40).OrderBy(x => x.ColumnInt).Skip(20).Delete(delete => delete.Executing = command => sql = command.CommandText);
+                    // BEFORE
+                    Assert.AreEqual(1225, ctx.Entity_Basics.Sum(x => x.ColumnInt));
 
-                // AFTER
-                Assert.AreEqual(870, ctx.Entity_Basics.Sum(x => x.ColumnInt));
-                Assert.AreEqual(10, rowsAffected);
+                    // ACTION
+                    var rowsAffected = ctx.Entity_Basics.Where(x => x.ColumnInt > 10 && x.ColumnInt <= 40).OrderBy(x => x.ColumnInt).Skip(20).Delete(delete => delete.Executing = command => sql = command.CommandText);
 
-#if EF5
+                    // AFTER
+                    Assert.AreEqual(870, ctx.Entity_Basics.Sum(x => x.ColumnInt));
+                    Assert.AreEqual(10, rowsAffected);
+
+    #if EF5
                 Assert.AreEqual(@"
 DELETE
 FROM    A
@@ -83,7 +86,10 @@ FROM (
 SELECT @@ROWCOUNT
 ", sql);
 #endif
-            }
+                }
+            };
+
+            MyIni.RunWithFailLogical(MyIni.GetSetupCasTest(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName + "." + System.Reflection.MethodBase.GetCurrentMethod().Name), action);
         }
     }
 }

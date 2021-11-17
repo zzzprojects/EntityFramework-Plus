@@ -482,6 +482,21 @@ namespace Z.EntityFramework.Plus
                                 convertToProvider = propertyConvertToProvider.GetValue(converter);
                                 methodeConvertFromProvider = convertToProvider?.GetType().GetMethod("Invoke", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
                             }
+                            else
+                            {
+                                var spatialPropertyConverter = relationalTypeMapping?.GetType().GetProperty("SpatialConverter", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+                                if (spatialPropertyConverter != null)
+                                {
+                                    var converterSpatial = spatialPropertyConverter.GetValue(relationalTypeMapping);
+                                    var spatialPropertyConvertToProvider = converterSpatial?.GetType().GetProperty("ConvertToProvider", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+
+                                    if (spatialPropertyConvertToProvider != null)
+                                    {
+                                        convertToProvider = spatialPropertyConvertToProvider.GetValue(converterSpatial);
+                                        methodeConvertFromProvider = convertToProvider?.GetType().GetMethod("Invoke", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+                                    }
+                                }
+                            }
                         }
                     }
 

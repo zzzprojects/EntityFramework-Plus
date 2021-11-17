@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Z.EntityFramework.Plus;
 
 namespace Z.Test.EntityFramework.Plus.Mik_Area
 {
@@ -45,15 +46,40 @@ namespace Z.Test.EntityFramework.Plus.Mik_Area
 		{
 			public int Id { get; set; }
 			public int ColumInt { get; set; }
+			public int? ColumIntNullable { get; set; }
 			public string ColumString { get; set; }
+		}
+
+		[AuditDisplay("EntitySimple_Patate")]
+		public class EntitySimpleWithDisplay
+		{
+			public int Id { get; set; }
+			public int ColumInt { get; set; }
+			public string ColumString { get; set; }
+		}
+
+		public class EntitySimpleWithChild
+		{
+			public int ID { get; set; }
+			public int ColumnInt { get; set; }
+			public string ColumnString { get; set; }
+			public bool IsActive { get; set; }
+
+			public EntitySimpleChild EntitySimpleChild { get; set; }
+		}
+		public class EntitySimpleChild
+		{
+			public int ID { get; set; }
+			public int ColumnInt { get; set; }
+			public string ColumnString { get; set; }
+			public bool IsActive { get; set; }
 		}
 
 		public class EntityContext : DbContext
 		{
 			public EntityContext() : base(My.ConnectionString)
 			{
-			}
-
+			} 
 			// begin BatchDelete_ChangeSet8127_Issue3109
 			public DbSet<Customer> Customers { get; set; }
 			public DbSet<Order> Orders { get; set; }
@@ -61,15 +87,21 @@ namespace Z.Test.EntityFramework.Plus.Mik_Area
 			// End BatchDelete_ChangeSet8127_Issue3109
 
 			public DbSet<EntitySimple> EntitySimples { get; set; }
+			public DbSet<EntitySimpleWithChild> EntitySimpleWithChilds { get; set; }
+			public DbSet<EntitySimpleChild> EntitySimpleChilds { get; set; }
 
-            // for BatchUpdateDelete_TPH
-		    public DbSet<MobileContract> MobileContracts { get; set; }
+			// for BatchUpdateDelete_TPH
+			public DbSet<MobileContract> MobileContracts { get; set; }
 		    public DbSet<TvContract> TvContracts { get; set; }
 		    public DbSet<BroadbandContract> BroadbandContracts { get; set; }
 		    public DbSet<Contract> Contracts { get; set; }
             public DbSet<ContractComplex> ContractComplexs { get; set; }
+			public DbSet<EntitySimpleWithDisplay> EntitySimpleWithDisplays { get; set; }
 
-            protected override void OnModelCreating(DbModelBuilder modelBuilder)
+			public DbSet<AuditEntry> AuditEntries { get; set; }
+			public DbSet<AuditEntryProperty> AuditEntryProperties { get; set; }
+
+			protected override void OnModelCreating(DbModelBuilder modelBuilder)
 			{
 			    // for BatchUpdateDelete_TPH
                 modelBuilder.Entity<Contract>().ToTable("Contracts");
@@ -260,6 +292,7 @@ namespace Z.Test.EntityFramework.Plus.Mik_Area
 			Inactive
 		}
 
-		// end BatchDelete_ChangeSet8127_Issue3109
+		// end BatchDelete_ChangeSet8127_Issue3109 
+
 	}
 }

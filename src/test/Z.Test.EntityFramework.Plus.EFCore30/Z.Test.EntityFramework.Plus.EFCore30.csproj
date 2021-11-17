@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup Label="Globals">
     <SccProjectName>SAK</SccProjectName>
@@ -36,5 +36,7 @@
   </ItemGroup>
 
   <Import Project="..\..\Z.Test.EntityFramework.Plus.EFCore.Shared\Z.Test.EntityFramework.Plus.EFCore.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\Z.Test.EntityFramework.Plus.Test.Shared\Z.Test.EntityFramework.Plus.Test.Shared.projitems" Label="Shared" />
 
 </Project>

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -35,11 +35,10 @@
     <DocumentationFile>bin\Release\Z.EntityFramework.Plus.EF5.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
+    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>zzzproject.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework, Version=4.4.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -56,11 +55,11 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Z.EntityFramework.Extensions.EF5, Version=4.0.52.0, Culture=neutral, PublicKeyToken=59b66d028979105b, processorArchitecture=MSIL">
-      <HintPath>..\packages\Z.EntityFramework.Extensions.EF5.4.0.52\lib\net40\Z.EntityFramework.Extensions.EF5.dll</HintPath>
+    <Reference Include="Z.EntityFramework.Extensions.EF5, Version = 6.13.0.0, Culture = neutral, PublicKeyToken = 59b66d028979105b, processorArchitecture = MSIL">
+      <HintPath>..\packages\Z.EntityFramework.Extensions.EF5.6.13.0\lib\net40\Z.EntityFramework.Extensions.EF5.dll</HintPath>
     </Reference>
-    <Reference Include="Z.Expressions.Eval, Version=3.1.6.0, Culture=neutral, PublicKeyToken=59b66d028979105b, processorArchitecture=MSIL">
-      <HintPath>..\packages\Z.Expressions.Eval.3.1.6\lib\net40\Z.Expressions.Eval.dll</HintPath>
+    <Reference Include="Z.Expressions.Eval, Version = 4.0.62.0, Culture = neutral, PublicKeyToken = 59b66d028979105b, processorArchitecture = MSIL">
+      <HintPath>..\packages\Z.Expressions.Eval.4.0.62\lib\net40\Z.Expressions.Eval.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -68,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="zzzproject.pfx" />
   </ItemGroup>
   <Import Project="..\shared\Z.EF.Plus._Core.Shared\Z.EF.Plus._Core.Shared.projitems" Label="Shared" />
   <Import Project="..\shared\Z.EF.Plus._ExceptionMessage.Shared\Z.EF.Plus._ExceptionMessage.Shared.projitems" Label="Shared" />

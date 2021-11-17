@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup Label="Globals">
     <SccProjectName>SAK</SccProjectName>
@@ -10,15 +10,15 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
 
-    <IsPackable>false</IsPackable>
+    <IsPackable>false</IsPackable> 
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;DEBUG;NETCOREAPP2_0 EFCORE FULL</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NETCOREAPP2_0 EFCORE FULL EFCORE_2X IsCore2</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>TRACE;RELEASE;NETCOREAPP2_0; EFCORE; FULL</DefineConstants>
+    <DefineConstants>TRACE;RELEASE;NETCOREAPP2_0; EFCORE; FULL  EFCORE_2X IsCore2</DefineConstants>
     <DocumentationFile>bin\Release\netcoreapp2.0\Z.Test.EntityFramework.Plus.EFCore20.xml</DocumentationFile>
   </PropertyGroup>
 
@@ -36,5 +36,7 @@
   </ItemGroup>
 
   <Import Project="..\..\Z.Test.EntityFramework.Plus.EFCore.Shared\Z.Test.EntityFramework.Plus.EFCore.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\Z.Test.EntityFramework.Plus.Test.Shared\Z.Test.EntityFramework.Plus.Test.Shared.projitems" Label="Shared" />
 
 </Project>

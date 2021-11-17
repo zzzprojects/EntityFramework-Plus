@@ -16,49 +16,54 @@ namespace Z.Test.EntityFramework.Plus.Mik_Area
         [TestMethod]
         public void BatchUpdateDelete_TPH_1()
         {
-            cleannup();
+            Action action = () =>
+            {
+                cleannup();
 
-            // SEED
-            using (var context = new ModelAndContext.EntityContext())
-            {  
-                //4
-                context.TvContracts.Add(new ModelAndContext.TvContract() {Months = 4});
-                context.TvContracts.Add(new ModelAndContext.TvContract() { Months = 4 });
-                context.TvContracts.Add(new ModelAndContext.TvContract() { Months = 4 });
-                context.TvContracts.Add(new ModelAndContext.TvContract() { Months = 4 });
+                // SEED
+                using (var context = new ModelAndContext.EntityContext())
+                {  
+                    //4
+                    context.TvContracts.Add(new ModelAndContext.TvContract() {Months = 4});
+                    context.TvContracts.Add(new ModelAndContext.TvContract() { Months = 4 });
+                    context.TvContracts.Add(new ModelAndContext.TvContract() { Months = 4 });
+                    context.TvContracts.Add(new ModelAndContext.TvContract() { Months = 4 });
 
-                //4
-                context.MobileContracts.Add(new ModelAndContext.MobileContract() {Months = 3, MobileNumber = "4524"});
-                context.MobileContracts.Add(new ModelAndContext.MobileContract() { Months = 3, MobileNumber = "4524" });
-                context.MobileContracts.Add(new ModelAndContext.MobileContract() { Months = 3, MobileNumber = "4524" });
-                context.MobileContracts.Add(new ModelAndContext.MobileContract() { Months = 3, MobileNumber = "4524" });
+                    //4
+                    context.MobileContracts.Add(new ModelAndContext.MobileContract() {Months = 3, MobileNumber = "4524"});
+                    context.MobileContracts.Add(new ModelAndContext.MobileContract() { Months = 3, MobileNumber = "4524" });
+                    context.MobileContracts.Add(new ModelAndContext.MobileContract() { Months = 3, MobileNumber = "4524" });
+                    context.MobileContracts.Add(new ModelAndContext.MobileContract() { Months = 3, MobileNumber = "4524" });
 
-                //8
-                context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() { Months = 6, DownloadSpeed = 50 });
-                context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() { DownloadSpeed = 52 });
-                context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() {Months = 6, DownloadSpeed = 50});
-                context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() {DownloadSpeed = 52});
-                context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() {Months = 6, DownloadSpeed = 50});
-                context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() {DownloadSpeed = 52});
-                context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() {Months = 6, DownloadSpeed = 50});
-                context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() {DownloadSpeed = 51});
+                    //8
+                    context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() { Months = 6, DownloadSpeed = 50 });
+                    context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() { DownloadSpeed = 52 });
+                    context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() {Months = 6, DownloadSpeed = 50});
+                    context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() {DownloadSpeed = 52});
+                    context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() {Months = 6, DownloadSpeed = 50});
+                    context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() {DownloadSpeed = 52});
+                    context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() {Months = 6, DownloadSpeed = 50});
+                    context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() {DownloadSpeed = 51});
                  
 
-                context.SaveChanges();
-            }
+                    context.SaveChanges();
+                }
 
-            using (var context = new ModelAndContext.EntityContext())
-            {
-                context.MobileContracts.Where(x => 1==1).Delete();
-                context.BroadbandContracts.Where(x => x.DownloadSpeed == 52).Update(y => new ModelAndContext.BroadbandContract(){ DownloadSpeed = 59});
-            }
+                using (var context = new ModelAndContext.EntityContext())
+                {
+                    context.MobileContracts.Where(x => 1==1).Delete();
+                    context.BroadbandContracts.Where(x => x.DownloadSpeed == 52).Update(y => new ModelAndContext.BroadbandContract(){ DownloadSpeed = 59});
+                }
 
-            using (var context = new ModelAndContext.EntityContext())
-            {
-                Assert.AreEqual(context.MobileContracts.ToList().Count, 0);
-                Assert.AreEqual(context.BroadbandContracts.Where(x => x.DownloadSpeed == 59).ToList().Count,3);
-                Assert.AreEqual(context.TvContracts.ToList(),4);
-            }
+                using (var context = new ModelAndContext.EntityContext())
+                {
+                    Assert.AreEqual(context.MobileContracts.ToList().Count, 0);
+                    Assert.AreEqual(context.BroadbandContracts.Where(x => x.DownloadSpeed == 59).ToList().Count,3);
+                    Assert.AreEqual(context.TvContracts.ToList(),4);
+                }
+            };
+
+            MyIni.RunWithFailLogical(MyIni.GetSetupCasTest(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName + "." + System.Reflection.MethodBase.GetCurrentMethod().Name), action);
         }
 
 
@@ -162,51 +167,56 @@ namespace Z.Test.EntityFramework.Plus.Mik_Area
         [TestMethod]
         public void BatchUpdateDelete_TPH_4()
         {
-            cleannup();
-
-            // SEED
-            using (var context = new ModelAndContext.EntityContext())
+            Action action = () =>
             {
-                //4
-                context.TvContracts.Add(new ModelAndContext.TvContract() { Months = 4 });
-                context.TvContracts.Add(new ModelAndContext.TvContract() { Months = 4 });
-                context.TvContracts.Add(new ModelAndContext.TvContract() { Months = 4 });
-                context.TvContracts.Add(new ModelAndContext.TvContract() { Months = 4 });
+                cleannup();
 
-                //4
-                context.MobileContracts.Add(new ModelAndContext.MobileContract() { Months = 3, MobileNumber = "4524" });
-                context.MobileContracts.Add(new ModelAndContext.MobileContract() { Months = 3, MobileNumber = "4524" });
-                context.MobileContracts.Add(new ModelAndContext.MobileContract() { Months = 3, MobileNumber = "4524" });
-                context.MobileContracts.Add(new ModelAndContext.MobileContract() { Months = 3, MobileNumber = "4524" });
+                // SEED
+                using (var context = new ModelAndContext.EntityContext())
+                {
+                    //4
+                    context.TvContracts.Add(new ModelAndContext.TvContract() { Months = 4 });
+                    context.TvContracts.Add(new ModelAndContext.TvContract() { Months = 4 });
+                    context.TvContracts.Add(new ModelAndContext.TvContract() { Months = 4 });
+                    context.TvContracts.Add(new ModelAndContext.TvContract() { Months = 4 });
 
-                //8
-                context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() { Months = 6, DownloadSpeed = 50 });
-                context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() { DownloadSpeed = 52 });
-                context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() { Months = 6, DownloadSpeed = 50 });
-                context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() { DownloadSpeed = 52 });
-                context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() { Months = 6, DownloadSpeed = 50 });
-                context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() { DownloadSpeed = 52 });
-                context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() { Months = 6, DownloadSpeed = 50 });
-                context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() { DownloadSpeed = 51 });
+                    //4
+                    context.MobileContracts.Add(new ModelAndContext.MobileContract() { Months = 3, MobileNumber = "4524" });
+                    context.MobileContracts.Add(new ModelAndContext.MobileContract() { Months = 3, MobileNumber = "4524" });
+                    context.MobileContracts.Add(new ModelAndContext.MobileContract() { Months = 3, MobileNumber = "4524" });
+                    context.MobileContracts.Add(new ModelAndContext.MobileContract() { Months = 3, MobileNumber = "4524" });
+
+                    //8
+                    context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() { Months = 6, DownloadSpeed = 50 });
+                    context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() { DownloadSpeed = 52 });
+                    context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() { Months = 6, DownloadSpeed = 50 });
+                    context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() { DownloadSpeed = 52 });
+                    context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() { Months = 6, DownloadSpeed = 50 });
+                    context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() { DownloadSpeed = 52 });
+                    context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() { Months = 6, DownloadSpeed = 50 });
+                    context.BroadbandContracts.Add(new ModelAndContext.BroadbandContract() { DownloadSpeed = 51 });
 
 
-                context.SaveChanges();
-            }
+                    context.SaveChanges();
+                }
 
-            var now = DateTime.Now;
+                var now = DateTime.Now;
 
-            using (var context = new ModelAndContext.EntityContext())
-            {
-                context.Contracts.Update(x => new ModelAndContext.BroadbandContract { StartDate = now });
-            }
+                using (var context = new ModelAndContext.EntityContext())
+                {
+                    context.Contracts.Update(x => new ModelAndContext.BroadbandContract { StartDate = now });
+                }
 
-            using (var context = new ModelAndContext.EntityContext())
-            {
-                Assert.AreEqual(context.Contracts.Where(x => x.StartDate == now).ToList().Count, 8);
-                Assert.AreEqual(context.TvContracts.Where(x => x.StartDate == now).ToList().Count, 0);
-                Assert.AreEqual(context.MobileContracts.Where(x => x.StartDate == now).ToList().Count, 0);
-                Assert.AreEqual(context.BroadbandContracts.Where(x => x.StartDate == now).ToList().Count, 8);
-            }
+                using (var context = new ModelAndContext.EntityContext())
+                {
+                    Assert.AreEqual(context.Contracts.Where(x => x.StartDate == now).ToList().Count, 8);
+                    Assert.AreEqual(context.TvContracts.Where(x => x.StartDate == now).ToList().Count, 0);
+                    Assert.AreEqual(context.MobileContracts.Where(x => x.StartDate == now).ToList().Count, 0);
+                    Assert.AreEqual(context.BroadbandContracts.Where(x => x.StartDate == now).ToList().Count, 8);
+                }
+            };
+
+            MyIni.RunWithFailLogical(MyIni.GetSetupCasTest(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName + "." + System.Reflection.MethodBase.GetCurrentMethod().Name), action);
         }
 
 

@@ -22,8 +22,11 @@ namespace Z.Test.EntityFramework.Plus.Mik_Area
             {
 	            ModelAndContext.My.CreateBD(context);
             }
-        }
 
-	   
+            using (var context = new TestContext())
+            {
+                ModelAndContext.My.CreateBD(context);
+            }
+        }
 	}
 }

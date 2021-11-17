@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup Label="Globals">
     <SccProjectName>SAK</SccProjectName>
@@ -11,10 +11,10 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Z.EntityFramework.Plus.EFCore</AssemblyName>
     <RootNamespace>Z.EntityFramework.Plus.EFCore.NETStandard21</RootNamespace>
-    <SignAssembly>false</SignAssembly>
+    <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>zzzproject.pfx</AssemblyOriginatorKeyFile>
     <PackageId>Z.EntityFramework.Plus.EFCore</PackageId>
-    <Version>3.0.40</Version>
+    <Version>3.13.0</Version>
     <Authors>Z.EntityFramework.Plus.EFCore</Authors>
     <Company>Z.EntityFramework.Plus.EFCore</Company>
     <Product>Z.EntityFramework.Plus.EFCore</Product>
@@ -54,13 +54,17 @@
 
   <Import Project="..\shared\Z.EF.Plus.QueryIncludeOptimized.Shared\Z.EF.Plus.QueryIncludeOptimized.Shared.projitems" Label="Shared" />
 
+  <Import Project="..\shared\Z.EF.Plus.SetDynamic.Shared\Z.EF.Plus.SetDynamic.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus.QueryHook\Z.EF.Plus.QueryHook.projitems" Label="Shared" />
+
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.6.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.0" />
     <PackageReference Include="System.Reflection.Emit" Version="4.6.0" />
     <PackageReference Include="System.Reflection.TypeExtensions" Version="4.6.0" />
-    <PackageReference Include="Z.EntityFramework.Extensions.EFCore" Version="3.0.52" />
-    <PackageReference Include="Z.Expressions.Eval" Version="3.1.6" />
+    <PackageReference Include="Z.EntityFramework.Extensions.EFCore" Version="3.13.0" />
+    <PackageReference Include="Z.Expressions.Eval" Version="4.0.62" />
   </ItemGroup>
 
 </Project>
