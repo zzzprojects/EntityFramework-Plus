@@ -11,7 +11,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Z.EntityFramework.Plus.EFCore</AssemblyName>
     <RootNamespace>Z.EntityFramework.Plus.EFCore.NETStandard21</RootNamespace>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>False</SignAssembly>
     <AssemblyOriginatorKeyFile>zzzproject.pfx</AssemblyOriginatorKeyFile>
     <PackageId>Z.EntityFramework.Plus.EFCore</PackageId>
     <Version>3.13.0</Version>
