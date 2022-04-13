@@ -20,6 +20,8 @@ namespace Z.EntityFramework.Plus
     {
         public static DbContext GetInMemoryContext<T>(this IQueryable<T> source)
 		{
+			source = Z.EntityFramework.Extensions.PublicExtensions.GetInnerForLinqKit(source);
+
 			var compilerField = typeof(EntityQueryProvider).GetField("_queryCompiler", BindingFlags.NonPublic | BindingFlags.Instance);
 			var compiler = (QueryCompiler)compilerField.GetValue(source.Provider);
 

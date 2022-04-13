@@ -5,7 +5,42 @@
       "ProjectGuid": "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3",
       "DisplayName": "Miscellaneous Files",
       "ColorIndex": -1
+    },
+    "1b28efb7-e679-4275-aca9-da7cd589a56a": {
+      "ProjectGuid": "1b28efb7-e679-4275-aca9-da7cd589a56a",
+      "DisplayName": "Z.EntityFramework.Plus.EF5",
+      "ColorIndex": 0
+    },
+    "e4c2af73-caeb-4429-bcb6-0a359484e064": {
+      "ProjectGuid": "e4c2af73-caeb-4429-bcb6-0a359484e064",
+      "DisplayName": "Z.EntityFramework.Plus.EF5.NET40",
+      "ColorIndex": 1
+    },
+    "6ea3675a-ab66-4aba-94d1-3da69fa88d4e": {
+      "ProjectGuid": "6ea3675a-ab66-4aba-94d1-3da69fa88d4e",
+      "DisplayName": "Z.EntityFramework.Plus.EF6",
+      "ColorIndex": 2
+    },
+    "ac398eb8-0a31-4d06-a804-84d10b6da96d": {
+      "ProjectGuid": "ac398eb8-0a31-4d06-a804-84d10b6da96d",
+      "DisplayName": "Z.EntityFramework.Plus.EF6.NET40",
+      "ColorIndex": 3
+    },
+    "ef1cbe03-3b93-4f28-8d98-3166320f62db": {
+      "ProjectGuid": "ef1cbe03-3b93-4f28-8d98-3166320f62db",
+      "DisplayName": "Z.EntityFramework.Plus.EFCore.NETStandard20",
+      "ColorIndex": 4
+    },
+    "61add154-ff1b-4683-80c9-ec6468a84c36": {
+      "ProjectGuid": "61add154-ff1b-4683-80c9-ec6468a84c36",
+      "DisplayName": "Z.EntityFramework.Plus.EFCore3x.NETStandard20",
+      "ColorIndex": 5
+    },
+    "d7434620-9c01-4260-9c84-4574b3e2827a": {
+      "ProjectGuid": "d7434620-9c01-4260-9c84-4574b3e2827a",
+      "DisplayName": "Z.EntityFramework.Plus.EFCore3x.NETStandard21",
+      "ColorIndex": 6
     }
   },
-  "NextColorIndex": 0
+  "NextColorIndex": 7
 }

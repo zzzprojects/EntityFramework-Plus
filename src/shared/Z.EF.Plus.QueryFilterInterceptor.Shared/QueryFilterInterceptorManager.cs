@@ -262,12 +262,29 @@ namespace Z.EntityFramework.Plus
         public static void ClearAllCache()
         {
             var propertyValues = CacheWeakFilterContext.GetType().GetProperty("Values", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            var values = (List<QueryFilterContextInterceptor>) propertyValues.GetValue(CacheWeakFilterContext, null);
-
-            foreach (var value in values)
+            
+            if(propertyValues != null)
             {
-                value.ClearCache();
+                var values = (List<QueryFilterContextInterceptor>)propertyValues.GetValue(CacheWeakFilterContext, null);
+
+                foreach (var value in values)
+                {
+                    value.ClearCache();
+                }
             }
+#if NETSTANDARD2_1
+            // Only do it when propertyValues is null for backward compatibility
+            else
+            {
+                var keyValues = CacheWeakFilterContext.ToList();
+                var values = keyValues.Select(x => x.Value).ToList();
+
+                foreach (var value in values)
+                {
+                    value.ClearCache();
+                }
+            }
+#endif
         }
 
         /// <summary>Clears the global filter.</summary>

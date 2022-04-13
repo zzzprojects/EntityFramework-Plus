@@ -31,6 +31,8 @@ namespace Z.EntityFramework.Plus
     {
         public static bool IsInMemoryQueryContext<T>(this IQueryable<T> query)
         {
+            query = Z.EntityFramework.Extensions.PublicExtensions.GetInnerForLinqKit(query);
+
             var compilerField = typeof(EntityQueryProvider).GetField("_queryCompiler", BindingFlags.NonPublic | BindingFlags.Instance);
             var compiler = (QueryCompiler)compilerField.GetValue(query.Provider);
 
