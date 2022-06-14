@@ -209,11 +209,11 @@ namespace Z.EntityFramework.Plus
                     }
 #endif
                 }
-
-                Queries.Clear();
             }
             finally
             {
+                Queries.Clear(); 
+
                 if (ownConnection)
                 {
 #if EFCORE
@@ -324,11 +324,11 @@ namespace Z.EntityFramework.Plus
                     }
 #endif
                 }
-
-                Queries.Clear();
             }
             finally
-            {
+            { 
+                Queries.Clear();
+
                 if (ownConnection)
                 {
                     connection.Close();
