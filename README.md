@@ -119,7 +119,7 @@ QueryCacheManager.ExpireTag("countries");
 
 **Support:** EF5, EF6, EF Core
 
-**[Learn more](https://entityframework-plus.net/ef-core-batch-update)**
+**[Learn more](https://entityframework-plus.net/ef-core-query-cache)**
 
 ## Query Deferred
 **Defer the execution of a query which is normally executed to allow some features like Query Cache and Query Future.**
