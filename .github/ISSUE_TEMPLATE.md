@@ -14,7 +14,7 @@ Stack trace:
 ## 3. Fiddle or Project
 If you are able,
 
-Provide a Fiddle that reproduce the issue: [https://dotnetfiddle.net/4SeLq9](https://dotnetfiddle.net/4SeLq9)
+Provide a Fiddle that reproduce the issue: https://dotnetfiddle.net/4SeLq9
 
 Or provide a project/solution that we can run to reproduce the issue.
 - Make sure the project compile
