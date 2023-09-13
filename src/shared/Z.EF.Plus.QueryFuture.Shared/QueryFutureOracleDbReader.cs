@@ -47,9 +47,8 @@ namespace Z.EntityFramework.Plus
         public override bool HasRows
         {
             get { return Reader.HasRows; }
-        }
+        } 
 
-#if !NETSTANDARD1_3
         public override void Close()
         {
             Reader.Close();
@@ -58,8 +57,7 @@ namespace Z.EntityFramework.Plus
         public override DataTable GetSchemaTable()
         {
             return Reader.GetSchemaTable();
-        }
-#endif
+        } 
 
         public override bool NextResult()
         {

@@ -42,14 +42,9 @@ namespace Z.EntityFramework.Plus
                 // Thrown if collection type implements IDbSet or IObjectSet<> more than once
             }
             return null;
-#elif EFCORE
-
-#if NETSTANDARD1_3
-            return type.GetTypeInfo().GenericTypeArguments[0];
-#else
+#elif EFCORE 
             return type.GetGenericArguments()[0];
-#endif
-#endif
+#endif 
         }
     }
 }

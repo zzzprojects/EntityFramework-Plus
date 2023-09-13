@@ -16,12 +16,8 @@ namespace Z.EntityFramework.Plus
     internal static partial class InternalExtensions
     {
         internal static Type GetTypeFromAssembly_Core(this Type fromType, string name)
-        {
-#if NETSTANDARD1_3
-            return fromType.GetTypeInfo().Assembly.GetType(name);
-#else
-            return fromType.Assembly.GetType(name);
-#endif
+        { 
+            return fromType.Assembly.GetType(name); 
         }
     }
 }

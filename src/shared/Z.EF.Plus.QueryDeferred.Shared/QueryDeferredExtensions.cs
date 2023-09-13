@@ -9,52 +9,30 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-
-#if EF5
-
-#elif EF6
-
-#endif
+using System.Reflection; 
 
 namespace Z.EntityFramework.Plus
 {
     public static partial class QueryDeferredExtensions
     {
         private static MethodInfo GetMethodInfo<T1, T2>(Func<T1, T2> f, T1 unused1)
-        {
-#if NETSTANDARD1_3
-            return f.GetMethodInfo();
-#else
-            return f.Method;
-#endif
+        { 
+            return f.Method; 
         }
 
         private static MethodInfo GetMethodInfo<T1, T2, T3>(Func<T1, T2, T3> f, T1 unused1, T2 unused2)
-        {
-#if NETSTANDARD1_3
-            return f.GetMethodInfo();
-#else
-            return f.Method;
-#endif
+        { 
+            return f.Method; 
         }
 
         private static MethodInfo GetMethodInfo<T1, T2, T3, T4>(Func<T1, T2, T3, T4> f, T1 unused1, T2 unused2, T3 unused3)
-        {
-#if NETSTANDARD1_3
-            return f.GetMethodInfo();
-#else
-            return f.Method;
-#endif
+        { 
+            return f.Method; 
         }
 
         private static MethodInfo GetMethodInfo<T1, T2, T3, T4, T5>(Func<T1, T2, T3, T4, T5> f, T1 unused1, T2 unused2, T3 unused3, T4 unused4)
-        {
-#if NETSTANDARD1_3
-            return f.GetMethodInfo();
-#else
-            return f.Method;
-#endif
+        { 
+            return f.Method; 
         }
 
         private static Expression GetSourceExpression<TSource>(IEnumerable<TSource> source)

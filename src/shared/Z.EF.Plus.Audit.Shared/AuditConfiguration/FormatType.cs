@@ -12,8 +12,7 @@ namespace Z.EntityFramework.Plus
     public partial class AuditConfiguration
     {
         public AuditConfiguration FormatType<T>(Func<T, object> formatter)
-        {
-#if !NETSTANDARD1_3
+        { 
             Func<object, object> func = o =>
             {
                 T obj;
@@ -29,10 +28,8 @@ namespace Z.EntityFramework.Plus
 
                 return formatter(obj);
 
-            };
-#else
-            Func<object, object> func = o => formatter((T) o);
-#endif
+            }; 
+
             EntityValueFormatters.Add((x, s, v) => v != null && (v.GetType() == typeof(T) || 
             (
                 typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(Nullable<>) && v.GetType() == typeof(T).GetGenericArguments()[0]

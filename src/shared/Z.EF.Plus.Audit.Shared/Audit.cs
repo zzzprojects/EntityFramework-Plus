@@ -37,10 +37,8 @@ namespace Z.EntityFramework.Plus
             Entries = new List<AuditEntry>();
 
             try
-            {
-#if !NETSTANDARD1_3
-                CreatedBy = System.Threading.Thread.CurrentPrincipal?.Identity?.Name;
-#endif
+            { 
+                CreatedBy = System.Threading.Thread.CurrentPrincipal?.Identity?.Name; 
 
                 if (string.IsNullOrEmpty(CreatedBy))
                 {

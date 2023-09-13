@@ -261,13 +261,8 @@ namespace Z.EntityFramework.Plus
                     {
                         FilterSetByType.AddOrAppend(@interface, filterDbSet);
                     }
-
-#if NETSTANDARD1_3
-                    baseType = baseType.GetTypeInfo().BaseType;
-#else
-                    baseType = baseType.BaseType;
-#endif
-
+                     
+                    baseType = baseType.BaseType;  
                 }
             }
         }

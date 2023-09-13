@@ -55,14 +55,7 @@ namespace Z.EntityFramework.Plus
         public override int RecordsAffected
         {
             get { return OriginalDataReader.RecordsAffected; }
-        }
-
-        //#if !NETSTANDARD1_3
-        //        public override void Close()
-        //        {
-        //            // DO NOT close reader
-        //        }
-        //#endif
+        } 
 
         public override bool GetBoolean(int ordinal)
         {
@@ -209,7 +202,17 @@ namespace Z.EntityFramework.Plus
 	            TimeSpan timeSpan; 
                 TimeSpan.TryParse(valueString, out timeSpan);
                 value = timeSpan;
-            }
+			}
+#if EFCORE_6X
+            else if (typeof(T) == typeof(DateOnly) && value is DateTime valueDateTime2)
+			{
+				value = new DateOnly(valueDateTime2.Year, valueDateTime2.Month, valueDateTime2.Day);
+			}
+			else if (typeof(T) == typeof(TimeOnly) && value is TimeSpan timeSpan)
+			{
+				value = new TimeOnly(timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, timeSpan.Milliseconds);
+			}
+#endif 
 
             return (T)value; 
 		} 

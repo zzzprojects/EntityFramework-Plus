@@ -227,6 +227,21 @@ namespace Z.EntityFramework.Plus
             // CHECK if a value has been returned
             if (value == null)
             {
+				if (methodCall.Method.Name == "Single"
+				|| methodCall.Method.Name == "First")
+                {
+                    var throwErrorFakeList = new List<TResult>();
+
+                    if (methodCall.Method.Name == "Single")
+                    {
+                        throwErrorFakeList.Single(); 
+					} 
+					else
+					{
+                        throwErrorFakeList.First(); 
+					} 
+				}
+
                 return (TResult) (object) null;
             }
 

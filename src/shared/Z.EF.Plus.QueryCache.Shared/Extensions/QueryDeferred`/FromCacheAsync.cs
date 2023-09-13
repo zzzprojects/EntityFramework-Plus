@@ -45,7 +45,7 @@ namespace Z.EntityFramework.Plus
                 });
             }
 
-            var key = QueryCacheManager.GetCacheKey(query, tags);
+            var key = QueryCacheManager.GetCacheKey(query, tags, true);
 
             var result = Task.Run(() =>
             {
@@ -89,7 +89,7 @@ namespace Z.EntityFramework.Plus
                 });
             }
 
-            var key = QueryCacheManager.GetCacheKey(query, tags);
+            var key = QueryCacheManager.GetCacheKey(query, tags, true);
 
             var result = Task.Run(() =>
             {
@@ -147,7 +147,7 @@ namespace Z.EntityFramework.Plus
                 return await query.ExecuteAsync(cancellationToken).ConfigureAwait(false);
             }
 
-            var key = QueryCacheManager.GetCacheKey(query, tags);
+            var key = QueryCacheManager.GetCacheKey(query, tags, true);
 
             var item = QueryCacheManager.GetDeferred(key);
 
@@ -204,7 +204,7 @@ namespace Z.EntityFramework.Plus
                 return await query.ExecuteAsync(cancellationToken).ConfigureAwait(false);
             }
 
-            var key = QueryCacheManager.GetCacheKey(query, tags);
+            var key = QueryCacheManager.GetCacheKey(query, tags, true);
 
             var item = QueryCacheManager.GetDeferred(key);
 
@@ -294,7 +294,7 @@ namespace Z.EntityFramework.Plus
                 return await query.ExecuteAsync(cancellationToken).ConfigureAwait(false);
             }
 
-            var key = QueryCacheManager.GetCacheKey(query, tags);
+            var key = QueryCacheManager.GetCacheKey(query, tags, true);
 
             object item;
             if (!QueryCacheManager.Cache.TryGetValue(key, out item))

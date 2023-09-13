@@ -456,7 +456,7 @@ namespace Z.EntityFramework.Plus
         /// <param name="query">The query to cache or retrieve from the QueryCacheManager.</param>
         /// <param name="tags">A variable-length parameters list containing tags to create the cache key.</param>
         /// <returns>The cache key used to cache or retrieve a query from the QueryCacheManager.</returns>
-        public static string GetCacheKey(IQueryable query, string[] tags)
+        public static string GetCacheKey(IQueryable query, string[] tags, bool isAsync = false)
         {
             if (CacheKeyFactory != null)
             {
@@ -551,7 +551,7 @@ namespace Z.EntityFramework.Plus
 #elif EF6
             if (objectQuery != null)
             {
-                var commandTextAndParameters = objectQuery.GetCommandTextAndParameters();
+                var commandTextAndParameters = objectQuery.GetCommandTextAndParameters(isAsync);
                 sb.AppendLine(commandTextAndParameters.Item1);
 
                 foreach (DbParameter parameter in commandTextAndParameters.Item2)
@@ -842,9 +842,9 @@ namespace Z.EntityFramework.Plus
         /// <param name="query">The query to cache or retrieve from the QueryCacheManager.</param>
         /// <param name="tags">A variable-length parameters list containing tags to create the cache key.</param>
         /// <returns>The cache key used to cache or retrieve a query from the QueryCacheManager.</returns>
-        public static string GetCacheKey<T>(QueryDeferred<T> query, string[] tags)
+        public static string GetCacheKey<T>(QueryDeferred<T> query, string[] tags, bool isAsync = false)
         {
-            return GetCacheKey(query.Query, tags);
+            return GetCacheKey(query.Query, tags, isAsync);
         }
     }
 }

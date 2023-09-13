@@ -162,22 +162,27 @@ namespace Z.EntityFramework.Plus
                 ownConnection = true;
             }
 #endif
-            var command = CreateCommandCombined();
-
+#if EFCORE
             try
             {
-                if (connection.State != ConnectionState.Open)
+#endif
+
+                var command = CreateCommandCombined();
+
+                try
                 {
+                    if (connection.State != ConnectionState.Open)
+                    {
 #if EFCORE
-                    // connection opened before
+                        // connection opened before
 #else
                     connection.Open();
 #endif
-                    ownConnection = true;
-                }
+                        ownConnection = true;
+                    }
 
-                using (command)
-                {
+                    using (command)
+                    {
 #if EF5
                     using (var reader = command.ExecuteReader())
                     {
@@ -198,37 +203,41 @@ namespace Z.EntityFramework.Plus
                         }
                     }
 #elif EFCORE
-                    using (var reader = command.ExecuteReader())
-                    {
-                        var createEntityDataReader = new CreateEntityDataReader(reader);
-                        foreach (var query in Queries)
+                        using (var reader = command.ExecuteReader())
                         {
-                            query.SetResult(createEntityDataReader);
-                            reader.NextResult();
+                            var createEntityDataReader = new CreateEntityDataReader(reader);
+                            foreach (var query in Queries)
+                            {
+                                query.SetResult(createEntityDataReader);
+                                reader.NextResult();
+                            }
                         }
-                    }
 #endif
+                    }
                 }
-            }
-            finally
-            {
-                Queries.Clear(); 
-
-                if (ownConnection)
+                finally
                 {
+                    Queries.Clear();
+
+                    if (ownConnection)
+                    {
 #if EFCORE
-                    Context.Database.CloseConnection();
+                        Context.Database.CloseConnection();
 #else
                     connection.Close();
 #endif
+                    }
                 }
-            }
 
 #if EFCORE
-            if(firstQuery.RestoreConnection != null)
-            {
-                firstQuery.RestoreConnection();
             }
+            finally
+            { 
+				if (firstQuery.RestoreConnection != null)
+				{
+					firstQuery.RestoreConnection();
+				}
+			}
 #endif
         }
 
@@ -279,20 +288,24 @@ namespace Z.EntityFramework.Plus
 
             var firstQuery = Queries[0];
 #endif
-            var command = CreateCommandCombined();
-
-            var ownConnection = false;
-
+#if EFCORE
             try
-            {
-                if (connection.State != ConnectionState.Open)
-                {
-                    await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                    ownConnection = true;
-                }
+            { 
+#endif
+                var command = CreateCommandCombined(true);
 
-                using (command)
+                var ownConnection = false;
+
+                try
                 {
+                    if (connection.State != ConnectionState.Open)
+                    {
+                        await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+                        ownConnection = true;
+                    }
+
+                    using (command)
+                    {
 #if EF5
                     using (var reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false))
                     {
@@ -313,40 +326,44 @@ namespace Z.EntityFramework.Plus
                         }
                     }
 #elif EFCORE
-                    using (var reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false))
-                    {
-                        var createEntityDataReader = new CreateEntityDataReader(reader);
-                        foreach (var query in Queries)
+                        using (var reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false))
                         {
-                            query.SetResult(createEntityDataReader);
-                            await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
+                            var createEntityDataReader = new CreateEntityDataReader(reader);
+                            foreach (var query in Queries)
+                            {
+                                query.SetResult(createEntityDataReader);
+                                await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
+                            }
                         }
-                    }
 #endif
+                    }
                 }
-            }
-            finally
-            { 
-                Queries.Clear();
-
-                if (ownConnection)
+                finally
                 {
-                    connection.Close();
+                    Queries.Clear();
+
+                    if (ownConnection)
+                    {
+                        connection.Close();
+                    }
                 }
-            }
 
 #if EFCORE
-            if (firstQuery.RestoreConnection != null)
-            {
-                firstQuery.RestoreConnection();
             }
+            finally 
+            { 
+                if (firstQuery.RestoreConnection != null)
+                {
+                    firstQuery.RestoreConnection();
+                }
+			}
 #endif
-        }
+		}
 #endif
 
         /// <summary>Creates a new command combining deferred queries.</summary>
         /// <returns>The combined command created from deferred queries.</returns>
-        protected DbCommand CreateCommandCombined()
+        protected DbCommand CreateCommandCombined(bool isAsync = false)
         {
             var command = Context.CreateStoreCommand();
 
@@ -405,7 +422,7 @@ namespace Z.EntityFramework.Plus
                     sql = sql.Replace("@" + oldValue, "@" + newValue);
                 }
 #elif EF6
-                var commandTextAndParameter = query.Query.GetCommandTextAndParameters();
+                var commandTextAndParameter = query.Query.GetCommandTextAndParameters(isAsync);
 
 
                 var sql = commandTextAndParameter.Item1;
@@ -506,15 +523,25 @@ namespace Z.EntityFramework.Plus
                         value = objectArray[i];
                         i++;
                     }
+                    string oldValue = "";
 
-                    var oldValue = relationalParameter.InvariantName;
+                    // pas de cas test voir projet client : https://zzzprojects.atlassian.net/browse/ZZZ-6894 (pas capable de faire cas simple et if ici uniquement pour lui.)
+                    if (relationalParameter is TypeMappedRelationalParameter parameterToCheck && parameterToCheck.Name != null &&
+                        parameterToCheck.Name.StartsWith("@_") && parameterToCheck.Name.Substring(1) != relationalParameter.InvariantName)
+                    {
+                        oldValue = parameterToCheck.Name.Substring(1);
+                    }
+                    else
+                    { 
+                        oldValue = relationalParameter.InvariantName;
+                    }
                     var newValue = string.Concat("Z_", queryCount, "_", oldValue);
 
                     // CREATE parameter
                     var dbParameter = command.CreateParameter();
-                    dbParameter.CopyFrom(relationalParameter, value ?? parameter, newValue);
+					dbParameter.CopyFrom(relationalParameter, value ?? parameter, newValue, Context);
 
-                    if (methodeConvertFromProvider != null)
+					if (methodeConvertFromProvider != null)
                     {
                         dbParameter.Value = methodeConvertFromProvider.Invoke(convertToProvider, new[] { dbParameter.Value });
                     }
@@ -550,28 +577,16 @@ namespace Z.EntityFramework.Plus
                     param.Value = DBNull.Value;
 
                     if (isOracle)
-                    {
-#if NETSTANDARD1_3
-                        SetOracleDbType(command.GetType().GetTypeInfo().Assembly, param, 121);
-#else
-                        SetOracleDbType(command.GetType().Assembly, param, 121);
-#endif
+                    { 
+                        SetOracleDbType(command.GetType().Assembly, param, 121); 
                     }
                     else if (isOracleManaged)
-                    {
-#if NETSTANDARD1_3
-                        SetOracleManagedDbType(command.GetType().GetTypeInfo().Assembly, param, 121);
-#else
-                        SetOracleManagedDbType(command.GetType().Assembly, param, 121);
-#endif
+                    { 
+                        SetOracleManagedDbType(command.GetType().Assembly, param, 121); 
                     }
                     else if (isOracleDevArt)
-                    {
-#if NETSTANDARD1_3
-                        SetOracleDevArtDbType(command.GetType().GetTypeInfo().Assembly, param, 7);
-#else
-                        SetOracleDevArtDbType(command.GetType().Assembly, param, 7);
-#endif
+                    { 
+                        SetOracleDevArtDbType(command.GetType().Assembly, param, 7); 
                     }
 
 

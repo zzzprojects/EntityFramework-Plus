@@ -9,11 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-
-#if NETSTANDARD1_3
-using System.Reflection;
-#endif
+using System.Linq.Expressions; 
 
 namespace Z.EntityFramework.Plus
 {

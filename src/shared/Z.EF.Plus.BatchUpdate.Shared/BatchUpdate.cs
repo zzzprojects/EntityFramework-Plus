@@ -1185,7 +1185,6 @@
 //                var param = command.CreateParameter();
 //                param.CopyFrom(relationalParameter, parameter, name);
 
-//#if !NETSTANDARD1_3
 //                if (isPostgreSQL)
 //                {
 //	                Type itemType = param.Value.GetType();
@@ -1196,7 +1195,6 @@
 //		                param.Value = Convert.ChangeType(param.Value, underlyingType);
 //	                } 
 //				}
-//#endif
 
 //				command.Parameters.Add(param);
 //            }
@@ -1246,7 +1244,6 @@
 //                        parameter.DbType = DbType.DateTime2;
 //                    }
 
-//#if !NETSTANDARD1_3
 //	                if (isPostgreSQL)
 //	                {
 //		                Type itemType = parameter.Value.GetType();
@@ -1257,7 +1254,6 @@
 //			                parameter.Value = Convert.ChangeType(paramValue, underlyingType);
 //		                } 
 //					}
-//#endif
 //				}
 
 //				command.Parameters.Add(parameter);
@@ -1572,19 +1568,7 @@
 //#elif EFCORE
 //                    RelationalQueryContext queryContext;
 //                    var command = ((IQueryable)result).CreateCommand(out queryContext);
-//                    var commandText = command.CommandText; 
-//#if NETSTANDARD1_3
-//                    // GET the 'value' part
-//                    var pos = commandText.IndexOf("AS [value]" + Environment.NewLine + "FROM", StringComparison.CurrentCultureIgnoreCase) != -1 ?
-//                        commandText.IndexOf("AS [value]" + Environment.NewLine + "FROM", StringComparison.CurrentCultureIgnoreCase) - 6 :
-//                        commandText.IndexOf(Environment.NewLine + "    FROM", StringComparison.CurrentCultureIgnoreCase) != -1 ?
-//                            commandText.IndexOf(Environment.NewLine + "    FROM", StringComparison.CurrentCultureIgnoreCase) - 6 :
-//                            commandText.IndexOf(Environment.NewLine + "FROM", StringComparison.CurrentCultureIgnoreCase) != -1 ?
-//                                commandText.IndexOf(Environment.NewLine + "FROM", StringComparison.CurrentCultureIgnoreCase) - 6 :
-//                                commandText.IndexOf("FROM", StringComparison.CurrentCultureIgnoreCase) - 6;
-
-//                    var valueSql = commandText.Substring(6, pos);
-//#else
+//                    var commandText = command.CommandText;  
 //                    // GET the 'value' part
 //                    var pos = commandText.IndexOf("AS [value]" + Environment.NewLine + "FROM", StringComparison.OrdinalIgnoreCase) != -1 ?
 //                        commandText.IndexOf("AS [value]" + Environment.NewLine + "FROM", StringComparison.OrdinalIgnoreCase) - 6 :
@@ -1594,9 +1578,7 @@
 //                                commandText.IndexOf(Environment.NewLine + "FROM", StringComparison.OrdinalIgnoreCase) - 6 :
 //                                commandText.IndexOf("FROM", StringComparison.OrdinalIgnoreCase) - 6;
 
-//                    var valueSql = commandText.Substring(6, pos);
-//#endif
-
+//                    var valueSql = commandText.Substring(6, pos); 
 //                    valueSql = valueSql.Trim();
 
 //					if (updateFactory.Parameters != null && updateFactory.Parameters.Count == 1)

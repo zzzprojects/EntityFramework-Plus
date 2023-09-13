@@ -19,6 +19,9 @@ using System.Data.SqlClient;
 #elif EFCORE
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Query;
 #endif
 
 namespace Z.EntityFramework.Plus
@@ -126,28 +129,51 @@ namespace Z.EntityFramework.Plus
 			CopyFrom(@this, from, value, from.InvariantName);
 		}
 
-        public static void CopyFrom(this DbParameter @this, IRelationalParameter from, object value, string newParameterName)
-        {
-            @this.ParameterName = newParameterName;
+		public static void CopyFrom(this DbParameter @this, IRelationalParameter from, object value, string newParameterName, DbContext context = null)
+		{
+			@this.ParameterName = newParameterName;
 
-            if (from is TypeMappedRelationalParameter)
-            {
-                var relationalTypeMappingProperty = typeof(TypeMappedRelationalParameter).GetProperty("RelationalTypeMapping", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+			if (from is TypeMappedRelationalParameter)
+			{
+				var relationalTypeMappingProperty = typeof(TypeMappedRelationalParameter).GetProperty("RelationalTypeMapping", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 
-                if (relationalTypeMappingProperty != null)
-                {
-                    var relationalTypeMapping = (RelationalTypeMapping) relationalTypeMappingProperty.GetValue(from);
+				if (relationalTypeMappingProperty != null)
+				{
+					var relationalTypeMapping = (RelationalTypeMapping)relationalTypeMappingProperty.GetValue(from);
 
-                    if (relationalTypeMapping.DbType.HasValue)
-                    {
-                        @this.DbType = relationalTypeMapping.DbType.Value;
-                    }
-                }
-            }
 
-            @this.Value = value ?? DBNull.Value;
-        }
+#if EFCORE_8X
+					if (relationalTypeMapping == null && context != null)
+				    {
+
+					    var querySqlGeneratorFactoryService = context.GetService<IQuerySqlGeneratorFactory>();
+					    var fieldTypeMappingSource = querySqlGeneratorFactoryService.GetType().GetField("_typeMappingSource", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+					    var typeMappingSource = (Microsoft.EntityFrameworkCore.Storage.RelationalTypeMappingSource)fieldTypeMappingSource.GetValue(querySqlGeneratorFactoryService);
+
+					    var mapping = typeMappingSource.FindMapping(value.GetType());
+					    if (mapping.DbType.HasValue)
+					    {
+						    @this.DbType = mapping.DbType.Value;
+
+                            if (mapping.Converter != null && mapping.Converter.ConvertToProvider != null)
+                            {
+                                value = mapping.Converter.ConvertToProvider(value); 
+                            }
+                        }
+				    }
+				    else
 #endif
-    }
+					if (relationalTypeMapping.DbType.HasValue)
+					{
+						@this.DbType = relationalTypeMapping.DbType.Value;
+					}
+				}
+			}
+
+			@this.Value = value ?? DBNull.Value;
+		}
+#endif
+	}
 }
 #endif

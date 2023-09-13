@@ -65,6 +65,12 @@ namespace Z.EntityFramework.Plus
             OriginalConnection.Open();
         }
 
+        public override void EnlistTransaction(System.Transactions.Transaction transaction)
+        {
+            // Calling the `EnlistTransaction` on the `OriginalConnection` also work but it should already contains it
+            // OriginalConnection.EnlistTransaction(transaction);
+        }
+
         protected override DbTransaction BeginDbTransaction(IsolationLevel isolationLevel)
         {
             return OriginalConnection.BeginTransaction();

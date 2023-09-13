@@ -19,7 +19,7 @@ namespace Z.EntityFramework.Plus
 {
     internal static partial class InternalExtensions
     {
-        public static Tuple<string, DbParameterCollection> GetCommandTextAndParameters(this ObjectQuery objectQuery)
+        public static Tuple<string, DbParameterCollection> GetCommandTextAndParameters(this ObjectQuery objectQuery, bool isAsync = false)
         {
             var stateField = objectQuery.GetType().BaseType.GetField("_state", BindingFlags.NonPublic | BindingFlags.Instance, true);
             var state = stateField.GetValue(objectQuery);
@@ -46,7 +46,13 @@ namespace Z.EntityFramework.Plus
 
                 interceptors.ForEach(i => {
                     var interceptionContext = new DbCommandInterceptionContext<DbDataReader>(objectQuery.Context.GetInterceptionContext());
-                    interceptionContexts[i] = interceptionContext;
+
+                    if (isAsync)
+                    {
+                        interceptionContext = interceptionContext.AsAsync();
+                    }
+
+                    interceptionContexts[i] = interceptionContext; 
                     i.ReaderExecuting(prepareEntityCommandBeforeExecution, interceptionContext);
                 });
 

@@ -458,10 +458,10 @@ namespace Z.EntityFramework.Plus
                 var innerConnectionField = typeof(RelationalConnection).GetField("_connection", BindingFlags.NonPublic | BindingFlags.Instance);
                 var initalConnection = innerConnectionField.GetValue(QueryConnection);
 
-                innerConnectionField.SetValue(QueryConnection, innerConnection);
+				innerConnectionField.SetValue(QueryConnection, innerConnection);
+				RestoreConnection = () => innerConnectionField.SetValue(QueryConnection, initalConnection);
 
-                RestoreConnection = () => innerConnectionField.SetValue(QueryConnection, initalConnection);
-            }, out queryContext, out compiledQueryOut);
+			}, out queryContext, out compiledQueryOut);
 
             QueryContext = queryContext;
             CompiledQuery = compiledQueryOut;
@@ -640,13 +640,36 @@ namespace Z.EntityFramework.Plus
             var enumerator = (IEnumerator<T>) getEnumerator;
 
             {
-
-#if EFCORE_5X
-
+#if EFCORE_7X
                 {
                     //https://github.com/dotnet/efcore/blob/b970bf29a46521f40862a01db9e276e6448d3cb0/src/EFCore.Relational/Storage/RelationalCommand.cs#L380
                     //public virtual RelationalDataReader ExecuteReader(RelationalCommandParameterObject parameterObject)
           
+                    //-columns
+                    var fieldrelationalCommandCache = enumerator.GetType().GetField("_readerColumns", BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+                    if (fieldrelationalCommandCache != null)
+				    {
+                        var readerColumns = (IReadOnlyList<ReaderColumn?>?)fieldrelationalCommandCache.GetValue(enumerator);
+
+                        if (readerColumns != null)
+                        {
+                            var fielReaderColumns = enumerator.GetType().GetField("_readerColumns", BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+                            if (fielReaderColumns != null)
+                            {
+                                fielReaderColumns.SetValue(enumerator, null);
+                            } 
+                        }
+                    }
+                }
+
+#elif EFCORE_5X
+
+                {
+                    //https://github.com/dotnet/efcore/blob/b970bf29a46521f40862a01db9e276e6448d3cb0/src/EFCore.Relational/Storage/RelationalCommand.cs#L380
+                    //public virtual RelationalDataReader ExecuteReader(RelationalCommandParameterObject parameterObject)
+
                     //-columns
                     var fieldrelationalCommandCache = enumerator.GetType().GetField("_relationalCommandCache", BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
