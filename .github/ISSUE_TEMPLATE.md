@@ -25,3 +25,10 @@ Otherwise, make sure to include as much information as possible to help our team
 
 ## 4. Any further technical details
 Add any relevant detail can help us.
+
+### Further technical details
+
+- EF version: [EF Core v7.0.13]
+- EF Plus version: [EF Plus Core v7.100.0.0]
+- Database Server version: [SQL Server 2002]
+- Database Provider version (NuGet): [Microsoft.Data.SqlClient v5.1.2]
