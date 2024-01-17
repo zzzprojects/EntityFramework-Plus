@@ -6,6 +6,7 @@
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 using Z.EntityFramework.Extensions;
+using Z.Expressions;
 
 namespace Z.EntityFramework.Plus
 {
@@ -19,6 +20,8 @@ namespace Z.EntityFramework.Plus
             EntityFrameworkManager.IsCommunity = true;
             
             EntityFrameworkManager.IsEntityFrameworkPlus = true;
+
+            EvalManager.IsCommunity = true;
 
             DefaultConfiguration = new AuditConfiguration();
         }
