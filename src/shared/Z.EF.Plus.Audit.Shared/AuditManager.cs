@@ -15,6 +15,9 @@ namespace Z.EntityFramework.Plus
         /// <summary>Static constructor.</summary>
         static AuditManager()
         {
+            // indicate we are not using the free version of the library
+            EntityFrameworkManager.IsCommunity = true;
+            
             EntityFrameworkManager.IsEntityFrameworkPlus = true;
 
             DefaultConfiguration = new AuditConfiguration();

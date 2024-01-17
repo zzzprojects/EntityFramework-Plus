@@ -22,7 +22,6 @@ namespace Z.EntityFramework.Plus
         public static DbContext GetDbContext<T>(this IQueryable<T> source)
         {
 #if EFCORE
-            source = Z.EntityFramework.Extensions.PublicExtensions.GetInnerForLinqKit(source);
 #endif
             var compilerField = typeof (EntityQueryProvider).GetField("_queryCompiler", BindingFlags.NonPublic | BindingFlags.Instance);
             var compiler = (QueryCompiler) compilerField.GetValue(source.Provider);
@@ -92,7 +91,6 @@ namespace Z.EntityFramework.Plus
         public static DbContext GetDbContext(this IQueryable query)
         {
 #if EFCORE
-            query = Z.EntityFramework.Extensions.PublicExtensions.GetInnerForLinqKit(query);
 #endif
 
             var compilerField = typeof (EntityQueryProvider).GetField("_queryCompiler", BindingFlags.NonPublic | BindingFlags.Instance);
