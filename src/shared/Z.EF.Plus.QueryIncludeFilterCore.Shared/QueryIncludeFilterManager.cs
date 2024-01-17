@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Z.EntityFramework.Extensions;
 
 namespace Z.EntityFramework.Plus
 {
@@ -17,7 +16,6 @@ namespace Z.EntityFramework.Plus
     {
         static QueryIncludeFilterManager()
         {
-            EntityFrameworkManager.IsEntityFrameworkPlus = true;
         }
         public static bool AllowQueryBatch { get; set; } = true;
         public static bool AllowIncludeSubPath { get; set; } = true;

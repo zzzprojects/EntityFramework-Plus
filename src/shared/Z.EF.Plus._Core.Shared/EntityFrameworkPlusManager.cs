@@ -1,7 +1,4 @@
-﻿using Z.EntityFramework.Extensions;
-using Z.Expressions;
-
-namespace Z.EntityFramework.Plus
+﻿namespace Z.EntityFramework.Plus
 {
     public static class EntityFrameworkPlusManager
     {

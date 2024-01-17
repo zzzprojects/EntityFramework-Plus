@@ -13,7 +13,7 @@ namespace Z.EntityFramework.Plus
         /// <returns>An IQueryable&lt;T&gt;</returns>
         public static IQueryable<T> WithHint<T>(this IQueryable<T> @this, string hint, params Type[] types)
         {
-            return PublicMethodForEFPlus.WithHint(@this, hint, types);
+            throw new NotImplementedException();
         }
 
         /// <summary>An IQueryable&lt;T&gt; extension method that add a table "HINT" such as "NOLOCK".</summary>
@@ -21,9 +21,9 @@ namespace Z.EntityFramework.Plus
         /// <param name="hint">The hint.</param>
         /// <param name="types">A variable-length parameters list containing types.</param>
         /// <returns>An IQueryable&lt;T&gt;</returns>
-        public static IQueryable<T> WithHint<T>(this IQueryable<T> @this, SqlServerTableHintFlags hint, params Type[] types)
+        public static IQueryable<T> WithHint<T>(this IQueryable<T> @this, dynamic hint, params Type[] types)
         {
-            return PublicMethodForEFPlus.WithHint(@this, hint, types);
+            throw new NotImplementedException();
         }
     }
 }

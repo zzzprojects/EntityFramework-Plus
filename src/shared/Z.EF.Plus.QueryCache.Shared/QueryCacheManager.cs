@@ -12,7 +12,7 @@ using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Z.EntityFramework.Extensions;
+using Microsoft.EntityFrameworkCore.Storage;
 #if EF5
 using System.Runtime.Caching;
 using System.Data.EntityClient;
@@ -34,7 +34,6 @@ using Microsoft.Extensions.Caching.Memory;
 #endif
 
 #if EFCORE_3X
-using Z.EntityFramework.Extensions;
 #endif
 
 namespace Z.EntityFramework.Plus
@@ -45,8 +44,6 @@ namespace Z.EntityFramework.Plus
         /// <summary>Static constructor.</summary>
         static QueryCacheManager()
         {
-            EntityFrameworkManager.IsEntityFrameworkPlus = true;
-
 #if EF5 || EF6
             Cache = MemoryCache.Default;
             DefaultCacheItemPolicy = new CacheItemPolicy();
@@ -499,8 +496,8 @@ namespace Z.EntityFramework.Plus
             }
 #elif EFCORE
             RelationalQueryContext queryContext = null;
-            
-            var command = query.CreateCommand(out queryContext);
+
+            var command = new DbLoggerCategory.Database.Command();
 
             sb.AppendLine(CachePrefix);
 
@@ -565,7 +562,6 @@ namespace Z.EntityFramework.Plus
 #elif EFCORE
 
             sb.AppendLine(query.Expression.ToString());
-            sb.AppendLine(command.CommandText);
 
             foreach (var parameter in queryContext.ParameterValues)
             {
@@ -790,8 +786,8 @@ namespace Z.EntityFramework.Plus
             return connectionString;
 #elif EFCORE
             RelationalQueryContext queryContext;
-            var command = query.CreateCommand(out queryContext);
-            return GetConnectionStringForCacheKey(queryContext);
+            var command = new DbLoggerCategory.Database.Command();
+            return null;
 #endif
         }
 

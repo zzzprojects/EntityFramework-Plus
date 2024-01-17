@@ -49,7 +49,6 @@ using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
-using Z.EntityFramework.Extensions;
 #endif
 
 namespace Z.EntityFramework.Plus
@@ -448,25 +447,9 @@ namespace Z.EntityFramework.Plus
         {
             object compiledQueryOut;
 
-            var relationalCommand = Query.EFPlusCreateCommand(queryable =>
-            {
-                var context = queryable.GetDbContext();
+            queryContext = null;
 
-                QueryConnection = context.Database.GetService<IRelationalConnection>();
-
-                var innerConnection = new CreateEntityConnection(QueryConnection.DbConnection, null);
-                var innerConnectionField = typeof(RelationalConnection).GetField("_connection", BindingFlags.NonPublic | BindingFlags.Instance);
-                var initalConnection = innerConnectionField.GetValue(QueryConnection);
-
-				innerConnectionField.SetValue(QueryConnection, innerConnection);
-				RestoreConnection = () => innerConnectionField.SetValue(QueryConnection, initalConnection);
-
-			}, out queryContext, out compiledQueryOut);
-
-            QueryContext = queryContext;
-            CompiledQuery = compiledQueryOut;
-
-            return relationalCommand;
+            return null;
 
             //var source = Query;
 

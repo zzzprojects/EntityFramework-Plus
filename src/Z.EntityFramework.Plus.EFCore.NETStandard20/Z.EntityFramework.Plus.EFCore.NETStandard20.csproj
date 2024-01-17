@@ -32,11 +32,7 @@
 
   <Import Project="..\shared\Z.EF.Plus.Audit.Shared\Z.EF.Plus.Audit.Shared.projitems" Label="Shared" />
 
-  <Import Project="..\shared\Z.EF.Plus.BatchDelete.Shared\Z.EF.Plus.BatchDelete.Shared.projitems" Label="Shared" />
-
   <Import Project="..\shared\Z.EF.Plus.QueryCache.Shared\Z.EF.Plus.QueryCache.Shared.projitems" Label="Shared" />
-
-  <Import Project="..\shared\Z.EF.Plus.BatchUpdate.Shared\Z.EF.Plus.BatchUpdate.Shared.projitems" Label="Shared" />
 
   <Import Project="..\shared\Z.EF.Plus.QueryDeferred.Shared\Z.EF.Plus.QueryDeferred.Shared.projitems" Label="Shared" />
 
@@ -54,8 +50,6 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.0.0" />
     <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
     <PackageReference Include="System.Reflection.TypeExtensions" Version="4.5.0" />
-    <PackageReference Include="Z.EntityFramework.Extensions.EFCore" Version="2.13.0" />
-    <PackageReference Include="Z.Expressions.Eval" Version="4.0.62" />
   </ItemGroup>
 
 </Project>
