@@ -108,13 +108,17 @@ namespace Z.EntityFramework.Plus
 #endif
 
 
-            /// <summary>Gets or sets the entries.</summary>
-            /// <value>The entries.</value>
+        /// <summary>Gets or sets the entries.</summary>
+        /// <value>The entries.</value>
         public List<AuditEntry> Entries { get; set; }
 
-        /// <summary>Gets or sets the  created by username.</summary>
+        /// <summary>Gets or sets the created by username.</summary>
         /// <value>The created by username.</value>
         public string CreatedBy { get; set; }
+        
+        /// <summary> Gets or sets the AuditID. </summary>
+        /// <value> The value of an ID set by EF.
+        public int AuditId { get; set; }
 
         /// <summary>Gets the configuration.</summary>
         /// <value>The configuration.</value>

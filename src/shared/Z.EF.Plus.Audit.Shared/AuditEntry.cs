@@ -216,5 +216,9 @@ namespace Z.EntityFramework.Plus
             get { return State.ToString(); }
             set { State = (AuditEntryState) Enum.Parse(typeof (AuditEntryState), value); }
         }
+        
+        /// <summary>Gets or sets the ID of the audited entity.</summary>
+        /// <value>The ID of the audited entity.</value>
+        public string EntityId { get; set; }
     }
 }
