@@ -183,6 +183,7 @@ namespace Z.EntityFramework.Plus
 
                     using (command)
                     {
+                        QueryFutureManager.OnBatchExecuting?.Invoke(command);
 #if EF5
                     using (var reader = command.ExecuteReader())
                     {
@@ -213,6 +214,7 @@ namespace Z.EntityFramework.Plus
                             }
                         }
 #endif
+                        QueryFutureManager.OnBatchExecuted?.Invoke(command);
                     }
                 }
                 finally

@@ -7,6 +7,8 @@
 
 using System.Runtime.CompilerServices;
 using Z.EntityFramework.Extensions;
+using System;
+using System.Data.Common;
 
 #if NET45 || EFCORE
 
@@ -52,6 +54,12 @@ namespace Z.EntityFramework.Plus
         /// <summary>Gets or sets a value indicating whether we allow query batch.</summary>
         /// <value>True if allow query batch, false if not.</value>
         public static bool AllowQueryBatch { get; set; } = true;
+
+        /// <summary>Gets or sets a delegate to be invoked directly before executing the batch DbCommand.</summary>
+        public static Action<DbCommand> OnBatchExecuting { get; set; } = cmd => { };  
+
+        /// <summary>Gets or sets a delegate to be invoked directly after executing the batch DbCommand.</summary>
+        public static Action<DbCommand> OnBatchExecuted { get; set; } = cmd => { };
 
         /// <summary>Gets or sets the weak table used to cache future batch associated to a context.</summary>
         /// <value>The weak table used to cache future batch associated to a context.</value>
