@@ -56,10 +56,18 @@ namespace Z.EntityFramework.Plus
         public static bool AllowQueryBatch { get; set; } = true;
 
         /// <summary>Gets or sets a delegate to be invoked directly before executing the batch DbCommand.</summary>
-        public static Action<DbCommand> OnBatchExecuting { get; set; } = cmd => { };  
+        /// <remarks>
+        /// This delegate is only invoked when queries are actually executed as a batch containing multiple queries.  
+        /// i.e. When AllowQueryBatch=false or only a single query is pending, this delegate is not invoked.
+        /// </remarks>
+        public static Action<DbCommand> OnBatchExecuting { get; set; } = null;
 
         /// <summary>Gets or sets a delegate to be invoked directly after executing the batch DbCommand.</summary>
-        public static Action<DbCommand> OnBatchExecuted { get; set; } = cmd => { };
+        /// <remarks>
+        /// This delegate is only invoked when queries are actually executed as a batch containing multiple queries.  
+        /// i.e. When AllowQueryBatch=false or only a single query is pending, this delegate is not invoked.
+        /// </remarks>
+        public static Action<DbCommand> OnBatchExecuted { get; set; } = null;
 
         /// <summary>Gets or sets the weak table used to cache future batch associated to a context.</summary>
         /// <value>The weak table used to cache future batch associated to a context.</value>
