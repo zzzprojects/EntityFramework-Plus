@@ -7,26 +7,35 @@
 
 using System;
 
+#if EF5 
+using System.Data.Entity;
+using System.Data.Objects;
+
+#elif EF6
+using System.Data.Entity;
+using System.Data.Entity.Core.Objects;
+
+#elif EFCORE
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+
+#endif
+
 namespace Z.EntityFramework.Plus
 {
     public partial class AuditConfiguration
     {
-
-        /// <summary>Excludes (by entity type) from the audit all entities which satisfy the predicate.</summary>
+        /// <summary>Excludes (by entity entry) from the audit all entities which satisfy the predicate.</summary>
         /// <param name="excludeEntityPredicate">The exclude entity predicate.</param>
         /// <returns>An AuditConfiguration.</returns>
-        public AuditConfiguration Exclude(Func<object, bool> excludeEntityPredicate)
-        {
-            ExcludeIncludeEntityPredicates.Add(x => excludeEntityPredicate(x) ? (bool?) false : null);
-            return this;
-        }
+#if EF5 || EF6
+        public AuditConfiguration ExcludeByEntry(Func<ObjectStateEntry, bool> excludeEntityPredicate)
+#elif EFCORE
+        public AuditConfiguration ExcludeByEntry(Func<EntityEntry, bool> excludeEntityPredicate)
+#endif
 
-        /// <summary>Excludes (by entity type) from the audit all entities of 'T' type or entities which the type derive from 'T'.</summary>
-        /// <typeparam name="T">Generic type to exclude.</typeparam>
-        /// <returns>An AuditConfiguration.</returns>
-        public AuditConfiguration Exclude<T>()
         {
-            ExcludeIncludeEntityPredicates.Add(x => x is T ? (bool?) false : null);
+            ExcludeIncludeByInstanceEntityPredicates.Add(x => excludeEntityPredicate(x) ? (bool?) false : null);
             return this;
         }
     }

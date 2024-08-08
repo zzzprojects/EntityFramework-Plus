@@ -106,15 +106,20 @@ namespace Z.EntityFramework.Plus
 
             // We deactivated temporary some QueryFuture for EF Core as they don't work correctly            
             // We need to still make them "work" for IncludeFilter feature
-            var isMySqlPomelo = assemblyName == "Pomelo.EntityFrameworkCore.MySql";
+            // sa chie dans notre dataReader en EF.Core 3 (2 pas test, mais je suppose pareil)
+#if (EFCORE_2X || EFCORE_3X) && !EFCORE_5X
+            var isMySqlPomeloUnsupported = assemblyName == "Pomelo.EntityFrameworkCore.MySql";
+#else
+            var isMySqlPomeloUnsupported = false;
+#endif
             var isOracle = assemblyName == "Oracle.EntityFrameworkCore" || assemblyName == "Devart.Data.Oracle.Entity.EFCore";
-            if (allowQueryBatch && (isOracle || isMySqlPomelo))
+            if (allowQueryBatch && (isOracle || isMySqlPomeloUnsupported))
             {
                 allowQueryBatch = false;
             }
 #endif
 
-            if (!allowQueryBatch)
+        if (!allowQueryBatch)
             {
                 foreach (var query in Queries)
                 {
@@ -185,24 +190,24 @@ namespace Z.EntityFramework.Plus
                     {
                         QueryFutureManager.OnBatchExecuting?.Invoke(command);
 #if EF5
-                    using (var reader = command.ExecuteReader())
-                    {
-                        foreach (var query in Queries)
+                        using (var reader = command.ExecuteReader())
                         {
-                            query.SetResult(reader);
-                            reader.NextResult();
+                            foreach (var query in Queries)
+                            {
+                                query.SetResult(reader);
+                                reader.NextResult();
+                            }
                         }
-}
 #elif EF6
-                    var interceptionContext = Context.GetInterceptionContext();
-                    using (var reader = DbInterception.Dispatch.Command.Reader(command, new DbCommandInterceptionContext(interceptionContext)))
-                    {
-                        foreach (var query in Queries)
+                        var interceptionContext = Context.GetInterceptionContext();
+                        using (var reader = DbInterception.Dispatch.Command.Reader(command, new DbCommandInterceptionContext(interceptionContext)))
                         {
-                            query.SetResult(reader);
-                            reader.NextResult();
+                            foreach (var query in Queries)
+                            {
+                                query.SetResult(reader);
+                                reader.NextResult();
+                            }
                         }
-                    }
 #elif EFCORE
                         using (var reader = command.ExecuteReader())
                         {
@@ -376,10 +381,11 @@ namespace Z.EntityFramework.Plus
             var isOracleManaged = command.GetType().FullName.Contains("Oracle.ManagedDataAccess");
             var isOracleDevArt = command.GetType().FullName.Contains("Devart");
 
+            var isPostgreSQL = command.GetType().FullName.Contains("Npgsql"); 
 #if EFCORE_3X
             // foreach is broken need stop and new Foreach, a for is better here, but I don't know if is possible Include with logique with new IncludeOptimized in a Where logic or other. In theory I guess yes, in true I don't know.
             // For now I try without check that.
-            for (int i = 0; i < Queries.Count;i++)
+                for (int i = 0; i < Queries.Count;i++)
             {
                 var query = Queries.ElementAt(i);
                 // first check is because parano.
@@ -403,7 +409,7 @@ namespace Z.EntityFramework.Plus
 
             foreach (var query in Queries)
             {
-                // GENERATE SQL
+            // GENERATE SQL
 #if EF5
                 var sql = query.Query.ToTraceString();
                 var parameters = query.Query.Parameters;
@@ -553,6 +559,34 @@ namespace Z.EntityFramework.Plus
                         command.Parameters.Add(dbParameter);
                     }
 
+                    if (isPostgreSQL)
+                    {
+                        var relationalTypeMappingProperty = typeof(TypeMappedRelationalParameter).GetProperty("RelationalTypeMapping", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+                        if (relationalTypeMappingProperty != null)
+                        {
+                            var relationalTypeMapping = (RelationalTypeMapping)relationalTypeMappingProperty.GetValue(relationalParameter);
+
+                            if (relationalTypeMapping != null && relationalTypeMapping.StoreType.Equals("citext", StringComparison.OrdinalIgnoreCase))
+                            { 
+
+                                var propertyPostgreSQLDBType = dbParameter.GetType().GetProperty("NpgsqlDbType", BindingFlags.Public | BindingFlags.Instance);
+
+                                if (propertyPostgreSQLDBType != null)
+                                {
+                                    // 51
+                                    // NpgsqlTypes.NpgsqlDbType.Citext
+                                    propertyPostgreSQLDBType.SetValue(dbParameter, 51);
+                                }
+                                else
+                                {
+                                    // parce que sinon le Query va fonctionner, mais pas fournir ou impacté potentiellement les mauvaise donné sans que le client le sache.
+                                    throw new Exception("Oops! The following class 'NpgsqlDbType' was not found from the assembly when trying to solve the 'citext' column type for the `QueryFuture` feature.");
+                                }
+                            }
+                        }
+                    }
+
                     // REPLACE parameter with new value
                     if (isOracle || isOracleManaged || isOracleDevArt)
                     {
@@ -567,7 +601,7 @@ namespace Z.EntityFramework.Plus
 
 
 
-                sb.AppendLine(string.Concat("-- EF+ Query Future: ", queryCount, " of ", Queries.Count));
+            sb.AppendLine(string.Concat("-- EF+ Query Future: ", queryCount, " of ", Queries.Count));
 
                 if (isOracle || isOracleManaged || isOracleDevArt)
                 {

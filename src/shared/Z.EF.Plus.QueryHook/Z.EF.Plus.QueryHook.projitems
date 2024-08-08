@@ -9,6 +9,7 @@
     <Import_RootNamespace>Z.EF.Plus.QueryHook</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)InterceptorCommandExecutingExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TableHintExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TemporalTableExtensions.cs" />
   </ItemGroup>

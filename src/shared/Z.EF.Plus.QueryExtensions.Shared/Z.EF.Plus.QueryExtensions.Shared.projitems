@@ -2,10 +2,10 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="SharedProjectFile_SccProperties">
     <SharedProjectFile_ProjectGuid>{47155a83-7578-47a8-b566-a64a9dca3c89}</SharedProjectFile_ProjectGuid>
-    <SharedProjectFile_SccProjectName>SAK</SharedProjectFile_SccProjectName>
-    <SharedProjectFile_SccAuxPath>SAK</SharedProjectFile_SccAuxPath>
-    <SharedProjectFile_SccLocalPath>SAK</SharedProjectFile_SccLocalPath>
-    <SharedProjectFile_SccProvider>SAK</SharedProjectFile_SccProvider>
+    <SharedProjectFile_SccProjectName></SharedProjectFile_SccProjectName>
+    <SharedProjectFile_SccAuxPath></SharedProjectFile_SccAuxPath>
+    <SharedProjectFile_SccLocalPath></SharedProjectFile_SccLocalPath>
+    <SharedProjectFile_SccProvider></SharedProjectFile_SccProvider>
   </PropertyGroup>
   <PropertyGroup>
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>

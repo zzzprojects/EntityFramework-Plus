@@ -2,10 +2,10 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="SharedProjectFile_SccProperties">
     <SharedProjectFile_ProjectGuid>{2ad53f92-e59b-4cba-b195-62918e6865fb}</SharedProjectFile_ProjectGuid>
-    <SharedProjectFile_SccProjectName>SAK</SharedProjectFile_SccProjectName>
-    <SharedProjectFile_SccAuxPath>SAK</SharedProjectFile_SccAuxPath>
-    <SharedProjectFile_SccLocalPath>SAK</SharedProjectFile_SccLocalPath>
-    <SharedProjectFile_SccProvider>SAK</SharedProjectFile_SccProvider>
+    <SharedProjectFile_SccProjectName></SharedProjectFile_SccProjectName>
+    <SharedProjectFile_SccAuxPath></SharedProjectFile_SccAuxPath>
+    <SharedProjectFile_SccLocalPath></SharedProjectFile_SccLocalPath>
+    <SharedProjectFile_SccProvider></SharedProjectFile_SccProvider>
   </PropertyGroup>
   <PropertyGroup>
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
@@ -19,8 +19,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Audit.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\DisplayNameDataAnnotation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\ExcludeByEntry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\ExcludeDataAnnotation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\ExcludeByInstance.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\ExcludeEntity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\IncludeByEntry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\IncludeByInstance.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\MetaProperty.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\ExcludeProperty.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AuditConfiguration\Format.cs" />

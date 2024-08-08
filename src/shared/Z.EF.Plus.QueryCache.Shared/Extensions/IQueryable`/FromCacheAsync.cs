@@ -284,7 +284,7 @@ namespace Z.EntityFramework.Plus
         {
             if (!QueryCacheManager.IsEnabled)
             {
-                return await query.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
+                return await QueryCacheManager.ResolveAsNoTracking(query).ToListAsync(cancellationToken).ConfigureAwait(false);
             }
 
             var key = QueryCacheManager.GetCacheKey(query, tags, true);
@@ -292,7 +292,7 @@ namespace Z.EntityFramework.Plus
             object item;
             if (!QueryCacheManager.Cache.TryGetValue(key, out item))
             {
-                item = await query.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
+                item = await QueryCacheManager.ResolveAsNoTracking(query).ToListAsync(cancellationToken).ConfigureAwait(false);
                 item = QueryCacheManager.Cache.Set(key, item, options);
                 QueryCacheManager.AddCacheTag(key, tags);
                 QueryCacheManager.AddCacheTag(key, typeof(T).Name + QueryCacheManager.CacheTypeSuffix);

@@ -30,6 +30,8 @@ using System.Runtime.Caching;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Caching.Memory;
+using System.Collections;
+
 
 #endif
 
@@ -52,7 +54,7 @@ namespace Z.EntityFramework.Plus
             DefaultCacheItemPolicy = new CacheItemPolicy();
 #elif EFCORE
             Cache = new MemoryCache(new MemoryCacheOptions());
-            DefaultMemoryCacheEntryOptions = new MemoryCacheEntryOptions(); 
+            DefaultMemoryCacheEntryOptions = new MemoryCacheEntryOptions();
 #endif
             CachePrefix = "Z.EntityFramework.Plus.QueryCacheManager;";
             CacheTypeSuffix = "_ZZZ_QueryCacheManager_CacheType";
@@ -191,7 +193,7 @@ namespace Z.EntityFramework.Plus
                 _memoryCacheEntryOptionsFactory = value;
                 _defaultMemoryCacheEntryOptions = null;
             }
-        }  
+        }
 #endif
 
         /// <summary>Gets or sets the cache prefix to use to create the cache key.</summary>
@@ -211,6 +213,14 @@ namespace Z.EntityFramework.Plus
         /// </summary>
         /// <value>true if the Query Cache is enabled.</value>
         public static bool IsEnabled { get; set; } = true;
+
+#if EFCORE_5X
+        /// <summary>
+        /// Gets or sets a value indicating whether the cache should use 'AsNoTrackingWithIdentityResolution()' instead of 'AsNoTracking()'.
+        /// </summary>
+        /// <value>True if the cache should use 'AsNoTrackingWithIdentityResolution()' instead of 'AsNoTracking()', false if not.</value>
+        public static bool UseAsNoTrackingWithIdentityResolution { get; set; }
+#endif
 
         /// <summary>
         ///     Gets or sets a value indicating whether the connection in cache key should be included.
@@ -343,18 +353,18 @@ namespace Z.EntityFramework.Plus
             foreach (var tag in tags)
             {
                 CacheTags.AddOrUpdate(CachePrefix + tag, x => new List<string> {cacheKey}, (x, list) =>
-                {
-                    lock (list)
-                    {
+                  {
+                      lock (list)
+                      {
                         // never lock something related to this list elsewhere or ensure we don't create a deadlock
                         if (!list.Contains(cacheKey))
-                        {
-                            list.Add(cacheKey);
-                        }
-                    }
+                          {
+                              list.Add(cacheKey);
+                          }
+                      }
 
-                    return list;
-                });
+                      return list;
+                  });
             }
         }
 
@@ -377,36 +387,36 @@ namespace Z.EntityFramework.Plus
                 Cache.Remove(item);
             }
         }
-#else 
-	    /// <summary>Expire all cached objects && tag.</summary>
+#else
+        /// <summary>Expire all cached objects && tag.</summary>
         public static void ExpireAll()
-	    {
-		    var tags =  CacheTags.Select(x => x.Key).ToList();
+        {
+            var tags = CacheTags.Select(x => x.Key).ToList();
 
             // We do not use ExpireTag because type doesn't have CachePrefix
             foreach (var tag in tags)
-		    {
-			     List<string> list;
-			     if (CacheTags.TryRemove(tag, out list))
-			     {
-				     // never lock something related to this list elsewhere or ensure we don't create a deadlock
-				     lock (list)
-				     {
-					     foreach (var item in list)
-					     {
-						     Cache.Remove(item);
-					     }
-				     }
-			     }
-		     }
+            {
+                List<string> list;
+                if (CacheTags.TryRemove(tag, out list))
+                {
+                    // never lock something related to this list elsewhere or ensure we don't create a deadlock
+                    lock (list)
+                    {
+                        foreach (var item in list)
+                        {
+                            Cache.Remove(item);
+                        }
+                    }
+                }
+            }
         }
 #endif
         /// <summary>Expire type.</summary>
         /// <param name="type">The type.</param>
 	    public static void ExpireType(Type type)
-	    {
-		    ExpireTag(type.Name + CacheTypeSuffix);
-	    }
+        {
+            ExpireTag(type.Name + CacheTypeSuffix);
+        }
 
         /// <summary>Expire type.</summary>
         public static void ExpireType<T>()
@@ -439,7 +449,7 @@ namespace Z.EntityFramework.Plus
             {
                 List<string> list;
                 if (CacheTags.TryRemove(CachePrefix + tag, out list))
-                {                        
+                {
                     // never lock something related to this list elsewhere or ensure we don't create a deadlock
                     lock (list)
                     {
@@ -450,7 +460,7 @@ namespace Z.EntityFramework.Plus
                     }
                 }
             }
-        } 
+        }
 
         /// <summary>Gets cached keys used to cache or retrieve a query from the QueryCacheManager.</summary>
         /// <param name="query">The query to cache or retrieve from the QueryCacheManager.</param>
@@ -499,7 +509,7 @@ namespace Z.EntityFramework.Plus
             }
 #elif EFCORE
             RelationalQueryContext queryContext = null;
-            
+
             var command = query.CreateCommand(out queryContext);
 
             sb.AppendLine(CachePrefix);
@@ -574,21 +584,22 @@ namespace Z.EntityFramework.Plus
                 sb.Append(parameter.Value);
                 sb.AppendLine(";");
 
-                if (parameter.Value is object[] parameterValues)
+                // Array contient IList
+                if (parameter.Value is IList parameterValues)
                 {
-	                foreach (var param in parameterValues)
-	                {
-		                if (param is DbParameter dbParameter)
-		                { 
-			                sb.Append(dbParameter.Value?.ToString() ?? "NULL");
-			                sb.AppendLine(";");
+                    foreach (var param in parameterValues)
+                    {
+                        if (param is DbParameter dbParameter)
+                        {
+                            sb.Append(dbParameter.Value?.ToString() ?? "NULL");
+                            sb.AppendLine(";");
                         }
                         else if (param != null)
                         {
                             sb.Append(param);
                             sb.AppendLine(";");
                         }
-	                }
+                    }
                 }
             }
 #endif
@@ -827,12 +838,21 @@ namespace Z.EntityFramework.Plus
             }
 
             // FORCE database name in case "ChangeDatabase()" method is used
-            var connectionString = string.Concat(connection.DataSource ?? "", 
-                Environment.NewLine, 
+            var connectionString = string.Concat(connection.DataSource ?? "",
+                Environment.NewLine,
                 connection.Database ?? "",
                 Environment.NewLine,
                 connectionStringWithoutPassword ?? "");
             return connectionString;
+        }
+
+        internal static IQueryable<TEntity> ResolveAsNoTracking<TEntity>(IQueryable<TEntity> query) where TEntity : class
+        {
+#if EFCORE_5X
+            return UseAsNoTrackingWithIdentityResolution ? query.AsNoTrackingWithIdentityResolution() : query.AsNoTracking();
+#else
+            return query.AsNoTracking();
+#endif 
         }
 #endif
 

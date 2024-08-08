@@ -143,7 +143,7 @@ namespace Z.EntityFramework.Plus
         {
             if (!QueryCacheManager.IsEnabled)
             {
-                return query.AsNoTracking().ToList();
+                return QueryCacheManager.ResolveAsNoTracking(query).ToList();
             }
 
             var key = QueryCacheManager.GetCacheKey(query, tags);
@@ -151,7 +151,7 @@ namespace Z.EntityFramework.Plus
             object item;
             if (!QueryCacheManager.Cache.TryGetValue(key, out item))
             {
-                item = query.AsNoTracking().ToList();
+                item = QueryCacheManager.ResolveAsNoTracking(query).ToList();
                 item = QueryCacheManager.Cache.Set(key, item, options);
                 QueryCacheManager.AddCacheTag(key, tags);
                 QueryCacheManager.AddCacheTag(key,typeof(T).Name  + QueryCacheManager.CacheTypeSuffix);

@@ -11,22 +11,12 @@ namespace Z.EntityFramework.Plus
 {
     public partial class AuditConfiguration
     {
-
-        /// <summary>Excludes (by entity type) from the audit all entities which satisfy the predicate.</summary>
+        /// <summary>Excludes (by entity instance) from the audit all entities which satisfy the predicate.</summary>
         /// <param name="excludeEntityPredicate">The exclude entity predicate.</param>
         /// <returns>An AuditConfiguration.</returns>
-        public AuditConfiguration Exclude(Func<object, bool> excludeEntityPredicate)
+        public AuditConfiguration ExcludeByInstance(Func<object, bool> excludeEntityPredicate)
         {
-            ExcludeIncludeEntityPredicates.Add(x => excludeEntityPredicate(x) ? (bool?) false : null);
-            return this;
-        }
-
-        /// <summary>Excludes (by entity type) from the audit all entities of 'T' type or entities which the type derive from 'T'.</summary>
-        /// <typeparam name="T">Generic type to exclude.</typeparam>
-        /// <returns>An AuditConfiguration.</returns>
-        public AuditConfiguration Exclude<T>()
-        {
-            ExcludeIncludeEntityPredicates.Add(x => x is T ? (bool?) false : null);
+            ExcludeIncludeByInstanceEntityPredicates.Add(x => excludeEntityPredicate(x.Entity) ? (bool?)false : null);
             return this;
         }
     }

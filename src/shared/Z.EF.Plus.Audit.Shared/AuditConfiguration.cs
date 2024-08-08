@@ -15,6 +15,7 @@ using System.Data.Objects;
 
 #elif EF6
 using System.Data.Entity;
+using System.Data.Entity.Core.Objects;
 
 #elif EFCORE
 using Microsoft.EntityFrameworkCore;
@@ -34,6 +35,12 @@ namespace Z.EntityFramework.Plus
 
             EntityValueFormatters = new List<Func<object, string, object, Func<object, object>>>();
             ExcludeIncludeEntityPredicates = new List<Func<object, bool?>>();
+#if EF5 || EF6
+            ExcludeIncludeByInstanceEntityPredicates = new List<Func<ObjectStateEntry, bool?>>();
+#elif EFCORE
+            ExcludeIncludeByInstanceEntityPredicates = new List<Func<EntityEntry, bool?>>();
+#endif
+
             ExcludeIncludePropertyPredicates = new List<Func<object, string, bool?>>();
 
             SoftAddedPredicates = new List<Func<object, bool>>();
@@ -71,6 +78,14 @@ namespace Z.EntityFramework.Plus
         /// <summary>Gets or sets a list of predicates to exclude or include entities.</summary>
         /// <value>A list of predicates to exclude or include entities.</value>
         public List<Func<object, bool?>> ExcludeIncludeEntityPredicates { get; set; }
+
+        /// <summary>Gets or sets a list of predicates to exclude or include by instance entities.</summary>
+        /// <value>A list of predicates to exclude or include by instance entities.</value>
+#if EF5 || EF6
+        public List<Func<ObjectStateEntry, bool?>> ExcludeIncludeByInstanceEntityPredicates { get; set; }
+#elif EFCORE
+        public List<Func<EntityEntry, bool?>> ExcludeIncludeByInstanceEntityPredicates { get; set; }
+#endif
 
         /// <summary>Gets or sets a list of predicates to exclude or include properties.</summary>
         /// <value>A list of predicates to exclude or include properties.</value>
@@ -179,6 +194,11 @@ namespace Z.EntityFramework.Plus
                 IgnoreRelationshipDeleted = IgnoreRelationshipDeleted,
                 EntityValueFormatters = new List<Func<object, string, object, Func<object, object>>>(EntityValueFormatters),
                 ExcludeIncludeEntityPredicates = new List<Func<object, bool?>>(ExcludeIncludeEntityPredicates),
+#if EF5 || EF6
+                ExcludeIncludeByInstanceEntityPredicates = new List<Func<ObjectStateEntry, bool?>>(ExcludeIncludeByInstanceEntityPredicates),
+#elif EFCORE
+                ExcludeIncludeByInstanceEntityPredicates = new List<Func<EntityEntry, bool?>>(ExcludeIncludeByInstanceEntityPredicates),
+#endif
                 ExcludeIncludePropertyPredicates = new List<Func<object, string, bool?>>(ExcludeIncludePropertyPredicates),
                 SoftAddedPredicates = new List<Func<object, bool>>(SoftAddedPredicates),
                 SoftDeletedPredicates = new List<Func<object, bool>>(SoftDeletedPredicates),

@@ -29,7 +29,8 @@ namespace Z.EntityFramework.Plus
         public bool IsAuditedEntity(EntityEntry entry)
 #endif
         {
-            if (ExcludeIncludeEntityPredicates.Count == 0 || entry.Entity == null)
+            if (entry.Entity == null
+                || (ExcludeIncludeEntityPredicates.Count == 0 && ExcludeIncludeByInstanceEntityPredicates.Count == 0))
             {
                 return true;
             }
@@ -52,6 +53,15 @@ namespace Z.EntityFramework.Plus
                 }
 
                 IsAuditedDictionary.TryAdd(key, value);
+            }
+
+            foreach(var excludeIncludeByInstanceEntityFunc in ExcludeIncludeByInstanceEntityPredicates)
+            {
+                var maybeIncluded = excludeIncludeByInstanceEntityFunc(entry);
+                if (maybeIncluded.HasValue)
+                {
+                    value = maybeIncluded.Value;
+                }
             }
 
             return value;

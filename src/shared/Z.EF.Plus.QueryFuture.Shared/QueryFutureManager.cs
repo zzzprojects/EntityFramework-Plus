@@ -87,8 +87,8 @@ namespace Z.EntityFramework.Plus
 #endif
         {
             QueryFutureBatch futureBatch;
-			
-			if (!CacheWeakFutureBatch.TryGetValue(context, out futureBatch))
+
+            if (!CacheWeakFutureBatch.TryGetValue(context, out futureBatch))
             {
                 futureBatch = new QueryFutureBatch(context);
                 CacheWeakFutureBatch.Add(context, futureBatch);
@@ -104,20 +104,20 @@ namespace Z.EntityFramework.Plus
 #elif EFCORE
             var batch = AddOrGetBatch(context);
 #endif
-            batch.ExecuteQueries(); 
+            batch.ExecuteQueries();
         }
 
 
 #if NET45 || EFCORE
         public static async Task ExecuteBatchAsync(DbContext context, CancellationToken cancellationToken = default(CancellationToken))
-		{
+        {
 #if EF5 || EF6
             var batch = AddOrGetBatch(context.GetObjectContext());
 #elif EFCORE
 			var batch = AddOrGetBatch(context);
 #endif
-			await batch.ExecuteQueriesAsync(cancellationToken).ConfigureAwait(false);
-		}
+            await batch.ExecuteQueriesAsync(cancellationToken).ConfigureAwait(false);
+        }
 #endif
     }
 }

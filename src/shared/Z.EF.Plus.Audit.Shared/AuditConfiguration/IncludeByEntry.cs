@@ -7,25 +7,35 @@
 
 using System;
 
+#if EF5 
+using System.Data.Entity;
+using System.Data.Objects;
+
+#elif EF6
+using System.Data.Entity;
+using System.Data.Entity.Core.Objects;
+
+#elif EFCORE
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+
+#endif
+
 namespace Z.EntityFramework.Plus
 {
     public partial class AuditConfiguration
     {
-        /// <summary>Includes (by entity type) from the audit all entities which satisfy the predicate.</summary>
+        /// <summary>Includes (by entity entry) from the audit all entities which satisfy the predicate.</summary>
         /// <param name="includeEntityPredicate">The include entity predicate.</param>
         /// <returns>An AuditConfiguration.</returns>
-        public AuditConfiguration Include(Func<object, bool> includeEntityPredicate)
-        {
-            ExcludeIncludeEntityPredicates.Add(x => includeEntityPredicate(x) ? (bool?) true : null);
-            return this;
-        }
+#if EF5 || EF6
+        public AuditConfiguration IncludeByEntry(Func<ObjectStateEntry, bool> includeEntityPredicate)
+#elif EFCORE
+        public AuditConfiguration IncludeByEntry(Func<EntityEntry, bool> includeEntityPredicate)
+#endif
 
-        /// <summary>Includes (by entity type) from the audit all entities of 'T' type or entities which the type derive from 'T'.</summary>
-        /// <typeparam name="T">Generic type to include.</typeparam>
-        /// <returns>An AuditConfiguration.</returns>
-        public AuditConfiguration Include<T>()
         {
-            ExcludeIncludeEntityPredicates.Add(x => x is T ? (bool?) true : null);
+            ExcludeIncludeByInstanceEntityPredicates.Add(x => includeEntityPredicate(x) ? (bool?)true : null);
             return this;
         }
     }
