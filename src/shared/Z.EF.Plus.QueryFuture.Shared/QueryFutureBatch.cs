@@ -119,7 +119,7 @@ namespace Z.EntityFramework.Plus
             }
 #endif
 
-        if (!allowQueryBatch)
+            if (!allowQueryBatch)
             {
                 foreach (var query in Queries)
                 {
@@ -239,12 +239,12 @@ namespace Z.EntityFramework.Plus
 #if EFCORE
             }
             finally
-            { 
-				if (firstQuery.RestoreConnection != null)
-				{
-					firstQuery.RestoreConnection();
-				}
-			}
+            {
+                if (firstQuery.RestoreConnection != null)
+                {
+                    firstQuery.RestoreConnection();
+                }
+            }
 #endif
         }
 
@@ -297,7 +297,7 @@ namespace Z.EntityFramework.Plus
 #endif
 #if EFCORE
             try
-            { 
+            {
 #endif
                 var command = CreateCommandCombined(true);
 
@@ -359,15 +359,15 @@ namespace Z.EntityFramework.Plus
 
 #if EFCORE
             }
-            finally 
-            { 
+            finally
+            {
                 if (firstQuery.RestoreConnection != null)
                 {
                     firstQuery.RestoreConnection();
                 }
-			}
+            }
 #endif
-		}
+        }
 #endif
 
         /// <summary>Creates a new command combining deferred queries.</summary>
@@ -383,11 +383,11 @@ namespace Z.EntityFramework.Plus
             var isOracleManaged = command.GetType().FullName.Contains("Oracle.ManagedDataAccess");
             var isOracleDevArt = command.GetType().FullName.Contains("Devart");
 
-            var isPostgreSQL = command.GetType().FullName.Contains("Npgsql"); 
+            var isPostgreSQL = command.GetType().FullName.Contains("Npgsql");
 #if EFCORE_3X
             // foreach is broken need stop and new Foreach, a for is better here, but I don't know if is possible Include with logique with new IncludeOptimized in a Where logic or other. In theory I guess yes, in true I don't know.
             // For now I try without check that.
-                for (int i = 0; i < Queries.Count;i++)
+            for (int i = 0; i < Queries.Count; i++)
             {
                 var query = Queries.ElementAt(i);
                 // first check is because parano.
@@ -411,7 +411,7 @@ namespace Z.EntityFramework.Plus
 
             foreach (var query in Queries)
             {
-            // GENERATE SQL
+                // GENERATE SQL
 #if EF5
                 var sql = query.Query.ToTraceString();
                 var parameters = query.Query.Parameters;
@@ -481,7 +481,7 @@ namespace Z.EntityFramework.Plus
                 int i = 0;
                 object value;
                 MethodInfo methodeConvertFromProvider;
-                object convertToProvider; 
+                object convertToProvider;
 
                 // UPDATE parameter name
                 foreach (var relationalParameter in parameters)
@@ -542,16 +542,16 @@ namespace Z.EntityFramework.Plus
                         oldValue = parameterToCheck.Name.Substring(1);
                     }
                     else
-                    { 
+                    {
                         oldValue = relationalParameter.InvariantName;
                     }
                     var newValue = string.Concat("Z_", queryCount, "_", oldValue);
 
                     // CREATE parameter
                     var dbParameter = command.CreateParameter();
-					dbParameter.CopyFrom(relationalParameter, value ?? parameter, newValue, Context);
+                    dbParameter.CopyFrom(relationalParameter, value ?? parameter, newValue, Context);
 
-					if (methodeConvertFromProvider != null)
+                    if (methodeConvertFromProvider != null)
                     {
                         dbParameter.Value = methodeConvertFromProvider.Invoke(convertToProvider, new[] { dbParameter.Value });
                     }
@@ -570,7 +570,7 @@ namespace Z.EntityFramework.Plus
                             var relationalTypeMapping = (RelationalTypeMapping)relationalTypeMappingProperty.GetValue(relationalParameter);
 
                             if (relationalTypeMapping != null && relationalTypeMapping.StoreType.Equals("citext", StringComparison.OrdinalIgnoreCase))
-                            { 
+                            {
 
                                 var propertyPostgreSQLDBType = dbParameter.GetType().GetProperty("NpgsqlDbType", BindingFlags.Public | BindingFlags.Instance);
 
@@ -603,7 +603,7 @@ namespace Z.EntityFramework.Plus
 
 
 
-            sb.AppendLine(string.Concat("-- EF+ Query Future: ", queryCount, " of ", Queries.Count));
+                sb.AppendLine(string.Concat("-- EF+ Query Future: ", queryCount, " of ", Queries.Count));
 
                 if (isOracle || isOracleManaged || isOracleDevArt)
                 {
@@ -615,16 +615,16 @@ namespace Z.EntityFramework.Plus
                     param.Value = DBNull.Value;
 
                     if (isOracle)
-                    { 
-                        SetOracleDbType(command.GetType().Assembly, param, 121); 
+                    {
+                        SetOracleDbType(command.GetType().Assembly, param, 121);
                     }
                     else if (isOracleManaged)
-                    { 
-                        SetOracleManagedDbType(command.GetType().Assembly, param, 121); 
+                    {
+                        SetOracleManagedDbType(command.GetType().Assembly, param, 121);
                     }
                     else if (isOracleDevArt)
-                    { 
-                        SetOracleDevArtDbType(command.GetType().Assembly, param, 7); 
+                    {
+                        SetOracleDevArtDbType(command.GetType().Assembly, param, 7);
                     }
 
 

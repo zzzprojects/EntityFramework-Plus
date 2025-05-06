@@ -583,6 +583,7 @@ namespace Z.EntityFramework.Plus
                 sb.Append(";");
                 sb.Append(parameter.Value);
                 sb.AppendLine(";");
+                 
 
                 // Array contient IList
                 if (parameter.Value is IList parameterValues)
@@ -600,6 +601,33 @@ namespace Z.EntityFramework.Plus
                             sb.AppendLine(";");
                         }
                     }
+                }
+                else if (parameter.Value is IEnumerable<object> enumerable)
+                {
+                    // je prend pour acquit que si cela résout une query EF.Core ne sera résolut qu'une seul fois et qu'après le tracking embarquera...
+                    var paramValueNotIList = enumerable.ToList(); 
+                    
+                    foreach (var param in paramValueNotIList)
+                    {
+                        if (param is DbParameter dbParameter)
+                        {
+                            sb.Append(dbParameter.Value?.ToString() ?? "NULL");
+                            sb.AppendLine(";");
+                        }
+                        else if (param != null)
+                        {
+                            try
+                            { 
+                                sb.Append(param);
+                                sb.AppendLine(";");
+                            }
+                            catch (Exception ex) 
+                            {
+                                // autant string, int et autre je me dit que ça va autant si sa tente de mettre une classe json ou autre sa risque de faire bomb.
+                                throw new Exception("Oops! The JSON? parameter list could not have been appended to create the key");
+                            }
+                        } 
+                    } 
                 }
             }
 #endif
