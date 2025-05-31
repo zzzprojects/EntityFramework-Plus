@@ -11,7 +11,11 @@ Read more on our [Website](https://entityframework-plus.net/).
 [![nuget](https://img.shields.io/nuget/dt/Z.EntityFramework.Plus.EFCore?logo=nuget&style=flat-square)](https://www.nuget.org/packages/Z.EntityFramework.Plus.EFCore)
 
 ```
-PM> Install-Package Z.EntityFramework.Plus.EFCore
+PM> NuGet\Install-Package Z.EntityFramework.Plus.EFCore
+```
+
+```
+>dotnet add package Z.EntityFramework.Plus.EFCore
 ```
 
 ### EF6
@@ -20,7 +24,11 @@ PM> Install-Package Z.EntityFramework.Plus.EFCore
 [![nuget](https://img.shields.io/nuget/dt/Z.EntityFramework.Plus.EF6?logo=nuget&style=flat-square)](https://www.nuget.org/packages/Z.EntityFramework.Plus.EF6)
 
 ```
-PM> Install-Package Z.EntityFramework.Plus.EF6
+PM> NuGet\Install-Package Z.EntityFramework.Plus.EF6
+```
+
+```
+>dotnet add package Z.EntityFramework.Plus.EF6
 ```
 
 ## Sponsors
