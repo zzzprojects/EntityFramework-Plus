@@ -15,7 +15,7 @@ PM> NuGet\Install-Package Z.EntityFramework.Plus.EFCore
 ```
 
 ```
->dotnet add package Z.EntityFramework.Plus.EFCore
+> dotnet add package Z.EntityFramework.Plus.EFCore
 ```
 
 ### EF6
@@ -28,7 +28,7 @@ PM> NuGet\Install-Package Z.EntityFramework.Plus.EF6
 ```
 
 ```
->dotnet add package Z.EntityFramework.Plus.EF6
+> dotnet add package Z.EntityFramework.Plus.EF6
 ```
 
 ## Sponsors
