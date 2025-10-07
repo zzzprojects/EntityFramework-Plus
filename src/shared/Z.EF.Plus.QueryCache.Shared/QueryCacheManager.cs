@@ -577,7 +577,11 @@ namespace Z.EntityFramework.Plus
             sb.AppendLine(query.Expression.ToString());
             sb.AppendLine(command.CommandText);
 
+#if EFCORE_10X
+            foreach (var parameter in queryContext.Parameters)
+#else
             foreach (var parameter in queryContext.ParameterValues)
+#endif
             {
                 sb.Append(parameter.Key);
                 sb.Append(";");

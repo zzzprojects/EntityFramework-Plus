@@ -18,6 +18,8 @@ using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
+using Z.EntityFramework.Extensions;
+
 
 #if EFCORE_2X
 using Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal;
@@ -36,8 +38,7 @@ namespace Z.EntityFramework.Plus
             var compilerField = typeof(EntityQueryProvider).GetField("_queryCompiler", BindingFlags.NonPublic | BindingFlags.Instance);
             var compiler = (QueryCompiler)compilerField.GetValue(query.Provider);
 
-            var queryContextFactoryField = compiler.GetType().GetField("_queryContextFactory", BindingFlags.NonPublic | BindingFlags.Instance);
-            var queryContextFactory = queryContextFactoryField.GetValue(compiler);
+            var queryContextFactory = PublicMethods.GetQueryContextFactory(compiler);
 
             var relationalQueryContextFactory = queryContextFactory as RelationalQueryContextFactory;
 

@@ -35,9 +35,12 @@ namespace Z.EntityFramework.Plus
             var changes = objectContext.ObjectStateManager.GetObjectStateEntries(EntityState.Added | EntityState.Modified | EntityState.Deleted);
 #elif EFCORE
             context.ChangeTracker.DetectChanges();
-            var changes = context.ChangeTracker.Entries().Where(x => x.State == EntityState.Added ||
-                                                                     x.State == EntityState.Modified ||
-                                                                     x.State == EntityState.Deleted);
+            var changes = context.ChangeTracker
+                                 .Entries()
+                                 .Where(x => x.State == EntityState.Added ||
+                                            x.State == EntityState.Modified ||
+                                            x.State == EntityState.Deleted)
+                                 .ToList(); // Fix for 10987: Item might be added to ChangeTracker during looping (unable to reproduce)
 #endif
 
             foreach (var objectStateEntry in changes)

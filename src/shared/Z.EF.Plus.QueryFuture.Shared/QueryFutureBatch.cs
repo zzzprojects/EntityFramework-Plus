@@ -487,7 +487,11 @@ namespace Z.EntityFramework.Plus
                 foreach (var relationalParameter in parameters)
                 {
                     value = null;
+#if EFCORE_10X
+                    var parameter = queryContext.Parameters[invariantName ?? relationalParameter.InvariantName];
+#else
                     var parameter = queryContext.ParameterValues[invariantName ?? relationalParameter.InvariantName];
+#endif
 
                     // logic FROM BatchUpdate.cs
                     methodeConvertFromProvider = null;
@@ -561,6 +565,35 @@ namespace Z.EntityFramework.Plus
                         command.Parameters.Add(dbParameter);
                     }
 
+                    // Comme on touche pas souvent au coin savoir que c'est un rajout et qu'il date de x.
+                    // Udt | ZZZ-10730 | 2025-07-05 | Fix related to LinqKit only
+                    var getSqlDbType = dbParameter.GetType().GetProperty("SqlDbType", BindingFlags.Public | BindingFlags.Instance);
+
+                    // CHECK if this is an Udt
+                    if (getSqlDbType != null && getSqlDbType.GetValue(dbParameter).ToString().Equals("Udt", StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (propertyRelationalTypeMapping != null)
+                        {
+                            var relationalTypeMapping = propertyRelationalTypeMapping.GetValue(relationalParameter);
+
+                            // Voir le jira pas uniquement "StoreType" de disponnible ici comme propriété.
+                            // Mais perso semble le plus juste.
+                            var getStoreType = relationalTypeMapping.GetType().GetProperty("StoreType", BindingFlags.Public | BindingFlags.Instance); 
+                            var setSqlDbType = dbParameter.GetType().GetProperty("UdtTypeName", BindingFlags.Public | BindingFlags.Instance);
+
+                            if (setSqlDbType != null && getStoreType != null)
+                            {
+                                var storeType = getStoreType.GetValue(relationalTypeMapping);
+
+                                if (storeType != null && storeType is string stringStoreType)
+                                {
+                                    // ex: stringStoreType == "hierarchyid"
+                                    setSqlDbType.SetValue(dbParameter, stringStoreType);
+                                }
+                            }
+                        }
+                    }
+
                     if (isPostgreSQL)
                     {
                         var relationalTypeMappingProperty = typeof(TypeMappedRelationalParameter).GetProperty("RelationalTypeMapping", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
@@ -603,7 +636,7 @@ namespace Z.EntityFramework.Plus
 
 
 
-                sb.AppendLine(string.Concat("-- EF+ Query Future: ", queryCount, " of ", Queries.Count));
+                    sb.AppendLine(string.Concat("-- EF+ Query Future: ", queryCount, " of ", Queries.Count));
 
                 if (isOracle || isOracleManaged || isOracleDevArt)
                 {

@@ -42,6 +42,7 @@ using Remotion.Linq.Parsing.Structure;
 using Remotion.Linq.Clauses;
 using Microsoft.EntityFrameworkCore.Query.Sql;
 using Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal;
+using Z.EntityFramework.Extensions;
 
 #elif EFCORE_3X
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
@@ -200,8 +201,7 @@ namespace Z.EntityFramework.Plus
 #endif
 
             // REFLECTION: Query.Provider._queryCompiler._queryContextFactory
-            var queryContextFactoryField = queryCompiler.GetType().GetField("_queryContextFactory", BindingFlags.NonPublic | BindingFlags.Instance);
-            var queryContextFactory = (IQueryContextFactory) queryContextFactoryField.GetValue(queryCompiler);
+            var queryContextFactory = (IQueryContextFactory)PublicMethods.GetQueryContextFactory(queryCompiler);
 
             // REFLECTION: Query.Provider._queryCompiler._queryContextFactory.CreateQueryBuffer
             var createQueryBufferDelegateMethod = (typeof (QueryContextFactory)).GetMethod("CreateQueryBuffer", BindingFlags.NonPublic | BindingFlags.Instance);

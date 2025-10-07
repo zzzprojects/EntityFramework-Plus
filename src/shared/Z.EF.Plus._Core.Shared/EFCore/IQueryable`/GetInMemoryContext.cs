@@ -7,12 +7,13 @@
 
 #if FULL || QUERY_FUTURE
 #if EFCORE
-using System.Linq;
-using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.EntityFrameworkCore.Query;
-using Microsoft.EntityFrameworkCore.Query.Internal;
+using Microsoft.EntityFrameworkCore.Query.Internal; 
+using System.Linq;
+using System.Reflection;
+using Z.EntityFramework.Extensions;
 
 namespace Z.EntityFramework.Plus
 {
@@ -25,10 +26,10 @@ namespace Z.EntityFramework.Plus
 			var compilerField = typeof(EntityQueryProvider).GetField("_queryCompiler", BindingFlags.NonPublic | BindingFlags.Instance);
 			var compiler = (QueryCompiler)compilerField.GetValue(source.Provider);
 
-			var queryContextFactoryField = compiler.GetType().GetField("_queryContextFactory", BindingFlags.NonPublic | BindingFlags.Instance);
-			var queryContextFactory = queryContextFactoryField.GetValue(compiler);
+			var queryContextFactory = PublicMethods.GetQueryContextFactory(compiler);
 
-			object stateManagerDynamic;
+
+            object stateManagerDynamic;
 
 #if EFCORE_3X
 

@@ -37,6 +37,7 @@ using Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal;
 using Microsoft.EntityFrameworkCore.Query.Sql;
 using Remotion.Linq.Parsing.ExpressionVisitors.TreeEvaluation;
 using Remotion.Linq.Parsing.Structure;
+using Z.EntityFramework.Extensions;
 
 #endif
 
@@ -172,13 +173,11 @@ namespace Z.EntityFramework.Plus
                 nodeTypeProvider = nodeTypeProviderProperty.GetValue(compiler);
             } 
 
-            var queryContextFactoryField = compiler.GetType().GetField("_queryContextFactory", BindingFlags.NonPublic | BindingFlags.Instance);
-            var queryContextFactory = (IQueryContextFactory)queryContextFactoryField.GetValue(compiler);
+            var queryContextFactory = (IQueryContextFactory)PublicMethods.GetQueryContextFactory(compiler);
 
             queryContext = (RelationalQueryContext)queryContextFactory.Create();
 
-            var databaseField = compiler.GetType().GetField("_database", BindingFlags.NonPublic | BindingFlags.Instance);
-            var database = (IDatabase)databaseField.GetValue(compiler);
+            var database = (IDatabase)PublicMethods.GetDatabase(compiler);
 
             // REFLECTION: Query.Provider._queryCompiler
             var queryCompilerField = typeof(EntityQueryProvider).GetField("_queryCompiler", BindingFlags.NonPublic | BindingFlags.Instance);

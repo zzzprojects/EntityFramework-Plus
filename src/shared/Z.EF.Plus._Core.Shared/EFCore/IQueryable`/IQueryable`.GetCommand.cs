@@ -19,6 +19,8 @@ using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
+using Z.EntityFramework.Extensions;
+
 
 #if EFCORE_2X
 using Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal;
@@ -64,16 +66,14 @@ namespace Z.EntityFramework.Plus
             var createQueryParser = (QueryParser)createQueryParserMethod.Invoke(null, new[] { nodeTypeProvider });
 
             // REFLECTION: Query.Provider._queryCompiler._database
-            var databaseField = queryCompiler.GetType().GetField("_database", BindingFlags.NonPublic | BindingFlags.Instance);
-            var database = (IDatabase)databaseField.GetValue(queryCompiler);
+            var database = (IDatabase)PublicMethods.GetDatabase(queryCompiler);
 
             // REFLECTION: Query.Provider._queryCompiler._evaluatableExpressionFilter
             var evaluatableExpressionFilterField = queryCompiler.GetType().GetField("_evaluatableExpressionFilter", BindingFlags.NonPublic | BindingFlags.Static);
             var evaluatableExpressionFilter = (IEvaluatableExpressionFilter)evaluatableExpressionFilterField.GetValue(null);
 
             // REFLECTION: Query.Provider._queryCompiler._queryContextFactory
-            var queryContextFactoryField = queryCompiler.GetType().GetField("_queryContextFactory", BindingFlags.NonPublic | BindingFlags.Instance);
-            var queryContextFactory = (IQueryContextFactory)queryContextFactoryField.GetValue(queryCompiler);
+            var queryContextFactory = (IQueryContextFactory)PublicMethods.GetQueryContextFactory(queryCompiler);
 
             // REFLECTION: Query.Provider._queryCompiler._queryContextFactory.CreateQueryBuffer
             var createQueryBufferDelegateMethod = (typeof(QueryContextFactory)).GetMethod("CreateQueryBuffer", BindingFlags.NonPublic | BindingFlags.Instance);

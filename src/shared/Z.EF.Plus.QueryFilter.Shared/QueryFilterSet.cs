@@ -222,8 +222,13 @@ namespace Z.EntityFramework.Plus
             if(context.IsEFCore2x())
             {
                 var set = GetDbSetCompiled.Value(context);
+                // https://github.com/dotnet/efcore/commit/fd4b2a6053d66f3ccd19023e4c879a5b9d756e02#diff-4e132cf6c13c8039f07a306f6392b39ac77859382dbf1cad8e5563726b23bc53
 
+#if EFCORE_10X
+                var field = set.GetType().GetField("<EntityQueryable>k__BackingField", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+#else
                 var field = set.GetType().GetField("_entityQueryable", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+#endif
                 field.SetValue(set, query);
             }
             else
@@ -240,5 +245,5 @@ namespace Z.EntityFramework.Plus
             }
         }
 #endif
-    }
+            }
 }

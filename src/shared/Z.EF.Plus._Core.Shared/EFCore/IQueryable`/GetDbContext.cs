@@ -7,13 +7,14 @@
 
 #if FULL || AUDIT || BATCH_DELETE || BATCH_UPDATE || QUERY_FUTURE
 #if EFCORE
-using System;
-using System.Linq;
-using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Query.Internal;
+using System;
+using System.Linq;
+using System.Reflection;
+using Z.EntityFramework.Extensions;
 
 namespace Z.EntityFramework.Plus
 {
@@ -27,8 +28,7 @@ namespace Z.EntityFramework.Plus
             var compilerField = typeof (EntityQueryProvider).GetField("_queryCompiler", BindingFlags.NonPublic | BindingFlags.Instance);
             var compiler = (QueryCompiler) compilerField.GetValue(source.Provider);
 
-            var queryContextFactoryField = compiler.GetType().GetField("_queryContextFactory", BindingFlags.NonPublic | BindingFlags.Instance);
-			var queryContextFactory = (RelationalQueryContextFactory)queryContextFactoryField.GetValue(compiler);
+            var queryContextFactory = (RelationalQueryContextFactory)PublicMethods.GetQueryContextFactory(compiler);
 
 #if EFCORE_3X
             object stateManagerDynamic;
@@ -53,7 +53,7 @@ namespace Z.EntityFramework.Plus
             }
 #else
 #if EFCORE
-			object stateManagerDynamic;
+            object stateManagerDynamic;
 
             var dependenciesProperty = typeof(RelationalQueryContextFactory).GetProperty("Dependencies", BindingFlags.NonPublic | BindingFlags.Instance);
             if (dependenciesProperty != null)
@@ -98,8 +98,7 @@ namespace Z.EntityFramework.Plus
             var compilerField = typeof (EntityQueryProvider).GetField("_queryCompiler", BindingFlags.NonPublic | BindingFlags.Instance);
             var compiler = (QueryCompiler) compilerField.GetValue(query.Provider);
 
-            var queryContextFactoryField = compiler.GetType().GetField("_queryContextFactory", BindingFlags.NonPublic | BindingFlags.Instance);
-            var queryContextFactory = (RelationalQueryContextFactory) queryContextFactoryField.GetValue(compiler);
+            var queryContextFactory = (RelationalQueryContextFactory)PublicMethods.GetQueryContextFactory(compiler);
 
 #if EFCORE_3X
             object stateManagerDynamic;
