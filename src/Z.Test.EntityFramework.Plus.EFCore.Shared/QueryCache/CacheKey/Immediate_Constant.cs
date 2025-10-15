@@ -5,6 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
+using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Z.EntityFramework.Plus;
@@ -16,24 +17,29 @@ namespace Z.Test.EntityFramework.Plus
         [TestMethod]
         public void Immediate_Constant()
         {
-            TestContext.DeleteAll(x => x.Entity_Basics);
-            TestContext.Insert(x => x.Entity_Basics, 3);
-
-            using (var ctx = new TestContext())
+            Action action = () =>
             {
-                var query1 = ctx.Entity_Basics.Where(x => x.ColumnInt > 0);
-                var query2 = ctx.Entity_Basics.Where(x => x.ColumnInt > 1);
+                TestContext.DeleteAll(x => x.Entity_Basics);
+                TestContext.Insert(x => x.Entity_Basics, 3);
 
-                var count1 = query1.FromCache().Count();
-                var count2 = query2.FromCache().Count();
+                using (var ctx = new TestContext())
+                {
+                    var query1 = ctx.Entity_Basics.Where(x => x.ColumnInt > 0);
+                    var query2 = ctx.Entity_Basics.Where(x => x.ColumnInt > 1);
 
-                // Cache key are different
-                Assert.AreNotEqual(QueryCacheManager.GetCacheKey(query1, new string[0]), QueryCacheManager.GetCacheKey(query2, new string[0]));
+                    var count1 = query1.FromCache().Count();
+                    var count2 = query2.FromCache().Count();
 
-                // Count are different
-                Assert.AreEqual(2, count1);
-                Assert.AreEqual(1, count2);
-            }
+                    // Cache key are different
+                    Assert.AreNotEqual(QueryCacheManager.GetCacheKey(query1, new string[0]), QueryCacheManager.GetCacheKey(query2, new string[0]));
+
+                    // Count are different
+                    Assert.AreEqual(2, count1);
+                    Assert.AreEqual(1, count2);
+                }
+            };
+
+            MyIni.RunWithFailLogical(MyIni.GetSetupCasTest(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName + "." + System.Reflection.MethodBase.GetCurrentMethod().Name), action);
         }
     }
 }

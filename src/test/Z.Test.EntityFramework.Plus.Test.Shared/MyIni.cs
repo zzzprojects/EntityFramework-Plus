@@ -35,7 +35,7 @@ namespace Z.EntityFramework.Plus
 
 			if (ShowTestFail != CasTestFailSetupe.Normal)
 			{
-#if IsCore3Memory || IsCore5Memory || IsCore5
+#if IsCore3Memory || IsCore5Memory || IsCore5 || IsCore7
 				dicSetupFailTestnew.Add("Z.Test.EntityFramework.Plus.BatchUpdate_Keyword.From", ShowTestFail); 
 #endif
 #if IsEF6
@@ -95,6 +95,10 @@ namespace Z.EntityFramework.Plus
 				dicSetupFailTestnew.Add("Z.Test.EntityFramework.Plus.QueryIncludeOptimized_ByPath.Many_Many_Single_Single", ShowTestFail); 
 				dicSetupFailTestnew.Add("Z.Test.EntityFramework.Plus.QueryIncludeOptimized_ByPath.Many_Many_Single_Many", ShowTestFail); 
 				dicSetupFailTestnew.Add("Z.Test.EntityFramework.Plus.QueryIncludeOptimized_ByPath.Many_Many_Many_Single", ShowTestFail); 
+#endif
+#if IsCore7
+				dicSetupFailTestnew.Add("Z.Test.EntityFramework.Plus.QueryIncludeOptimized_ByPath.Many_Many_Many_Many", ShowTestFail); 
+				dicSetupFailTestnew.Add("Z.Test.EntityFramework.Plus.QueryIncludeOptimized_ByPath.Many_Many_Many_Single", ShowTestFail);  
 #endif
 			}
 

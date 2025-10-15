@@ -6,6 +6,7 @@
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using Z.EntityFramework.Plus;
 
 namespace Z.Test.EntityFramework.Plus
@@ -15,27 +16,32 @@ namespace Z.Test.EntityFramework.Plus
         [TestMethod]
         public void FromCache_QueryDeferred_WithDefault()
         {
-            TestContext.DeleteAll(x => x.Entity_Basics);
-            TestContext.Insert(x => x.Entity_Basics, 1);
-
-            using (var ctx = new TestContext())
+            Action action = () =>
             {
-                // BEFORE
-                var itemCountBefore = ctx.Entity_Basics.DeferredCount().FromCache();
-                var cacheCountBefore = QueryCacheHelper.GetCacheCount();
-
                 TestContext.DeleteAll(x => x.Entity_Basics);
+                TestContext.Insert(x => x.Entity_Basics, 1);
 
-                // AFTER
-                var itemCountAfter = ctx.Entity_Basics.DeferredCount().FromCache();
-                var cacheCountAfter = QueryCacheHelper.GetCacheCount();
+                using (var ctx = new TestContext())
+                {
+                    // BEFORE
+                    var itemCountBefore = ctx.Entity_Basics.DeferredCount().FromCache();
+                    var cacheCountBefore = QueryCacheHelper.GetCacheCount();
 
-                // TEST: The item count are equal
-                Assert.AreEqual(itemCountBefore, itemCountAfter);
+                    TestContext.DeleteAll(x => x.Entity_Basics);
 
-                // TEST: The cache count are equal
-                Assert.AreEqual(cacheCountBefore, cacheCountAfter);
-            }
+                    // AFTER
+                    var itemCountAfter = ctx.Entity_Basics.DeferredCount().FromCache();
+                    var cacheCountAfter = QueryCacheHelper.GetCacheCount();
+
+                    // TEST: The item count are equal
+                    Assert.AreEqual(itemCountBefore, itemCountAfter);
+
+                    // TEST: The cache count are equal
+                    Assert.AreEqual(cacheCountBefore, cacheCountAfter);
+                }
+            };
+
+            MyIni.RunWithFailLogical(MyIni.GetSetupCasTest(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName + "." + System.Reflection.MethodBase.GetCurrentMethod().Name), action);
         }
     }
 }

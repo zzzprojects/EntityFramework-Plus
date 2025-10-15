@@ -5,6 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
+using System;
 using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -17,31 +18,36 @@ namespace Z.Test.EntityFramework.Plus
         [TestMethod]
         public void Many()
         {
-            TestContext.DeleteAll(x => x.Entity_Basics);
-            TestContext.Insert(x => x.Entity_Basics, 3);
-
-            using (var ctx = new TestContext())
+            Action action = () =>
             {
-                var tags = new string[] { "zzzprojects", "tag2", "tag3" };
+                TestContext.DeleteAll(x => x.Entity_Basics);
+                TestContext.Insert(x => x.Entity_Basics, 3);
 
-                StringBuilder cacheKey = new StringBuilder();
-                cacheKey.AppendLine(QueryCacheManager.CachePrefix);
-                cacheKey.AppendLine(QueryCacheManager.GetConnectionStringForCacheKey(ctx.Entity_Basics));
-                cacheKey.AppendLine(string.Join(";", tags));
+                using (var ctx = new TestContext())
+                {
+                    var tags = new string[] { "zzzprojects", "tag2", "tag3" };
 
-                var query = ctx.Entity_Basics.Where(x => x.ColumnInt > 0);
+                    StringBuilder cacheKey = new StringBuilder();
+                    cacheKey.AppendLine(QueryCacheManager.CachePrefix);
+                    cacheKey.AppendLine(QueryCacheManager.GetConnectionStringForCacheKey(ctx.Entity_Basics));
+                    cacheKey.AppendLine(string.Join(";", tags));
 
-                var cacheKey1 = QueryCacheManager.GetCacheKey(query, new string[0]);
-                QueryCacheManager.UseTagsAsCacheKey = true;
-                var cacheKey2 = QueryCacheManager.GetCacheKey(query, tags);
-                QueryCacheManager.UseTagsAsCacheKey = false;
+                    var query = ctx.Entity_Basics.Where(x => x.ColumnInt > 0);
 
-                // Cache key are different
-                Assert.AreNotEqual(cacheKey1, cacheKey2);
+                    var cacheKey1 = QueryCacheManager.GetCacheKey(query, new string[0]);
+                    QueryCacheManager.UseTagsAsCacheKey = true;
+                    var cacheKey2 = QueryCacheManager.GetCacheKey(query, tags);
+                    QueryCacheManager.UseTagsAsCacheKey = false;
 
-                // Cache key2 is equal to hardcoded cacheKey
-                Assert.AreEqual(cacheKey.ToString(), cacheKey2);
-            }
+                    // Cache key are different
+                    Assert.AreNotEqual(cacheKey1, cacheKey2);
+
+                    // Cache key2 is equal to hardcoded cacheKey
+                    Assert.AreEqual(cacheKey.ToString(), cacheKey2);
+                }
+            };
+
+            MyIni.RunWithFailLogical(MyIni.GetSetupCasTest(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName + "." + System.Reflection.MethodBase.GetCurrentMethod().Name), action);
         }
     }
 }

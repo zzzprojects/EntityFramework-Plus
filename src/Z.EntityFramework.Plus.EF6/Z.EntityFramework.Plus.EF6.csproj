@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -11,10 +11,14 @@
     <AssemblyName>Z.EntityFramework.Plus.EF6</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -54,17 +58,16 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Caching" />
-    <Reference Include="System.Runtime.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Z.EntityFramework.Extensions, Version = 6.13.0.0, Culture = neutral, PublicKeyToken = 59b66d028979105b, processorArchitecture = MSIL">
-      <HintPath>..\packages\Z.EntityFramework.Extensions.6.13.0\lib\net45\Z.EntityFramework.Extensions.dll</HintPath>
+    <Reference Include="Z.EntityFramework.Extensions, Version = 9.104.0.1.0, Culture = neutral, PublicKeyToken = 59b66d028979105b, processorArchitecture = MSIL">
+      <HintPath>..\packages\Z.EntityFramework.Extensions.9.104.0.1\lib\net45\Z.EntityFramework.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="Z.Expressions.Eval, Version = 4.0.62.0, Culture = neutral, PublicKeyToken = 59b66d028979105b, processorArchitecture = MSIL">
-      <HintPath>..\packages\Z.Expressions.Eval.4.0.62\lib\net45\Z.Expressions.Eval.dll</HintPath>
+    <Reference Include="Z.Expressions.Eval, Version = 6.3.2.0, Culture = neutral, PublicKeyToken = 59b66d028979105b, processorArchitecture = MSIL">
+      <HintPath>..\packages\Z.Expressions.Eval.6.3.2\lib\net45\Z.Expressions.Eval.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -91,6 +94,7 @@
   <Import Project="..\shared\Z.EF.Plus.SetDynamic.Shared\Z.EF.Plus.SetDynamic.Shared.projitems" Label="Shared" />
   <Import Project="..\shared\Z.EF.Plus.QueryHook\Z.EF.Plus.QueryHook.projitems" Label="Shared" />
   <Import Project="..\shared\Z.EF.Plus.Project.Shared\Z.EF.Plus.Project.Shared.projitems" Label="Shared" />
+  <Import Project="..\shared\Z.EF.Plus.SetIdentity.Shared\Z.EF.Plus.SetIdentity.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

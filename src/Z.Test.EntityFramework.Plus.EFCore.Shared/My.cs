@@ -15,7 +15,11 @@ namespace Z.Test.EntityFramework.Plus
         {
             public class ConnectionStrings
             {
-                public static string TestDatabase = "Server=localhost;Initial Catalog=Z.Test.EntityFramework.Plus.EFCore;Integrated Security=True;";//ConfigurationManager.ConnectionStrings["TestDatabase"].ConnectionString;
+#if EFCORE_7X
+                public static string TestDatabase = "Server=localhost;Initial Catalog=Z.Test.EntityFramework.Plus.EFCore;Integrated Security=True;TrustServerCertificate=true;";//ConfigurationManager.ConnectionStrings["TestDatabase"].ConnectionString;
+#else
+                public static string TestDatabase = "Server=localhost;Initial Catalog=Z.Test.EntityFramework.Plus.EFCore;Integrated Security=True;TrustServerCertificate=true;";//ConfigurationManager.ConnectionStrings["TestDatabase"].ConnectionString;
+#endif
             }
         }
     }

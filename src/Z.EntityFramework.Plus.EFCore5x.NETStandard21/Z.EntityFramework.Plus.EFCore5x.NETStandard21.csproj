@@ -1,0 +1,66 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <SignAssembly>False</SignAssembly>
+    <AssemblyOriginatorKeyFile>zzzproject.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyName>Z.EntityFramework.Plus.EFCore</AssemblyName>
+    <RootNamespace>Z.EntityFramework.Plus.EFCore</RootNamespace>
+    <PackageId>Z.EntityFramework.Plus.EFCore</PackageId>
+    <Version>5.104.0.1</Version>
+    <Authors>ZZZ Projects Inc.</Authors>
+    <Company>ZZZ Projects Inc.</Company>
+    <Product>Z.EntityFramework.Plus.EFCore</Product>
+    <Description>Description: EF Bulk Operations &amp; Utilities | Bulk Insert, Update, Delete, Merge from database.</Description>
+    <Copyright>Copyright © ZZZ Projects Inc.</Copyright>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;RELEASE;NETSTANDARD2_0;EFCORE NET45 FULL EFCORE_3X EFCORE_5X</DefineConstants>
+    <DocumentationFile>bin\Release\netstandard2.1\Z.EntityFramework.Plus.EFCore.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;RELEASE;NETSTANDARD2_0;EFCORE NET45 FULL EFCORE_3X EFCORE_5X</DefineConstants>
+  </PropertyGroup>
+
+  <Import Project="..\shared\Z.EF.Plus._Core.Shared\Z.EF.Plus._Core.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus._ExceptionMessage.Shared\Z.EF.Plus._ExceptionMessage.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus.Audit.Shared\Z.EF.Plus.Audit.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus.BatchDelete.Shared\Z.EF.Plus.BatchDelete.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus.BatchUpdate.Shared\Z.EF.Plus.BatchUpdate.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus.QueryCache.Shared\Z.EF.Plus.QueryCache.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus.QueryDeferred.Shared\Z.EF.Plus.QueryDeferred.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus.QueryExtensions.Shared\Z.EF.Plus.QueryExtensions.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus.QueryFilter.Shared\Z.EF.Plus.QueryFilter.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus.QueryFuture.Shared\Z.EF.Plus.QueryFuture.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus.QueryIncludeFilterCore.Shared\Z.EF.Plus.QueryIncludeFilterCore.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus.QueryIncludeOptimized.Shared\Z.EF.Plus.QueryIncludeOptimized.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus.SetDynamic.Shared\Z.EF.Plus.SetDynamic.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus.QueryHook\Z.EF.Plus.QueryHook.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus.SetIdentity.Shared\Z.EF.Plus.SetIdentity.Shared.projitems" Label="Shared" />
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.0" />
+    <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
+    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.7.0" />
+    <PackageReference Include="Z.EntityFramework.Extensions.EFCore" Version="5.104.0.1" />
+    <PackageReference Include="Z.Expressions.Eval" Version="6.3.2" />
+  </ItemGroup>
+
+</Project>

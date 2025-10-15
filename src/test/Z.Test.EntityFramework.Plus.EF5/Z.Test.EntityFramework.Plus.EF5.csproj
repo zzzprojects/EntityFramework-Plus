@@ -16,10 +16,14 @@
     <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -56,8 +60,8 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Runtime.Caching" />
-    <Reference Include="Z.EntityFramework.Extensions.EF5, Version = 6.13.0.0, Culture = neutral, PublicKeyToken = 59b66d028979105b, processorArchitecture = MSIL">
-      <HintPath>..\..\packages\Z.EntityFramework.Extensions.EF5.6.13.0\lib\net45\Z.EntityFramework.Extensions.EF5.dll</HintPath>
+    <Reference Include="Z.EntityFramework.Extensions.EF5, Version = 9.104.0.1.0, Culture = neutral, PublicKeyToken = 59b66d028979105b, processorArchitecture = MSIL">
+      <HintPath>..\..\packages\Z.EntityFramework.Extensions.EF5.9.104.0.1\lib\net45\Z.EntityFramework.Extensions.EF5.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Choose>

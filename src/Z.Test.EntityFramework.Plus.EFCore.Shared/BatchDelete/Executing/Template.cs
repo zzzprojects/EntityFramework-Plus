@@ -5,6 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
+using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Z.EntityFramework.Plus;
@@ -16,26 +17,28 @@ namespace Z.Test.EntityFramework.Plus
         [TestMethod]
         public void Template()
         {
-            TestContext.DeleteAll(x => x.Entity_Basics);
-            TestContext.Insert(x => x.Entity_Basics, 50);
-
-            using (var ctx = new TestContext())
+            Action action = () =>
             {
-                var sql = "";
+                TestContext.DeleteAll(x => x.Entity_Basics);
+                TestContext.Insert(x => x.Entity_Basics, 50);
 
-                // BEFORE
-                Assert.AreEqual(1225, ctx.Entity_Basics.Sum(x => x.ColumnInt));
-
-                // ACTION
-                var rowsAffected = ctx.Entity_Basics.Where(x => x.ColumnInt > 10 && x.ColumnInt <= 40).Delete(delete =>
+                using (var ctx = new TestContext())
                 {
-                    delete.BatchSize = 0;
-                    delete.Executing = command => sql = command.CommandText;
-                });
+                    var sql = "";
 
-                // AFTER
-                Assert.AreEqual(460, ctx.Entity_Basics.Sum(x => x.ColumnInt));
-                Assert.AreEqual(30, rowsAffected);
+                    // BEFORE
+                    Assert.AreEqual(1225, ctx.Entity_Basics.Sum(x => x.ColumnInt));
+
+                    // ACTION
+                    var rowsAffected = ctx.Entity_Basics.Where(x => x.ColumnInt > 10 && x.ColumnInt <= 40).Delete(delete =>
+                    {
+                        delete.BatchSize = 0;
+                        delete.Executing = command => sql = command.CommandText;
+                    });
+
+                    // AFTER
+                    Assert.AreEqual(460, ctx.Entity_Basics.Sum(x => x.ColumnInt));
+                    Assert.AreEqual(30, rowsAffected);
 
 #if EF5
                 Assert.AreEqual(@"
@@ -63,6 +66,18 @@ FROM    [dbo].[Entity_Basic] AS A
 
 SELECT @@ROWCOUNT
 ", sql);
+#elif EFCORE_7X
+                    Assert.AreEqual((@"
+DELETE
+FROM    A 
+FROM    [Entity_Basic] AS A
+        INNER JOIN ( SELECT [e].[ID]
+FROM [Entity_Basic] AS [e]
+WHERE [e].[ColumnInt] > 10 AND [e].[ColumnInt] <= 40
+                    ) AS B ON A.[ID] = B.[ID]
+
+SELECT @@ROWCOUNT
+"), sql);
 #elif EFCORE_2X
                 
             Assert.AreEqual((@"
@@ -77,7 +92,7 @@ WHERE ([x].[ColumnInt] > 10) AND ([x].[ColumnInt] <= 40)
 SELECT @@ROWCOUNT
 "), sql);
 #elif EFCORE_3X
-                Assert.AreEqual((@"
+                    Assert.AreEqual((@"
 DELETE
 FROM    A 
 FROM    [Entity_Basic] AS A
@@ -88,8 +103,11 @@ WHERE ([e].[ColumnInt] > 10) AND ([e].[ColumnInt] <= 40)
 
 SELECT @@ROWCOUNT
 "), sql);
-#endif
-            }
+#endif 
+                }
+            };
+
+            MyIni.RunWithFailLogical(MyIni.GetSetupCasTest(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName + "." + System.Reflection.MethodBase.GetCurrentMethod().Name), action);
         }
     }
 }

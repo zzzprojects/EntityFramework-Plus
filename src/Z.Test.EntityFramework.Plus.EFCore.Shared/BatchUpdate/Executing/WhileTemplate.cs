@@ -5,6 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
+using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Z.EntityFramework.Plus;
@@ -16,22 +17,24 @@ namespace Z.Test.EntityFramework.Plus
         [TestMethod]
         public void WhileTemplate()
         {
-            TestContext.DeleteAll(x => x.Entity_Basics);
-            TestContext.Insert(x => x.Entity_Basics, 50);
-
-            using (var ctx = new TestContext())
+            Action action = () =>
             {
-                var sql = "";
+                TestContext.DeleteAll(x => x.Entity_Basics);
+                TestContext.Insert(x => x.Entity_Basics, 50);
 
-                // BEFORE
-                Assert.AreEqual(1225, ctx.Entity_Basics.Sum(x => x.ColumnInt));
+                using (var ctx = new TestContext())
+                {
+                    var sql = "";
 
-                // ACTION
-                var rowsAffected = ctx.Entity_Basics.Where(x => x.ColumnInt > 10 && x.ColumnInt <= 40).Update(x => new Entity_Basic {ColumnInt = 99}, update => update.Executing = command => sql = command.CommandText);
+                    // BEFORE
+                    Assert.AreEqual(1225, ctx.Entity_Basics.Sum(x => x.ColumnInt));
 
-                // AFTER
-                Assert.AreEqual(3430, ctx.Entity_Basics.Sum(x => x.ColumnInt));
-                Assert.AreEqual(30, rowsAffected);
+                    // ACTION
+                    var rowsAffected = ctx.Entity_Basics.Where(x => x.ColumnInt > 10 && x.ColumnInt <= 40).Update(x => new Entity_Basic {ColumnInt = 99}, update => update.Executing = command => sql = command.CommandText);
+
+                    // AFTER
+                    Assert.AreEqual(3430, ctx.Entity_Basics.Sum(x => x.ColumnInt));
+                    Assert.AreEqual(30, rowsAffected);
 
 #if EF5
                 Assert.AreEqual(@"
@@ -57,6 +60,16 @@ INNER JOIN ( SELECT
     WHERE ([Extent1].[ColumnInt] > 10) AND ([Extent1].[ColumnInt] <= 40)
            ) AS B ON A.[ID] = B.[ID]
 ", sql);
+#elif EFCORE_7X
+                    Assert.AreEqual(@"
+UPDATE A 
+SET A.[ColumnInt] = @zzz_BatchUpdate_0
+FROM [Entity_Basic] AS A
+INNER JOIN ( SELECT [e].[ID], [e].[ColumnInt]
+FROM [Entity_Basic] AS [e]
+WHERE [e].[ColumnInt] > 10 AND [e].[ColumnInt] <= 40
+           ) AS B ON A.[ID] = B.[ID]
+", sql);
 #elif EFCORE_2X
                 Assert.AreEqual(@"
 UPDATE A 
@@ -68,7 +81,7 @@ WHERE ([x].[ColumnInt] > 10) AND ([x].[ColumnInt] <= 40)
            ) AS B ON A.[ID] = B.[ID]
 ", sql);
 #elif EFCORE_3X
-                Assert.AreEqual(@"
+                    Assert.AreEqual(@"
 UPDATE A 
 SET A.[ColumnInt] = @zzz_BatchUpdate_0
 FROM [Entity_Basic] AS A
@@ -78,7 +91,10 @@ WHERE ([e].[ColumnInt] > 10) AND ([e].[ColumnInt] <= 40)
            ) AS B ON A.[ID] = B.[ID]
 ", sql);
 #endif
-            }
+                }
+            };
+
+            MyIni.RunWithFailLogical(MyIni.GetSetupCasTest(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName + "." + System.Reflection.MethodBase.GetCurrentMethod().Name), action);
         }
     }
 }

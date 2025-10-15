@@ -2,10 +2,10 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="SharedProjectFile_SccProperties">
     <SharedProjectFile_ProjectGuid>{32966e97-6b33-4744-847b-b4f3f4c0639d}</SharedProjectFile_ProjectGuid>
-    <SharedProjectFile_SccProjectName>SAK</SharedProjectFile_SccProjectName>
-    <SharedProjectFile_SccAuxPath>SAK</SharedProjectFile_SccAuxPath>
-    <SharedProjectFile_SccLocalPath>SAK</SharedProjectFile_SccLocalPath>
-    <SharedProjectFile_SccProvider>SAK</SharedProjectFile_SccProvider>
+    <SharedProjectFile_SccProjectName></SharedProjectFile_SccProjectName>
+    <SharedProjectFile_SccAuxPath></SharedProjectFile_SccAuxPath>
+    <SharedProjectFile_SccLocalPath></SharedProjectFile_SccLocalPath>
+    <SharedProjectFile_SccProvider></SharedProjectFile_SccProvider>
   </PropertyGroup>
   <PropertyGroup>
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
@@ -242,9 +242,25 @@
     <Compile Include="$(MSBuildThisFileDirectory)BatchUpdate\WhereValue\Single_False.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BatchUpdate\WhereValue\Single_Variable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExceptionMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MikaelAreaIndependant\AuditDisplayAndNot.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MikaelAreaIndependant\Audit_IsKey.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MikaelAreaIndependant\Autre.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MikaelAreaIndependant\ConverterFutur.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MikaelAreaIndependant\DynamicSet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MikaelAreaIndependant\FormatTestType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MikaelAreaIndependant\FromSqlRaw.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MikaelAreaIndependant\IncludeOptimized.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MikaelAreaIndependant\FromSqlInterpolated.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MikaelAreaIndependant\IncludeFilter_694.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MikaelAreaIndependant\IncludeOptimizedWithFutur.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MikaelAreaIndependant\IncludFilterTimeofDay.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MikaelAreaIndependant\ModelAndContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MikaelAreaIndependant\My.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MikaelAreaIndependant\QueryCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MikaelAreaIndependant\QueryFuturCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MikaelAreaIndependant\IncludeFilterSimple.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MikaelAreaIndependant\RetrySimpleCasTest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MikaelAreaIndependant\UpdateFromQueryDic.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)My.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)QueryCache\CacheKeyFactory\NotNull.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)QueryCache\CacheKey\Deferred_Constant.cs" />

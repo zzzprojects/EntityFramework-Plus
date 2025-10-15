@@ -5,6 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
+using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Z.EntityFramework.Plus;
@@ -16,26 +17,31 @@ namespace Z.Test.EntityFramework.Plus
         [TestMethod]
         public void NotNull()
         {
-            TestContext.DeleteAll(x => x.Entity_Basics);
-            TestContext.Insert(x => x.Entity_Basics, 3);
-
-            using (var ctx = new TestContext())
+            Action action = () =>
             {
-                string hardcodedCacheKey = "zzzprojects";
+                TestContext.DeleteAll(x => x.Entity_Basics);
+                TestContext.Insert(x => x.Entity_Basics, 3);
 
-                var query = ctx.Entity_Basics.Where(x => x.ColumnInt > 0);
+                using (var ctx = new TestContext())
+                {
+                    string hardcodedCacheKey = "zzzprojects";
 
-                var cacheKey1 = QueryCacheManager.GetCacheKey(query, new string[0]);
-                QueryCacheManager.CacheKeyFactory = (queryable, strings) => hardcodedCacheKey;
-                var cacheKey2 = QueryCacheManager.GetCacheKey(query, new string[0]);
-                QueryCacheManager.CacheKeyFactory = null;
+                    var query = ctx.Entity_Basics.Where(x => x.ColumnInt > 0);
 
-                // Cache key are different
-                Assert.AreNotEqual(cacheKey1, cacheKey2);
+                    var cacheKey1 = QueryCacheManager.GetCacheKey(query, new string[0]);
+                    QueryCacheManager.CacheKeyFactory = (queryable, strings) => hardcodedCacheKey;
+                    var cacheKey2 = QueryCacheManager.GetCacheKey(query, new string[0]);
+                    QueryCacheManager.CacheKeyFactory = null;
 
-                // Cache key2 is equal to hardcoded cacheKey
-                Assert.AreEqual(hardcodedCacheKey, cacheKey2);
-            }
+                    // Cache key are different
+                    Assert.AreNotEqual(cacheKey1, cacheKey2);
+
+                    // Cache key2 is equal to hardcoded cacheKey
+                    Assert.AreEqual(hardcodedCacheKey, cacheKey2);
+                }
+            };
+
+            MyIni.RunWithFailLogical(MyIni.GetSetupCasTest(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName + "." + System.Reflection.MethodBase.GetCurrentMethod().Name), action);
         }
     }
 }

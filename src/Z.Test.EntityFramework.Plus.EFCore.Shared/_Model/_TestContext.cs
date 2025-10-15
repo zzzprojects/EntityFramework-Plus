@@ -20,7 +20,9 @@ using Microsoft.EntityFrameworkCore;
 #endif
 
 #if EFCORE_3X
+#if !INMEMORY
 using Microsoft.Data.SqlClient;
+#endif
 #endif
 
 namespace Z.Test.EntityFramework.Plus
@@ -258,7 +260,11 @@ END
 #elif EFCORE
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(new SqlConnection(My.Config.ConnectionStrings.TestDatabase));
+#if INMEMORY
+	        optionsBuilder.UseInMemoryDatabase("zzz");
+#else
+	        optionsBuilder.UseSqlServer(new SqlConnection(My.Config.ConnectionStrings.TestDatabase));
+#endif
         }
 
 

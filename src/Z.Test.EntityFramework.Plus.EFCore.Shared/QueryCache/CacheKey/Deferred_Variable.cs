@@ -5,6 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
+using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Z.EntityFramework.Plus;
@@ -16,28 +17,33 @@ namespace Z.Test.EntityFramework.Plus
         [TestMethod]
         public void Deferred_Variable()
         {
-            TestContext.DeleteAll(x => x.Entity_Basics);
-            TestContext.Insert(x => x.Entity_Basics, 3);
-
-            using (var ctx = new TestContext())
+            Action action = () =>
             {
-                int i = 0;
-                var query1 = ctx.Entity_Basics.Where(x => x.ColumnInt > i).DeferredCount();
-                var cacheKey1 = query1;
-                var count1 = query1.FromCache();
+                TestContext.DeleteAll(x => x.Entity_Basics);
+                TestContext.Insert(x => x.Entity_Basics, 3);
 
-                i = 1;
-                var query2 = ctx.Entity_Basics.Where(x => x.ColumnInt > i).DeferredCount();
-                var cacheKey2 = query2;
-                var count2 = query2.FromCache();
+                using (var ctx = new TestContext())
+                {
+                    int i = 0;
+                    var query1 = ctx.Entity_Basics.Where(x => x.ColumnInt > i).DeferredCount();
+                    var cacheKey1 = query1;
+                    var count1 = query1.FromCache();
 
-                // Cache key are different
-                Assert.AreNotEqual(cacheKey1, cacheKey2);
+                    i = 1;
+                    var query2 = ctx.Entity_Basics.Where(x => x.ColumnInt > i).DeferredCount();
+                    var cacheKey2 = query2;
+                    var count2 = query2.FromCache();
 
-                // Count are different
-                Assert.AreEqual(2, count1);
-                Assert.AreEqual(1, count2);
-            }
+                    // Cache key are different
+                    Assert.AreNotEqual(cacheKey1, cacheKey2);
+
+                    // Count are different
+                    Assert.AreEqual(2, count1);
+                    Assert.AreEqual(1, count2);
+                }
+            };
+
+            MyIni.RunWithFailLogical(MyIni.GetSetupCasTest(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName + "." + System.Reflection.MethodBase.GetCurrentMethod().Name), action);
         }
     }
 }

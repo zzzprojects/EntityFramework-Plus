@@ -6,6 +6,7 @@
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 #if EF6 || EFCORE
+using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Z.EntityFramework.Plus;
@@ -17,26 +18,31 @@ namespace Z.Test.EntityFramework.Plus
         [TestMethod]
         public void Rollback()
         {
-            TestContext.DeleteAll(x => x.Entity_Basics);
-            TestContext.Insert(x => x.Entity_Basics, 50);
-
-            using (var ctx = new TestContext())
+            Action action = () =>
             {
-                var transaction = ctx.Database.BeginTransaction();
+                TestContext.DeleteAll(x => x.Entity_Basics);
+                TestContext.Insert(x => x.Entity_Basics, 50);
 
-                // BEFORE
-                Assert.AreEqual(1225, ctx.Entity_Basics.Sum(x => x.ColumnInt));
+                using (var ctx = new TestContext())
+                {
+                    var transaction = ctx.Database.BeginTransaction();
 
-                // ACTION
-                var rowsAffected = ctx.Entity_Basics.Where(x => x.ColumnInt > 10 && x.ColumnInt <= 40).Delete();
-                transaction.Rollback();
+                    // BEFORE
+                    Assert.AreEqual(1225, ctx.Entity_Basics.Sum(x => x.ColumnInt));
 
-                // AFTER
-                Assert.AreEqual(1225, ctx.Entity_Basics.Sum(x => x.ColumnInt));
+                    // ACTION
+                    var rowsAffected = ctx.Entity_Basics.Where(x => x.ColumnInt > 10 && x.ColumnInt <= 40).Delete();
+                    transaction.Rollback();
 
-                // STILL have the same number of rows affected
-                Assert.AreEqual(30, rowsAffected);
-            }
+                    // AFTER
+                    Assert.AreEqual(1225, ctx.Entity_Basics.Sum(x => x.ColumnInt));
+
+                    // STILL have the same number of rows affected
+                    Assert.AreEqual(30, rowsAffected);
+                }
+            };
+
+            MyIni.RunWithFailLogical(MyIni.GetSetupCasTest(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName + "." + System.Reflection.MethodBase.GetCurrentMethod().Name), action);
         }
     }
 }

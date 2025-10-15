@@ -5,6 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
+using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Z.EntityFramework.Plus;
@@ -16,34 +17,39 @@ namespace Z.Test.EntityFramework.Plus
         [TestMethod]
         public void Single_Enumerator()
         {
-            TestContext.DeleteAll(x => x.Association_OneToMany_Rights);
-            TestContext.DeleteAll(x => x.Association_OneToMany_Lefts);
-
-            using (var ctx = new TestContext())
+            Action action = () =>
             {
-                var left = TestContext.Insert(ctx, x => x.Association_OneToMany_Lefts, 1).First();
-                left.Rights = TestContext.Insert(ctx, x => x.Association_OneToMany_Rights, 5);
-                ctx.SaveChanges();
-            }
+                TestContext.DeleteAll(x => x.Association_OneToMany_Rights);
+                TestContext.DeleteAll(x => x.Association_OneToMany_Lefts);
 
-            using (var ctx = new TestContext())
-            {
-                var list = ctx.Association_OneToMany_Lefts
-                    .IncludeFilter(left => left.Rights.Where(y => y.ColumnInt > 2))
-                    .ToList();
+                using (var ctx = new TestContext())
+                {
+                    var left = TestContext.Insert(ctx, x => x.Association_OneToMany_Lefts, 1).First();
+                    left.Rights = TestContext.Insert(ctx, x => x.Association_OneToMany_Rights, 5);
+                    ctx.SaveChanges();
+                }
 
-                // TEST: context
-                Assert.AreEqual(3, ctx.ChangeTracker.Entries().Count());
+                using (var ctx = new TestContext())
+                {
+                    var list = ctx.Association_OneToMany_Lefts
+                        .IncludeFilter(left => left.Rights.Where(y => y.ColumnInt > 2))
+                        .ToList();
 
-                // TEST: left
-                Assert.AreEqual(1, list.Count);
+                    // TEST: context
+                    Assert.AreEqual(3, ctx.ChangeTracker.Entries().Count());
 
-                // TEST: right
-                var item = list[0];
-                Assert.AreEqual(2, item.Rights.Count);
-                Assert.AreEqual(3, item.Rights[0].ColumnInt);
-                Assert.AreEqual(4, item.Rights[1].ColumnInt);
-            }
+                    // TEST: left
+                    Assert.AreEqual(1, list.Count);
+
+                    // TEST: right
+                    var item = list[0];
+                    Assert.AreEqual(2, item.Rights.Count);
+                    Assert.AreEqual(3, item.Rights[0].ColumnInt);
+                    Assert.AreEqual(4, item.Rights[1].ColumnInt);
+                }
+            };
+
+            MyIni.RunWithFailLogical(MyIni.GetSetupCasTest(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName + "." + System.Reflection.MethodBase.GetCurrentMethod().Name), action);
         }
     }
 }

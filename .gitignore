@@ -1,6 +1,7 @@
 [Bb]in/
 [Oo]bj/
 [Pp]ackages/
+.vs/
 Z.Expressions.Eval.NET40/
 Z.Lab/
 *.suo

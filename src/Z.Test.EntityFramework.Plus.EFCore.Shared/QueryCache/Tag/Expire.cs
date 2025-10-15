@@ -17,37 +17,42 @@ namespace Z.Test.EntityFramework.Plus
         [TestMethod]
         public void Tag_Expire()
         {
-            var testCacheKey = Guid.NewGuid().ToString();
-
-            TestContext.DeleteAll(x => x.Entity_Basics);
-            TestContext.Insert(x => x.Entity_Basics, 1);
-
-            using (var ctx = new TestContext())
+            Action action = () =>
             {
-                // BEFORE
-                var itemCountBefore = ctx.Entity_Basics.FromCache(testCacheKey).Count();
-                var cacheCountBefore = QueryCacheHelper.GetCacheCount();
+                var testCacheKey = Guid.NewGuid().ToString();
 
                 TestContext.DeleteAll(x => x.Entity_Basics);
+                TestContext.Insert(x => x.Entity_Basics, 1);
 
-                QueryCacheManager.ExpireTag(testCacheKey);
-                var cacheCountExpired = QueryCacheHelper.GetCacheCount();
+                using (var ctx = new TestContext())
+                {
+                    // BEFORE
+                    var itemCountBefore = ctx.Entity_Basics.FromCache(testCacheKey).Count();
+                    var cacheCountBefore = QueryCacheHelper.GetCacheCount();
 
-                // TEST: The cache count are NOT equal (The cache key has been removed)
-                Assert.AreEqual(cacheCountBefore - 1, cacheCountExpired);
+                    TestContext.DeleteAll(x => x.Entity_Basics);
 
-                // AFTER
-                var itemCountAfter = ctx.Entity_Basics.FromCache(testCacheKey).Count();
-                var cacheCountAfter = QueryCacheHelper.GetCacheCount();
+                    QueryCacheManager.ExpireTag(testCacheKey);
+                    var cacheCountExpired = QueryCacheHelper.GetCacheCount();
 
-                // TEST: The item count are NOT equal (The query has been expired)
-                Assert.AreNotEqual(itemCountBefore, itemCountAfter);
-                Assert.AreEqual(0, itemCountAfter);
+                    // TEST: The cache count are NOT equal (The cache key has been removed)
+                    Assert.AreEqual(cacheCountBefore - 1, cacheCountExpired);
 
-                // TEST: The cache count are NOT equal (The expired cache key is added)
-                Assert.AreEqual(cacheCountExpired + 1, cacheCountAfter);
-                Assert.AreEqual(cacheCountBefore, cacheCountAfter);
-            }
+                    // AFTER
+                    var itemCountAfter = ctx.Entity_Basics.FromCache(testCacheKey).Count();
+                    var cacheCountAfter = QueryCacheHelper.GetCacheCount();
+
+                    // TEST: The item count are NOT equal (The query has been expired)
+                    Assert.AreNotEqual(itemCountBefore, itemCountAfter);
+                    Assert.AreEqual(0, itemCountAfter);
+
+                    // TEST: The cache count are NOT equal (The expired cache key is added)
+                    Assert.AreEqual(cacheCountExpired + 1, cacheCountAfter);
+                    Assert.AreEqual(cacheCountBefore, cacheCountAfter);
+                }
+            };
+
+            MyIni.RunWithFailLogical(MyIni.GetSetupCasTest(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName + "." + System.Reflection.MethodBase.GetCurrentMethod().Name), action);
         }
     }
 }

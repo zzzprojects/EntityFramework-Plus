@@ -5,6 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
+using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Z.EntityFramework.Plus;
@@ -16,22 +17,24 @@ namespace Z.Test.EntityFramework.Plus
         [TestMethod]
         public void WhileTemplate()
         {
-            TestContext.DeleteAll(x => x.Entity_Basics);
-            TestContext.Insert(x => x.Entity_Basics, 50);
-
-            using (var ctx = new TestContext())
+            Action action = () =>
             {
-                var sql = "";
+                TestContext.DeleteAll(x => x.Entity_Basics);
+                TestContext.Insert(x => x.Entity_Basics, 50);
 
-                // BEFORE
-                Assert.AreEqual(1225, ctx.Entity_Basics.Sum(x => x.ColumnInt));
+                using (var ctx = new TestContext())
+                {
+                    var sql = "";
 
-                // ACTION
-                var rowsAffected = ctx.Entity_Basics.Where(x => x.ColumnInt > 10 && x.ColumnInt <= 40).Delete(delete => delete.Executing = command => sql = command.CommandText);
+                    // BEFORE
+                    Assert.AreEqual(1225, ctx.Entity_Basics.Sum(x => x.ColumnInt));
 
-                // AFTER
-                Assert.AreEqual(460, ctx.Entity_Basics.Sum(x => x.ColumnInt));
-                Assert.AreEqual(30, rowsAffected);
+                    // ACTION
+                    var rowsAffected = ctx.Entity_Basics.Where(x => x.ColumnInt > 10 && x.ColumnInt <= 40).Delete(delete => delete.Executing = command => sql = command.CommandText);
+
+                    // AFTER
+                    Assert.AreEqual(460, ctx.Entity_Basics.Sum(x => x.ColumnInt));
+                    Assert.AreEqual(30, rowsAffected);
 
 #if EF5
                 Assert.AreEqual(@"
@@ -86,6 +89,34 @@ WHILE @stop=0
         SET @totalRowAffected = @totalRowAffected + @rowAffected
 
 		IF @rowAffected < 4000
+            SET @stop = 1
+    END
+
+SELECT  @totalRowAffected
+", sql);
+#elif EFCORE_7X
+                    Assert.AreEqual(@"
+DECLARE @stop int
+DECLARE @rowAffected INT
+DECLARE @totalRowAffected INT
+
+SET @stop = 0
+SET @totalRowAffected = 0
+
+WHILE @stop=0
+    BEGIN
+        DELETE TOP (4000)
+        FROM    A 
+        FROM    [Entity_Basic] AS A
+                INNER JOIN ( SELECT [e].[ID]
+FROM [Entity_Basic] AS [e]
+WHERE [e].[ColumnInt] > 10 AND [e].[ColumnInt] <= 40
+                           ) AS B ON A.[ID] = B.[ID]
+
+        SET @rowAffected = @@ROWCOUNT
+        SET @totalRowAffected = @totalRowAffected + @rowAffected
+
+        IF @rowAffected < 4000
             SET @stop = 1
     END
 
@@ -147,8 +178,11 @@ WHERE ([e].[ColumnInt] > 10) AND ([e].[ColumnInt] <= 40)
 
 SELECT  @totalRowAffected
 ", sql);
-#endif
-            }
+#endif 
+                }
+            };
+
+            MyIni.RunWithFailLogical(MyIni.GetSetupCasTest(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName + "." + System.Reflection.MethodBase.GetCurrentMethod().Name), action);
         }
     }
 }

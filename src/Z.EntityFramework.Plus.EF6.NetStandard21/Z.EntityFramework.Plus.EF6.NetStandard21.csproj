@@ -1,0 +1,73 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup Label="Globals">
+    <SccProjectName></SccProjectName>
+    <SccProvider></SccProvider>
+    <SccAuxPath></SccAuxPath>
+    <SccLocalPath></SccLocalPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <SignAssembly>False</SignAssembly>
+    <AssemblyOriginatorKeyFile>zzzproject.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyName>Z.EntityFramework.Plus.EF6</AssemblyName>
+    <RootNamespace>Z.EntityFramework.Plus.EF6</RootNamespace>
+    <Description>Description: EF Bulk Operations &amp; Utilities | Bulk Insert, Update, Delete, Merge from database.</Description>
+    <Version>9.104.0.1</Version>
+    <Authors>ZZZ Projects Inc.</Authors>
+    <Company>ZZZ Projects Inc.</Company>
+    <Copyright>Copyright © ZZZ Projects Inc.</Copyright>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;EF6 NET45 FULL</DefineConstants>
+    <DocumentationFile>\Z.EntityFramework.Plus.EF6.NetStandard21\Z.EntityFramework.Plus.EF6.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;EF6 NET45 FULL</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EntityFramework" Version="6.3.0" />
+    <PackageReference Include="System.Runtime.Caching" Version="4.6.0" />
+    <PackageReference Include="Z.EntityFramework.Extensions" Version="9.104.0.1" />
+    <PackageReference Include="Z.Expressions.Eval" Version="6.3.2" />
+  </ItemGroup>
+
+  <Import Project="..\shared\Z.EF.Plus._Core.Shared\Z.EF.Plus._Core.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus._ExceptionMessage.Shared\Z.EF.Plus._ExceptionMessage.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus.BatchDelete.Shared\Z.EF.Plus.BatchDelete.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus.Audit.Shared\Z.EF.Plus.Audit.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus.BatchUpdate.Shared\Z.EF.Plus.BatchUpdate.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus.QueryCache.Shared\Z.EF.Plus.QueryCache.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus.QueryDeferred.Shared\Z.EF.Plus.QueryDeferred.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus.QueryExtensions.Shared\Z.EF.Plus.QueryExtensions.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus.QueryFilter.Shared\Z.EF.Plus.QueryFilter.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus.QueryFilterInterceptor.Shared\Z.EF.Plus.QueryFilterInterceptor.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus.QueryFuture.Shared\Z.EF.Plus.QueryFuture.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus.QueryIncludeFilter.Shared\Z.EF.Plus.QueryIncludeFilter.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus.QueryIncludeOptimized.Shared\Z.EF.Plus.QueryIncludeOptimized.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared_dev\Z.EF.Plus.QueryInterceptor.Shared\Z.EF.Plus.QueryInterceptor.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus.SetDynamic.Shared\Z.EF.Plus.SetDynamic.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus.QueryHook\Z.EF.Plus.QueryHook.projitems" Label="Shared" />
+
+  <Import Project="..\shared\Z.EF.Plus.SetIdentity.Shared\Z.EF.Plus.SetIdentity.Shared.projitems" Label="Shared" />
+
+</Project>

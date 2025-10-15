@@ -29,5 +29,22 @@ namespace Z.Test.EntityFramework.Plus
                 QueryFilterHelper.ClearGlobalManagerFilter();
             }
         }
+
+        [TestMethod]
+        public void WithGlobalManagerFilter_ManyFilter_Enable_v2()
+        {
+            TestContext.DeleteAll(x => x.Inheritance_Interface_Entities);
+            TestContext.Insert(x => x.Inheritance_Interface_Entities, 10);
+
+            using (var ctx = new TestContext())
+            {
+                QueryFilterHelper.CreateGlobalManagerFilter(false, enableFilter1: true, enableFilter2: true, enableFilter3: true, enableFilter4: true);
+                QueryFilterManager.InitilizeGlobalFilter(ctx);
+                int allo = 0;
+                Assert.AreEqual(35, ctx.Inheritance_Interface_Entities.Where(x => x.ColumnInt > allo && x.ID > allo).Sum(x => x.ColumnInt));
+
+                QueryFilterHelper.ClearGlobalManagerFilter();
+            }
+        }
     }
 }

@@ -5,6 +5,7 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
+using System;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -17,29 +18,34 @@ namespace Z.Test.EntityFramework.Plus
         [TestMethod]
         public void Thirty()
         {
-            TestContext.DeleteAll(x => x.Entity_Basics);
-            TestContext.Insert(x => x.Entity_Basics, 50);
-
-            using (var ctx = new TestContext())
+            Action action = () =>
             {
-                // BEFORE
-                Assert.AreEqual(1225, ctx.Entity_Basics.Sum(x => x.ColumnInt));
+                TestContext.DeleteAll(x => x.Entity_Basics);
+                TestContext.Insert(x => x.Entity_Basics, 50);
 
-                // ACTION
-                var clock = new Stopwatch();
-                clock.Start();
-                var rowsAffected = ctx.Entity_Basics.Where(x => x.ColumnInt > 10 && x.ColumnInt <= 40).Delete(delete =>
+                using (var ctx = new TestContext())
                 {
-                    delete.BatchDelayInterval = 50;
-                    delete.BatchSize = 5;
-                });
-                clock.Stop();
+                    // BEFORE
+                    Assert.AreEqual(1225, ctx.Entity_Basics.Sum(x => x.ColumnInt));
 
-                // AFTER
-                Assert.AreEqual(460, ctx.Entity_Basics.Sum(x => x.ColumnInt));
-                Assert.AreEqual(30, rowsAffected);
-                Assert.IsTrue(clock.ElapsedMilliseconds > 250 && clock.ElapsedMilliseconds < 600);
-            }
+                    // ACTION
+                    var clock = new Stopwatch();
+                    clock.Start();
+                    var rowsAffected = ctx.Entity_Basics.Where(x => x.ColumnInt > 10 && x.ColumnInt <= 40).Delete(delete =>
+                    {
+                        delete.BatchDelayInterval = 50;
+                        delete.BatchSize = 5;
+                    });
+                    clock.Stop();
+
+                    // AFTER
+                    Assert.AreEqual(460, ctx.Entity_Basics.Sum(x => x.ColumnInt));
+                    Assert.AreEqual(30, rowsAffected);
+                    Assert.IsTrue(clock.ElapsedMilliseconds > 250 && clock.ElapsedMilliseconds < 600);
+                }
+            };
+
+            MyIni.RunWithFailLogical(MyIni.GetSetupCasTest(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName + "." + System.Reflection.MethodBase.GetCurrentMethod().Name), action);
         }
     }
 }

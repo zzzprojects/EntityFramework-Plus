@@ -17,30 +17,35 @@ namespace Z.Test.EntityFramework.Plus
         [TestMethod]
         public void Tag_NotEqual()
         {
-            var testCacheKey = Guid.NewGuid().ToString();
-
-            TestContext.DeleteAll(x => x.Entity_Basics);
-            TestContext.Insert(x => x.Entity_Basics, 1);
-
-            using (var ctx = new TestContext())
+            Action action = () =>
             {
-                // BEFORE
-                var itemCountBefore = ctx.Entity_Basics.FromCache(testCacheKey).Count();
-                var cacheCountBefore = QueryCacheHelper.GetCacheCount();
+                var testCacheKey = Guid.NewGuid().ToString();
 
                 TestContext.DeleteAll(x => x.Entity_Basics);
+                TestContext.Insert(x => x.Entity_Basics, 1);
 
-                // AFTER
-                var itemCountAfter = ctx.Entity_Basics.FromCache(testCacheKey, Guid.NewGuid().ToString()).Count();
-                var cacheCountAfter = QueryCacheHelper.GetCacheCount();
+                using (var ctx = new TestContext())
+                {
+                    // BEFORE
+                    var itemCountBefore = ctx.Entity_Basics.FromCache(testCacheKey).Count();
+                    var cacheCountBefore = QueryCacheHelper.GetCacheCount();
 
-                // TEST: The item count are NOT equal (A new cache key is used, the query is materialized)
-                Assert.AreNotEqual(itemCountBefore, itemCountAfter);
-                Assert.AreEqual(0, itemCountAfter);
+                    TestContext.DeleteAll(x => x.Entity_Basics);
 
-                // TEST: The cache count are NOT equal (A new cache key is used)
-                Assert.AreEqual(cacheCountBefore + 1, cacheCountAfter);
-            }
+                    // AFTER
+                    var itemCountAfter = ctx.Entity_Basics.FromCache(testCacheKey, Guid.NewGuid().ToString()).Count();
+                    var cacheCountAfter = QueryCacheHelper.GetCacheCount();
+
+                    // TEST: The item count are NOT equal (A new cache key is used, the query is materialized)
+                    Assert.AreNotEqual(itemCountBefore, itemCountAfter);
+                    Assert.AreEqual(0, itemCountAfter);
+
+                    // TEST: The cache count are NOT equal (A new cache key is used)
+                    Assert.AreEqual(cacheCountBefore + 1, cacheCountAfter);
+                }
+            };
+
+            MyIni.RunWithFailLogical(MyIni.GetSetupCasTest(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName + "." + System.Reflection.MethodBase.GetCurrentMethod().Name), action);
         }
     }
 }

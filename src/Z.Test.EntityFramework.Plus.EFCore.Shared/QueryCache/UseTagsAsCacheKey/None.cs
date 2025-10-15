@@ -17,31 +17,36 @@ namespace Z.Test.EntityFramework.Plus
         [TestMethod]
         public void None()
         {
-            TestContext.DeleteAll(x => x.Entity_Basics);
-            TestContext.Insert(x => x.Entity_Basics, 3);
-
-            using (var ctx = new TestContext())
+            Action action = () =>
             {
-                var firstTag = "zzzprojects";
+                TestContext.DeleteAll(x => x.Entity_Basics);
+                TestContext.Insert(x => x.Entity_Basics, 3);
 
-                var query = ctx.Entity_Basics.Where(x => x.ColumnInt > 0);
+                using (var ctx = new TestContext())
+                {
+                    var firstTag = "zzzprojects";
 
-                var cacheKey1 = QueryCacheManager.GetCacheKey(query, new string[0]);
-                QueryCacheManager.UseTagsAsCacheKey = true;
+                    var query = ctx.Entity_Basics.Where(x => x.ColumnInt > 0);
 
-                try
-                {
-                    var cacheKey2 = QueryCacheManager.GetCacheKey(query, new string[0]);
+                    var cacheKey1 = QueryCacheManager.GetCacheKey(query, new string[0]);
+                    QueryCacheManager.UseTagsAsCacheKey = true;
+
+                    try
+                    {
+                        var cacheKey2 = QueryCacheManager.GetCacheKey(query, new string[0]);
+                    }
+                    catch (Exception ex)
+                    {
+                        Assert.AreEqual(ExceptionMessage.QueryCache_UseTagsNullOrEmpty, ex.Message);
+                    }
+                    finally
+                    {
+                        QueryCacheManager.UseTagsAsCacheKey = false;
+                    }
                 }
-                catch (Exception ex)
-                {
-                    Assert.AreEqual(ExceptionMessage.QueryCache_UseTagsNullOrEmpty, ex.Message);
-                }
-                finally
-                {
-                    QueryCacheManager.UseTagsAsCacheKey = false;
-                }
-            }
+            };
+
+            MyIni.RunWithFailLogical(MyIni.GetSetupCasTest(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName + "." + System.Reflection.MethodBase.GetCurrentMethod().Name), action);
         }
     }
 }
