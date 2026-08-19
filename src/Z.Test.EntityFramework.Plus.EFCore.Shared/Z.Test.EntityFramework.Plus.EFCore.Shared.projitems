@@ -280,11 +280,17 @@
     <Compile Include="$(MSBuildThisFileDirectory)QueryCache\FromCache\QueryDeferred_WithDefault.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)QueryCache\FromCache\QueryDeferred_WithExpiration.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)QueryCache\FromCache\QueryDeferred_WithNull.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryCache\IsCommandInfoOptionalForCacheKey\Disabled_KeyUnchanged.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryCache\IsCommandInfoOptionalForCacheKey\DoesNotCompileQuery.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryCache\IsCommandInfoOptionalForCacheKey\WithFirstTag.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryCache\IsCommandInfoOptionalForCacheKey\WithTags.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryCache\IsCommandInfoOptionalForCacheKey\WithoutTagMode_Throws.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)QueryCache\QueryCache_CacheKey.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)QueryCache\QueryCache_CacheKeyFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)QueryCache\QueryCache_ExpireAll.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)QueryCache\QueryCache_FromCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)QueryCache\QueryCache_FromCacheAsync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QueryCache\QueryCache_IsCommandInfoOptionalForCacheKey.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)QueryCache\QueryCache_IsEnabledFalse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)QueryCache\QueryCache_Tag.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)QueryCache\QueryCache_UseFirstTagAsCacheKey.cs" />
