@@ -246,14 +246,15 @@ namespace Z.EntityFramework.Plus
 
 #if EFCORE
 
-        // NEED TEXT!
-
-		/// <remarks>
-		/// The query is not compiled when this option is enabled, so the connection and the command are
-		/// omitted from the cache key. The option 'UseFirstTagAsCacheKey' or 'UseTagsAsCacheKey' must also
-		/// be enabled since the tags become the only information used to create the cache key.
-		/// </remarks>
-		public static bool SkipCommandCreationForCacheKey { get; set; }
+        /// <summary>
+        /// Gets or sets a value indicating whether the command is created and used for the cache key.
+        /// </summary>
+        /// <remarks>
+        /// The query is not compiled when this option is enabled, so the connection and the command are
+        /// omitted from the cache key. The option 'UseFirstTagAsCacheKey' or 'UseTagsAsCacheKey' must also
+        /// be enabled since the tags become the only information used to create the cache key.
+        /// </remarks>
+        public static bool SkipCommandCreationForCacheKey { get; set; }
 #else
 		/// <summary>
 		/// Gets or sets a value indicating whether this object is command information optional for cache
