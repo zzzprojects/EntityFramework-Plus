@@ -19,6 +19,7 @@ namespace Z.Test.EntityFramework.Plus.EFCore.Shared.MikaelAreaIndependant
 			using (var context = new ModelAndContext.EntityContext())
 			{
 				context.EntitySimples.RemoveRange(context.EntitySimples);
+				context.EntitySimpleChilds.RemoveRange(context.EntitySimpleChilds);
 				context.SaveChanges();
 			}
 		}
@@ -454,6 +455,53 @@ namespace Z.Test.EntityFramework.Plus.EFCore.Shared.MikaelAreaIndependant
 
         }
 
-    }
+		[TestMethod()]
+		public void Test_SameNameVariable()
+	{ 
+			Clean();
+			using (var context = new ModelAndContext.EntityContext())
+			{
+				for (int i = 1; i < 4; i++)
+				{
+					context.EntitySimples.Add(new EntitySimple { ColumnInt = i, ColumnString = "Annual", EntitySimpleChild = new List<EntitySimpleChild>() { new EntitySimpleChild { ColumnInt = 10 + i } } });
+				}
+				for (int i = 1; i < 4; i++)
+				{
+					context.EntitySimples.Add(new EntitySimple { ColumnInt = i, EntitySimpleChild = new List<EntitySimpleChild>() { new EntitySimpleChild { ColumnInt = 10 + i , ColumnString  = "Annual" } , new EntitySimpleChild { ColumnInt = 10 + i, ColumnString = "patate" } } });
+				}
+
+				context.SaveChanges();
+			}
+			using (var context = new ModelAndContext.EntityContext())
+			{
+				var tt = context.EntitySimples.Where(x => x.ColumnInt == 10).Future();
+
+				var keyword = "Annual";
+				var KEYWORD = "Annual";
+
+				var query = context.EntitySimples
+					.AsNoTracking()
+					.Where(d => d.ColumnString.Contains(keyword) || d.ColumnString.Contains(KEYWORD));
+
+				var totalCount = query
+					.DeferredCount()
+					.FutureValue();
+
+				var asda = query
+					.Future()
+					.ToList();
+
+
+				var asdasad = context.EntitySimples
+					//.AsNoTracking()
+					.IncludeFilter(d => d.EntitySimpleChild.Where(y => y.ColumnString.Contains(keyword) || y.ColumnString.Contains(KEYWORD))).ToList();
+				Assert.AreEqual(3, asdasad.SelectMany(x => x.EntitySimpleChild).Count());
+				Assert.AreEqual(3, asda.Count());
+
+			} 
+
+		}
+
+	}
 }
 #endif

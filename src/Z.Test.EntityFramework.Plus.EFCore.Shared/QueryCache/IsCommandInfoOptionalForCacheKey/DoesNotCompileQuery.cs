@@ -48,7 +48,7 @@ namespace Z.Test.EntityFramework.Plus
                     // The query is compiled by default
                     Assert.IsNotNull(compileException);
 
-                    QueryCacheManager.IsCommandInfoOptionalForCacheKey = true;
+                    QueryCacheManager.SkipCommandCreationForCacheKey = true;
                     QueryCacheManager.UseFirstTagAsCacheKey = true;
 
                     try
@@ -61,7 +61,7 @@ namespace Z.Test.EntityFramework.Plus
                     finally
                     {
                         QueryCacheManager.UseFirstTagAsCacheKey = false;
-                        QueryCacheManager.IsCommandInfoOptionalForCacheKey = false;
+                        QueryCacheManager.SkipCommandCreationForCacheKey = false;
                     }
                 }
             };

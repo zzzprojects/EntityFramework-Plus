@@ -35,7 +35,7 @@ namespace Z.Test.EntityFramework.Plus
 
                     var cacheKey1 = QueryCacheManager.GetCacheKey(query, new string[0]);
 
-                    QueryCacheManager.IsCommandInfoOptionalForCacheKey = true;
+                    QueryCacheManager.SkipCommandCreationForCacheKey = true;
                     QueryCacheManager.UseFirstTagAsCacheKey = true;
 
                     try
@@ -54,7 +54,7 @@ namespace Z.Test.EntityFramework.Plus
                     finally
                     {
                         QueryCacheManager.UseFirstTagAsCacheKey = false;
-                        QueryCacheManager.IsCommandInfoOptionalForCacheKey = false;
+                        QueryCacheManager.SkipCommandCreationForCacheKey = false;
                     }
                 }
             };

@@ -15,6 +15,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Z.EntityFramework.Extensions; 
+ 
 #if EF5
 using System.Data.EntityClient;
 using System.Data.Objects;
@@ -78,6 +80,8 @@ namespace Z.EntityFramework.Plus
                 return;
             }
 
+
+
 #if EFCORE
             if (IsInMemory)
             {
@@ -96,6 +100,10 @@ namespace Z.EntityFramework.Plus
                 Queries.Clear();
                 return;
             }
+
+#if EF6 && NET45
+            WhereBulkManager.DisableFixedTemporaryTableName = true;
+#endif
 
             bool allowQueryBatch = QueryFutureManager.AllowQueryBatch;
 #if EFCORE
@@ -278,6 +286,10 @@ namespace Z.EntityFramework.Plus
                 Queries.Clear();
                 return;
             }
+
+#if EF6 && NET45
+            WhereBulkManager.DisableFixedTemporaryTableName = true;
+#endif
 
 #if EF5 || EF6
             var connection = (EntityConnection)Context.Connection;
@@ -537,19 +549,10 @@ namespace Z.EntityFramework.Plus
                         value = objectArray[i];
                         i++;
                     }
-                    string oldValue = "";
 
-                    // pas de cas test voir projet client : https://zzzprojects.atlassian.net/browse/ZZZ-6894 (pas capable de faire cas simple et if ici uniquement pour lui.)
-                    if (relationalParameter is TypeMappedRelationalParameter parameterToCheck && parameterToCheck.Name != null &&
-                        parameterToCheck.Name.StartsWith("@_") && parameterToCheck.Name.Substring(1) != relationalParameter.InvariantName)
-                    {
-                        oldValue = parameterToCheck.Name.Substring(1);
-                    }
-                    else
-                    {
-                        oldValue = relationalParameter.InvariantName;
-                    }
-                    var newValue = string.Concat("Z_", queryCount, "_", oldValue);
+                    string oldValue = Z.EntityFramework.Extensions.PublicExtensions.GetParameterName(relationalParameter);
+
+					var newValue = string.Concat("Z_", queryCount, "_", oldValue);
 
                     // CREATE parameter
                     var dbParameter = command.CreateParameter();

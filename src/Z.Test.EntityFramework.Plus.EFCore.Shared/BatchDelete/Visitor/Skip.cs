@@ -80,6 +80,21 @@ FROM    [dbo].[Entity_Basic] AS A
 
 SELECT @@ROWCOUNT
 ", sql);
+#elif EFCORE_10X
+                    // it same of other so I keep what is in sql.
+                    Assert.AreEqual(@"
+DELETE
+FROM    A 
+FROM    [Entity_Basic] AS A
+        INNER JOIN ( SELECT [e].[ID]
+FROM [Entity_Basic] AS [e]
+WHERE [e].[ColumnInt] > 10 AND [e].[ColumnInt] <= 40
+ORDER BY [e].[ColumnInt]
+OFFSET @p ROWS FETCH NEXT @p0 ROWS ONLY
+                    ) AS B ON A.[ID] = B.[ID]
+
+SELECT @@ROWCOUNT
+", sql);
 #elif EFCORE_7X
                     // it same of other so I keep what is in sql.
                     Assert.AreEqual(@"
@@ -95,7 +110,6 @@ OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY
 
 SELECT @@ROWCOUNT
 ", sql);
-
 #elif EFCORE_2X
                 // it same of other so I keep what is in sql.
                 Assert.AreEqual(@"
@@ -126,7 +140,7 @@ OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY
 
 SELECT @@ROWCOUNT
 ", sql);
-#endif 
+#endif
                 }
             };
 

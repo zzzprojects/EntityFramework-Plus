@@ -26,7 +26,7 @@ namespace Z.Test.EntityFramework.Plus
                 {
                     var query = ctx.Entity_Basics.Where(x => x.ColumnInt > 0);
 
-                    QueryCacheManager.IsCommandInfoOptionalForCacheKey = true;
+                    QueryCacheManager.SkipCommandCreationForCacheKey = true;
 
                     try
                     {
@@ -44,7 +44,7 @@ namespace Z.Test.EntityFramework.Plus
                     }
                     finally
                     {
-                        QueryCacheManager.IsCommandInfoOptionalForCacheKey = false;
+                        QueryCacheManager.SkipCommandCreationForCacheKey = false;
                     }
                 }
             };

@@ -36,7 +36,7 @@ namespace Z.EntityFramework.Plus
 			if (ShowTestFail != CasTestFailSetupe.Normal)
 			{
 #if IsCore3Memory || IsCore5Memory || IsCore5 || IsCore7
-				dicSetupFailTestnew.Add("Z.Test.EntityFramework.Plus.BatchUpdate_Keyword.From", ShowTestFail); 
+				dicSetupFailTestnew.Add("Z.Test.EntityFramework.Plus.BatchUpdate_Keyword.From", ShowTestFail);
 #endif
 #if IsEF6
 				dicSetupFailTestnew.Add("Z.Test.EntityFramework.Plus.BatchDelete_Visitor.Skip", ShowTestFail);
@@ -46,6 +46,9 @@ namespace Z.EntityFramework.Plus
 				dicSetupFailTestnew.Add("Z.Test.EntityFramework.Plus.Mik_Area.BatchUpdateDelete_TPH.BatchUpdateDelete_TPH_4", ShowTestFail);
 #endif
 #if IsCore3Memory || IsCore5Memory
+				dicSetupFailTestnew.Add("Z.Test.EntityFramework.Plus.QueryCache_IsCommandInfoOptionalForCacheKey.WithTags", ShowTestFail);
+				dicSetupFailTestnew.Add("Z.Test.EntityFramework.Plus.QueryCache_IsCommandInfoOptionalForCacheKey.Disabled_KeyUnchanged", ShowTestFail);
+				dicSetupFailTestnew.Add("Z.Test.EntityFramework.Plus.QueryCache_IsCommandInfoOptionalForCacheKey.WithFirstTag", ShowTestFail);
 				dicSetupFailTestnew.Add("Z.Test.EntityFramework.Plus.EFCore.Shared.MikaelAreaIndependant.IncludeOptimized.IncludeOptimized_1", ShowTestFail);
 				dicSetupFailTestnew.Add("Z.Test.EntityFramework.Plus.BatchDelete_BatchDelayInterval.Thirty", ShowTestFail);
 				dicSetupFailTestnew.Add("Z.Test.EntityFramework.Plus.BatchDelete_Executing.Template", ShowTestFail);

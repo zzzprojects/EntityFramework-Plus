@@ -244,24 +244,31 @@ namespace Z.EntityFramework.Plus
         /// <value>true if use tag as cache key, false if not.</value>
         public static bool UseTagsAsCacheKey { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether this object is command information optional for cache
-        /// key.
-        /// </summary>
-        /// <value>
-        /// True if this object is command information optional for cache key, false if not.
-        /// </value>
-        /// <remarks>
-        /// The query is not compiled when this option is enabled, so the connection and the command are
-        /// omitted from the cache key. The option 'UseFirstTagAsCacheKey' or 'UseTagsAsCacheKey' must also
-        /// be enabled since the tags become the only information used to create the cache key.
-        /// </remarks>
-        public static bool IsCommandInfoOptionalForCacheKey { get; set; }
+#if EFCORE
+
+        // NEED TEXT!
+
+		/// <remarks>
+		/// The query is not compiled when this option is enabled, so the connection and the command are
+		/// omitted from the cache key. The option 'UseFirstTagAsCacheKey' or 'UseTagsAsCacheKey' must also
+		/// be enabled since the tags become the only information used to create the cache key.
+		/// </remarks>
+		public static bool SkipCommandCreationForCacheKey { get; set; }
+#else
+		/// <summary>
+		/// Gets or sets a value indicating whether this object is command information optional for cache
+		/// key.
+		/// </summary>
+		/// <value>
+		/// True if this object is command information optional for cache key, false if not.
+		/// </value>
+		public static bool IsCommandInfoOptionalForCacheKey { get; set; }
+#endif
 
 
 
 #if EF6
-        internal static bool _isAutoExpireCacheEnabled;
+		internal static bool _isAutoExpireCacheEnabled;
 
         internal static QueryCacheInterceptor AutoResetCacheInterceptor { get; set; }
 
@@ -513,25 +520,25 @@ namespace Z.EntityFramework.Plus
                 sb.AppendLine(GetConnectionStringForCacheKey(query));
             }
 #elif EFCORE
-            if (IsCommandInfoOptionalForCacheKey && !UseFirstTagAsCacheKey && !UseTagsAsCacheKey)
+            if (SkipCommandCreationForCacheKey && !UseFirstTagAsCacheKey && !UseTagsAsCacheKey)
             {
                 throw new Exception(ExceptionMessage.QueryCache_IsCommandInfoOptionalForCacheKey_Invalid);
             }
 
             RelationalQueryContext queryContext = null;
-
+             
             // Creating the command compiles the query, skip it when only tags are used to create the cache key
-            var command = IsCommandInfoOptionalForCacheKey ? null : query.CreateCommand(out queryContext);
+            var command = SkipCommandCreationForCacheKey ? null : query.CreateCommand(out queryContext);
 
             sb.AppendLine(CachePrefix);
-
+             
             if (IncludeConnectionInCacheKey && queryContext != null)
             {
                 sb.AppendLine(GetConnectionStringForCacheKey(queryContext));
             }
 #endif
 
-            if (UseFirstTagAsCacheKey)
+			if (UseFirstTagAsCacheKey)
             {
                 if (tags == null || tags.Length == 0 || string.IsNullOrEmpty(tags[0]))
                 {
@@ -895,7 +902,7 @@ namespace Z.EntityFramework.Plus
             return UseAsNoTrackingWithIdentityResolution ? query.AsNoTrackingWithIdentityResolution() : query.AsNoTracking();
 #else
             return query.AsNoTracking();
-#endif 
+#endif
         }
 #endif
 

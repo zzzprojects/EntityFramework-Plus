@@ -52,7 +52,8 @@ namespace Z.EntityFramework.Plus
                         interceptionContext = interceptionContext.AsAsync();
                     }
 
-                    interceptionContexts[i] = interceptionContext; 
+                    interceptionContexts[i] = interceptionContext;
+
                     i.ReaderExecuting(prepareEntityCommandBeforeExecution, interceptionContext);
                 });
 
