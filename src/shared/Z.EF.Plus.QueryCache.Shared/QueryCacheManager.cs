@@ -251,6 +251,11 @@ namespace Z.EntityFramework.Plus
         /// <value>
         /// True if this object is command information optional for cache key, false if not.
         /// </value>
+        /// <remarks>
+        /// The query is not compiled when this option is enabled, so the connection and the command are
+        /// omitted from the cache key. The option 'UseFirstTagAsCacheKey' or 'UseTagsAsCacheKey' must also
+        /// be enabled since the tags become the only information used to create the cache key.
+        /// </remarks>
         public static bool IsCommandInfoOptionalForCacheKey { get; set; }
 
 
@@ -508,13 +513,19 @@ namespace Z.EntityFramework.Plus
                 sb.AppendLine(GetConnectionStringForCacheKey(query));
             }
 #elif EFCORE
+            if (IsCommandInfoOptionalForCacheKey && !UseFirstTagAsCacheKey && !UseTagsAsCacheKey)
+            {
+                throw new Exception(ExceptionMessage.QueryCache_IsCommandInfoOptionalForCacheKey_Invalid);
+            }
+
             RelationalQueryContext queryContext = null;
 
-            var command = query.CreateCommand(out queryContext);
+            // Creating the command compiles the query, skip it when only tags are used to create the cache key
+            var command = IsCommandInfoOptionalForCacheKey ? null : query.CreateCommand(out queryContext);
 
             sb.AppendLine(CachePrefix);
 
-            if (IncludeConnectionInCacheKey)
+            if (IncludeConnectionInCacheKey && queryContext != null)
             {
                 sb.AppendLine(GetConnectionStringForCacheKey(queryContext));
             }
