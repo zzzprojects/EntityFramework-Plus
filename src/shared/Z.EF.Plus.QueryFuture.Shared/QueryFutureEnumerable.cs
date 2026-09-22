@@ -165,6 +165,25 @@ namespace Z.EntityFramework.Plus
                 return list.ToArray();
             }
         }
+
+        public async Task<T> FirstOrDefaultAsync()
+        {
+            if (!HasValue)
+            {
+                await OwnerBatch.ExecuteQueriesAsync().ConfigureAwait(false);
+            }
+
+            if (_result == null)
+            {
+                return default(T);
+            }
+
+            using (var enumerator = _result.GetEnumerator())
+            {
+                enumerator.MoveNext();
+                return enumerator.Current;
+            }
+        }
 #endif
 #endif
 
